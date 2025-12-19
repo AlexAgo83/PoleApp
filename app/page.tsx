@@ -73,27 +73,18 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10 md:px-8">
-      <section
-        className={`panel p-4 text-sm text-slate-200 ${
-          isAuthenticated
-            ? "flex flex-col gap-3 items-end text-right md:flex-row md:items-center md:justify-between md:text-left"
-            : "flex flex-col gap-2 text-left md:flex-row md:items-center md:justify-between"
-        }`}
-      >
-        <div
-          className={`flex flex-wrap items-center gap-2 ${
-            isAuthenticated ? "justify-end md:justify-start" : "justify-start"
-          }`}
-        >
+      <section className="panel relative flex flex-col gap-3 overflow-hidden p-5 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
+        <div className="relative flex flex-wrap items-center gap-2">
           {session?.user ? (
             <>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-indigo-500/15 px-3 py-1 text-xs uppercase tracking-[0.14em] text-indigo-100">
                 Session
                 <span className="text-white text-[11px] normal-case tracking-normal">
                   {session.user.email}
                 </span>
               </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
+              <span className="rounded-full border border-white/15 bg-cyan-500/15 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-100">
                 Rôle : {session.user.role}
               </span>
             </>
@@ -103,17 +94,13 @@ export default async function Home() {
             </span>
           )}
         </div>
-        <div
-          className={`flex flex-wrap items-center gap-2 ${
-            isAuthenticated ? "justify-end md:justify-start" : "justify-start md:justify-end"
-          }`}
-        >
+        <div className="relative flex flex-wrap items-center gap-2 md:justify-end">
           {session?.user ? (
             <>
               <Link
                 href={homeForRole}
                 role="button"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                className="rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-1.5 font-semibold text-white transition hover:border-indigo-300 hover:bg-indigo-500/30"
               >
                 Mon espace
               </Link>
@@ -122,7 +109,7 @@ export default async function Home() {
           ) : (
             <Link
               href="/login"
-              className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
               style={{ flexShrink: 0, whiteSpace: "nowrap" }}
             >
               Se connecter
@@ -132,7 +119,7 @@ export default async function Home() {
       </section>
 
       <header className="panel relative overflow-hidden p-6">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-amber-400/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
         <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             {session?.user && (
@@ -140,31 +127,31 @@ export default async function Home() {
                 Pole App — MVP v0.2.1
               </p>
             )}
-            <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
+            <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">
               Suivi élève complet : positions, progression, cours et révision ludique.
             </h1>
-            <p className="max-w-2xl text-slate-300">
+            <p className="max-w-2xl text-slate-200">
               Une plateforme pour que professeurs et élèves alignent entraînement,
               sécurité et progression : base de positions, suivi des blessures,
               fiches cours et mini-jeu de révision. Cette homepage sert de guide
               vers chaque module clé, avec un bandeau de navigation commun par rôle.
             </p>
-            <div className="flex flex-wrap gap-3 text-sm text-slate-300">
-              <span className="rounded-full bg-white/10 px-3 py-1">
+            <div className="flex flex-wrap gap-3 text-sm text-slate-200">
+              <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
                 Accès différencié élève / prof / admin
               </span>
-              <span className="rounded-full bg-white/10 px-3 py-1">
+              <span className="rounded-full border border-cyan-400/30 bg-cyan-500/15 px-3 py-1">
                 Suivi sécurité : blessures visibles par le professeur
               </span>
-              <span className="rounded-full bg-white/10 px-3 py-1">
+              <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1">
                 Progression et révision des positions
               </span>
-              <span className="rounded-full bg-white/10 px-3 py-1">
-                Navigation unifiée (session, rôle, Accueil/Mon espace)
+              <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
+                Navigation unifiée (session, rôle, Mon espace)
               </span>
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg backdrop-blur">
+          <div className="rounded-2xl border border-indigo-400/20 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg shadow-indigo-500/20 backdrop-blur">
             {/* Mobile: collapsed by défaut */}
             <details className="group md:hidden">
               <summary className="flex cursor-pointer items-center justify-between gap-3">
@@ -179,7 +166,7 @@ export default async function Home() {
                     <li key={step.label} className="flex items-center gap-2">
                       <span
                         className={`inline-flex h-2.5 w-2.5 rounded-full ${
-                          step.done ? "bg-emerald-400" : "bg-slate-500"
+                          step.done ? "bg-emerald-400 shadow-[0_0_0_4px_rgba(16,185,129,0.15)]" : "bg-slate-600"
                         }`}
                       />
                       <span
@@ -234,7 +221,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <details className="panel group p-8">
+      <details className="panel group p-8 border-indigo-400/25 shadow-indigo-900/30">
         <summary className="flex cursor-pointer items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-white">Modules</h2>
@@ -254,25 +241,28 @@ export default async function Home() {
             <a
               key={module.title}
               href={module.href}
-              className="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:-translate-y-0.5 hover:border-cyan-400/60 hover:bg-white/10"
+              className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:-translate-y-0.5 hover:border-indigo-300/70 hover:shadow-xl hover:shadow-indigo-900/30"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-400/10 opacity-0 transition group-hover:opacity-100" />
+              <div className="relative">
               <h3 className="text-lg font-semibold text-white">
                 {module.title}
               </h3>
               <p className="text-sm text-slate-300">{module.description}</p>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-slate-200">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-white/10 bg-indigo-500/15 px-3 py-1 text-[11px] font-semibold text-indigo-50">
                   {module.role}
                 </span>
-                <span className="rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-200">
+                <span className="rounded-full border border-amber-400/30 bg-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-50">
                   {module.status}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-sm font-semibold text-cyan-300">
+              <div className="relative mt-2 flex items-center gap-2 text-sm font-semibold text-cyan-200">
                 <span>Voir la route</span>
                 <span className="transition-transform group-hover:translate-x-1">
                   →
                 </span>
+              </div>
               </div>
             </a>
           ))}

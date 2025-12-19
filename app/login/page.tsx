@@ -80,8 +80,8 @@ function LoginContent() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 py-12">
-      <section className="panel w-full max-w-xl max-h-[90vh] overflow-auto p-8 md:p-10">
-        <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+      <section className="panel w-full max-w-xl max-h-[90vh] overflow-auto border-indigo-400/25 p-8 shadow-indigo-900/30 md:p-10">
+        <p className="text-sm uppercase tracking-[0.14em] text-indigo-100">
           Pole App
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-white">
@@ -115,8 +115,8 @@ function LoginContent() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
           </div>
           <div>
             <label className="text-sm text-slate-200" htmlFor="password">
@@ -130,8 +130,8 @@ function LoginContent() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
           </div>
           {error && (
             <p className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
@@ -146,7 +146,7 @@ function LoginContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-cyan-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-lg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
@@ -159,7 +159,7 @@ function LoginContent() {
           </Link>
         </form>
 
-        <div className="mt-6 space-y-3 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+        <div className="mt-6 space-y-3 rounded-xl border border-indigo-400/25 bg-white/5 p-4 text-sm text-slate-200">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold text-white">Pas encore de compte ?</p>
             <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] uppercase tracking-[0.14em] text-cyan-200">

@@ -45,7 +45,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-12">
-      <section className="panel w-full max-w-xl p-8 md:p-10">
+      <section className="panel w-full max-w-xl border-indigo-400/25 p-8 shadow-indigo-900/30 md:p-10">
         <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">Inscription</p>
         <h1 className="mt-2 text-3xl font-semibold text-white">Créer un compte élève</h1>
         <p className="mt-2 text-slate-300">
@@ -64,7 +64,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
               Prénom (optionnel)
               <input
                 name="firstName"
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
                 autoComplete="given-name"
               />
             </label>
@@ -72,7 +72,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
               Nom (optionnel)
               <input
                 name="lastName"
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
                 autoComplete="family-name"
               />
             </label>
@@ -84,7 +84,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
               name="email"
               type="email"
               required
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
               autoComplete="email"
             />
           </label>
@@ -96,7 +96,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
               type="password"
               required
               minLength={8}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
               autoComplete="new-password"
             />
             <span className="text-xs text-slate-400">
@@ -108,7 +108,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
             École
             <select
               name="schoolId"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             >
               {schools.map((school) => (
                 <option key={school.id} value={school.id}>
@@ -126,13 +126,13 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
           <div className="flex flex-wrap justify-between gap-3 text-sm text-slate-200">
             <Link
               href="/login"
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
             >
               Déjà inscrit ? Connexion
             </Link>
             <button
               type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
             >
               Créer mon compte élève
             </button>
