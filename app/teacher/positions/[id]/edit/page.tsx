@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { SessionNavBar } from "@/components/SessionNavBar";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -39,6 +40,7 @@ export default async function EditPositionPage({ params }: Props) {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
+      <SessionNavBar session={session} />
       <header className="panel p-8">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
           Professeur / Admin
