@@ -266,6 +266,27 @@ async function main() {
       });
     }
   }
+
+  // Seed one active injury for the free student.
+  const shoulder = await prisma.injuryType.findUnique({ where: { name: "Épaule" } });
+  if (shoulder && userRecords.studentFree) {
+    await prisma.studentInjury.upsert({
+      where: { id: "seed-injury-shoulder-student1" },
+      update: {
+        studentId: userRecords.studentFree,
+        injuryTypeId: shoulder.id,
+        notes: "Tendinite épaule droite, éviter inversions.",
+        isActive: true,
+      },
+      create: {
+        id: "seed-injury-shoulder-student1",
+        studentId: userRecords.studentFree,
+        injuryTypeId: shoulder.id,
+        notes: "Tendinite épaule droite, éviter inversions.",
+        isActive: true,
+      },
+    });
+  }
 }
 
 main()
