@@ -1,10 +1,20 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
 
 export default async function TeacherDashboard() {
+  const session = await getServerSession(authOptions);
+  const displayName =
+    session?.user?.name?.split(" ")[0] ??
+    session?.user?.name ??
+    session?.user?.email ??
+    "professeur";
+
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
-        <h2 className="text-xl font-semibold text-white">Vue prof</h2>
+        <h2 className="text-xl font-semibold text-white">Bonjour {displayName}</h2>
         <p className="text-slate-300">
           Accès réservé aux profs/admins de l’école pour gérer élèves, cours et progression.
         </p>

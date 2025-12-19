@@ -6,11 +6,16 @@ import Link from "next/link";
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
   const isPremium = Boolean(session?.user?.isPremium);
+  const displayName =
+    session?.user?.name?.split(" ")[0] ??
+    session?.user?.name ??
+    session?.user?.email ??
+    "élève";
 
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
-        <h2 className="text-xl font-semibold text-white">Vue élève</h2>
+        <h2 className="text-xl font-semibold text-white">Bonjour {displayName}</h2>
         <p className="text-slate-300">
           Accès réservé aux rôles étudiant. Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
