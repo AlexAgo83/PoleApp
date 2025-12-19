@@ -28,32 +28,50 @@ const typeLabels = {
   STRENGTH: "Strength",
 } as const;
 
-export default async function StudentProgressPage() {
+const PAGE_SIZE = 10;
+
+export default async function StudentProgressPage({
+  searchParams,
+}: {
+  searchParams?: { page?: string };
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
   if (session.user.role !== "STUDENT") redirect("/access-denied");
 
-  const [positions, progressEntries] = await Promise.all([
-    prisma.position.findMany({
-      orderBy: { name: "asc" },
-      include: { media: { take: 1 } },
-    }),
+  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [progressEntries, totalPositions] = await Promise.all([
     prisma.studentPositionProgress.findMany({
       where: { studentId: session.user.id },
       include: { position: true },
     }),
+    session.user.isPremium
+      ? prisma.position.count()
+      : prisma.studentPositionProgress.count({
+          where: { studentId: session.user.id },
+        }),
   ]);
 
   const progressMap = new Map(
     progressEntries.map((p) => [p.positionId, p])
   );
 
-  const visiblePositions = session.user.isPremium
-    ? positions
-    : positions.filter((p) => progressMap.has(p.id));
-  const lockedCount = session.user.isPremium
-    ? 0
-    : positions.length - visiblePositions.length;
+  const visibleIds = session.user.isPremium
+    ? undefined
+    : progressEntries.map((p) => p.positionId);
+
+  const positions = await prisma.position.findMany({
+    where: visibleIds ? { id: { in: visibleIds } } : undefined,
+    orderBy: { name: "asc" },
+    include: { media: { take: 1 } },
+    skip,
+    take: PAGE_SIZE,
+  });
+
+  const lockedCount = 0;
+  const totalPages = Math.max(1, Math.ceil(totalPositions / PAGE_SIZE));
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
@@ -76,7 +94,7 @@ export default async function StudentProgressPage() {
           </div>
         )}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visiblePositions.map((position) => {
+          {positions.map((position) => {
             const progress = progressMap.get(position.id);
             const status = progress?.learningStatus ?? "NOT_STARTED";
             const mastery = progress?.masteryLevel;
@@ -118,7 +136,7 @@ export default async function StudentProgressPage() {
                     </p>
                   )}
                   <Link
-                    href={`/positions/${position.id}?from=/app/student/progress`}
+                    href={`/positions/${position.id}?from=/app/student/progress?page=${page}`}
                     className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
                   >
                     Détail position →
@@ -127,11 +145,40 @@ export default async function StudentProgressPage() {
               </article>
             );
           })}
-          {visiblePositions.length === 0 && (
+          {positions.length === 0 && (
             <p className="col-span-full rounded-xl border border-white/5 bg-white/5 px-4 py-6 text-center text-slate-200">
               Aucune position débloquée pour l’instant.
             </p>
           )}
+        </div>
+        <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-200">
+          <Link
+            aria-disabled={page <= 1}
+            href={page <= 1 ? "#" : `/app/student/progress?page=${page - 1}`}
+            className={`rounded-full border px-3 py-1 font-semibold transition ${
+              page <= 1
+                ? "cursor-not-allowed border-white/10 text-slate-500"
+                : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+            }`}
+          >
+            Précédent
+          </Link>
+          <span>
+            Page {page} / {totalPages}
+          </span>
+          <Link
+            aria-disabled={page >= totalPages}
+            href={
+              page >= totalPages ? "#" : `/app/student/progress?page=${page + 1}`
+            }
+            className={`rounded-full border px-3 py-1 font-semibold transition ${
+              page >= totalPages
+                ? "cursor-not-allowed border-white/10 text-slate-500"
+                : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+            }`}
+          >
+            Suivant
+          </Link>
         </div>
       </section>
     </main>

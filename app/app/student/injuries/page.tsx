@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -9,20 +10,34 @@ import {
   updateInjuryAction,
 } from "./actions";
 
-export default async function StudentInjuriesPage() {
+const PAGE_SIZE = 10;
+
+export default async function StudentInjuriesPage({
+  searchParams,
+}: {
+  searchParams?: { page?: string };
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return null;
   }
 
-  const [injuryTypes, injuries] = await Promise.all([
+  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [injuryTypes, injuryCount, injuries] = await Promise.all([
     prisma.injuryType.findMany({ orderBy: { name: "asc" } }),
+    prisma.studentInjury.count({ where: { studentId: session.user.id } }),
     prisma.studentInjury.findMany({
       where: { studentId: session.user.id },
       include: { injuryType: true },
       orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
     }),
   ]);
+
+  const totalPages = Math.max(1, Math.ceil(injuryCount / PAGE_SIZE));
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -137,6 +152,40 @@ export default async function StudentInjuriesPage() {
             <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
           )}
         </div>
+
+        {injuries.length > 0 && (
+          <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-200">
+            <Link
+              aria-disabled={page <= 1}
+              href={page <= 1 ? "#" : `/app/student/injuries?page=${page - 1}`}
+              className={`rounded-full border px-3 py-1 font-semibold transition ${
+                page <= 1
+                  ? "cursor-not-allowed border-white/10 text-slate-500"
+                  : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+              }`}
+            >
+              Précédent
+            </Link>
+            <span>
+              Page {page} / {totalPages}
+            </span>
+            <Link
+              aria-disabled={page >= totalPages}
+              href={
+                page >= totalPages
+                  ? "#"
+                  : `/app/student/injuries?page=${page + 1}`
+              }
+              className={`rounded-full border px-3 py-1 font-semibold transition ${
+                page >= totalPages
+                  ? "cursor-not-allowed border-white/10 text-slate-500"
+                  : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+              }`}
+            >
+              Suivant
+            </Link>
+          </div>
+        )}
       </section>
     </main>
   );

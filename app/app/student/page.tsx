@@ -6,11 +6,14 @@ import Link from "next/link";
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
   const isPremium = Boolean(session?.user?.isPremium);
-  const displayName =
-    session?.user?.name?.split(" ")[0] ??
-    session?.user?.name ??
-    session?.user?.email ??
-    "élève";
+  const nameParts =
+    session?.user?.name
+      ?.trim()
+      .split(/\s+/)
+      .filter(Boolean) ?? [];
+  const firstName = nameParts[0];
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
+  const displayName = firstName ?? lastName ?? session?.user?.email ?? "élève";
 
   return (
     <main className="grid gap-6">

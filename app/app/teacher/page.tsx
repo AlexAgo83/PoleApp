@@ -5,11 +5,14 @@ import { authOptions } from "@/lib/auth";
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
-  const displayName =
-    session?.user?.name?.split(" ")[0] ??
-    session?.user?.name ??
-    session?.user?.email ??
-    "professeur";
+  const nameParts =
+    session?.user?.name
+      ?.trim()
+      .split(/\s+/)
+      .filter(Boolean) ?? [];
+  const firstName = nameParts[0];
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
+  const displayName = firstName ?? lastName ?? session?.user?.email ?? "professeur";
 
   return (
     <main className="grid gap-6">

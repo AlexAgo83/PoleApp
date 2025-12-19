@@ -44,6 +44,13 @@ const moduleSections = [
     status: "Étape 7",
     role: "Admin",
   },
+  {
+    title: "Profile",
+    href: "/app/profile",
+    description: "Consulter et mettre à jour prénom/nom, voir email, rôle et école.",
+    status: "Étape 8",
+    role: "Élève / Professeur / Admin",
+  },
 ];
 
 const buildSteps = [
