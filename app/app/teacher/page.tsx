@@ -24,11 +24,11 @@ export default async function TeacherDashboard() {
             </p>
             <p className="text-base font-semibold text-white">
               Liste et fiches élèves
-            </p>
-            <p className="text-sm text-slate-300">
-              Voir blessures et progression par position, filtré sur ton école.
-            </p>
-          </Link>
+          </p>
+          <p className="text-sm text-slate-300">
+            Voir blessures et progression par position, filtré sur ton école.
+          </p>
+        </Link>
           <Link
             href="/app/teacher/courses"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -38,13 +38,13 @@ export default async function TeacherDashboard() {
             </p>
             <p className="text-base font-semibold text-white">
               Créer et suivre les cours
-            </p>
-            <p className="text-sm text-slate-300">
-              Présences, positions, notes élève×position, impact progression.
-            </p>
-          </Link>
-          <Link
-            href="/teacher/positions"
+          </p>
+          <p className="text-sm text-slate-300">
+            Présences, positions, notes élève×position, impact progression.
+          </p>
+        </Link>
+        <Link
+            href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
