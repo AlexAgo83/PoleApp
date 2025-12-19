@@ -100,7 +100,9 @@ export default async function StudentCoursesPage({
             );
           })}
           {attendances.length === 0 && (
-            <p className="py-4 text-slate-200">Aucun cours trouvé.</p>
+            <div className="mt-2 rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200">
+              Aucun cours trouvé. Tes prochains cours apparaîtront ici.
+            </div>
           )}
         </div>
         {totalPages > 1 && (
