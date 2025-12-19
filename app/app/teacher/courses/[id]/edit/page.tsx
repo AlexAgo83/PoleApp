@@ -8,15 +8,13 @@ import { prisma } from "@/lib/prisma";
 import { CourseForm } from "../../new/CourseForm";
 import { updateCourseAction } from "../actions";
 
-type Props =
-  | { params: { id: string } }
-  | { params: Promise<{ id?: string }> };
+type Props = {
+  params: { id: string };
+  searchParams?: { from?: string };
+};
 
-export default async function EditCoursePage({ params }: Props) {
-  const resolvedParams = await Promise.resolve(
-    (params as { id?: string } | Promise<{ id?: string }>)
-  );
-  const id = resolvedParams?.id;
+export default async function EditCoursePage({ params, searchParams }: Props) {
+  const id = params?.id;
   const session = await getServerSession(authOptions);
   const teacherId = session?.user?.id;
   const schoolId = session?.user?.schoolId;
@@ -75,6 +73,12 @@ export default async function EditCoursePage({ params }: Props) {
   const defaultDate = `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
     dateObj.getDate()
   )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
+  const rawFrom = searchParams?.from;
+  const safeFrom =
+    rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
+      ? rawFrom
+      : undefined;
+  const backHref = safeFrom ?? `/app/teacher/courses/${course.id}`;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10">
@@ -99,13 +103,13 @@ export default async function EditCoursePage({ params }: Props) {
           defaultSelectedPositions={defaultSelectedPositions}
           defaultNotes={defaultNotes}
           submitLabel="Mettre à jour"
-          cancelHref={`/app/teacher/courses/${course.id}`}
+          cancelHref={backHref}
           courseId={course.id}
         />
       </section>
 
       <Link
-        href={`/app/teacher/courses/${course.id}`}
+        href={backHref}
         className="text-sm text-cyan-300 underline underline-offset-4"
       >
         Retour au détail

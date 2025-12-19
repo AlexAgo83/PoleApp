@@ -7,10 +7,9 @@ import { prisma } from "@/lib/prisma";
 export default async function StudentCoursesPage({
   searchParams,
 }: {
-  searchParams?: { page?: string } | Promise<{ page?: string }>;
+  searchParams?: { page?: string };
 }) {
-  const params = (await Promise.resolve(searchParams)) ?? {};
-  const rawPage = Number(params.page ?? "1");
+  const rawPage = Number(searchParams?.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
@@ -61,7 +60,9 @@ export default async function StudentCoursesPage({
             return (
               <a
                 key={attendance.id}
-                href={`/app/student/courses/${course.id}`}
+                href={`/app/student/courses/${course.id}?from=${encodeURIComponent(
+                  `/app/student/courses?page=${currentPage}`
+                )}`}
                 className="group block rounded-xl transition hover:-translate-y-0.5 hover:bg-white/5"
               >
                 <article className="flex flex-col gap-2 py-3 px-2">
