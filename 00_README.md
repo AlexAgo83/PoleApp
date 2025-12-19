@@ -29,5 +29,9 @@ Ce dossier contient :
 - Docker : `docker compose watch` (reco hot-reload sans bind mount, build target `dev` avec code + schéma Prisma embarqués) ou `docker-compose up --build` (rebuild nécessaire pour prendre le code). Si un lock watch existe : `docker compose down` puis relancer.
 - Déploiement Render : `render.yaml` (service web + base Postgres auto), build `npm install && npx prisma generate && npm run build`, start `npm run start`, seed via `npm run db:push && npm run db:seed`.
 
+## Seed (dev)
+- Comptes fixes : admin/teacher/student1/student2 (`change-me-password`), rattachés à École 1.
+- Généré : 2 écoles (École 1, École 2) + 5 profs et 10 élèves par école (mot de passe `change-me-password`, premium 1/2).
+
 > Si vous voulez partir direct sur du mobile, remplacez Next.js par Expo/React Native,
 > mais le MVP “data + flows” est plus rapide à valider côté web.

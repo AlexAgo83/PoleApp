@@ -152,11 +152,17 @@ function slugify(input: string) {
 async function main() {
   const passwordHash = await bcrypt.hash("change-me-password", 10);
 
-  const school = await prisma.school.upsert({
-    where: { name: "Pole Pilot School" },
-    update: {},
-    create: { name: "Pole Pilot School" },
-  });
+  const schoolNames = ["École 1", "École 2"];
+  const schoolRecords: Record<string, string> = {};
+
+  for (const name of schoolNames) {
+    const school = await prisma.school.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+    schoolRecords[name] = school.id;
+  }
 
   const userRecords: Record<SeedUser["key"], string> = {
     admin: "",
@@ -165,6 +171,8 @@ async function main() {
     studentPremium: "",
   };
 
+  const primarySchoolId = schoolRecords[schoolNames[0]];
+
   for (const seedUser of users) {
     const record = await prisma.user.upsert({
       where: { email: seedUser.email },
@@ -172,7 +180,7 @@ async function main() {
         name: seedUser.name,
         passwordHash,
         role: seedUser.role,
-        schoolId: school.id,
+        schoolId: primarySchoolId,
         isPremium: seedUser.isPremium ?? false,
       },
       create: {
@@ -180,12 +188,45 @@ async function main() {
         email: seedUser.email,
         passwordHash,
         role: seedUser.role,
-        schoolId: school.id,
+        schoolId: primarySchoolId,
         isPremium: seedUser.isPremium ?? false,
       },
     });
 
     userRecords[seedUser.key] = record.id;
+  }
+
+  // Random teachers/students for each school
+  for (const name of schoolNames) {
+    const schoolId = schoolRecords[name];
+    const slug = slugify(name);
+
+    const teacherData = Array.from({ length: 5 }).map((_, idx) => ({
+      email: `teacher${idx + 1}.${slug}@poleapp.test`,
+      name: `Teacher ${idx + 1} (${name})`,
+      passwordHash,
+      role: Role.TEACHER,
+      schoolId,
+      isPremium: false,
+    }));
+
+    const studentData = Array.from({ length: 10 }).map((_, idx) => ({
+      email: `student${idx + 1}.${slug}@poleapp.test`,
+      name: `Student ${idx + 1} (${name})`,
+      passwordHash,
+      role: Role.STUDENT,
+      schoolId,
+      isPremium: idx % 2 === 0,
+    }));
+
+    await prisma.user.createMany({
+      data: teacherData,
+      skipDuplicates: true,
+    });
+    await prisma.user.createMany({
+      data: studentData,
+      skipDuplicates: true,
+    });
   }
 
   for (const name of injuryTypes) {

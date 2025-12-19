@@ -48,6 +48,12 @@ async function requireAdmin() {
 
 export async function createUserAction(formData: FormData) {
   const admin = await requireAdmin();
+  const school = admin.schoolId
+    ? await prisma.school.findUnique({ where: { id: admin.schoolId } })
+    : null;
+  if (!school) {
+    redirectWithMessage("École introuvable pour cet admin", "error");
+  }
   const parsed = createSchema.safeParse({
     email: formData.get("email"),
     name: formData.get("name") || undefined,
