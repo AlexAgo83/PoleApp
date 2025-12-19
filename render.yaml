@@ -9,6 +9,7 @@ services:
     name: poleapp
     env: node
     plan: free
+    branch: main
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm run start
     postDeploy: npm run db:push && npm run db:seed
