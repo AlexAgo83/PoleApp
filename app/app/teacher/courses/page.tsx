@@ -9,9 +9,10 @@ const PAGE_SIZE = 10;
 export default async function TeacherCoursesPage({
   searchParams,
 }: {
-  searchParams?: { page?: string };
+  searchParams?: Promise<{ page?: string }>;
 }) {
-  const rawPage = Number(searchParams?.page ?? "1");
+  const resolvedParams = (await searchParams) ?? {};
+  const rawPage = Number(resolvedParams.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return null;
