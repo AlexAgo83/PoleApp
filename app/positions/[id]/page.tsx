@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 
 type Props = {
   params: { id: string };
-  searchParams?: {
+  searchParams?: Promise<{
     from?: string;
-  };
+  }>;
 };
 
 const typeLabels: Record<PositionType, string> = {
@@ -35,7 +35,8 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     notFound();
   }
 
-  const from = searchParams?.from;
+  const awaitedSearch = searchParams ? await searchParams : undefined;
+  const from = awaitedSearch?.from;
   const safeFrom =
     from && from.startsWith("/") && !from.startsWith("//") ? from : undefined;
   const backHref = safeFrom ?? "/positions";
@@ -68,6 +69,8 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   const cover = position.media[0];
   const isPremium = Boolean(session?.user?.isPremium);
+  const isStaff =
+    session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-12">
@@ -164,12 +167,16 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               </span>
             </p>
           </div>
-          <Link
-            href="/teacher/positions/new"
-            className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-          >
-            Créer une position (prof/admin)
-          </Link>
+          {isStaff && (
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/teacher/positions/${position.id}/edit`}
+                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Éditer
+              </Link>
+            </div>
+          )}
         </aside>
       </section>
     </main>
