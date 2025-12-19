@@ -23,6 +23,7 @@ export default async function TeacherStudentsPage() {
       injuries: {
         include: { injuryType: true },
       },
+      progress: true,
     },
     orderBy: { createdAt: "asc" },
   });

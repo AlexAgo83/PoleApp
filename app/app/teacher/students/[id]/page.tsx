@@ -1,4 +1,4 @@
-import { LearningStatus, MasteryLevel } from "@prisma/client";
+import { LearningStatus } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 

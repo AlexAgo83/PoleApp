@@ -53,6 +53,11 @@ Scripts utiles :
 - Élève : `/app/student/progress` (vue progression par position, accès complet si premium, sinon positions vues).
 - Prof : mise à jour progression sur `/app/teacher/students/[id]` (statut, niveau, commentaire, piste : prise en compte des blessures visibles).
 
+## Cours (Step 5 - en cours)
+- Création cours : `/app/teacher/courses/new` (date/titre, élèves, positions, notes élève×position).
+- Notes impactent la progression (status + niveau via server action).
+- Liste (stub) `/app/teacher/courses` — détail à venir.
+
 ## Déploiement Render
 - Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.
 - Build command : `npm install && npx prisma generate && npm run build` (rootDir=web). Start : `npm run start`.
