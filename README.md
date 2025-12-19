@@ -44,6 +44,7 @@ Scripts utiles :
 - Route login : `/login` (Credentials provider).
 - Middleware RBAC protège : `/app/student`, `/app/teacher`, `/app/admin` (+ `/student|/teacher|/admin` pour la suite).
 - Redirection auto selon rôle : admin → `/app/admin`, teacher → `/app/teacher`, student → `/app/student` (prend en compte `callbackUrl` si fourni et même origine).
+- Logout renvoie vers `/login` (bouton “Se déconnecter”).
 - Besoin d’un `NEXTAUTH_SECRET` dans `.env` (+ `NEXTAUTH_URL` recommandé). Exemple dans `.env.example`.
 
 ## Positions (Step 2)
