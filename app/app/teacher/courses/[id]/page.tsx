@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = {
-  params: { id: string };
+  params: { id: string } | Promise<{ id?: string }>;
   searchParams?: { from?: string };
 };
 
@@ -16,7 +16,8 @@ export default async function TeacherCourseDetailPage({
   params,
   searchParams,
 }: PageProps) {
-  const id = params?.id;
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams?.id;
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return notFound();
