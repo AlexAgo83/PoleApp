@@ -26,6 +26,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Login: `/login` (presets seed).
 - Rôles: `STUDENT`, `TEACHER`, `SCHOOL_ADMIN`.
 - RBAC: middleware protège `/app/...`; redirections selon rôle après login; logout renvoie à la home.
+- Inscription self-serve élève : `/signup` (email + mot de passe + école, premium optionnel). Prof/Admin restent créés par l’école.
 
 ## Navigation / Profile (Step 8)
 - Bandeau session/rôle avec `Accueil`, `Mon espace`, `Se déconnecter` sur toutes les pages.
