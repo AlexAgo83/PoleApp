@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type Status = "loading" | "up" | "down";
 
-export function HealthBadge() {
+export default function HealthBadge() {
   const [status, setStatus] = useState<Status>("loading");
 
   useEffect(() => {

@@ -32,27 +32,49 @@ export default async function AppLayout({
               "Progression, blessures, cours et mini-jeu."}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+        <div className="flex flex-col items-start gap-3 text-sm text-slate-200 md:items-end md:text-right">
           {session?.user && (
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-              {session.user.email} · {session.user.role}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
+                Session
+                <span className="text-white text-[11px] normal-case tracking-normal">
+                  {session.user.email}
+                </span>
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
+                Rôle : {session.user.role}
+              </span>
             </div>
           )}
-          <Link
-            href={defaultHomeForRole(session?.user?.role)}
-            role="button"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Mon espace
-          </Link>
-          <Link
-            href="/"
-            role="button"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Accueil
-          </Link>
-          <SignOutButton />
+          <div className="flex w-full flex-wrap items-center gap-2 md:justify-end">
+            {session?.user ? (
+              <>
+                <Link
+                  href={defaultHomeForRole(session?.user?.role)}
+                  role="button"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Mon espace
+                </Link>
+                <Link
+                  href="/"
+                  role="button"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Accueil
+                </Link>
+                <SignOutButton />
+              </>
+            ) : (
+              <Link
+                href="/login"
+                role="button"
+                className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Se connecter
+              </Link>
+            )}
+          </div>
         </div>
       </header>
       {children}
