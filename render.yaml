@@ -11,7 +11,7 @@ services:
     plan: free
     branch: main
     buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npm run start
+    startCommand: npm run db:push && npm run db:seed && npm run start
     envVars:
       - key: NODE_VERSION
         value: "20"
