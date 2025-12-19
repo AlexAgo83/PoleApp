@@ -43,7 +43,7 @@ export default async function TeacherCourseDetailPage({ params }: PageProps) {
       <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-            Prof / Admin
+            Professeur / Admin
           </p>
           <h1 className="text-3xl font-semibold text-white">
             {course.title ?? "Cours sans titre"}

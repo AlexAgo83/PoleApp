@@ -90,7 +90,7 @@ export default async function AdminDashboard() {
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
             <Stat label="Utilisateurs" value={counts.total} />
             <Stat label="Étudiants" value={counts.STUDENT} />
-            <Stat label="Profs" value={counts.TEACHER} />
+            <Stat label="Professeurs" value={counts.TEACHER} />
             <Stat label="Admins" value={counts.SCHOOL_ADMIN} />
             <Stat label="Premium" value={counts.premium} />
           </div>
