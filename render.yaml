@@ -8,7 +8,11 @@ services:
   - type: web
     name: poleapp
     env: node
+    rootDir: .
     plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm run start
     postDeploy: npm run db:push && npm run db:seed
