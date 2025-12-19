@@ -104,7 +104,7 @@ Structure proposée :
 - Modèle StudentPositionProgress
 - UI :
   - `/student/progress` (mes positions + états)
-  - `/teacher/students/[id]` (profil + progression + blessures)
+  - `/app/teacher/students/[id]` (profil + progression + blessures)
 - Ops :
   - Prof peut modifier (niveau+statut+commentaire) pour une position
 
@@ -155,8 +155,8 @@ Structure proposée :
 ## Step 7 — Admin école (pilot)
 
 **Tâches**
-- `/admin/users` CRUD users (dans la school)
-- `/admin/dashboard` stats simples
+- `/app/admin/users` CRUD users (dans la school)
+- `/app/admin` dashboard stats simples
 
 **DoD**
 - L’école pilote peut onboarder facilement profs/élèves

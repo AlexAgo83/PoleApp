@@ -1,4 +1,4 @@
-# Pole App — MVP (Steps 0 → 6)
+# Pole App — MVP (Steps 0 → 7)
 
 Base Next.js + Prisma setup derived from the provided markdown specs (roles, positions, courses, injuries, mini-jeu).
 
@@ -69,6 +69,10 @@ Scripts utiles :
 - Quiz photo → nom : `/app/student/game` (10 questions).
 - Pool = positions débloquées de l’élève (ou toute la base si premium).
 - Score final + correction détaillée; message si <4 positions disponibles.
+
+## Admin école (Step 7)
+- Dashboard admin : `/app/admin` (stats école : utilisateurs, premium, cours, positions, blessures actives).
+- Gestion des utilisateurs : `/app/admin/users` (créer prof/élève/admin, premium on/off, suppression).
 
 ## Déploiement Render
 - Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.

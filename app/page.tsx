@@ -13,7 +13,7 @@ const moduleSections = [
   },
   {
     title: "Élèves",
-    href: "/teacher/students",
+    href: "/app/teacher/students",
     description: "Fiches élèves, progression, blessures visibles par prof.",
     status: "Étapes 3-4",
   },
@@ -39,7 +39,7 @@ const buildSteps = [
   { label: "Step 4 — Progression par position", done: true },
   { label: "Step 5 — Fiche cours (notes + progression)", done: true },
   { label: "Step 6 — Mini-jeu", done: true },
-  { label: "Step 7 — Admin école", done: false },
+  { label: "Step 7 — Admin école", done: true },
 ];
 
 export default function Home() {
@@ -144,16 +144,16 @@ export default function Home() {
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-white">Nouveautés</h3>
           <p className="text-slate-300">
-            Dernière étape livrée : <strong>Step 6 — Mini-jeu</strong>
+            Dernière étape livrée : <strong>Step 7 — Admin école</strong>
             <br />
-            Quiz photo → nom sur les positions débloquées (ou toutes si premium).
-            Route : `/app/student/game`. 10 questions, score final, correction
-            par question. Si tu as moins de 4 positions débloquées, un message
-            t’invite à enrichir ta base avant de jouer.
+            Dashboard admin (stats école) et gestion des utilisateurs (création
+            prof/élève/admin, premium, suppression) sur `/app/admin` et
+            `/app/admin/users`.
           </p>
           <div className="space-y-2 text-sm text-slate-300">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
+              <li>• Step 7 : Admin — dashboard + gestion utilisateurs</li>
               <li>• Step 6 : Mini-jeu — quiz photo→nom sur positions débloquées</li>
               <li>• Step 5 : Cours — création + progression auto</li>
               <li>• Step 4 : Progression — élève/prof</li>
@@ -166,7 +166,7 @@ export default function Home() {
           <div className="space-y-1 text-sm text-slate-300">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Step 7 : Admin école</li>
+              <li>• Stabilisation & QA</li>
             </ul>
           </div>
         </div>

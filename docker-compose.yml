@@ -20,6 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: deps
     container_name: poleapp-web
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/poleapp?schema=public
@@ -35,6 +36,9 @@ services:
         npm run db:seed &&
         npm run dev -- --hostname 0.0.0.0 --port 3000
       "
+    volumes:
+      - .:/app
+      - /app/node_modules
     develop:
       watch:
         - path: .
