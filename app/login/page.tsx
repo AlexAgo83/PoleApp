@@ -1,0 +1,150 @@
+"use client";
+
+import { signIn, getSession, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { defaultHomeForRole } from "@/lib/rbac";
+
+type PresetUser = {
+  label: string;
+  email: string;
+};
+
+const presets: PresetUser[] = [
+  { label: "Admin", email: "admin@poleapp.test" },
+  { label: "Teacher", email: "teacher@poleapp.test" },
+  { label: "Student", email: "student1@poleapp.test" },
+  { label: "Student premium", email: "student2@poleapp.test" },
+];
+
+export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/app";
+  const { data: session, status } = useSession();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.role) {
+      router.replace(defaultHomeForRole(session.user.role));
+    }
+  }, [status, session, router]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+      callbackUrl,
+    });
+
+    if (result?.error) {
+      setError("Email ou mot de passe incorrect.");
+      setLoading(false);
+      return;
+    }
+
+    const updatedSession = await getSession();
+    const role = updatedSession?.user?.role;
+    router.replace(defaultHomeForRole(role));
+  };
+
+  return (
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-16 md:flex-row md:items-center">
+      <section className="panel flex-1 p-8">
+        <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+          Pole App
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold text-white">
+          Connexion (credentials)
+        </h1>
+        <p className="mt-2 text-slate-300">
+          Utilisez les comptes seed (mot de passe <code>poleapp123</code>) pour
+          tester les rôles et l’accès protégé.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-200">
+          {presets.map((preset) => (
+            <button
+              key={preset.email}
+              onClick={() => setEmail(preset.email)}
+              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
+              type="button"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label className="text-sm text-slate-200" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </div>
+          <div>
+            <label className="text-sm text-slate-200" htmlFor="password">
+              Mot de passe
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </div>
+          {error && (
+            <p className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+              {error}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-cyan-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {loading ? "Connexion..." : "Se connecter"}
+          </button>
+        </form>
+      </section>
+      <aside className="panel flex-1 space-y-4 p-8">
+        <h2 className="text-xl font-semibold text-white">Accès rapide</h2>
+        <p className="text-sm text-slate-300">
+          Après login, redirection automatique selon le rôle.
+        </p>
+        <ul className="space-y-2 text-sm text-slate-200">
+          <li>Admin → /app/admin</li>
+          <li>Teacher → /app/teacher</li>
+          <li>Student → /app/student</li>
+        </ul>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+        >
+          ← Retour accueil
+        </Link>
+      </aside>
+    </main>
+  );
+}
