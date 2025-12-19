@@ -52,8 +52,10 @@ export default async function AppLayout({
                 <Link
                   href={defaultHomeForRole(session?.user?.role)}
                   role="button"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/house.svg" alt="" className="h-4 w-4" />
                   Mon espace
                 </Link>
                 <SignOutButton />
