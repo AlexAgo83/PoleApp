@@ -28,6 +28,7 @@ Ce dossier contient :
 - Scripts : `npm run db:push`, `npm run db:seed`, `npm run dev`.
 - Docker : `docker compose watch` (reco hot-reload sans bind mount, build target `dev` avec code + schéma Prisma embarqués) ou `docker-compose up --build` (rebuild nécessaire pour prendre le code). Si un lock watch existe : `docker compose down` puis relancer.
 - Déploiement Render : `render.yaml` (service web + base Postgres auto), build `npm install && npx prisma generate && npm run build`, start `npm run start`, seed via `npm run db:push && npm run db:seed`.
+- Turbopack : des panics peuvent survenir avec le cache. Si ça arrive, supprimer `.next`/`.turbo` puis lancer `NEXT_USE_TURBOPACK=0 npm run dev` (ou ajouter la variable dans Docker/Render).
 
 ## Seed (dev)
 - Comptes fixes : admin/teacher/student1/student2 (`change-me-password`), rattachés à École 1.
