@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { HealthBadge } from "@/components/HealthBadge";
 import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 
@@ -100,7 +101,7 @@ export default async function Home() {
         <div className="relative flex flex-col gap-4 p-10 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-              Pole App — MVP
+              Pole App — MVP v0.1.0
             </p>
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
               Suivi élève complet : positions, progression, cours et révision ludique.
@@ -148,21 +149,21 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="panel p-8">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <details className="panel group p-8">
+        <summary className="flex cursor-pointer items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-white">Modules (Debug Technique)</h2>
             <p className="text-slate-300">
               Modules disponibles selon les rôles (élève, prof, admin)
             </p>
           </div>
-          <a
-            href="/health"
-            className="inline-flex items-center gap-2 rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
-          >
-            Vérifier /health
-          </a>
-        </div>
+          <div className="flex items-center gap-3">
+            <HealthBadge />
+            <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </div>
+        </summary>
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {moduleSections.map((module) => (
             <a
@@ -193,19 +194,24 @@ export default async function Home() {
             </a>
           ))}
         </div>
-      </section>
+      </details>
 
-      <section className="panel p-8">
-        <div className="space-y-3">
-          <h3 className="text-xl font-semibold text-white">Nouveautés</h3>
-          <p className="text-slate-300">
+      <details className="panel group p-8">
+        <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
+          <span>Nouveautés</span>
+          <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
+            ▼
+          </span>
+        </summary>
+        <div className="mt-4 space-y-3 text-sm text-slate-300">
+          <p>
             Dernière étape livrée : <strong>Step 7 — Admin école</strong>
             <br />
             Dashboard admin (stats école) et gestion des utilisateurs (création
             prof/élève/admin, premium, suppression) sur `/app/admin` et
             `/app/admin/users`.
           </p>
-          <div className="space-y-2 text-sm text-slate-300">
+          <div className="space-y-1">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
               <li>• Step 7 : Admin — dashboard + gestion utilisateurs</li>
@@ -218,14 +224,14 @@ export default async function Home() {
               <li>• Step 0 : Bootstrap — Next.js + Prisma + seed + /health</li>
             </ul>
           </div>
-          <div className="space-y-1 text-sm text-slate-300">
+          <div className="space-y-1">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
               <li>• Stabilisation & QA</li>
             </ul>
           </div>
         </div>
-      </section>
+      </details>
     </main>
   );
 }
