@@ -151,9 +151,9 @@ export default async function Home() {
       <section className="panel p-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-white">Modules</h2>
+            <h2 className="text-2xl font-semibold text-white">Modules (Debug Technique)</h2>
             <p className="text-slate-300">
-              Modules disponibles selon ton rôle (élève, prof, admin)
+              Modules disponibles selon les rôles (élève, prof, admin)
             </p>
           </div>
           <a
