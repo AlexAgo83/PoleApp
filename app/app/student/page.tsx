@@ -20,7 +20,7 @@ export default async function StudentDashboard() {
       <section className="panel space-y-4 p-6">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-semibold text-white">
-            Bonjour {displayName}
+            Bonjour {displayName},
           </h2>
           <Link
             href="/app/profile"
