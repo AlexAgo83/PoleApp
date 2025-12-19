@@ -14,8 +14,8 @@
 
 ## Prof
 - `/teacher` : dashboard
-- `/teacher/students` : liste élèves (de l’école)
-- `/teacher/students/[id]` : fiche élève (progress + blessures)
+- `/app/teacher/students` : liste élèves (de l’école)
+- `/app/teacher/students/[id]` : fiche élève (progress + blessures)
 - `/teacher/courses` : historique
 - `/teacher/courses/new` : créer cours + notes
 - `/teacher/positions` : gestion positions
@@ -23,8 +23,8 @@
 - `/teacher/positions/[id]/edit` : éditer
 
 ## Admin école
-- `/admin` : dashboard
-- `/admin/users` : CRUD users
+- `/app/admin` : dashboard
+- `/app/admin/users` : CRUD users
 - `/admin/settings` : (option) taxonomies
 
 ---

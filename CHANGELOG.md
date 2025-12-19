@@ -48,3 +48,8 @@
 - Route élève `/app/student/game` : quiz photo → nom (10 questions) sur les positions débloquées (ou toute la base si premium).
 - Résumé score + correction détaillée en fin de partie; fallback message si <4 positions disponibles.
 - Home mise à jour (modules + timeline) pour signaler Step 6 livrée.
+
+## 2025-12-19 — Step 7 (Admin école)
+- Dashboard admin `/app/admin` : stats école (utilisateurs par rôle, premium, cours, positions, blessures actives) + actions rapides.
+- Gestion utilisateurs `/app/admin/users` : création prof/élève/admin (mot de passe, premium), mise à jour rôle/premium/nom, suppression (protégée si dépendances).
+- Home/README mis à jour pour marquer l’étape livrée.
