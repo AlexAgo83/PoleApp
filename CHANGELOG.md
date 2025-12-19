@@ -19,3 +19,9 @@
 - Détail inclut infos, tips, contre-indications, gating élève (stub free/premium) et lien création.
 - Prof/Admin : création via `/teacher/positions/new` (zod + server action + Prisma), listing rapide `/teacher/positions`.
 - Home mise à jour pour marquer Step 2 livré.
+
+## 2025-12-19 — Déploiement Render (PostgreSQL)
+- Prisma basculé sur PostgreSQL (provider) et scripts DB simplifiés.
+- `.env.example` mis à jour (Postgres + NextAuth). `.env` exemple local Postgres.
+- Ajout `render.yaml` (web service Next + base Postgres, postdeploy db:push + db:seed).
+- Pages positions forcées en dynamique pour éviter besoin DB au build local.
