@@ -35,3 +35,7 @@
 - Élève : page `/app/student/injuries` (liste + création + édition/suppression, toggle actif/inactif).
 - Prof : vues `/app/teacher/students` et `/app/teacher/students/[id]` pour consulter les blessures des élèves de l’école.
 - Seed : blessure active ajoutée pour student1 (épaule).
+
+## 2025-12-19 — Step 4 (Progression)
+- Élève : `/app/student/progress` affiche progression par position (accès complet si premium, sinon positions vues).
+- Prof : `/app/teacher/students/[id]` enrichi avec mise à jour progression (statut, niveau, commentaire) par position.
