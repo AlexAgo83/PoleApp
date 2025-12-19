@@ -53,22 +53,23 @@ export default function Home() {
               Pole App — MVP
             </p>
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
-              Positions, élèves, cours et mini-jeu, réunis en une web app rapide.
+              Suivi élève complet : positions, progression, cours et révision ludique.
             </h1>
             <p className="max-w-2xl text-slate-300">
-              Lecture des specs (Markdown) → implémentation Next.js, Prisma,
-              Tailwind. Cette homepage servira de table d’orientation pour les
-              modules à venir.
+              Une plateforme pour que profs et élèves alignent entraînement,
+              sécurité et progression : base de positions, suivi des blessures,
+              fiches cours et mini-jeu de révision. Cette homepage sert de guide
+              vers chaque module clé.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-slate-300">
               <span className="rounded-full bg-white/10 px-3 py-1">
-                Next.js App Router
+                Accès différencié élève / prof / admin
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1">
-                Prisma + PostgreSQL
+                Suivi sécurité : blessures visibles par le prof
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1">
-                Auth + RBAC (prochaines étapes)
+                Progression et révision des positions
               </span>
             </div>
           </div>
