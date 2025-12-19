@@ -3,9 +3,10 @@
 import { signIn, getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { defaultHomeForRole } from "@/lib/rbac";
+import { Role } from "@prisma/client";
 
 type PresetUser = {
   label: string;
@@ -30,11 +31,29 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const resolveTarget = useCallback(
+    (role?: Role | null) => {
+      if (callbackUrl) {
+        try {
+          if (callbackUrl.startsWith("/")) return callbackUrl;
+          const url = new URL(callbackUrl);
+          if (url.origin === window.location.origin) {
+            return `${url.pathname}${url.search}${url.hash}`;
+          }
+        } catch {
+          // ignore malformed callbackUrl
+        }
+      }
+      return defaultHomeForRole(role);
+    },
+    [callbackUrl]
+  );
+
   useEffect(() => {
     if (status === "authenticated" && session?.user?.role) {
-      router.replace(defaultHomeForRole(session.user.role));
+      router.replace(resolveTarget(session.user.role));
     }
-  }, [status, session, router]);
+  }, [status, session, router, callbackUrl, resolveTarget]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,7 +74,7 @@ function LoginContent() {
 
     const updatedSession = await getSession();
     const role = updatedSession?.user?.role;
-    router.replace(defaultHomeForRole(role));
+    router.replace(resolveTarget(role));
   };
 
   return (

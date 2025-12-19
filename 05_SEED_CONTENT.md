@@ -53,7 +53,7 @@ Exemple (format libre):
 
 ## Écoles et utilisateurs générés
 - 2 écoles créées : **École 1** et **École 2**.
-- Pour chaque école : **5 profs** (`teacherX.ecole-1@poleapp.test`, `teacherX.ecole-2@poleapp.test`) et **10 élèves** (`studentX.ecole-1@poleapp.test`, `studentX.ecole-2@poleapp.test`), mot de passe `poleapp123`, premium pour 1 élève sur 2.
+- Pour chaque école : **5 profs** (`teacherX.ecole-1@poleapp.test`, `teacherX.ecole-2@poleapp.test`) et **10 élèves** (`studentX.ecole-1@poleapp.test`, `studentX.ecole-2@poleapp.test`), mot de passe `poleapp123`, premium pour 1 élève sur 2. Les noms affichés sont génériques (`Teacher X`, `Student X`).
 - Les comptes fixes ci-dessus sont rattachés à **École 1**.
 - 1 cours de démo créé par école (prof 1 + 3 élèves + 2 positions).
 
