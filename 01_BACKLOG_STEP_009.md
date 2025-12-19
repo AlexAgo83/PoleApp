@@ -1,6 +1,6 @@
-# Step 9 — Retour QA 19.12
+# Step 9 — Discovery QA
 
-Objectif : traiter le lot de retours QA du 19/12 pour stabiliser la V0.2.1 (navigation, cohérence UI/UX, fiabilité des données affichées).
+Objectif : traiter le lot de retours QA pour stabiliser la V0.2.1 (navigation, cohérence UI/UX, fiabilité des données affichées).
 
 ## Périmètre
 - Navigation et bandeaux : unifier le bandeau des espaces (session/rôle/boutons), activer le pliage par défaut de « Status build » (desktop : ouvert), conserver le retour contextuel (positions, élèves, mini-jeu, modules) et éviter les retours vers la mauvaise vue.
@@ -12,7 +12,7 @@ Objectif : traiter le lot de retours QA du 19/12 pour stabiliser la V0.2.1 (nav
 - Robustesse Next.js : corriger les usages sync de `searchParams`/`params` (await/React.use) sur toutes les pages dynamiques.
 
 ## Hors périmètre
-- Fonctionnalités majeures non liées au QA 19/12 (VOD, partenaires, paiements, planning avancé, audit/badges futurs).
+- Fonctionnalités majeures non liées au QA en cours (VOD, partenaires, paiements, planning avancé, audit/badges futurs).
 
 ## Plan d’action synthétique
 - Corrections fonctionnelles (navigation, retours contextuels, tri, pagination, formulaires).
@@ -23,7 +23,7 @@ Objectif : traiter le lot de retours QA du 19/12 pour stabiliser la V0.2.1 (nav
 ## Retours QA_S001 → tâches
 
 ### Quick wins intégrables Step 9
-- Navigation : clarifier le vrai « Accueil » (icône maison vers la home), retirer/confiner la page « Évolution de l’app » des raccourcis, conserver la barre de nav sur toutes les pages.
+- Navigation : clarifier le vrai « Accueil » (icône maison vers la home), retirer/confiner la page « Évolution de l’app » ("Cette homepage n'est pas pour les utilisateurs") des raccourcis, conserver la barre de nav sur toutes les pages.
 - Login : afficher les CTA de création de compte (élève/prof/admin) et rappeler freemium/premium (même si l’abonnement n’est pas encore implémenté).
 - Admin/Prof : dans les listes cours ajouter filtres rapides (date, prof, niveau, discipline) en plus du tri date, et exposer l’école/studio comme champs dédiés.
 - Positions : préparer le champ lien vidéo (non bloquant) et masquer description/vidéo pour les élèves non Premium quand on a l’info d’abonnement.

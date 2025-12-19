@@ -72,11 +72,9 @@
 - Pagination (10 items/page) généralisée : cours élève/prof, progression élève, blessures élève, liste élèves prof, liste cours prof (tri date desc).
 - Navigation / positions : liste 2 colonnes partagée, bannière session/role/accueil partout, retour contextuel `from` préservé.
 - Modules homepage : carte Profile ajoutée, “Status build” et “Modules” repliables par défaut, bandeau mis à jour.
-- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, 9→12 planifiées : Retour QA 19.12, journal d’audit, contre-indications, badges/UX).
-- Plan Step 9 (Retour QA 19.12) centralisé dans `01_BACKLOG_STEP_009.md` pour piloter les correctifs QA.
+- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, Step 9 Discovery QA pilotée dans `01_BACKLOG_STEP_009.md`).
+- Suites à cadrer après Step 9 : journal d’audit, contre-indications, badges/UX.
 
-## Roadmap prochaine (Steps 9 → 12)
-- Step 9 — Retour QA 19.12 : plan détaillé dans `01_BACKLOG_STEP_009.md` pour traiter navigation, cohérence UI/pagination, profils/home.
-- Step 10 — Journal d’audit : logs “qui/quoi/quand” sur mutations sensibles + page admin d’inspection.
-- Step 11 — Contre-indications : lier positions ↔ blessures avec sévérité, affichage alerte/badge.
-- Step 12 — UX + Badges : badges mini-jeu (série/100%/sessions), affichage dashboard élève, polish UX (vides/error/marges).
+## Roadmap prochaine
+- Step 9 — Discovery QA : plan détaillé dans `01_BACKLOG_STEP_009.md` (navigation cohérente, pagination, profils/home).
+- À cadrer ensuite : journal d’audit, contre-indications position/blessure, badges & polish UX.

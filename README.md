@@ -1,6 +1,6 @@
 # Pole App — MVP v0.2.1 (Steps 0 → 8)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Step 9 (QA 19.12) en préparation — plan dans `01_BACKLOG_STEP_009.md`.
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Step 9 (Discovery QA) en préparation — plan dans `01_BACKLOG_STEP_009.md`.
 
 ## Stack
 - Next.js 16 (App Router) + TypeScript + Tailwind
