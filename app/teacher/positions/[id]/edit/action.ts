@@ -58,22 +58,10 @@ export async function updatePositionAction(formData: FormData) {
       contraindications: data.contraindications,
       media: data.imageUrl
         ? {
-            upsert: {
-              create: {
-                kind: MediaKind.PHOTO,
-                url: data.imageUrl,
-              },
-              update: {
-                kind: MediaKind.PHOTO,
-                url: data.imageUrl,
-              },
-              where: {
-                // first media only
-                positionId_index: {
-                  positionId: data.id,
-                  index: 0,
-                },
-              },
+            deleteMany: { positionId: data.id },
+            create: {
+              kind: MediaKind.PHOTO,
+              url: data.imageUrl,
             },
           }
         : undefined,
