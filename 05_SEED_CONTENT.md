@@ -44,3 +44,13 @@ Exemple (format libre):
 8. Basic Climb — STRENGTH — BEGINNER
 9. Shoulder Mount Prep — STRENGTH — INTERMEDIATE (contre-indication épaule)
 10. Warmup Flow 1 — WARMUP — BEGINNER
+
+## Comptes seed (mot de passe `poleapp123`)
+- admin@poleapp.test — SCHOOL_ADMIN (premium)
+- teacher@poleapp.test — TEACHER
+- student1@poleapp.test — STUDENT (free)
+- student2@poleapp.test — STUDENT (premium)
+
+## Commandes de seed
+- `npm run db:push` : synchro schéma Postgres.
+- `npm run db:seed` : push + seed (idempotent). Lancé automatiquement par `docker-compose` et `render.yaml`.

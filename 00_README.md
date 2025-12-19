@@ -18,10 +18,16 @@ Ce dossier contient :
 
 ## Hypothèses techniques (prototype rapide)
 - Web app **Next.js** (responsive) pour itérer vite (mobile ensuite).
-- DB **SQLite** + **Prisma** (facile à migrer).
-- Auth **NextAuth** (ou Clerk si vous préférez) + RBAC.
+- DB **PostgreSQL** + **Prisma** (provider Postgres en place, seed idempotent).
+- Auth **NextAuth** (Credentials) + middleware RBAC.
 - UI **Tailwind** + composants simples.
 - Stockage médias : local en dev, abstraction prête pour S3/Cloudinary ensuite.
+
+## Mise en route (implémentation actuelle)
+- Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
+- Scripts : `npm run db:push`, `npm run db:seed`, `npm run dev`.
+- Docker : `docker compose watch` (web en mode dev + Postgres) ou `docker-compose up --build`.
+- Déploiement Render : `render.yaml` (service web + base Postgres auto), build `npm install && npx prisma generate && npm run build`, start `npm run start`, seed via `npm run db:push && npm run db:seed`.
 
 > Si vous voulez partir direct sur du mobile, remplacez Next.js par Expo/React Native,
 > mais le MVP “data + flows” est plus rapide à valider côté web.

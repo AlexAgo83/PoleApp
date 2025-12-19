@@ -15,15 +15,18 @@ Objectif : prototyper rapidement une **web app** (responsive) validant le MVP :
 
 ---
 
-## Stack & conventions
+## Stack & conventions (implémentation actuelle)
 
 - Next.js (App Router) + TypeScript
-- Prisma + SQLite (dev)
-- NextAuth (credentials) + RBAC (middleware)
+- Prisma + PostgreSQL (provider Postgres)
+- NextAuth (credentials) + middleware RBAC (paths `/app/*`)
 - Tailwind CSS
 - Zod pour validation
 - React Hook Form (optionnel) pour forms
-- Testing: Vitest (unit) + Playwright (smoke e2e) (optionnel en MVP)
+- Testing: Vitest (unit)
+- Run dev : `npm run dev` (ou `docker compose watch` pour hot-reload conteneur)
+- DB : `npm run db:push` puis `npm run db:seed`
+- Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma generate && npm run build`, start `npm run start`
 
 Structure proposée :
 - `/app` routes
