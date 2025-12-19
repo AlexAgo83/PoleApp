@@ -27,14 +27,15 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 export default async function PositionDetailPage({ params }: Props) {
-  if (!params?.id) {
+  const awaitedParams = await params;
+  if (!awaitedParams?.id) {
     notFound();
   }
 
   const session = await getServerSession(authOptions);
 
   const position = await prisma.position.findUnique({
-    where: { id: params.id },
+    where: { id: awaitedParams.id },
     include: {
       media: true,
       createdBy: true,

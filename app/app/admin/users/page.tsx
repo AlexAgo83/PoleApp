@@ -10,8 +10,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams?: { success?: string; error?: string };
+  searchParams?: { success?: string; error?: string } | Promise<{ success?: string; error?: string }>;
 }) {
+  const params = await searchParams;
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     return null;
@@ -53,11 +54,11 @@ export default async function AdminUsersPage({
             Tu es connecté en <strong>{session.user.email}</strong>
           </p>
         </div>
-        {(searchParams?.success || searchParams?.error) && (
+        {(params?.success || params?.error) && (
           <p
-            className={`mt-3 text-sm ${searchParams?.error ? "text-amber-300" : "text-emerald-300"}`}
+            className={`mt-3 text-sm ${params?.error ? "text-amber-300" : "text-emerald-300"}`}
           >
-            {searchParams.error ?? searchParams.success}
+            {params?.error ?? params?.success}
           </p>
         )}
         <div className="mt-4 flex flex-wrap gap-3 text-sm">

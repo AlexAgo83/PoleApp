@@ -27,8 +27,9 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 export default async function PositionsPage({ searchParams }: Props) {
-  const rawType = searchParams?.type;
-  const rawLevel = searchParams?.level;
+  const awaitedParams = await searchParams;
+  const rawType = awaitedParams?.type;
+  const rawLevel = awaitedParams?.level;
   const typeFilter = Object.values(PositionType).includes(rawType as PositionType)
     ? (rawType as PositionType)
     : undefined;
@@ -70,12 +71,20 @@ export default async function PositionsPage({ searchParams }: Props) {
               placeholders seedés pour le mini-jeu.
             </p>
           </div>
-          <Link
-            href="/teacher/positions/new"
-            className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
-          >
-            Ajouter (prof/admin)
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Accueil
+            </Link>
+            <Link
+              href="/teacher/positions/new"
+              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+            >
+              Ajouter (prof/admin)
+            </Link>
+          </div>
         </div>
         <div className="mt-6 flex flex-wrap gap-3 text-sm">
           <div className="flex flex-wrap gap-2">
