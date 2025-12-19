@@ -1,3 +1,10 @@
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+
+import { SignOutButton } from "@/components/auth/SignOutButton";
+import { authOptions } from "@/lib/auth";
+import { defaultHomeForRole } from "@/lib/rbac";
+
 const moduleSections = [
   {
     title: "Positions",
@@ -47,9 +54,47 @@ const buildSteps = [
   { label: "Step 7 — Admin école", done: true },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  const homeForRole = defaultHomeForRole(session?.user?.role);
+
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-10 px-6 py-12 md:px-10">
+      <section className="panel flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-slate-200">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
+            Session
+          </span>
+          {session?.user ? (
+            <>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                {session.user.email}
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                Rôle : {session.user.role}
+              </span>
+              <Link
+                href={homeForRole}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Aller à ta vue
+              </Link>
+              <SignOutButton />
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+            >
+              Se connecter
+            </Link>
+          )}
+        </div>
+        <div className="text-xs text-slate-400">
+          Accès différencié élève / prof / admin via NextAuth + RBAC.
+        </div>
+      </section>
+
       <header className="panel relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-amber-400/10" />
         <div className="relative flex flex-col gap-4 p-10 md:flex-row md:items-center md:justify-between">
