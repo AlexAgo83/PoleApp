@@ -64,6 +64,13 @@
 - Dashboards élève/prof : salutation personnalisée (prénom/nom/email fallback) avec bouton “Éditer” renvoyant vers le profil.
 - Homepage modules : pastilles rôle/étape déplacées sous la description pour plus de lisibilité.
 
+## 2025-12-21 — Pagination & release v0.2.0
+- Version bump `0.2.0` (README, homepage, package.json).
+- Pagination (10 items/page) généralisée : cours élève/prof, progression élève, blessures élève, liste élèves prof, liste cours prof (tri date desc).
+- Navigation / positions : liste 2 colonnes partagée, bannière session/role/accueil partout, retour contextuel `from` préservé.
+- Modules homepage : carte Profile ajoutée, “Status build” et “Modules” repliables par défaut, bandeau mis à jour.
+- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, 9→11 planifiées : audit, contre-indications, badges UX).
+
 ## Roadmap prochaine (Steps 9 → 11)
 - Step 9 — Journal d’audit : logs “qui/quoi/quand” sur mutations sensibles + page admin d’inspection.
 - Step 10 — Contre-indications : lier positions ↔ blessures avec sévérité, affichage alerte/badge.
