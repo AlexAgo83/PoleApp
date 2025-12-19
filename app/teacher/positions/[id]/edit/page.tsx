@@ -42,11 +42,11 @@ export default async function EditPositionPage({ params }: Props) {
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
       <SessionNavBar session={session} />
       <header className="panel p-8">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+        <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
           Professeur / Admin
         </p>
         <h1 className="text-3xl font-semibold text-white">Éditer la position</h1>
-        <p className="text-slate-300">
+        <p className="text-slate-200">
           Mets à jour les informations principales de la position. Les médias supplémentaires
           viendront plus tard.
         </p>
@@ -98,13 +98,15 @@ export default async function EditPositionPage({ params }: Props) {
           <div className="flex flex-wrap gap-3">
             <button
               type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gear.svg" alt="" className="h-4 w-4" />
               Éditer
             </button>
             <Link
               href={`/positions/${position.id}?from=/positions`}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
             >
               Annuler
             </Link>

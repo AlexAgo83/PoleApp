@@ -23,9 +23,11 @@ export default async function TeacherDashboard() {
           </h2>
           <Link
             href="/app/profile"
-            className="rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-cyan-400/70 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
             aria-label="Éditer le profil"
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gear.svg" alt="" className="h-4 w-4" />
             Éditer
           </Link>
         </div>
