@@ -5,21 +5,29 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type PageProps = {
-  params: { id: string };
-};
+type PageProps =
+  | { params: { id: string } }
+  | { params: Promise<{ id?: string }> };
 
 export const dynamic = "force-dynamic";
 
 export default async function StudentCourseDetailPage({ params }: PageProps) {
+  const resolvedParams = await Promise.resolve(
+    (params as { id?: string } | Promise<{ id?: string }>)
+  );
+  const id = resolvedParams?.id;
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return notFound();
   }
 
+  if (!id) {
+    return notFound();
+  }
+
   const course = await prisma.course.findUnique({
     where: {
-      id: params.id,
+      id,
       attendances: { some: { studentId: session.user.id } },
     },
     include: {

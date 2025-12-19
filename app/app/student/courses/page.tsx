@@ -1,17 +1,33 @@
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export default async function StudentCoursesPage() {
+export default async function StudentCoursesPage({
+  searchParams,
+}: {
+  searchParams?: { page?: string } | Promise<{ page?: string }>;
+}) {
+  const params = (await Promise.resolve(searchParams)) ?? {};
+  const rawPage = Number(params.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
   }
 
+  const totalCount = await prisma.courseAttendance.count({
+    where: { studentId: session.user.id },
+  });
+  const totalPages = Math.max(1, Math.ceil(totalCount / 10));
+  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+  const skip = (currentPage - 1) * 10;
+
   const attendances = await prisma.courseAttendance.findMany({
     where: { studentId: session.user.id },
     orderBy: { course: { date: "desc" } },
+    skip,
+    take: 10,
     include: {
       course: {
         include: {
@@ -33,7 +49,9 @@ export default async function StudentCoursesPage() {
           Élève
         </p>
         <h1 className="text-3xl font-semibold text-white">Mes cours</h1>
-        <p className="text-sm text-slate-300">Historique des cours suivis.</p>
+        <p className="text-sm text-slate-300">
+          Historique des cours suivis. Page {currentPage} / {totalPages} · {totalCount} entrées
+        </p>
       </header>
 
       <section className="panel p-6">
@@ -84,6 +102,35 @@ export default async function StudentCoursesPage() {
             <p className="py-4 text-slate-200">Aucun cours trouvé.</p>
           )}
         </div>
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between">
+            <Link
+              href={`/app/student/courses?page=${Math.max(1, currentPage - 1)}`}
+              className={`rounded-full px-3 py-2 text-sm font-semibold ${
+                currentPage === 1
+                  ? "cursor-not-allowed border border-white/10 text-slate-500"
+                  : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5"
+              }`}
+              aria-disabled={currentPage === 1}
+            >
+              Précédent
+            </Link>
+            <span className="text-sm text-slate-300">
+              Page {currentPage} / {totalPages}
+            </span>
+            <Link
+              href={`/app/student/courses?page=${Math.min(totalPages, currentPage + 1)}`}
+              className={`rounded-full px-3 py-2 text-sm font-semibold ${
+                currentPage === totalPages
+                  ? "cursor-not-allowed border border-white/10 text-slate-500"
+                  : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5"
+              }`}
+              aria-disabled={currentPage === totalPages}
+            >
+              Suivant
+            </Link>
+          </div>
+        )}
       </section>
     </main>
   );
