@@ -1,5 +1,3 @@
-import { Position } from "@prisma/client";
-
 export type GameQuestion = {
   id: string;
   image: string;
@@ -9,7 +7,13 @@ export type GameQuestion = {
 
 const QUESTIONS_COUNT = 10;
 
-export function buildGameQuestions(positions: Position[]): GameQuestion[] {
+type PositionWithMedia = {
+  id: string;
+  name: string;
+  media?: { url: string }[];
+};
+
+export function buildGameQuestions(positions: PositionWithMedia[]): GameQuestion[] {
   const shuffled = [...positions].sort(() => Math.random() - 0.5);
   const picked = shuffled.slice(0, Math.min(QUESTIONS_COUNT, shuffled.length));
 
@@ -26,7 +30,7 @@ export function buildGameQuestions(positions: Position[]): GameQuestion[] {
   });
 }
 
-function pickOptions(target: Position, positions: Position[]) {
+function pickOptions(target: PositionWithMedia, positions: PositionWithMedia[]) {
   const pool = positions.filter((p) => p.id !== target.id);
   const shuffled = pool.sort(() => Math.random() - 0.5);
   const distractors = shuffled.slice(0, 3).map((p) => ({ id: p.id, name: p.name }));
