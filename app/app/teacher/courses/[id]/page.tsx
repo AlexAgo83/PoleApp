@@ -50,7 +50,8 @@ export default async function TeacherCourseDetailPage({
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
-  const rawFrom = searchParams?.from;
+  const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
+  const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom
