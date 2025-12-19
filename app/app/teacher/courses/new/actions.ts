@@ -11,7 +11,7 @@ import { prisma } from "@/lib/prisma";
 
 const courseSchema = z.object({
   title: z.string().optional(),
-  date: z.string().datetime(),
+  date: z.coerce.date(),
   studentIds: z.array(z.string().cuid()).min(1),
   positionIds: z.array(z.string().cuid()).min(1),
   notes: z
@@ -51,7 +51,7 @@ export async function createCourseAction(formData: FormData) {
     const course = await tx.course.create({
       data: {
         title: parsed.data.title || null,
-        date: new Date(parsed.data.date),
+        date: parsed.data.date,
         schoolId: session.user.schoolId!,
         teacherId: session.user.id,
       },

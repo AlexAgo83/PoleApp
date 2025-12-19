@@ -27,8 +27,16 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 export default async function PositionsPage({ searchParams }: Props) {
-  const typeFilter = searchParams?.type as PositionType | undefined;
-  const levelFilter = searchParams?.level as PositionLevel | undefined;
+  const rawType = searchParams?.type;
+  const rawLevel = searchParams?.level;
+  const typeFilter = Object.values(PositionType).includes(rawType as PositionType)
+    ? (rawType as PositionType)
+    : undefined;
+  const levelFilter = Object.values(PositionLevel).includes(
+    rawLevel as PositionLevel
+  )
+    ? (rawLevel as PositionLevel)
+    : undefined;
 
   const positions = await prisma.position.findMany({
     where: {
@@ -74,13 +82,23 @@ export default async function PositionsPage({ searchParams }: Props) {
             <span className="rounded-full bg-white/10 px-3 py-1 text-slate-200">
               Type
             </span>
-            <FilterChip label="Tous" href="/positions" active={!typeFilter} />
+            <FilterButton
+              label="Tous"
+              active={!typeFilter}
+              dimension="type"
+              value=""
+              otherName="level"
+              otherValue={levelFilter}
+            />
             {types.map((t) => (
-              <FilterChip
+              <FilterButton
                 key={t}
                 label={typeLabels[t]}
-                href={`/positions?type=${t}${levelFilter ? `&level=${levelFilter}` : ""}`}
                 active={typeFilter === t}
+                dimension="type"
+                value={t}
+                otherName="level"
+                otherValue={levelFilter}
               />
             ))}
           </div>
@@ -88,17 +106,23 @@ export default async function PositionsPage({ searchParams }: Props) {
             <span className="rounded-full bg-white/10 px-3 py-1 text-slate-200">
               Niveau
             </span>
-            <FilterChip
+            <FilterButton
               label="Tous"
-              href={`/positions${typeFilter ? `?type=${typeFilter}` : ""}`}
               active={!levelFilter}
+              dimension="level"
+              value=""
+              otherName="type"
+              otherValue={typeFilter}
             />
             {levels.map((l) => (
-              <FilterChip
+              <FilterButton
                 key={l}
                 label={levelLabels[l]}
-                href={`/positions?level=${l}${typeFilter ? `&type=${typeFilter}` : ""}`}
                 active={levelFilter === l}
+                dimension="level"
+                value={l}
+                otherName="type"
+                otherValue={typeFilter}
               />
             ))}
           </div>
@@ -153,25 +177,38 @@ export default async function PositionsPage({ searchParams }: Props) {
   );
 }
 
-function FilterChip({
+function FilterButton({
   label,
-  href,
   active,
+  dimension,
+  value,
+  otherName,
+  otherValue,
 }: {
   label: string;
-  href: string;
   active: boolean;
+  dimension: "type" | "level";
+  value: string;
+  otherName: "type" | "level";
+  otherValue?: string;
 }) {
   return (
-    <Link
-      href={href}
-      className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
-        active
-          ? "bg-cyan-500 text-slate-900"
-          : "border border-white/10 bg-white/5 text-white hover:border-cyan-400/70 hover:bg-white/10"
-      }`}
-    >
-      {label}
-    </Link>
+    <form action="/positions" method="get">
+      {otherValue ? (
+        <input type="hidden" name={otherName} value={otherValue} />
+      ) : null}
+      <button
+        type="submit"
+        name={value ? dimension : undefined}
+        value={value || undefined}
+        className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
+          active
+            ? "bg-cyan-500 text-slate-900"
+            : "border border-white/10 bg-white/5 text-white hover:border-cyan-400/70 hover:bg-white/10"
+        }`}
+      >
+        {label}
+      </button>
+    </form>
   );
 }
