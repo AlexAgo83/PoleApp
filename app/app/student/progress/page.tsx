@@ -33,13 +33,17 @@ const PAGE_SIZE = 10;
 export default async function StudentProgressPage({
   searchParams,
 }: {
-  searchParams?: { page?: string };
+  searchParams?: Promise<{ page?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
   if (session.user.role !== "STUDENT") redirect("/access-denied");
 
-  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
+  const resolvedParams = (await searchParams) ?? {};
+  const pageParam = Array.isArray(resolvedParams.page)
+    ? resolvedParams.page[0]
+    : resolvedParams.page;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const skip = (page - 1) * PAGE_SIZE;
 
   const [progressEntries, totalPositions] = await Promise.all([
