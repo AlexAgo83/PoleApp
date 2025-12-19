@@ -108,7 +108,7 @@ export default function Home() {
           <div>
             <h2 className="text-2xl font-semibold text-white">Modules</h2>
             <p className="text-slate-300">
-              Routes clés décrites dans 04_ROUTES_AND_SCREENS.md
+              Modules disponibles selon ton rôle (élève, prof, admin)
             </p>
           </div>
           <a
