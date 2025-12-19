@@ -6,7 +6,7 @@ databases:
 
 services:
   - type: web
-    name: poleapp-web
+    name: poleapp
     env: node
     plan: free
     buildCommand: npm install && npx prisma generate && npm run build
@@ -20,4 +20,4 @@ services:
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: NEXTAUTH_URL
-        value: https://poleapp-web.onrender.com
+        value: https://poleapp.onrender.com
