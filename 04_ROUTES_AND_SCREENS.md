@@ -5,20 +5,20 @@
 - `/login` : auth
 
 ## Élève
-- `/student` : dashboard (progress + prochains items)
-- `/student/courses` : historique cours
-- `/student/courses/[id]` : détail
-- `/student/progress` : positions + statut/niveau
-- `/student/injuries` : gérer blessures
+- `/app/student` : dashboard (progress + prochains items)
+- `/app/student/courses` : historique cours
+- `/app/student/courses/[id]` : détail
+- `/app/student/progress` : positions + statut/niveau
+- `/app/student/injuries` : gérer blessures
 - `/app/student/game` : mini-jeu photo→nom
 
 ## Prof
-- `/teacher` : dashboard
+- `/app/teacher` : dashboard
 - `/app/teacher/students` : liste élèves (de l’école)
 - `/app/teacher/students/[id]` : fiche élève (progress + blessures)
-- `/teacher/courses` : historique
-- `/teacher/courses/new` : créer cours + notes
-- `/teacher/positions` : gestion positions
+- `/app/teacher/courses` : historique
+- `/app/teacher/courses/new` : créer cours + notes
+- `/teacher/positions` : gestion positions (legacy public prefix)
 - `/teacher/positions/new` : créer
 - `/teacher/positions/[id]/edit` : éditer
 

@@ -88,7 +88,7 @@ Structure proposée :
 
 **Tâches**
 - Modèles InjuryType + StudentInjury
-- UI élève: `/student/injuries`
+- UI élève: `/app/student/injuries`
 - UI prof: visible sur fiche élève
 
 **DoD**
@@ -103,7 +103,7 @@ Structure proposée :
 **Tâches**
 - Modèle StudentPositionProgress
 - UI :
-  - `/student/progress` (mes positions + états)
+  - `/app/student/progress` (mes positions + états)
   - `/app/teacher/students/[id]` (profil + progression + blessures)
 - Ops :
   - Prof peut modifier (niveau+statut+commentaire) pour une position
@@ -120,7 +120,7 @@ Structure proposée :
 **Tâches**
 - Modèles Course + CourseAttendance + CoursePosition + CourseNote
 - UI prof:
-  - `/teacher/courses/new` (date, élèves, positions)
+  - `/app/teacher/courses/new` (date, élèves, positions)
   - formulaire de notes élève x position
 - À la validation :
   - Créer le cours
@@ -130,7 +130,7 @@ Structure proposée :
 **DoD**
 - Créer un cours en < 2 minutes
 - Vérifier que la progression élève est mise à jour automatiquement
-- Student voit l’historique de cours `/student/courses`
+- Student voit l’historique de cours `/app/student/courses`
 
 ---
 
