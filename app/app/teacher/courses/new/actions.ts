@@ -1,6 +1,6 @@
 "use server";
 
-import { LearningStatus, MasteryLevel, Prisma, PrismaClient } from "@prisma/client";
+import { LearningStatus, MasteryLevel, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";

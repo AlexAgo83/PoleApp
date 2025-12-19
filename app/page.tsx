@@ -7,7 +7,7 @@ const moduleSections = [
   },
   {
     title: "Cours",
-    href: "/teacher/courses",
+    href: "/app/teacher/courses",
     description: "Création cours, présences, notes et mise à jour progression.",
     status: "Étape 5",
   },
@@ -37,7 +37,7 @@ const buildSteps = [
   { label: "Step 2 — Positions (browse + create prof)", done: true },
   { label: "Step 3 — Blessures élève (UI + prof)", done: true },
   { label: "Step 4 — Progression par position", done: true },
-  { label: "Step 5 — Fiche cours (notes + progression)", done: false },
+  { label: "Step 5 — Fiche cours (notes + progression)", done: true },
   { label: "Step 6 — Mini-jeu", done: false },
   { label: "Step 7 — Admin école", done: false },
 ];
@@ -144,15 +144,17 @@ export default function Home() {
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-white">Nouveautés</h3>
           <p className="text-slate-300">
-            Dernière étape livrée : <strong>Step 4 — Progression</strong>
+            Dernière étape livrée : <strong>Step 5 — Fiche cours</strong>
             <br />
-            Élève : progression par position sur `/app/student/progress` (accès complet
-            si premium, sinon positions vues). Prof : mise à jour progression
-            dans `/app/teacher/students/[id]` (statut, niveau, commentaire).
+            Création cours `/app/teacher/courses/new` (élèves, positions, notes
+            élève×position) avec mise à jour automatique de la progression.
+            Liste : `/app/teacher/courses`. Historique élève : `/app/student/courses`.
           </p>
           <div className="space-y-2 text-sm text-slate-300">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
+              <li>• Step 5 : Cours — création + progression auto</li>
+              <li>• Step 4 : Progression — élève/prof</li>
               <li>• Step 3 : Blessures — déclaration élève, lecture prof</li>
               <li>• Step 2 : Positions — liste/détail + création prof</li>
               <li>• Step 1 : Auth/RBAC — login credentials + middleware</li>
@@ -162,7 +164,7 @@ export default function Home() {
           <div className="space-y-1 text-sm text-slate-300">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Step 5 : Fiche cours (notes + progression auto)</li>
+              <li>• Step 6 : Mini-jeu (photo → nom)</li>
             </ul>
           </div>
         </div>
