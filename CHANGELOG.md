@@ -79,6 +79,7 @@
 - Bannière session/rôle + Accueil/Mon espace/Logout ajoutée aux vues positions hors layout (`/positions/[id]`, création/édition position prof) + icône maison sur le bandeau des espaces.
 - Page création de position refactorisée en serveur + formulaire client pour appliquer le RBAC avant affichage et offrir un retour rapide vers la liste.
 - Page login enrichie avec des CTA de création de compte (élève/prof/admin) et rappel freemium/premium en attendant l’onboarding complet.
+- Inscription self-serve élève via `/signup` (email + mot de passe + école, premium optionnel). Prof/Admin restent créés côté école.
 
 ## Roadmap prochaine
 - Step 9 — Discovery QA : plan détaillé dans `01_BACKLOG_STEP_009.md` (navigation cohérente, pagination, profils/home).

@@ -24,6 +24,7 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/app";
+  const signupSuccess = searchParams.get("signup") === "success";
   const { data: session, status } = useSession();
 
   const [email, setEmail] = useState("");
@@ -135,6 +136,11 @@ function LoginContent() {
           {error && (
             <p className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
               {error}
+            </p>
+          )}
+          {signupSuccess && (
+            <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
+              Compte créé. Tu peux te connecter avec tes identifiants.
             </p>
           )}
           <button
