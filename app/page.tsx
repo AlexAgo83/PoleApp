@@ -101,7 +101,7 @@ export default async function Home() {
             </>
           ) : (
             <span className="text-xs uppercase tracking-[0.18em] text-cyan-200">
-              Pole App — MVP v0.1.0
+              Pole App — MVP v0.2.0
             </span>
           )}
         </div>
@@ -139,7 +139,7 @@ export default async function Home() {
           <div className="space-y-3">
             {session?.user && (
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — MVP v0.1.0
+                Pole App — MVP v0.2.0
               </p>
             )}
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
