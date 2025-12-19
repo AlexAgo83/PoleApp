@@ -9,12 +9,13 @@ import { CourseForm } from "../../new/CourseForm";
 import { updateCourseAction } from "../actions";
 
 type Props = {
-  params: { id: string };
+  params: { id: string } | Promise<{ id?: string }>;
   searchParams?: { from?: string };
 };
 
 export default async function EditCoursePage({ params, searchParams }: Props) {
-  const id = params?.id;
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams?.id;
   const session = await getServerSession(authOptions);
   const teacherId = session?.user?.id;
   const schoolId = session?.user?.schoolId;
