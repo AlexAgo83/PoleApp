@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { SessionNavBar } from "@/components/SessionNavBar";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-12">
+      <SessionNavBar session={session} />
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">

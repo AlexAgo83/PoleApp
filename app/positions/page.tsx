@@ -1,11 +1,10 @@
 import { PositionLevel, PositionType } from "@prisma/client";
-import Link from "next/link";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 
-import { SignOutButton } from "@/components/auth/SignOutButton";
+import { SessionNavBar } from "@/components/SessionNavBar";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { defaultHomeForRole } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 10;
@@ -39,7 +38,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const skip = (currentPage - 1) * PAGE_SIZE;
 
   const session = await getServerSession(authOptions);
-  const homeForRole = defaultHomeForRole(session?.user?.role);
   const positions = await prisma.position.findMany({
     orderBy: { updatedAt: "desc" },
     skip,
@@ -53,56 +51,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12">
-      <section className="panel flex flex-col gap-3 p-4 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          {session?.user ? (
-            <>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-                Session
-                <span className="text-white text-[11px] normal-case tracking-normal">
-                  {session.user.email}
-                </span>
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-                Rôle : {session.user.role}
-              </span>
-            </>
-          ) : (
-            <span className="text-xs uppercase tracking-[0.18em] text-cyan-200">
-              Pole App — MVP v0.2.1
-            </span>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2 md:justify-end">
-          <Link
-            href="/"
-            role="button"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Accueil
-          </Link>
-          {session?.user ? (
-            <>
-              <Link
-                href={homeForRole}
-                role="button"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                Mon espace
-              </Link>
-              <SignOutButton />
-            </>
-          ) : (
-            <Link
-              href="/login"
-              role="button"
-              className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
-            >
-              Se connecter
-            </Link>
-          )}
-        </div>
-      </section>
+      <SessionNavBar session={session} />
 
       <header className="panel flex flex-wrap items-center justify-between gap-4 p-6">
         <div>

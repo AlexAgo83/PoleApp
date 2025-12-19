@@ -75,6 +75,11 @@
 - Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, Step 9 Discovery QA pilotée dans `01_BACKLOG_STEP_009.md`).
 - Suites à cadrer après Step 9 : journal d’audit, contre-indications, badges/UX.
 
+## 2025-12-22 — Step 9 (Discovery QA — navigation & login)
+- Bannière session/rôle + Accueil/Mon espace/Logout ajoutée aux vues positions hors layout (`/positions/[id]`, création/édition position prof) + icône maison sur le bandeau des espaces.
+- Page création de position refactorisée en serveur + formulaire client pour appliquer le RBAC avant affichage et offrir un retour rapide vers la liste.
+- Page login enrichie avec des CTA de création de compte (élève/prof/admin) et rappel freemium/premium en attendant l’onboarding complet.
+
 ## Roadmap prochaine
 - Step 9 — Discovery QA : plan détaillé dans `01_BACKLOG_STEP_009.md` (navigation cohérente, pagination, profils/home).
 - À cadrer ensuite : journal d’audit, contre-indications position/blessure, badges & polish UX.

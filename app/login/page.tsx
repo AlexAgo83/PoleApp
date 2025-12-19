@@ -152,6 +152,33 @@ function LoginContent() {
             ← Retour accueil
           </Link>
         </form>
+
+        <div className="mt-6 space-y-3 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-semibold text-white">Pas encore de compte ?</p>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] uppercase tracking-[0.14em] text-cyan-200">
+              Démo
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {["Élève", "Professeur", "Admin école"].map((label) => (
+              <button
+                key={label}
+                type="button"
+                aria-disabled
+                className="cursor-not-allowed rounded-full border border-dashed border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200"
+                title="Ouverture de compte à venir"
+              >
+                Créer un compte {label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-slate-300">
+            Freemium : accès de base (positions vues, modules ouverts). Premium : base complète
+            des positions + explications et mini-jeu renforcé. Les CTA de création seront activés
+            quand l&apos;onboarding sera branché.
+          </p>
+        </div>
       </section>
     </main>
   );
