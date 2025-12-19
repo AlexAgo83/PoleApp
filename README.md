@@ -49,6 +49,10 @@ Scripts utiles :
 - Prof : `/app/teacher/students` + `/app/teacher/students/[id]` (consultation blessures élèves de l’école).
 - Seed : 1 blessure active pour student1.
 
+## Progression (Step 4)
+- Élève : `/app/student/progress` (vue progression par position, accès complet si premium, sinon positions vues).
+- Prof : mise à jour progression sur `/app/teacher/students/[id]` (statut, niveau, commentaire, piste : prise en compte des blessures visibles).
+
 ## Déploiement Render
 - Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.
 - Build command : `npm install && npx prisma generate && npm run build` (rootDir=web). Start : `npm run start`.

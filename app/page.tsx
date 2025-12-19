@@ -36,7 +36,7 @@ const buildSteps = [
   { label: "Step 1 — Auth/RBAC (login + middleware)", done: true },
   { label: "Step 2 — Positions (browse + create prof)", done: true },
   { label: "Step 3 — Blessures élève (UI + prof)", done: true },
-  { label: "Step 4 — Progression par position", done: false },
+  { label: "Step 4 — Progression par position", done: true },
   { label: "Step 5 — Fiche cours (notes + progression)", done: false },
   { label: "Step 6 — Mini-jeu", done: false },
   { label: "Step 7 — Admin école", done: false },
@@ -144,15 +144,16 @@ export default function Home() {
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-white">Nouveautés</h3>
           <p className="text-slate-300">
-            Dernière étape livrée : <strong>Step 3 — Blessures</strong>
+            Dernière étape livrée : <strong>Step 4 — Progression</strong>
             <br />
-            Élève : déclaration/édition/suppression sur `/app/student/injuries`.
-            Prof : lecture des blessures élèves dans `/app/teacher/students` et
-            la fiche détail.
+            Élève : progression par position sur `/app/student/progress` (accès complet
+            si premium, sinon positions vues). Prof : mise à jour progression
+            dans `/app/teacher/students/[id]` (statut, niveau, commentaire).
           </p>
           <div className="space-y-2 text-sm text-slate-300">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
+              <li>• Step 3 : Blessures — déclaration élève, lecture prof</li>
               <li>• Step 2 : Positions — liste/détail + création prof</li>
               <li>• Step 1 : Auth/RBAC — login credentials + middleware</li>
               <li>• Step 0 : Bootstrap — Next.js + Prisma + seed + /health</li>
@@ -161,7 +162,7 @@ export default function Home() {
           <div className="space-y-1 text-sm text-slate-300">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Step 4 : Progression par position (élève/prof)</li>
+              <li>• Step 5 : Fiche cours (notes + progression auto)</li>
             </ul>
           </div>
         </div>
