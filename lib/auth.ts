@@ -80,7 +80,6 @@ export const authOptions: NextAuthOptions = {
       console.info("User signed in", { userId: user.id, role: user.role });
     },
   },
-  trustHost: true,
 };
 
 export function homeForUserRole(role?: Role | null) {
