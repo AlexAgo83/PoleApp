@@ -13,3 +13,9 @@
 - Pages protégées : `/app/student`, `/app/teacher`, `/app/admin` + routing rôle `/app`.
 - Page `/login` avec presets seed, redirection selon rôle, bouton signout global.
 - Types NextAuth étendus, helper RBAC (`lib/rbac.ts`), README mis à jour.
+
+## 2025-12-19 — Step 2 (Positions browse + création prof)
+- Liste `/positions` avec filtres type/niveau, cartes avec médias seed et détail `/positions/[id]`.
+- Détail inclut infos, tips, contre-indications, gating élève (stub free/premium) et lien création.
+- Prof/Admin : création via `/teacher/positions/new` (zod + server action + Prisma), listing rapide `/teacher/positions`.
+- Home mise à jour pour marquer Step 2 livré.
