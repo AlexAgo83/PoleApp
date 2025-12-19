@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="60" cy="60" r="16" stroke="#9CA3AF" stroke-width="6"/>
-  <path d="M60 20V12" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M60 108V100" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M32 32L26 26" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M88 88L94 94" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M20 60H12" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M108 60H100" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M32 88L26 94" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
-  <path d="M88 32L94 26" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round"/>
+  <path
+    d="M60 12L72 16L78 12L86 22H98L102 34L112 40L108 52L112 60L108 68L112 80L102 86L98 98H86L78 108L72 104L60 108L48 104L42 108L34 98H22L18 86L8 80L12 68L8 60L12 52L8 40L18 34L22 22H34L42 12L48 16L60 12Z"
+    stroke="#9CA3AF"
+    stroke-width="7"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <circle cx="60" cy="60" r="18" stroke="#9CA3AF" stroke-width="7" />
 </svg>
