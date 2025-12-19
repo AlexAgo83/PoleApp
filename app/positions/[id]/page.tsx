@@ -1,15 +1,18 @@
 import { PositionLevel, PositionType } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
 
 export const dynamic = "force-dynamic";
 
 type Props = {
   params: { id: string };
+  searchParams?: {
+    from?: string;
+  };
 };
 
 const typeLabels: Record<PositionType, string> = {
@@ -26,11 +29,16 @@ const levelLabels: Record<PositionLevel, string> = {
   ADVANCED: "Avancé",
 };
 
-export default async function PositionDetailPage({ params }: Props) {
+export default async function PositionDetailPage({ params, searchParams }: Props) {
   const awaitedParams = await params;
   if (!awaitedParams?.id) {
     notFound();
   }
+
+  const from = searchParams?.from;
+  const safeFrom =
+    from && from.startsWith("/") && !from.startsWith("//") ? from : undefined;
+  const backHref = safeFrom ?? "/positions";
 
   const session = await getServerSession(authOptions);
 
@@ -48,7 +56,7 @@ export default async function PositionDetailPage({ params }: Props) {
         <div className="panel w-full max-w-xl p-6 text-center text-slate-200">
           <p>Position introuvable.</p>
           <Link
-            href="/positions"
+            href={backHref}
             className="mt-3 inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
           >
             Retour à la liste
@@ -74,7 +82,7 @@ export default async function PositionDetailPage({ params }: Props) {
           </p>
         </div>
         <Link
-          href="/positions"
+          href={backHref}
           className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
         >
           ← Retour

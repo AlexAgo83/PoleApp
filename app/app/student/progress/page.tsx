@@ -118,7 +118,7 @@ export default async function StudentProgressPage() {
                     </p>
                   )}
                   <Link
-                    href={`/positions/${position.id}`}
+                    href={`/positions/${position.id}?from=/app/student/progress`}
                     className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
                   >
                     Détail position →
