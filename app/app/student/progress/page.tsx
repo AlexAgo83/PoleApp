@@ -56,8 +56,8 @@ export default async function StudentProgressPage() {
     : positions.length - visiblePositions.length;
 
   return (
-    <main className="mx-auto grid min-h-screen max-w-6xl gap-6 px-6 py-10">
-      <header className="panel p-6">
+    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+      <header className="panel p-6 sm:p-8">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
           Élève
         </p>
@@ -75,7 +75,7 @@ export default async function StudentProgressPage() {
             {lockedCount} position(s) verrouillées. Passe en premium pour tout voir.
           </div>
         )}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visiblePositions.map((position) => {
             const progress = progressMap.get(position.id);
             const status = progress?.learningStatus ?? "NOT_STARTED";
@@ -128,7 +128,7 @@ export default async function StudentProgressPage() {
             );
           })}
           {visiblePositions.length === 0 && (
-            <p className="col-span-full py-4 text-slate-200">
+            <p className="col-span-full rounded-xl border border-white/5 bg-white/5 px-4 py-6 text-center text-slate-200">
               Aucune position débloquée pour l’instant.
             </p>
           )}
