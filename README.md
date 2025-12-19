@@ -26,6 +26,11 @@ Scripts utiles :
 - Redirection auto selon rôle : admin → `/app/admin`, teacher → `/app/teacher`, student → `/app/student`.
 - Besoin d’un `NEXTAUTH_SECRET` dans `.env` (+ `NEXTAUTH_URL` recommandé). Exemple dans `.env.example`.
 
+## Positions (Step 2)
+- Liste publique `/positions` avec filtres type/niveau et détail `/positions/[id]`.
+- Gating élève : stub affiché (gratuit vs premium), en attente de la logique “débloqué”.
+- Prof/Admin : création via `/teacher/positions/new` (form zod + server action) et liste rapide `/teacher/positions`.
+
 ## Comptes seed (mot de passe : `poleapp123`)
 - admin@poleapp.test — SCHOOL_ADMIN (premium)
 - teacher@poleapp.test — TEACHER
