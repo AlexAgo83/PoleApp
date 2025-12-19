@@ -29,6 +29,9 @@ export default async function PositionsPage() {
   const positions = await prisma.position.findMany({
     orderBy: { updatedAt: "desc" },
     take: 50,
+    include: {
+      media: { take: 1 },
+    },
   });
   const canManage =
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
@@ -110,27 +113,52 @@ export default async function PositionsPage() {
       </header>
 
       <section className="panel p-6">
-        <div className="flex flex-col divide-y divide-white/5">
-          {positions.map((p) => (
-            <div
-              key={p.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-3"
-            >
-              <div>
-                <p className="text-base font-semibold text-white">{p.name}</p>
-                <p className="text-sm text-slate-300">
-                  {typeLabels[p.type]} · {levelLabels[p.levelRequired]} ·{" "}
-                  {p.grips ?? "grip ?"}
-                </p>
-              </div>
-              <Link
-                href={`/positions/${p.id}?from=/positions`}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+        <div className="grid gap-4 md:grid-cols-2">
+          {positions.map((p) => {
+            const cover = p.media?.[0];
+            return (
+              <article
+                key={p.id}
+                className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/60 hover:bg-white/10"
               >
-                Voir
-              </Link>
-            </div>
-          ))}
+                {cover ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={cover.url}
+                    alt={p.name}
+                    className="h-40 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-40 w-full items-center justify-center bg-white/5 text-sm text-slate-300">
+                    Pas d’image
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col gap-2 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-base font-semibold text-white">{p.name}</p>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                      {levelLabels[p.levelRequired]}
+                    </span>
+                  </div>
+                  <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
+                  <p className="text-sm text-slate-300 line-clamp-2">
+                    {p.tips ?? p.description ?? "Aucun détail"}
+                  </p>
+                  <div className="mt-auto flex items-center justify-between gap-2">
+                    <p className="text-xs text-slate-400">
+                      {p.grips ?? "Grip ?"}
+                    </p>
+                    <Link
+                      href={`/positions/${p.id}?from=/positions`}
+                      className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    >
+                      Voir
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
           {positions.length === 0 && (
             <p className="py-4 text-slate-200">Aucune position pour le moment.</p>
           )}
