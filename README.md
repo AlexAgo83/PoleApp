@@ -4,18 +4,24 @@ Base Next.js + Prisma setup derived from the provided markdown specs (roles, pos
 
 ## Stack
 - Next.js (App Router) + TypeScript + Tailwind
-- Prisma + SQLite (dev)
+- Prisma + PostgreSQL
 - NextAuth (Credentials) + middleware RBAC (student/teacher/admin)
 - Vitest + Testing Library (unit smoke)
 
 ## Setup rapide
 1) `npm install`  
-2) `.env` : pointer `DATABASE_URL` vers le chemin absolu du fichier SQLite (exemple actuel : `file:/Users/alexandreagostini/Library/Mobile Documents/com~apple~CloudDocs/Documents/Workspace/PoleApp/web/prisma/dev.db`). Les chemins relatifs via `file:./prisma/dev.db` posent problème sur ce poste.  
+2) `.env` : `DATABASE_URL` doit pointer vers un Postgres (ex: `postgresql://USER:PASSWORD@localhost:5432/poleapp?schema=public`), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (http://localhost:3000 en dev).  
 3) `npm run db:seed` — applique le schéma + seed (école, users, positions).  
 4) `npm run dev` — app sur http://localhost:3000.
 
+Postgres local (option rapide, Docker) :
+```bash
+docker run -d --name poleapp-postgres -e POSTGRES_PASSWORD=devpassword -e POSTGRES_DB=poleapp -p 5432:5432 postgres:16
+```
+Puis dans `.env` : `DATABASE_URL="postgresql://postgres:devpassword@localhost:5432/poleapp?schema=public"`
+
 Scripts utiles :
-- `npm run db:push` : synchro schéma (force le chemin DB absolu automatiquement).
+- `npm run db:push` : synchro schéma.
 - `npm run db:seed` : push + seed.
 - `npm test` : Vitest.
 - `npm run lint`
@@ -30,6 +36,12 @@ Scripts utiles :
 - Liste publique `/positions` avec filtres type/niveau et détail `/positions/[id]`.
 - Gating élève : stub affiché (gratuit vs premium), en attente de la logique “débloqué”.
 - Prof/Admin : création via `/teacher/positions/new` (form zod + server action) et liste rapide `/teacher/positions`.
+
+## Déploiement Render
+- Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.
+- Build command : `npm install && npx prisma generate && npm run build` (rootDir=web). Start : `npm run start`.
+- Post-deploy : `npm run db:push && npm run db:seed` pour préparer la base distante.
+- Variables à prévoir : `NEXTAUTH_SECRET` (auto-généré dans render.yaml), `NEXTAUTH_URL` (`https://<service>.onrender.com`).
 
 ## Comptes seed (mot de passe : `change-me-password`)
 - admin@poleapp.test — SCHOOL_ADMIN (premium)
@@ -46,5 +58,4 @@ Scripts utiles :
 - `GET /health` retourne `{ status: "ok", timestamp, uptimeSeconds }`.
 
 ## Notes
-- DB ignorée par git (`prisma/dev.db`).
 - Changelog : voir `CHANGELOG.md`.

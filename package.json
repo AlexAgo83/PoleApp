@@ -9,8 +9,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:push": "DATABASE_URL=\"${DATABASE_URL:-file:$(pwd)/prisma/dev.db}\" prisma db push",
-    "db:seed": "npm run db:push && DATABASE_URL=\"${DATABASE_URL:-file:$(pwd)/prisma/dev.db}\" prisma db seed"
+    "db:push": "prisma db push",
+    "db:seed": "npm run db:push && prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "^6.2.0",
