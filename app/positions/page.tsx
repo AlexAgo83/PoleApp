@@ -69,7 +69,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
             </>
           ) : (
             <span className="text-xs uppercase tracking-[0.18em] text-cyan-200">
-              Pole App — MVP v0.2.0
+              Pole App — MVP v0.2.1
             </span>
           )}
         </div>
