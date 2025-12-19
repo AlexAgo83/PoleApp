@@ -41,7 +41,7 @@ export async function updatePositionAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { error: "Formulaire invalide." };
+    throw new Error("Formulaire invalide.");
   }
 
   const data = parsed.data;
