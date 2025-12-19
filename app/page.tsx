@@ -63,15 +63,15 @@ export default async function Home() {
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-10 px-6 py-12 md:px-10">
       <section className="panel flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-slate-200">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-            Session
-          </span>
           {session?.user ? (
             <>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                {session.user.email}
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
+                Session
+                <span className="text-white text-[11px] normal-case tracking-normal">
+                  {session.user.email}
+                </span>
               </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
                 Rôle : {session.user.role}
               </span>
               <Link
@@ -197,7 +197,7 @@ export default async function Home() {
       </details>
 
       <details className="panel group p-8">
-        <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
+        <summary className="flex cursor-pointer items-center justify-between text-2xl font-semibold text-white">
           <span>Nouveautés</span>
           <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
             ▼

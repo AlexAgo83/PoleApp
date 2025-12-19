@@ -34,8 +34,7 @@ export function HealthBadge() {
 
   const color =
     status === "up" ? "bg-emerald-400" : status === "down" ? "bg-rose-500" : "bg-amber-300";
-  const label =
-    status === "up" ? "Health: OK" : status === "down" ? "Health: DOWN" : "Health: ...";
+  const label = status === "up" ? "OK" : status === "down" ? "KO" : "CHECK";
 
   return (
     <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
