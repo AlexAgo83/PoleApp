@@ -91,7 +91,7 @@ export default async function StudentProgressPage({
         </p>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         {!session.user.isPremium && lockedCount > 0 && (
           <div className="mb-4 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
             {lockedCount} position(s) verrouillées. Passe en premium pour tout voir.
@@ -107,7 +107,7 @@ export default async function StudentProgressPage({
             return (
               <article
                 key={position.id}
-                className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/60 hover:bg-white/10"
+                className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-indigo-300/60 hover:bg-white/10"
               >
                 {cover ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -126,7 +126,17 @@ export default async function StudentProgressPage({
                     <h3 className="text-lg font-semibold text-white">
                       {position.name}
                     </h3>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-200">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        status === "NOT_STARTED"
+                          ? "border border-white/10 bg-white/5 text-slate-200"
+                          : status === "IN_PROGRESS"
+                          ? "border border-amber-400/40 bg-amber-500/20 text-amber-100"
+                          : status === "PASSED"
+                          ? "border border-emerald-400/40 bg-emerald-500/20 text-emerald-100"
+                          : "border border-indigo-400/40 bg-indigo-500/20 text-indigo-50"
+                      }`}
+                    >
                       {statusLabels[status as LearningStatus]}
                     </span>
                   </div>
@@ -150,9 +160,9 @@ export default async function StudentProgressPage({
             );
           })}
           {positions.length === 0 && (
-            <p className="col-span-full rounded-xl border border-white/5 bg-white/5 px-4 py-6 text-center text-slate-200">
+            <div className="col-span-full rounded-xl border border-dashed border-white/15 bg-white/5 px-4 py-6 text-center text-slate-200">
               Aucune position débloquée pour l’instant.
-            </p>
+            </div>
           )}
         </div>
         <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-200">

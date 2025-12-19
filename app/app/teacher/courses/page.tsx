@@ -82,7 +82,9 @@ export default async function TeacherCoursesPage({
             </a>
           ))}
           {courses.length === 0 && (
-              <p className="py-4 text-slate-200">Aucun cours créé pour le moment.</p>
+            <div className="mt-2 rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200">
+              Aucun cours créé pour le moment. Utilise le bouton “Nouveau cours” pour commencer.
+            </div>
           )}
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">

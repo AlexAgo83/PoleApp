@@ -153,7 +153,9 @@ export default async function StudentInjuriesPage({
             </article>
           ))}
           {injuries.length === 0 && (
-            <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
+            <div className="mt-2 rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200">
+              Aucune blessure déclarée pour le moment.
+            </div>
           )}
         </div>
 
