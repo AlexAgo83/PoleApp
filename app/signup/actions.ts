@@ -7,26 +7,33 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
 const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8, "Mot de passe trop court"),
+  email: z.string().email("Email invalide"),
+  password: z.string().min(8, "Mot de passe trop court (8 caractères min)"),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-  schoolId: z.string().cuid().optional(),
+  schoolId: z.string().optional(),
   isPremium: z.coerce.boolean().optional(),
 });
 
+function normalize(input: FormDataEntryValue | null | undefined) {
+  if (typeof input !== "string") return undefined;
+  const trimmed = input.trim();
+  return trimmed.length === 0 ? undefined : trimmed;
+}
+
 export async function signupStudentAction(formData: FormData) {
   const parsed = signupSchema.safeParse({
-    email: formData.get("email"),
+    email: normalize(formData.get("email")),
     password: formData.get("password"),
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    schoolId: formData.get("schoolId"),
+    firstName: normalize(formData.get("firstName")),
+    lastName: normalize(formData.get("lastName")),
+    schoolId: normalize(formData.get("schoolId")),
     isPremium: formData.get("isPremium"),
   });
 
   if (!parsed.success) {
-    throw new Error("Formulaire invalide");
+    const message = parsed.error.issues[0]?.message ?? "Formulaire invalide";
+    redirect(`/signup?error=${encodeURIComponent(message)}`);
   }
 
   const data = parsed.data;

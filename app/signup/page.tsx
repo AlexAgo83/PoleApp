@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 
-export default async function SignupPage() {
+export default async function SignupPage({ searchParams }: { searchParams?: { error?: string } }) {
   const session = await getServerSession(authOptions);
   if (session?.user?.role) {
     // Already logged in: send back to home to avoid creating duplicate accounts
@@ -41,6 +41,7 @@ export default async function SignupPage() {
     orderBy: { name: "asc" },
     select: { id: true, name: true },
   });
+  const error = searchParams?.error;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-12">
@@ -50,6 +51,12 @@ export default async function SignupPage() {
         <p className="mt-2 text-slate-300">
           Création self-serve réservée aux élèves. Les comptes prof/admin restent gérés par l’école.
         </p>
+
+        {error && (
+          <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+            {error}
+          </p>
+        )}
 
         <form action={signupStudentAction} className="mt-6 space-y-4">
           <div className="grid gap-3 md:grid-cols-2">
