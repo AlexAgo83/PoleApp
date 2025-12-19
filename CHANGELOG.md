@@ -30,3 +30,8 @@
 - Ajout Dockerfile multi-stage (Next + Prisma) à la racine.
 - Ajout docker-compose (web + Postgres) pour un run local : `docker-compose up --build`.
 - `.dockerignore` pour alléger l’image.
+
+## 2025-12-19 — Step 3 (Blessures)
+- Élève : page `/app/student/injuries` (liste + création + édition/suppression, toggle actif/inactif).
+- Prof : vues `/app/teacher/students` et `/app/teacher/students/[id]` pour consulter les blessures des élèves de l’école.
+- Seed : blessure active ajoutée pour student1 (épaule).

@@ -44,6 +44,11 @@ Scripts utiles :
 - Gating élève : stub affiché (gratuit vs premium), en attente de la logique “débloqué”.
 - Prof/Admin : création via `/teacher/positions/new` (form zod + server action) et liste rapide `/teacher/positions`.
 
+## Blessures (Step 3)
+- Élève : `/app/student/injuries` (CRUD blessures, toggle actif/inactif).
+- Prof : `/app/teacher/students` + `/app/teacher/students/[id]` (consultation blessures élèves de l’école).
+- Seed : 1 blessure active pour student1.
+
 ## Déploiement Render
 - Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.
 - Build command : `npm install && npx prisma generate && npm run build` (rootDir=web). Start : `npm run start`.
