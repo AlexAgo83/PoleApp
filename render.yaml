@@ -8,7 +8,6 @@ services:
   - type: web
     name: poleapp-web
     env: node
-    rootDir: web
     plan: free
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm run start
