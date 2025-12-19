@@ -58,3 +58,8 @@
 - Bandeau session/role/Accueil/Mon espace/logout harmonisé sur toutes les pages (élève, Professeur, Admin) avec badges session/rôle + CTA retour/connexion.
 - Unification des écrans Positions : design Professeur appliqué à `/positions` (2 colonnes vignettes, bandeau visible, retour contextuel `from`), bouton “Éditer” réservé Professeur/Admin, création/édition via `/teacher/positions/new|[id]/edit`.
 - Terminologie harmonisée (“Professeur”), marges panels normalisées, home mise à jour (steps, modules, nouveautés) pour refléter la nouvelle navigation par rôle.
+
+## Roadmap prochaine (Steps 9 → 11)
+- Step 9 — Journal d’audit : logs “qui/quoi/quand” sur mutations sensibles + page admin d’inspection.
+- Step 10 — Contre-indications : lier positions ↔ blessures avec sévérité, affichage alerte/badge.
+- Step 11 — UX + Badges : badges mini-jeu (série/100%/sessions), affichage dashboard élève, polish UX (vides/error/marges).

@@ -25,7 +25,10 @@ Ce dossier contient :
 
 ## Progression des Steps
 - Step 0 → 7 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école).
-- **Step 8** : navigation unifiée par rôle (bandeau session/role, Accueil, Mon espace, logout) et espaces dédiés par rôle.
+- Step 8 : navigation unifiée par rôle (bandeau session/role, Accueil, Mon espace, logout) et espaces dédiés par rôle.
+- **Step 9 (à faire)** : Journal d’audit minimal (log qui/quoi/quand).
+- **Step 10 (à faire)** : Contre-indications structurées Position ↔ Blessure.
+- **Step 11 (à faire)** : Améliorations UX + badges jeu (E2).
 
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
