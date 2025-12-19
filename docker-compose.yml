@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: deps
+      target: dev
     container_name: poleapp-web
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/poleapp?schema=public

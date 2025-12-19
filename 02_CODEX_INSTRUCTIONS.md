@@ -24,8 +24,8 @@ Objectif : prototyper rapidement une **web app** (responsive) validant le MVP :
 - Zod pour validation
 - React Hook Form (optionnel) pour forms
 - Testing: Vitest (unit)
-- Run dev : `npm run dev` (ou `docker compose watch` pour hot-reload conteneur)
-- DB : `npm run db:push` puis `npm run db:seed`
+- Run dev : `npm run dev` (ou `docker compose watch` pour hot-reload conteneur, target `dev` avec code + schema embarqués, sans bind mount)
+- DB : `npm run db:push` puis `npm run db:seed` (les scripts pointent sur `prisma/schema.prisma`)
 - Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma generate && npm run build`, start `npm run start`
 
 Structure proposée :
