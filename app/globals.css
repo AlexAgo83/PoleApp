@@ -39,7 +39,8 @@ a {
 }
 
 .panel {
-  background: var(--panel);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(34, 211, 238, 0.08)),
+    var(--panel);
   border: 1px solid var(--border);
   border-radius: 20px;
   backdrop-filter: blur(8px);

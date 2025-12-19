@@ -17,6 +17,10 @@ export async function SessionNavBar({ session, className }: Props) {
   return (
     <section
       className={`panel flex flex-col gap-3 p-4 text-sm text-slate-200 md:flex-row md:items-center md:justify-between ${className ?? ""}`}
+      style={{
+        borderColor: "rgba(124,58,237,0.3)",
+        boxShadow: "0 16px 40px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
+      }}
     >
       <div className="flex flex-wrap items-center gap-2">
         {currentSession?.user ? (
@@ -43,7 +47,7 @@ export async function SessionNavBar({ session, className }: Props) {
             <Link
               href={homeForRole}
               role="button"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-2 text-white transition hover:border-indigo-300 hover:bg-indigo-500/30"
             >
               Mon espace
             </Link>
@@ -53,7 +57,7 @@ export async function SessionNavBar({ session, className }: Props) {
           <Link
             href="/login"
             role="button"
-            className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
           >
             Se connecter
           </Link>
