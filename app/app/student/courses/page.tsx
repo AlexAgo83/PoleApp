@@ -7,9 +7,10 @@ import { prisma } from "@/lib/prisma";
 export default async function StudentCoursesPage({
   searchParams,
 }: {
-  searchParams?: { page?: string };
+  searchParams?: Promise<{ page?: string }>;
 }) {
-  const rawPage = Number(searchParams?.page ?? "1");
+  const resolvedParams = (await searchParams) ?? {};
+  const rawPage = Number(resolvedParams.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
