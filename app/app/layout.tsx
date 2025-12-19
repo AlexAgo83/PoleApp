@@ -50,16 +50,6 @@ export default async function AppLayout({
             {session?.user ? (
               <>
                 <Link
-                  href="/"
-                  role="button"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  <span aria-hidden="true" className="mr-1">
-                    🏠
-                  </span>
-                  Accueil
-                </Link>
-                <Link
                   href={defaultHomeForRole(session?.user?.role)}
                   role="button"
                   className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
