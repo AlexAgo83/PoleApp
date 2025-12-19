@@ -227,6 +227,41 @@ async function main() {
       data: studentData,
       skipDuplicates: true,
     });
+
+    // Sample course per school with first teacher + 3 students + 2 positions
+    const teacher = await prisma.user.findFirst({
+      where: { schoolId, role: Role.TEACHER },
+    });
+    const schoolStudents = await prisma.user.findMany({
+      where: { schoolId, role: Role.STUDENT },
+      take: 3,
+    });
+    const schoolPositions = await prisma.position.findMany({ take: 2 });
+
+    if (teacher && schoolStudents.length && schoolPositions.length) {
+      const course = await prisma.course.create({
+        data: {
+          title: `Cours de demo (${name})`,
+          date: new Date(),
+          schoolId,
+          teacherId: teacher.id,
+        },
+      });
+
+      await prisma.courseAttendance.createMany({
+        data: schoolStudents.map((s) => ({
+          courseId: course.id,
+          studentId: s.id,
+        })),
+      });
+
+      await prisma.coursePosition.createMany({
+        data: schoolPositions.map((p) => ({
+          courseId: course.id,
+          positionId: p.id,
+        })),
+      });
+    }
   }
 
   for (const name of injuryTypes) {

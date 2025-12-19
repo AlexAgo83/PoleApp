@@ -31,7 +31,7 @@ Ce dossier contient :
 
 ## Seed (dev)
 - Comptes fixes : admin/teacher/student1/student2 (`poleapp123`), rattachés à École 1.
-- Généré : 2 écoles (École 1, École 2) + 5 profs et 10 élèves par école (mot de passe `poleapp123`, premium 1/2).
+- Généré : 2 écoles (École 1, École 2) + 5 profs et 10 élèves par école (mot de passe `poleapp123`, premium 1/2) + 1 cours de démo par école (prof 1 + 3 élèves + 2 positions).
 
 > Si vous voulez partir direct sur du mobile, remplacez Next.js par Expo/React Native,
 > mais le MVP “data + flows” est plus rapide à valider côté web.
