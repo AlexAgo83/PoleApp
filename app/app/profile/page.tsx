@@ -60,16 +60,20 @@ export default async function ProfilePage() {
       </section>
 
       <section className="panel p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
-              Édition
-            </p>
-            <h2 className="text-xl font-semibold text-white">
-              Mettre à jour ton profil
-            </h2>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gear.svg" alt="" className="h-4 w-4" />
+              <div>
+                <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+                  Édition
+                </p>
+                <h2 className="text-xl font-semibold text-white">
+                  Mettre à jour ton profil
+                </h2>
+              </div>
+            </div>
           </div>
-        </div>
 
         <form action={updateProfileAction} className="mt-4 space-y-4">
           <label className="block space-y-2">
