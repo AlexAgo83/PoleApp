@@ -23,12 +23,20 @@ export default async function TeacherPositionsPage() {
             ajoutée ensuite.
           </p>
         </div>
-        <Link
-          href="/teacher/positions/new"
-          className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-        >
-          Nouvelle position
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Accueil
+          </Link>
+          <Link
+            href="/teacher/positions/new"
+            className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+          >
+            Nouvelle position
+          </Link>
+        </div>
       </header>
 
       <section className="panel p-6">
