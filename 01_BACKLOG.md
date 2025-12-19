@@ -3,7 +3,7 @@
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (MVP), P1 (post-MVP), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (positions listées pour tous sur `/positions`, création/édition prof/admin sous `/teacher/positions/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
-> Statut : Steps 0→8 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination). Steps 9→11 à planifier (audit, contre-indications, badges/UX). Home affiche les modules, la santé (`/health`) et le bandeau session/rôle.
+> Statut : Steps 0→8 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination). Steps 9→12 à planifier (retour QA 19.12, audit, contre-indications, badges/UX). Home affiche les modules, la santé (`/health`) et le bandeau session/rôle.
 
 ---
 
@@ -24,13 +24,23 @@
 
 ---
 
+### Step 9 — Retour QA 19.12 (P1)
+**User stories**
+- En tant que produit, je veux traiter le lot de retours QA du 19/12 (UX, navigation contextuelle, cohérence des listes/pagination).
+
+**Critères d’acceptation**
+- Corrections QA regroupées et tracées.
+- Pages critiques revérifiées (home/modules, positions, cours, élèves, progression).
+
+---
+
 ### A2 — Journal d’audit minimal (P1)
 **User stories**
 - En tant qu’école, je veux savoir qui a modifié une fiche élève/cours.
 
 **Critères d’acceptation**
 - Log “qui / quoi / quand” sur: création/édition cours, progression, blessures.
-- Step 9 (à venir) : implémentation MVP (Prisma model AuditLog + hooks sur actions sensibles).
+- Step 10 (à venir) : implémentation MVP (Prisma model AuditLog + hooks sur actions sensibles).
 
 ---
 

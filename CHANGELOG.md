@@ -69,9 +69,10 @@
 - Pagination (10 items/page) généralisée : cours élève/prof, progression élève, blessures élève, liste élèves prof, liste cours prof (tri date desc).
 - Navigation / positions : liste 2 colonnes partagée, bannière session/role/accueil partout, retour contextuel `from` préservé.
 - Modules homepage : carte Profile ajoutée, “Status build” et “Modules” repliables par défaut, bandeau mis à jour.
-- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, 9→11 planifiées : audit, contre-indications, badges UX).
+- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, 9→12 planifiées : Retour QA 19.12, journal d’audit, contre-indications, badges/UX).
 
-## Roadmap prochaine (Steps 9 → 11)
-- Step 9 — Journal d’audit : logs “qui/quoi/quand” sur mutations sensibles + page admin d’inspection.
-- Step 10 — Contre-indications : lier positions ↔ blessures avec sévérité, affichage alerte/badge.
-- Step 11 — UX + Badges : badges mini-jeu (série/100%/sessions), affichage dashboard élève, polish UX (vides/error/marges).
+## Roadmap prochaine (Steps 9 → 12)
+- Step 9 — Retour QA 19.12 : prise en compte retours QA (UI, navigation, cohérence données) livrés le 19/12.
+- Step 10 — Journal d’audit : logs “qui/quoi/quand” sur mutations sensibles + page admin d’inspection.
+- Step 11 — Contre-indications : lier positions ↔ blessures avec sévérité, affichage alerte/badge.
+- Step 12 — UX + Badges : badges mini-jeu (série/100%/sessions), affichage dashboard élève, polish UX (vides/error/marges).

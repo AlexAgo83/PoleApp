@@ -182,7 +182,18 @@ Structure proposée :
 
 ---
 
-## Step 9 — Journal d’audit (A2/P1)
+## Step 9 — Retour QA 19.12 (P1)
+
+**Tâches**
+- Traiter le lot de retours QA du 19/12 (navigation contextuelle, cohérence des listes/pagination, UI bandeaux).
+- Revérifier les écrans clés (home/modules, positions, cours, élèves, progression).
+
+**DoD**
+- Retours QA appliqués et re-testés sur les écrans concernés.
+
+---
+
+## Step 10 — Journal d’audit (A2/P1)
 
 **Tâches**
 - Ajouter modèle Prisma `AuditLog` (actorId, action, entityType, entityId, metadata JSON, createdAt).
@@ -195,7 +206,7 @@ Structure proposée :
 
 ---
 
-## Step 10 — Contre-indications (B3/P1)
+## Step 11 — Contre-indications (B3/P1)
 
 **Tâches**
 - Modèle `PositionContraindication` (positionId, injuryTypeId, severity: INFO|WARN|BLOCK, notes).
@@ -209,7 +220,7 @@ Structure proposée :
 
 ---
 
-## Step 11 — Améliorations UX + Badges (E2/P1)
+## Step 12 — Améliorations UX + Badges (E2/P1)
 
 **Tâches**
 - Table `UserBadge` (userId, badgeId, unlockedAt) + référentiel de badges (série 5 bonnes, 10 sessions jouées, 100% score).

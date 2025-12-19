@@ -24,12 +24,12 @@ Ce dossier contient :
 - Stockage médias : local en dev, abstraction prête pour S3/Cloudinary ensuite.
 
 ## Progression des Steps
-- Step 0 → 7 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école).
-- Step 8 : navigation unifiée par rôle (bandeau session/role, Accueil, Mon espace, logout), espaces dédiés par rôle et carte “Profile” sur la homepage.
+- Step 0 → 8 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + homepage “Profile”).
 - v0.2.0 : page profil utilisateur (`/app/profile`, édition prénom/nom), harmonisation des salutations, pagination (10 items) sur les listes dynamiques (cours, progression, blessures, élèves), positions unifiées (liste 2 colonnes commune).
-- **Step 9 (à faire)** : Journal d’audit minimal (log qui/quoi/quand).
-- **Step 10 (à faire)** : Contre-indications structurées Position ↔ Blessure.
-- **Step 11 (à faire)** : Améliorations UX + badges jeu (E2).
+- **Step 9 (à faire)** : Retour QA 19.12 (traitement du lot de retours QA).
+- **Step 10 (à faire)** : Journal d’audit minimal (log qui/quoi/quand).
+- **Step 11 (à faire)** : Contre-indications structurées Position ↔ Blessure.
+- **Step 12 (à faire)** : Améliorations UX + badges jeu (E2).
 
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
