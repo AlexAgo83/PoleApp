@@ -59,22 +59,22 @@ export default async function TeacherCourseDetailPage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             Professeur / Admin
           </p>
           <h1 className="text-3xl font-semibold text-white">
             {course.title ?? "Cours sans titre"}
           </h1>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-slate-200">
             {new Date(course.date).toLocaleString()} · {teacherName}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/app/teacher/courses/new"
-            className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
           >
             Nouveau cours
           </Link>
@@ -82,7 +82,7 @@ export default async function TeacherCourseDetailPage({
             href={`/app/teacher/courses/${course.id}/edit${
               safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
             }`}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/gear.svg" alt="" className="h-4 w-4" />
@@ -90,14 +90,14 @@ export default async function TeacherCourseDetailPage({
           </Link>
           <Link
             href={backHref}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
           >
             Retour liste
           </Link>
         </div>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Positions</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.positions.map((cp) => (
@@ -123,7 +123,7 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Participants</h2>
         <ul className="mt-3 space-y-2">
           {course.attendances.map((attendance) => (
@@ -140,7 +140,7 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Notes</h2>
         {course.notes.length === 0 ? (
           <p className="text-slate-300">Aucune note pour ce cours.</p>
