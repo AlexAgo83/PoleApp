@@ -160,26 +160,37 @@ export default async function Home() {
             </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg backdrop-blur">
-            <p className="font-semibold text-white">Status build</p>
-            <ul className="mt-2 space-y-1">
-              {buildSteps.map((step) => (
-                <li key={step.label} className="flex items-center gap-2">
-                  <span
-                    className={`inline-flex h-2.5 w-2.5 rounded-full ${
-                      step.done ? "bg-emerald-400" : "bg-slate-500"
-                    }`}
-                  />
-                  <span className={step.done ? "text-white" : "text-slate-300"}>
-                    {step.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-slate-400">
-              See `/health` for runtime status, `npm run db:seed` pour la base
-              locale. Login via `/login` (seed: admin/teacher/student). Création
-              position : `/teacher/positions/new`.
-            </p>
+            <details className="group">
+              <summary className="flex cursor-pointer items-center justify-between gap-3">
+                <span className="font-semibold text-white">Status build</span>
+                <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
+                  ▼
+                </span>
+              </summary>
+              <div className="group-open:mt-3 group-open:space-y-3">
+                <ul className="space-y-1">
+                  {buildSteps.map((step) => (
+                    <li key={step.label} className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                          step.done ? "bg-emerald-400" : "bg-slate-500"
+                        }`}
+                      />
+                      <span
+                        className={step.done ? "text-white" : "text-slate-300"}
+                      >
+                        {step.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-slate-400">
+                  See `/health` for runtime status, `npm run db:seed` pour la base
+                  locale. Login via `/login` (seed: admin/teacher/student).
+                  Création position : `/teacher/positions/new`.
+                </p>
+              </div>
+            </details>
           </div>
         </div>
       </header>
@@ -187,7 +198,7 @@ export default async function Home() {
       <details className="panel group p-8">
         <summary className="flex cursor-pointer items-center justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-white">Modules (Debug Technique)</h2>
+            <h2 className="text-2xl font-semibold text-white">Modules</h2>
             <p className="text-slate-300">
               Modules disponibles selon les rôles (élève, prof, admin)
             </p>
