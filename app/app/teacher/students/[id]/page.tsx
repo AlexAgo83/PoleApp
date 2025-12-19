@@ -9,11 +9,14 @@ import { updateProgressAction } from "./actions";
 
 type Props = {
   params: { id: string };
+  searchParams?: { from?: string };
 };
 
-export default async function TeacherStudentDetailPage({ params }: Props) {
-  const resolvedParams = await Promise.resolve(params);
-  const studentId = resolvedParams?.id;
+export default async function TeacherStudentDetailPage({
+  params,
+  searchParams,
+}: Props) {
+  const studentId = params?.id;
 
   if (!studentId) {
     notFound();
@@ -57,6 +60,12 @@ export default async function TeacherStudentDetailPage({ params }: Props) {
   const progressMap = new Map(
     student.progress.map((p) => [p.positionId, p])
   );
+  const rawFrom = searchParams?.from;
+  const safeFrom =
+    rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
+      ? rawFrom
+      : undefined;
+  const backHref = safeFrom ?? "/app/teacher/students";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -73,7 +82,7 @@ export default async function TeacherStudentDetailPage({ params }: Props) {
             </p>
           </div>
           <Link
-            href="/app/teacher/students"
+            href={backHref}
             className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400 hover:text-cyan-200"
           >
             ← Retour à la liste

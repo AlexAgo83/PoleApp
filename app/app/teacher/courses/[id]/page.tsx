@@ -5,17 +5,18 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type PageProps =
-  | { params: { id: string } }
-  | { params: Promise<{ id?: string }> };
+type PageProps = {
+  params: { id: string };
+  searchParams?: { from?: string };
+};
 
 export const dynamic = "force-dynamic";
 
-export default async function TeacherCourseDetailPage({ params }: PageProps) {
-  const resolvedParams = await Promise.resolve(
-    (params as { id?: string } | Promise<{ id?: string }>)
-  );
-  const id = resolvedParams?.id;
+export default async function TeacherCourseDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const id = params?.id;
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return notFound();
@@ -48,6 +49,12 @@ export default async function TeacherCourseDetailPage({ params }: PageProps) {
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
+  const rawFrom = searchParams?.from;
+  const safeFrom =
+    rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
+      ? rawFrom
+      : undefined;
+  const backHref = safeFrom ?? "/app/teacher/courses";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -71,13 +78,15 @@ export default async function TeacherCourseDetailPage({ params }: PageProps) {
             Nouveau cours
           </Link>
           <Link
-            href={`/app/teacher/courses/${course.id}/edit`}
+            href={`/app/teacher/courses/${course.id}/edit${
+              safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
+            }`}
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             Éditer
           </Link>
           <Link
-            href="/app/teacher/courses"
+            href={backHref}
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             Retour liste

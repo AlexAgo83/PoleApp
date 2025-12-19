@@ -5,17 +5,18 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type PageProps =
-  | { params: { id: string } }
-  | { params: Promise<{ id?: string }> };
+type PageProps = {
+  params: { id: string };
+  searchParams?: { from?: string };
+};
 
 export const dynamic = "force-dynamic";
 
-export default async function StudentCourseDetailPage({ params }: PageProps) {
-  const resolvedParams = await Promise.resolve(
-    (params as { id?: string } | Promise<{ id?: string }>)
-  );
-  const id = resolvedParams?.id;
+export default async function StudentCourseDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const id = params?.id;
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return notFound();
@@ -47,6 +48,12 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
+  const rawFrom = searchParams?.from;
+  const safeFrom =
+    rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
+      ? rawFrom
+      : undefined;
+  const backHref = safeFrom ?? "/app/student/courses";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -63,7 +70,7 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
           </p>
         </div>
         <Link
-          href="/app/student/courses"
+          href={backHref}
           className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
         >
           Retour à mes cours

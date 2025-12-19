@@ -6,19 +6,12 @@ import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
 
-type SearchParams =
-  | { page?: string }
-  | Promise<{
-      page?: string;
-    }>;
-
 export default async function TeacherStudentsPage({
   searchParams,
 }: {
-  searchParams?: SearchParams;
+  searchParams?: { page?: string };
 }) {
-  const resolvedParams = (await Promise.resolve(searchParams)) ?? {};
-  const rawPage = Number(resolvedParams.page ?? "1");
+  const rawPage = Number(searchParams?.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return null;
@@ -88,7 +81,9 @@ export default async function TeacherStudentsPage({
                 </p>
               </div>
               <Link
-                href={`/app/teacher/students/${student.id}`}
+                href={`/app/teacher/students/${student.id}?from=${encodeURIComponent(
+                  `/app/teacher/students?page=${currentPage}`
+                )}`}
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
               >
                 Voir la fiche
