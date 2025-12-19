@@ -3,7 +3,7 @@
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (MVP), P1 (post-MVP), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (positions listées pour tous sur `/positions`, création/édition prof/admin sous `/teacher/positions/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
-> Statut : Steps 0→8 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination). Steps 9→12 à planifier (retour QA 19.12, audit, contre-indications, badges/UX). Home affiche les modules, la santé (`/health`) et le bandeau session/rôle.
+> Statut : Steps 0→9 livrées/en cours (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA). Home affiche les modules, la santé (`/health`) et le bandeau session/rôle.
 
 ---
 
@@ -24,7 +24,7 @@
 
 ---
 
-### Step 9 — Retour QA 19.12 (P1)
+### Step 9 — Discovery QA (P1)
 Voir le plan détaillé: `01_BACKLOG_STEP_009.md`.
 
 ---
@@ -35,7 +35,7 @@ Voir le plan détaillé: `01_BACKLOG_STEP_009.md`.
 
 **Critères d’acceptation**
 - Log “qui / quoi / quand” sur: création/édition cours, progression, blessures.
-- Step 10 (à venir) : implémentation MVP (Prisma model AuditLog + hooks sur actions sensibles).
+- Implémentation MVP (Prisma model AuditLog + hooks sur actions sensibles).
 
 ---
 

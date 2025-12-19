@@ -63,10 +63,7 @@ const buildSteps = [
   { label: "Step 6 — Mini-jeu", done: true },
   { label: "Step 7 — Admin école", done: true },
   { label: "Step 8 — Navigation par rôle + Positions unifiées", done: true },
-  { label: "Step 9 — Retour QA 19.12", done: false },
-  { label: "Step 10 — Journal d’audit", done: false },
-  { label: "Step 11 — Contre-indications", done: false },
-  { label: "Step 12 — UX + Badges", done: false },
+  { label: "Step 9 — Discovery QA", done: false },
 ];
 
 export default async function Home() {
@@ -314,10 +311,8 @@ export default async function Home() {
           <div className="space-y-1">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Step 9 : Retour QA 19.12</li>
-              <li>• Step 10 : Journal d’audit (logs mutations)</li>
-              <li>• Step 11 : Contre-indications Position ↔ Blessure</li>
-              <li>• Step 12 : UX + Badges mini-jeu</li>
+              <li>• Step 9 : Discovery QA</li>
+              <li>• À cadrer ensuite : journal d’audit, contre-indications, badges/UX</li>
             </ul>
           </div>
         </div>
