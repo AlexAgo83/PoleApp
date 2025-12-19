@@ -5,10 +5,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type PageProps = {
-  params: { id: string };
-  searchParams?: { from?: string };
-};
+type PageProps =
+  | { params: { id: string }; searchParams?: { from?: string } }
+  | { params: Promise<{ id?: string }>; searchParams?: { from?: string } };
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +15,8 @@ export default async function StudentCourseDetailPage({
   params,
   searchParams,
 }: PageProps) {
-  const id = params?.id;
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams?.id;
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return notFound();
