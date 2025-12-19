@@ -21,7 +21,7 @@ export default async function TeacherCoursesPage() {
   });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
       <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
@@ -43,23 +43,25 @@ export default async function TeacherCoursesPage() {
       <section className="panel p-6">
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => (
-            <article
+            <a
               key={course.id}
-              className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between"
+              href={`/app/teacher/courses/${course.id}`}
+              className="group block rounded-xl transition hover:-translate-y-0.5 hover:bg-white/5"
             >
-              <div>
-                <p className="text-base font-semibold text-white">
-                  {course.title ?? "Cours sans titre"}
+              <article className="flex flex-col gap-2 py-3 px-2 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-base font-semibold text-white">
+                    {course.title ?? "Cours sans titre"}
+                  </p>
+                  <p className="text-sm text-slate-300">
+                    {new Date(course.date).toLocaleString()}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold text-slate-200">
+                  {course.attendances.length} élèves · {course.positions.length} positions
                 </p>
-                <p className="text-sm text-slate-300">
-                  {new Date(course.date).toLocaleString()} · {course.attendances.length} élèves ·{" "}
-                  {course.positions.length} positions
-                </p>
-              </div>
-              <p className="text-xs text-slate-400">
-                Créé le {new Date(course.createdAt).toLocaleDateString()}
-              </p>
-            </article>
+              </article>
+            </a>
           ))}
           {courses.length === 0 && (
             <p className="py-4 text-slate-200">Aucun cours créé pour le moment.</p>

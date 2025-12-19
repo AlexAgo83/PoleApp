@@ -12,7 +12,7 @@ export default async function StudentDashboard() {
       <section className="panel space-y-4 p-6">
         <h2 className="text-xl font-semibold text-white">Vue élève</h2>
         <p className="text-slate-300">
-          Accès réservé aux rôles étudiant (ou admin pour debug). Suis ta progression, tes blessures et révise via le mini-jeu.
+          Accès réservé aux rôles étudiant. Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
       </section>
 
