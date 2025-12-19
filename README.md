@@ -9,7 +9,7 @@ Base Next.js + Prisma setup derived from the provided markdown specs (roles, pos
 - Vitest + Testing Library (unit smoke)
 
 ## Setup rapide
-1) `npm install`  
+1) `npm install` (à la racine)  
 2) `.env` : `DATABASE_URL` doit pointer vers un Postgres (ex: `postgresql://USER:PASSWORD@localhost:5432/poleapp?schema=public`), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (http://localhost:3000 en dev).  
 3) `npm run db:seed` — applique le schéma + seed (école, users, positions).  
 4) `npm run dev` — app sur http://localhost:3000.
@@ -22,7 +22,6 @@ Puis dans `.env` : `DATABASE_URL="postgresql://postgres:devpassword@localhost:54
 
 Option docker-compose (web + postgres) :
 ```bash
-cd web
 docker-compose up --build
 # la webapp sera sur http://localhost:3000
 ```
