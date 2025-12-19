@@ -25,12 +25,7 @@
 ---
 
 ### Step 9 — Retour QA 19.12 (P1)
-**User stories**
-- En tant que produit, je veux traiter le lot de retours QA du 19/12 (UX, navigation contextuelle, cohérence des listes/pagination).
-
-**Critères d’acceptation**
-- Corrections QA regroupées et tracées.
-- Pages critiques revérifiées (home/modules, positions, cours, élèves, progression).
+Voir le plan détaillé: `01_BACKLOG_STEP_009.md`.
 
 ---
 

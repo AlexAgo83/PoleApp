@@ -185,11 +185,12 @@ Structure proposée :
 ## Step 9 — Retour QA 19.12 (P1)
 
 **Tâches**
-- Traiter le lot de retours QA du 19/12 (navigation contextuelle, cohérence des listes/pagination, UI bandeaux).
-- Revérifier les écrans clés (home/modules, positions, cours, élèves, progression).
+- Suivre le plan détaillé `01_BACKLOG_STEP_009.md` (navigation/bandeaux, positions unifiées, context back, pagination/tri, profils et modules).
+- Traiter le lot de retours QA du 19/12 : navigation contextuelle, cohérence listes/pagination, UI bandeaux, greetings profil/home.
+- Revérifier les écrans clés (home/modules, positions, cours, élèves, progression, profil) et corriger les usages `params`/`searchParams` sync.
 
 **DoD**
-- Retours QA appliqués et re-testés sur les écrans concernés.
+- Retours QA appliqués et re-testés sur les écrans concernés selon `01_BACKLOG_STEP_009.md`.
 
 ---
 

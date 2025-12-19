@@ -1,6 +1,6 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.2.0
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.2.1
 
-Date: 2025-12-19 (MAJ v0.2.0)
+Date: 2025-12-19 (MAJ v0.2.1)
 
 Ce dossier contient :
 - `01_BACKLOG.md` : backlog structuré (epics → features → user stories → critères d’acceptation).
@@ -25,8 +25,8 @@ Ce dossier contient :
 
 ## Progression des Steps
 - Step 0 → 8 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + homepage “Profile”).
-- v0.2.0 : page profil utilisateur (`/app/profile`, édition prénom/nom), harmonisation des salutations, pagination (10 items) sur les listes dynamiques (cours, progression, blessures, élèves), positions unifiées (liste 2 colonnes commune).
-- **Step 9 (à faire)** : Retour QA 19.12 (traitement du lot de retours QA).
+- v0.2.1 : page profil utilisateur (`/app/profile`, édition prénom/nom), harmonisation des salutations, pagination (10 items) sur les listes dynamiques (cours, progression, blessures, élèves), positions unifiées (liste 2 colonnes commune).
+- **Step 9 (en cours)** : Retour QA 19.12 — plan détaillé dans `01_BACKLOG_STEP_009.md`.
 - **Step 10 (à faire)** : Journal d’audit minimal (log qui/quoi/quand).
 - **Step 11 (à faire)** : Contre-indications structurées Position ↔ Blessure.
 - **Step 12 (à faire)** : Améliorations UX + badges jeu (E2).
