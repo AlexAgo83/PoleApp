@@ -26,6 +26,7 @@ Objectif : prototyper rapidement une **web app** (responsive) validant le MVP :
 - Testing: Vitest (unit)
 - Run dev : `npm run dev` (ou `docker compose watch` pour hot-reload conteneur, target `dev` avec code + schema embarqués, sans bind mount)
 - DB : `npm run db:push` puis `npm run db:seed` (les scripts pointent sur `prisma/schema.prisma`)
+- Seed : 2 écoles (École 1/École 2) + 5 profs et 10 élèves par école (mot de passe `poleapp123`, premium 1/2) + comptes fixes admin/teacher/student1/2
 - Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma generate && npm run build`, start `npm run start`
 
 Structure proposée :

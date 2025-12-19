@@ -51,6 +51,11 @@ Exemple (format libre):
 - student1@poleapp.test — STUDENT (free)
 - student2@poleapp.test — STUDENT (premium)
 
+## Écoles et utilisateurs générés
+- 2 écoles créées : **École 1** et **École 2**.
+- Pour chaque école : **5 profs** (`teacherX.ecole-1@poleapp.test`, `teacherX.ecole-2@poleapp.test`) et **10 élèves** (`studentX.ecole-1@poleapp.test`, `studentX.ecole-2@poleapp.test`), mot de passe `poleapp123`, premium pour 1 élève sur 2.
+- Les comptes fixes ci-dessus sont rattachés à **École 1**.
+
 ## Commandes de seed
 - `npm run db:push` : synchro schéma Postgres.
 - `npm run db:seed` : push + seed (idempotent). Lancé automatiquement par `docker-compose` et `render.yaml`.
