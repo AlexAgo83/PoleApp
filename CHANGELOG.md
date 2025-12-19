@@ -39,3 +39,7 @@
 ## 2025-12-19 — Step 4 (Progression)
 - Élève : `/app/student/progress` affiche progression par position (accès complet si premium, sinon positions vues).
 - Prof : `/app/teacher/students/[id]` enrichi avec mise à jour progression (statut, niveau, commentaire) par position.
+
+## 2025-12-19 — Step 5 (Cours - en cours)
+- Formulaire création cours `/app/teacher/courses/new` (date/titre, élèves, positions, notes élève×position) avec mise à jour progression automatique.
+- Liste stub des cours `/app/teacher/courses` (dernier 20).

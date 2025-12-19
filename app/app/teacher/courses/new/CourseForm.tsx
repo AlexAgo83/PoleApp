@@ -1,0 +1,253 @@
+"use client";
+
+import { MasteryLevel } from "@prisma/client";
+import { useMemo, useState } from "react";
+
+type Student = { id: string; name: string | null; email: string };
+type Position = { id: string; name: string; type: string };
+
+type Props = {
+  students: Student[];
+  positions: Position[];
+  action: (formData: FormData) => Promise<void>;
+};
+
+type Note = {
+  studentId: string;
+  positionId: string;
+  masteryLevel?: string;
+  comment?: string;
+};
+
+export function CourseForm({ students, positions, action }: Props) {
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [notes, setNotes] = useState<Record<string, Note>>({});
+
+  const masteryOptions = useMemo(
+    () => [
+      { value: "", label: "(non renseigné)" },
+      { value: MasteryLevel.INITIATED, label: "Initiation" },
+      { value: MasteryLevel.PASSED, label: "Passé" },
+      { value: MasteryLevel.FLUID, label: "Fluide" },
+      { value: MasteryLevel.CHOREO, label: "Choréo" },
+    ],
+    []
+  );
+
+  const notesArray: Note[] = useMemo(
+    () =>
+      Object.values(notes).filter(
+        (n) => n.comment || (n.masteryLevel && n.masteryLevel.length > 0)
+      ),
+    [notes]
+  );
+
+  return (
+    <form action={action} className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="text-sm text-slate-200">
+          Date
+          <input
+            type="datetime-local"
+            name="date"
+            required
+            defaultValue={new Date().toISOString().slice(0, 16)}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+          />
+        </label>
+        <label className="text-sm text-slate-200">
+          Titre (optionnel)
+          <input
+            type="text"
+            name="title"
+            placeholder="Cours du soir - Spins inter"
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+          />
+        </label>
+      </div>
+
+      <label className="block text-sm text-slate-200">
+        Élèves présents
+        <div className="mt-2 grid gap-2 md:grid-cols-2">
+          {students.map((student) => {
+            const checked = selectedStudents.includes(student.id);
+            return (
+              <label
+                key={student.id}
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    setSelectedStudents((prev) =>
+                      e.target.checked
+                        ? [...prev, student.id]
+                        : prev.filter((id) => id !== student.id)
+                    );
+                  }}
+                />
+                {student.name ?? student.email}
+              </label>
+            );
+          })}
+        </div>
+      </label>
+
+      <label className="block text-sm text-slate-200">
+        Positions abordées
+        <div className="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+          {positions.map((position) => {
+            const checked = selectedPositions.includes(position.id);
+            return (
+              <label
+                key={position.id}
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    setSelectedPositions((prev) =>
+                      e.target.checked
+                        ? [...prev, position.id]
+                        : prev.filter((id) => id !== position.id)
+                    );
+                  }}
+                />
+                {position.name} ({position.type})
+              </label>
+            );
+          })}
+        </div>
+      </label>
+
+      {selectedStudents.length > 0 && selectedPositions.length > 0 && (
+        <NotesMatrix
+          students={students.filter((s) => selectedStudents.includes(s.id))}
+          positions={positions.filter((p) => selectedPositions.includes(p.id))}
+          masteryOptions={masteryOptions}
+          notes={notes}
+          setNotes={setNotes}
+        />
+      )}
+
+      <input
+        type="hidden"
+        name="studentIds"
+        value={JSON.stringify(selectedStudents)}
+      />
+      <input
+        type="hidden"
+        name="positionIds"
+        value={JSON.stringify(selectedPositions)}
+      />
+      <input type="hidden" name="notes" value={JSON.stringify(notesArray)} />
+
+      <button
+        type="submit"
+        className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={selectedStudents.length === 0 || selectedPositions.length === 0}
+      >
+        Créer le cours
+      </button>
+    </form>
+  );
+}
+
+function NotesMatrix({
+  students,
+  positions,
+  masteryOptions,
+  notes,
+  setNotes,
+}: {
+  students: Student[];
+  positions: Position[];
+  masteryOptions: { value: string; label: string }[];
+  notes: Record<string, Note>;
+  setNotes: React.Dispatch<React.SetStateAction<Record<string, Note>>>;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <h3 className="text-base font-semibold text-white">
+        Notes par élève × position
+      </h3>
+      <p className="text-sm text-slate-300">
+        Optionnel : renseigne un niveau ou un commentaire pour mettre à jour la
+        progression.
+      </p>
+      <div className="mt-4 space-y-4">
+        {students.map((student) => (
+          <div key={student.id} className="space-y-2">
+            <p className="text-sm font-semibold text-white">
+              {student.name ?? student.email}
+            </p>
+            <div className="grid gap-3 md:grid-cols-2">
+              {positions.map((pos) => {
+                const key = `${student.id}-${pos.id}`;
+                const current = notes[key];
+                return (
+                  <fieldset
+                    key={key}
+                    className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200"
+                  >
+                    <legend className="text-sm font-semibold text-white">
+                      {pos.name} ({pos.type})
+                    </legend>
+                    <label className="block">
+                      Niveau
+                      <select
+                        value={current?.masteryLevel ?? ""}
+                        onChange={(e) =>
+                          setNotes((prev) => ({
+                            ...prev,
+                            [key]: {
+                              ...(prev[key] ?? {
+                                studentId: student.id,
+                                positionId: pos.id,
+                              }),
+                              masteryLevel: e.target.value,
+                            },
+                          }))
+                        }
+                        className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-cyan-400"
+                      >
+                        {masteryOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block">
+                      Commentaire
+                      <input
+                        value={current?.comment ?? ""}
+                        onChange={(e) =>
+                          setNotes((prev) => ({
+                            ...prev,
+                            [key]: {
+                              ...(prev[key] ?? {
+                                studentId: student.id,
+                                positionId: pos.id,
+                              }),
+                              comment: e.target.value,
+                            },
+                          }))
+                        }
+                        placeholder="Note courte"
+                        className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-cyan-400"
+                      />
+                    </label>
+                  </fieldset>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
