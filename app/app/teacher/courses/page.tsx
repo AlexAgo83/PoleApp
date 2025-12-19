@@ -56,7 +56,9 @@ export default async function TeacherCoursesPage() {
                   {course.positions.length} positions
                 </p>
               </div>
-              {/* Placeholder for future detail link */}
+              <p className="text-xs text-slate-400">
+                Créé le {new Date(course.createdAt).toLocaleDateString()}
+              </p>
             </article>
           ))}
           {courses.length === 0 && (
