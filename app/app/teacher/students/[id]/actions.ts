@@ -72,3 +72,47 @@ export async function updateProgressAction(formData: FormData) {
   revalidatePath(targetPath);
   redirect(targetPath);
 }
+
+const updateProfileSchema = z.object({
+  studentId: z.string().cuid(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+});
+
+export async function updateStudentProfileAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const parsed = updateProfileSchema.safeParse({
+    studentId: formData.get("studentId"),
+    firstName: (formData.get("firstName") as string | null)?.trim() || "",
+    lastName: (formData.get("lastName") as string | null)?.trim() || "",
+  });
+
+  if (!parsed.success) {
+    throw new Error("Formulaire invalide");
+  }
+
+  const student = await prisma.user.findUnique({
+    where: { id: parsed.data.studentId },
+    select: { schoolId: true },
+  });
+  if (!student || student.schoolId !== session.user.schoolId) {
+    redirect("/access-denied");
+  }
+
+  const name = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ").trim() || null;
+
+  await prisma.user.update({
+    where: { id: parsed.data.studentId },
+    data: { name },
+  });
+
+  const targetPath = `/app/teacher/students/${parsed.data.studentId}`;
+  revalidatePath(targetPath);
+}

@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateProgressAction } from "./actions";
+import { updateProgressAction, updateStudentProfileAction } from "./actions";
 
 type Props =
   | { params: { id: string }; searchParams?: { from?: string } }
@@ -81,6 +81,29 @@ export default async function TeacherStudentDetailPage({
               {student.name ?? student.email} · {student.email} ·{" "}
               {student.isPremium ? "Premium" : "Free"}
             </p>
+            <form action={updateStudentProfileAction} className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-200">
+              <input type="hidden" name="studentId" value={student.id} />
+              <input
+                name="firstName"
+                placeholder="Prénom"
+                defaultValue={student.name?.split(" ")[0] ?? ""}
+                className="w-28 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              />
+              <input
+                name="lastName"
+                placeholder="Nom"
+                defaultValue={
+                  student.name?.split(" ").slice(1).join(" ") ?? ""
+                }
+                className="w-32 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              />
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+              >
+                Sauvegarder
+              </button>
+            </form>
           </div>
           <Link
             href={backHref}
