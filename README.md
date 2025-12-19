@@ -1,4 +1,4 @@
-# Pole App — MVP bootstrap (Step 0)
+# Pole App — MVP (Steps 0 → 6)
 
 Base Next.js + Prisma setup derived from the provided markdown specs (roles, positions, courses, injuries, mini-jeu).
 
@@ -25,7 +25,14 @@ Option docker-compose (web + postgres) :
 docker-compose up --build
 # la webapp sera sur http://localhost:3000
 ```
-La commande web lance `npm run db:push && npm run db:seed` avant `npm run start`.
+La commande web lance `npm run db:push && npm run db:seed` avant `npm run dev -- --hostname 0.0.0.0 --port 3000` (mode dev dans le conteneur).
+
+Option docker-compose avec watch (auto-refresh code) :
+```bash
+# nécessite Docker Desktop 4.22+ ou docker compose v2.22+
+docker compose watch
+# monte le code en live + relance quand package-lock/schema changent (service web en mode dev)
+```
 
 Scripts utiles :
 - `npm run db:push` : synchro schéma.
@@ -53,10 +60,15 @@ Scripts utiles :
 - Élève : `/app/student/progress` (vue progression par position, accès complet si premium, sinon positions vues).
 - Prof : mise à jour progression sur `/app/teacher/students/[id]` (statut, niveau, commentaire, piste : prise en compte des blessures visibles).
 
-## Cours (Step 5 - en cours)
+## Cours (Step 5)
 - Création cours : `/app/teacher/courses/new` (date/titre, élèves, positions, notes élève×position).
 - Notes impactent la progression (status + niveau via server action).
-- Liste (stub) `/app/teacher/courses` — détail à venir.
+- Liste `/app/teacher/courses`. Historique élève : `/app/student/courses`.
+
+## Mini-jeu (Step 6)
+- Quiz photo → nom : `/app/student/game` (10 questions).
+- Pool = positions débloquées de l’élève (ou toute la base si premium).
+- Score final + correction détaillée; message si <4 positions disponibles.
 
 ## Déploiement Render
 - Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.

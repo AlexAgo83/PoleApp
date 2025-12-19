@@ -137,7 +137,7 @@ Structure proposée :
 ## Step 6 — Mini-jeu (Photo → Nom)
 
 **Tâches**
-- Route `/student/game`
+- Route `/app/student/game`
 - Générer une session de 10 questions depuis pool autorisé
 - UI quiz :
   - image

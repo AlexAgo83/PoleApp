@@ -10,7 +10,7 @@
 - `/student/courses/[id]` : détail
 - `/student/progress` : positions + statut/niveau
 - `/student/injuries` : gérer blessures
-- `/student/game` : mini-jeu photo→nom
+- `/app/student/game` : mini-jeu photo→nom
 
 ## Prof
 - `/teacher` : dashboard
