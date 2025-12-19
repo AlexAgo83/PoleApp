@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050b16;
-  --foreground: #e2e8f0;
+  --background: #060714;
+  --foreground: #e7ecf7;
   --panel: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.08);
-  --accent: #0ea5e9;
-  --accent-strong: #f59e0b;
+  --border: rgba(255, 255, 255, 0.12);
+  --accent: #7c3aed;
+  --accent-strong: #22d3ee;
+  --accent-warm: #f472b6;
 }
 
 @theme inline {
@@ -17,9 +18,11 @@
 }
 
 body {
-  background: radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.1), transparent 30%),
-    radial-gradient(circle at 80% 0%, rgba(245, 158, 11, 0.08), transparent 25%),
-    var(--background);
+  background:
+    radial-gradient(circle at 20% 25%, rgba(124, 58, 237, 0.16), transparent 32%),
+    radial-gradient(circle at 70% 10%, rgba(34, 211, 238, 0.18), transparent 26%),
+    radial-gradient(circle at 85% 60%, rgba(244, 114, 182, 0.14), transparent 24%),
+    linear-gradient(135deg, #050712 0%, #0c1024 45%, #0a0f1f 100%);
   color: var(--foreground);
 }
 
@@ -40,4 +43,5 @@ a {
   border: 1px solid var(--border);
   border-radius: 20px;
   backdrop-filter: blur(8px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
