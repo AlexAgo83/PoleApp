@@ -20,10 +20,19 @@ export default async function AppLayout({
             Espace app
           </p>
           <h1 className="text-2xl font-semibold text-white">
-            Tableau de bord protégé
+            {session?.user?.role === "SCHOOL_ADMIN"
+              ? "Dashboard admin"
+              : session?.user?.role === "TEACHER"
+              ? "Espace prof"
+              : "Espace élève"}
           </h1>
           <p className="text-sm text-slate-300">
-            Routes protégées par NextAuth + middleware RBAC.
+            {session?.user?.role === "SCHOOL_ADMIN" &&
+              "Stats école, gestion utilisateurs et accès cours/positions."}
+            {session?.user?.role === "TEACHER" &&
+              "Accès élèves de l’école, cours et progression."}
+            {session?.user?.role === "STUDENT" &&
+              "Progression, blessures, cours et mini-jeu."}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
