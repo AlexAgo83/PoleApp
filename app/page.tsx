@@ -76,9 +76,10 @@ export default async function Home() {
               </span>
               <Link
                 href={homeForRole}
+                role="button"
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
               >
-                Aller à ta vue
+                Mon espace
               </Link>
               <SignOutButton />
             </>

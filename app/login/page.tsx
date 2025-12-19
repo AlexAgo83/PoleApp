@@ -78,17 +78,16 @@ function LoginContent() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-16 md:flex-row md:items-center">
-      <section className="panel flex-1 p-8">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 py-12">
+      <section className="panel w-full max-w-xl max-h-[90vh] overflow-auto p-8 md:p-10">
         <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
           Pole App
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-white">
-          Connexion (credentials)
+          Connexion
         </h1>
         <p className="mt-2 text-slate-300">
-          Utilisez les comptes seed (mot de passe <code>poleapp123</code>) pour
-          tester les rôles et l’accès protégé.
+          Utilisez les comptes seed pour tester les rôles et l’accès protégé.
         </p>
         <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-200">
           {presets.map((preset) => (
@@ -145,25 +144,15 @@ function LoginContent() {
           >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
+          <Link
+            href="/"
+            role="button"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+          >
+            ← Retour accueil
+          </Link>
         </form>
       </section>
-      <aside className="panel flex-1 space-y-4 p-8">
-        <h2 className="text-xl font-semibold text-white">Accès rapide</h2>
-        <p className="text-sm text-slate-300">
-          Après login, redirection automatique selon le rôle.
-        </p>
-        <ul className="space-y-2 text-sm text-slate-200">
-          <li>Admin → /app/admin</li>
-          <li>Teacher → /app/teacher</li>
-          <li>Student → /app/student</li>
-        </ul>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
-        >
-          ← Retour accueil
-        </Link>
-      </aside>
     </main>
   );
 }

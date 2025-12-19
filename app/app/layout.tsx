@@ -16,9 +16,6 @@ export default async function AppLayout({
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10">
       <header className="panel flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-            Espace app
-          </p>
           <h1 className="text-2xl font-semibold text-white">
             {session?.user?.role === "SCHOOL_ADMIN"
               ? "Dashboard admin"
@@ -43,12 +40,14 @@ export default async function AppLayout({
           )}
           <Link
             href={defaultHomeForRole(session?.user?.role)}
+            role="button"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            Vue rôle
+            Mon espace
           </Link>
           <Link
             href="/"
+            role="button"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             Accueil
