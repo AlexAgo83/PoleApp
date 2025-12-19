@@ -14,7 +14,18 @@ export default async function TeacherDashboard() {
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
-        <h2 className="text-xl font-semibold text-white">Bonjour {displayName}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold text-white">
+            Bonjour {displayName}
+          </h2>
+          <Link
+            href="/app/profile"
+            className="rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-cyan-400/70 hover:text-white"
+            aria-label="Éditer le profil"
+          >
+            Éditer
+          </Link>
+        </div>
         <p className="text-slate-300">
           Accès réservé aux profs/admins de l’école pour gérer élèves, cours et progression.
         </p>

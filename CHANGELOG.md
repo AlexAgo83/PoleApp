@@ -59,6 +59,11 @@
 - Unification des écrans Positions : design Professeur appliqué à `/positions` (2 colonnes vignettes, bandeau visible, retour contextuel `from`), bouton “Éditer” réservé Professeur/Admin, création/édition via `/teacher/positions/new|[id]/edit`.
 - Terminologie harmonisée (“Professeur”), marges panels normalisées, home mise à jour (steps, modules, nouveautés) pour refléter la nouvelle navigation par rôle.
 
+## 2025-12-20 — Profil utilisateur & polish UI
+- Ajout page profil `/app/profile` (consultation email/rôle/école/abonnement, édition du nom d’affichage) + server action `updateProfileAction`.
+- Dashboards élève/prof : salutation personnalisée (prénom/nom/email fallback) avec bouton “Éditer” renvoyant vers le profil.
+- Homepage modules : pastilles rôle/étape déplacées sous la description pour plus de lisibilité.
+
 ## Roadmap prochaine (Steps 9 → 11)
 - Step 9 — Journal d’audit : logs “qui/quoi/quand” sur mutations sensibles + page admin d’inspection.
 - Step 10 — Contre-indications : lier positions ↔ blessures avec sévérité, affichage alerte/badge.
