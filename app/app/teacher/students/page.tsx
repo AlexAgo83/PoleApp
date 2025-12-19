@@ -65,7 +65,7 @@ export default async function TeacherStudentsPage({
           {students.map((student) => (
             <article
               key={student.id}
-              className="flex flex-col gap-2 py-4 transition hover:bg-indigo-500/10 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
             >
               <div>
                 <p className="text-base font-semibold text-white">

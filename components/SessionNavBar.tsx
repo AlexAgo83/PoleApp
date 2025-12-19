@@ -22,25 +22,7 @@ export async function SessionNavBar({ session, className }: Props) {
         boxShadow: "0 16px 40px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
       }}
     >
-      <div className="flex flex-wrap items-center gap-2">
-        {currentSession?.user ? (
-          <>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-              Session
-              <span className="text-white text-[11px] normal-case tracking-normal">
-                {currentSession.user.email}
-              </span>
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-              Rôle : {currentSession.user.role}
-            </span>
-          </>
-        ) : (
-          <span className="text-xs uppercase tracking-[0.18em] text-cyan-200">
-            Pole App — MVP v0.2.1
-          </span>
-        )}
-      </div>
+      <div className="flex flex-wrap items-center gap-2" />
       <div className="flex flex-wrap items-center gap-2 md:justify-end">
         {currentSession?.user ? (
             <>

@@ -148,3 +148,43 @@ async function upsertProgressFromNotes(
     });
   }
 }
+
+const deleteSchema = z.object({
+  courseId: z.string().cuid(),
+});
+
+export async function deleteCourseAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const parsed = deleteSchema.safeParse({
+    courseId: formData.get("courseId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Form invalid");
+  }
+
+  const existing = await prisma.course.findFirst({
+    where: { id: parsed.data.courseId, schoolId: session.user.schoolId },
+    select: { id: true },
+  });
+  if (!existing) {
+    redirect("/access-denied");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.courseAttendance.deleteMany({ where: { courseId: parsed.data.courseId } });
+    await tx.coursePosition.deleteMany({ where: { courseId: parsed.data.courseId } });
+    await tx.courseNote.deleteMany({ where: { courseId: parsed.data.courseId } });
+    await tx.course.delete({ where: { id: parsed.data.courseId } });
+  });
+
+  revalidatePath("/app/teacher/courses");
+  redirect("/app/teacher/courses");
+}
