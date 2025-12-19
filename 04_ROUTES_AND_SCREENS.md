@@ -27,6 +27,8 @@
 - `/app/admin/users` : CRUD users
 - `/admin/settings` : (option) taxonomies
 
+CTA retour : les pages modules clés incluent un lien “← Accueil” pour revenir à `/`.
+
 ---
 
 ## États UI à prévoir partout

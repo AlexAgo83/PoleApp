@@ -26,7 +26,7 @@ Ce dossier contient :
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
 - Scripts : `npm run db:push`, `npm run db:seed`, `npm run dev`.
-- Docker : `docker compose watch` (web en mode dev + Postgres) ou `docker-compose up --build`.
+- Docker : `docker compose watch` (reco hot-reload sans bind mount, build target `dev` avec code + schéma Prisma embarqués) ou `docker-compose up --build` (rebuild nécessaire pour prendre le code). Si un lock watch existe : `docker compose down` puis relancer.
 - Déploiement Render : `render.yaml` (service web + base Postgres auto), build `npm install && npx prisma generate && npm run build`, start `npm run start`, seed via `npm run db:push && npm run db:seed`.
 
 > Si vous voulez partir direct sur du mobile, remplacez Next.js par Expo/React Native,

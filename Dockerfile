@@ -12,6 +12,11 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+FROM deps AS dev
+WORKDIR /app
+COPY . .
+RUN npx prisma generate
+
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
