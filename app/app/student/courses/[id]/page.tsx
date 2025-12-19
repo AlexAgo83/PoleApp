@@ -9,13 +9,15 @@ type PageProps = {
   params: { id: string };
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentCourseDetailPage({ params }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return notFound();
   }
 
-  const course = await prisma.course.findFirst({
+  const course = await prisma.course.findUnique({
     where: {
       id: params.id,
       attendances: { some: { studentId: session.user.id } },

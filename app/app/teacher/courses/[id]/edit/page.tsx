@@ -8,9 +8,15 @@ import { prisma } from "@/lib/prisma";
 import { CourseForm } from "../../new/CourseForm";
 import { updateCourseAction } from "../actions";
 
-type Props = { params: { id: string } };
+type Props =
+  | { params: { id: string } }
+  | { params: Promise<{ id?: string }> };
 
 export default async function EditCoursePage({ params }: Props) {
+  const resolvedParams = await Promise.resolve(
+    (params as { id?: string } | Promise<{ id?: string }>)
+  );
+  const id = resolvedParams?.id;
   const session = await getServerSession(authOptions);
   const teacherId = session?.user?.id;
   const schoolId = session?.user?.schoolId;
@@ -19,8 +25,12 @@ export default async function EditCoursePage({ params }: Props) {
     redirect("/access-denied");
   }
 
+  if (!id) {
+    notFound();
+  }
+
   const course = await prisma.course.findFirst({
-    where: { id: params.id, schoolId },
+    where: { id, schoolId },
     include: {
       attendances: true,
       positions: { include: { position: true } },
@@ -59,7 +69,12 @@ export default async function EditCoursePage({ params }: Props) {
     {}
   );
 
-  const defaultDate = new Date(course.date).toISOString().slice(0, 16);
+  // Preserve local date/time in the datetime-local input (avoid UTC shift)
+  const dateObj = new Date(course.date);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const defaultDate = `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
+    dateObj.getDate()
+  )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10">

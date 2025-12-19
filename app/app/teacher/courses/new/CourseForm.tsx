@@ -170,21 +170,23 @@ export function CourseForm({
       {courseId && <input type="hidden" name="courseId" value={courseId} />}
       <input type="hidden" name="notes" value={JSON.stringify(notesArray)} />
 
-      <button
-        type="submit"
-        className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={selectedStudents.length === 0 || selectedPositions.length === 0}
-      >
-        {submitLabel}
-      </button>
-      {cancelHref && (
-        <a
-          href={cancelHref}
-          className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+      <div className="mt-4 flex flex-wrap justify-end gap-3">
+        {cancelHref && (
+          <a
+            href={cancelHref}
+            className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Annuler
+          </a>
+        )}
+        <button
+          type="submit"
+          className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={selectedStudents.length === 0 || selectedPositions.length === 0}
         >
-          Annuler
-        </a>
-      )}
+          {submitLabel}
+        </button>
+      </div>
     </form>
   );
 }

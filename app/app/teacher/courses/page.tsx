@@ -4,16 +4,38 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export default async function TeacherCoursesPage() {
+const PAGE_SIZE = 10;
+
+type SearchParams =
+  | { page?: string }
+  | Promise<{
+      page?: string;
+    }>;
+
+export default async function TeacherCoursesPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
+  const resolvedParams = (await Promise.resolve(searchParams)) ?? {};
+  const rawPage = Number(resolvedParams.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return null;
   }
 
+  const totalCount = await prisma.course.count({
+    where: { schoolId: session.user.schoolId },
+  });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
   const courses = await prisma.course.findMany({
     where: { schoolId: session.user.schoolId },
     orderBy: { date: "desc" },
-    take: 20,
+    skip,
+    take: PAGE_SIZE,
     include: {
       attendances: true,
       positions: true,
@@ -66,6 +88,35 @@ export default async function TeacherCoursesPage() {
           {courses.length === 0 && (
             <p className="py-4 text-slate-200">Aucun cours créé pour le moment.</p>
           )}
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
+          <span>
+            Page {currentPage} / {totalPages} · {totalCount} cours
+          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/app/teacher/courses?page=${Math.max(1, currentPage - 1)}`}
+              aria-disabled={currentPage === 1}
+              className={`rounded-full border border-white/10 px-3 py-2 ${
+                currentPage === 1
+                  ? "cursor-not-allowed text-slate-500"
+                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              }`}
+            >
+              Précédent
+            </Link>
+            <Link
+              href={`/app/teacher/courses?page=${Math.min(totalPages, currentPage + 1)}`}
+              aria-disabled={currentPage === totalPages}
+              className={`rounded-full border border-white/10 px-3 py-2 ${
+                currentPage === totalPages
+                  ? "cursor-not-allowed text-slate-500"
+                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              }`}
+            >
+              Suivant
+            </Link>
+          </div>
         </div>
       </section>
     </main>

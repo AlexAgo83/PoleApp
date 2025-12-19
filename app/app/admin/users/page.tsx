@@ -10,9 +10,12 @@ export const dynamic = "force-dynamic";
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams?: { success?: string; error?: string } | Promise<{ success?: string; error?: string }>;
+  searchParams?:
+    | { success?: string; error?: string; page?: string }
+    | Promise<{ success?: string; error?: string; page?: string }>;
 }) {
-  const params = await searchParams;
+  const params = (await Promise.resolve(searchParams)) ?? {};
+  const rawPage = Number(params.page ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     return null;
@@ -28,6 +31,13 @@ export default async function AdminUsersPage({
     );
   }
 
+  const totalCount = await prisma.user.count({
+    where: { schoolId: session.user.schoolId },
+  });
+  const totalPages = Math.max(1, Math.ceil(totalCount / 10));
+  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+  const skip = (currentPage - 1) * 10;
+
   const users = await prisma.user.findMany({
     where: { schoolId: session.user.schoolId },
     select: {
@@ -39,6 +49,8 @@ export default async function AdminUsersPage({
       createdAt: true,
     },
     orderBy: { createdAt: "desc" },
+    skip,
+    take: 10,
   });
 
   return (
@@ -134,7 +146,9 @@ export default async function AdminUsersPage({
       <section className="panel p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-white">Utilisateurs existants</h2>
-          <p className="text-sm text-slate-300">{users.length} comptes</p>
+          <p className="text-sm text-slate-300">
+            Page {currentPage} / {totalPages} · {totalCount} comptes
+          </p>
         </div>
         <div className="mt-4 divide-y divide-white/5">
           {users.map((user) => (
@@ -205,6 +219,30 @@ export default async function AdminUsersPage({
             </div>
           ))}
           {users.length === 0 && <p className="py-4 text-slate-200">Aucun utilisateur.</p>}
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-200">
+          <Link
+            href={`/app/admin/users?page=${Math.max(1, currentPage - 1)}`}
+            aria-disabled={currentPage === 1}
+            className={`rounded-full border border-white/10 px-3 py-2 ${
+              currentPage === 1
+                ? "cursor-not-allowed text-slate-500"
+                : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            }`}
+          >
+            Précédent
+          </Link>
+          <Link
+            href={`/app/admin/users?page=${Math.min(totalPages, currentPage + 1)}`}
+            aria-disabled={currentPage === totalPages}
+            className={`rounded-full border border-white/10 px-3 py-2 ${
+              currentPage === totalPages
+                ? "cursor-not-allowed text-slate-500"
+                : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            }`}
+          >
+            Suivant
+          </Link>
         </div>
       </section>
     </main>

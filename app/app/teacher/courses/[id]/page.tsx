@@ -5,18 +5,28 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type PageProps = {
-  params: { id: string };
-};
+type PageProps =
+  | { params: { id: string } }
+  | { params: Promise<{ id?: string }> };
+
+export const dynamic = "force-dynamic";
 
 export default async function TeacherCourseDetailPage({ params }: PageProps) {
+  const resolvedParams = await Promise.resolve(
+    (params as { id?: string } | Promise<{ id?: string }>)
+  );
+  const id = resolvedParams?.id;
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return notFound();
   }
 
-  const course = await prisma.course.findFirst({
-    where: { id: params.id, schoolId: session.user.schoolId },
+  if (!id) {
+    return notFound();
+  }
+
+  const course = await prisma.course.findUnique({
+    where: { id, schoolId: session.user.schoolId },
     include: {
       teacher: { select: { name: true, email: true } },
       attendances: {
@@ -36,7 +46,8 @@ export default async function TeacherCourseDetailPage({ params }: PageProps) {
     return notFound();
   }
 
-  const teacherName = course.teacher?.name ?? course.teacher?.email ?? "Prof";
+  const teacherName =
+    course.teacher?.name ?? course.teacher?.email ?? "Professeur";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
