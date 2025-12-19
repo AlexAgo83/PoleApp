@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  SCHOOL_ADMIN
+}
+
+enum PositionType {
+  SPIN
+  TRICK
+  TRANSITION
+  WARMUP
+  STRENGTH
+}
+
+enum PositionLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum MediaKind {
+  PHOTO
+  VIDEO
+}
+
+enum LearningStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PASSED
+  MASTERED
+}
+
+enum MasteryLevel {
+  INITIATED
+  PASSED
+  FLUID
+  CHOREO
+}
+
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  users   User[]
+  courses Course[]
+
+  @@unique([name])
+}
+
+model User {
+  id            String                    @id @default(cuid())
+  email         String                    @unique
+  name          String?
+  passwordHash  String
+  role          Role
+  schoolId      String?
+  isPremium     Boolean                   @default(false)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  school        School?                   @relation(fields: [schoolId], references: [id])
+  injuries      StudentInjury[]
+  progress      StudentPositionProgress[]
+  courseNotes   CourseNote[]
+  attendances   CourseAttendance[]
+  coursesTaught Course[]                  @relation("CourseTeacher")
+
+  createdPositions    Position[]                @relation("CreatedPositions")
+  lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
+}
+
+model Position {
+  id                String        @id @default(cuid())
+  name              String
+  description       String?
+  levelRequired     PositionLevel
+  type              PositionType
+  grips             String?
+  tips              String?
+  contraindications String?
+  createdByUserId   String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  createdBy         User?         @relation("CreatedPositions", fields: [createdByUserId], references: [id])
+
+  media         PositionMedia[]
+  progress      StudentPositionProgress[]
+  courseEntries CoursePosition[]
+  courseNotes   CourseNote[]
+
+  @@unique([name])
+}
+
+model PositionMedia {
+  id         String    @id @default(cuid())
+  positionId String
+  kind       MediaKind
+  url        String
+  createdAt  DateTime  @default(now())
+  position   Position  @relation(fields: [positionId], references: [id])
+}
+
+model InjuryType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  studentInjuries StudentInjury[]
+}
+
+model StudentInjury {
+  id           String     @id @default(cuid())
+  studentId    String
+  injuryTypeId String
+  notes        String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  student      User       @relation(fields: [studentId], references: [id])
+  injuryType   InjuryType @relation(fields: [injuryTypeId], references: [id])
+}
+
+model StudentPositionProgress {
+  id                  String         @id @default(cuid())
+  studentId           String
+  positionId          String
+  learningStatus      LearningStatus
+  masteryLevel        MasteryLevel?
+  comment             String?
+  lastUpdatedByUserId String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  student             User           @relation(fields: [studentId], references: [id])
+  position            Position       @relation(fields: [positionId], references: [id])
+  lastUpdatedBy       User?          @relation("ProgressUpdatedBy", fields: [lastUpdatedByUserId], references: [id])
+
+  @@unique([studentId, positionId])
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  schoolId  String
+  teacherId String
+  title     String?
+  date      DateTime
+  createdAt DateTime @default(now())
+  school    School   @relation(fields: [schoolId], references: [id])
+  teacher   User     @relation("CourseTeacher", fields: [teacherId], references: [id])
+
+  attendances CourseAttendance[]
+  positions   CoursePosition[]
+  notes       CourseNote[]
+}
+
+model CourseAttendance {
+  id        String @id @default(cuid())
+  courseId  String
+  studentId String
+  course    Course @relation(fields: [courseId], references: [id])
+  student   User   @relation(fields: [studentId], references: [id])
+
+  @@unique([courseId, studentId])
+}
+
+model CoursePosition {
+  id         String   @id @default(cuid())
+  courseId   String
+  positionId String
+  course     Course   @relation(fields: [courseId], references: [id])
+  position   Position @relation(fields: [positionId], references: [id])
+
+  @@unique([courseId, positionId])
+}
+
+model CourseNote {
+  id           String       @id @default(cuid())
+  courseId     String
+  studentId    String
+  positionId   String
+  masteryLevel MasteryLevel
+  comment      String?
+  createdAt    DateTime     @default(now())
+  course       Course       @relation(fields: [courseId], references: [id])
+  student      User         @relation(fields: [studentId], references: [id])
+  position     Position     @relation(fields: [positionId], references: [id])
+
+  @@unique([courseId, studentId, positionId])
+}
