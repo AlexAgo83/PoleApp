@@ -10,23 +10,25 @@ const moduleSections = [
   {
     title: "Positions",
     href: "/positions",
-    description: "Base positions + médias, filtres, progression par élève.",
-    status: "Étape 2",
-    role: "Public / Prof",
+    description:
+      "Base positions + médias, filtres, vignettes 2 colonnes, détail partageable, retour contextuel.",
+    status: "Étape 8",
+    role: "Élève / Professeur / Admin",
   },
   {
     title: "Cours",
     href: "/app/teacher/courses",
     description: "Création cours, présences, notes et mise à jour progression.",
     status: "Étape 5",
-    role: "Prof",
+    role: "Professeur",
   },
   {
     title: "Élèves",
     href: "/app/teacher/students",
-    description: "Fiches élèves, progression, blessures visibles par prof.",
+    description:
+      "Fiches élèves, progression, blessures visibles par professeur.",
     status: "Étapes 3-4",
-    role: "Prof / Admin",
+    role: "Professeur / Admin",
   },
   {
     title: "Mini-jeu",
@@ -47,12 +49,13 @@ const moduleSections = [
 const buildSteps = [
   { label: "Step 0 — Bootstrap + health", done: true },
   { label: "Step 1 — Auth/RBAC (login + middleware)", done: true },
-  { label: "Step 2 — Positions (browse + create prof)", done: true },
-  { label: "Step 3 — Blessures élève (UI + prof)", done: true },
+  { label: "Step 2 — Positions (browse + create professeur)", done: true },
+  { label: "Step 3 — Blessures élève (UI + professeur)", done: true },
   { label: "Step 4 — Progression par position", done: true },
   { label: "Step 5 — Fiche cours (notes + progression)", done: true },
   { label: "Step 6 — Mini-jeu", done: true },
   { label: "Step 7 — Admin école", done: true },
+  { label: "Step 8 — Navigation par rôle + Positions unifiées", done: true },
 ];
 
 export default async function Home() {
@@ -133,20 +136,23 @@ export default async function Home() {
               Suivi élève complet : positions, progression, cours et révision ludique.
             </h1>
             <p className="max-w-2xl text-slate-300">
-              Une plateforme pour que profs et élèves alignent entraînement,
+              Une plateforme pour que professeurs et élèves alignent entraînement,
               sécurité et progression : base de positions, suivi des blessures,
               fiches cours et mini-jeu de révision. Cette homepage sert de guide
-              vers chaque module clé.
+              vers chaque module clé, avec un bandeau de navigation commun par rôle.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-slate-300">
               <span className="rounded-full bg-white/10 px-3 py-1">
                 Accès différencié élève / prof / admin
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1">
-                Suivi sécurité : blessures visibles par le prof
+                Suivi sécurité : blessures visibles par le professeur
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1">
                 Progression et révision des positions
+              </span>
+              <span className="rounded-full bg-white/10 px-3 py-1">
+                Navigation unifiée (session, rôle, Accueil/Mon espace)
               </span>
             </div>
           </div>
@@ -231,15 +237,18 @@ export default async function Home() {
         </summary>
         <div className="mt-4 space-y-3 text-sm text-slate-300">
           <p>
-            Dernière étape livrée : <strong>Step 7 — Admin école</strong>
+            Dernière étape livrée :{" "}
+            <strong>Step 8 — Navigation par rôle & Positions unifiées</strong>
             <br />
-            Dashboard admin (stats école) et gestion des utilisateurs (création
-            prof/élève/admin, premium, suppression) sur `/app/admin` et
-            `/app/admin/users`.
+            Bandeau session/rôle/Accueil harmonisé, positions partagées en 2
+            colonnes avec retour contextuel et édition réservée Professeur/Admin.
           </p>
           <div className="space-y-1">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
+              <li>
+                • Step 8 : Navigation par rôle — bandeau commun, positions unifiées
+              </li>
               <li>• Step 7 : Admin — dashboard + gestion utilisateurs</li>
               <li>• Step 6 : Mini-jeu — quiz photo→nom sur positions débloquées</li>
               <li>• Step 5 : Cours — création + progression auto</li>

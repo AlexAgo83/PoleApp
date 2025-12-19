@@ -4,6 +4,7 @@
 - Provider Prisma : **PostgreSQL** (`DATABASE_URL` requis).
 - Une **School** possède des Users (élèves/profs/admin).
 - Une **Position** est globale (scopée école plus tard si besoin).
+- Navigation par rôle : un seul écran Positions partagé, avec actions d’édition visibles uniquement pour Professeur/Admin.
 - La progression = relation **Student ↔ Position**.
 - Un **Course** relie prof + élèves + positions + notes.
 - Seed : 2 écoles créées par défaut (École 1, École 2) avec comptes profs/élèves rattachés; les comptes fixes sont attachés à École 1. Chaque école reçoit 1 cours de démo (prof 1 + 3 élèves + 2 positions).

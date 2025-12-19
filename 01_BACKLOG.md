@@ -3,7 +3,7 @@
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (MVP), P1 (post-MVP), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (sauf positions prof en `/teacher/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
-> Statut : Steps 0→7 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école). Home affiche les modules et la santé (`/health`).
+> Statut : Steps 0→8 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés). Home affiche les modules, la santé (`/health`) et le bandeau session/rôle.
 
 ---
 

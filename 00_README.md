@@ -23,6 +23,10 @@ Ce dossier contient :
 - UI **Tailwind** + composants simples.
 - Stockage médias : local en dev, abstraction prête pour S3/Cloudinary ensuite.
 
+## Progression des Steps
+- Step 0 → 7 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école).
+- **Step 8** : navigation unifiée par rôle (bandeau session/role, Accueil, Mon espace, logout) et espaces dédiés par rôle.
+
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
 - Scripts : `npm run db:push`, `npm run db:seed`, `npm run dev`.

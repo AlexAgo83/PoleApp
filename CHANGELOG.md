@@ -53,3 +53,8 @@
 - Dashboard admin `/app/admin` : stats école (utilisateurs par rôle, premium, cours, positions, blessures actives) + actions rapides.
 - Gestion utilisateurs `/app/admin/users` : création prof/élève/admin (mot de passe, premium), mise à jour rôle/premium/nom, suppression (protégée si dépendances).
 - Home/README mis à jour pour marquer l’étape livrée.
+
+## 2025-12-19 — Step 8 (Navigation unifiée par rôle)
+- Bandeau session/role/Accueil/Mon espace/logout harmonisé sur toutes les pages (élève, Professeur, Admin) avec badges session/rôle + CTA retour/connexion.
+- Unification des écrans Positions : design Professeur appliqué à `/positions` (2 colonnes vignettes, bandeau visible, retour contextuel `from`), bouton “Éditer” réservé Professeur/Admin, création/édition via `/teacher/positions/new|[id]/edit`.
+- Terminologie harmonisée (“Professeur”), marges panels normalisées, home mise à jour (steps, modules, nouveautés) pour refléter la nouvelle navigation par rôle.

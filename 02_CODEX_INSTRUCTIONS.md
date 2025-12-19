@@ -168,6 +168,20 @@ Structure proposée :
 
 ---
 
+## Step 8 — Navigation par rôle (bandeau + espaces)
+
+**Tâches**
+- Harmoniser le bandeau (session, rôle, Accueil, Mon espace, logout) sur les pages clés.
+- Afficher modules/actions par rôle (élève/professeur/admin) sur la homepage et les dashboards.
+- Assurer les retours “← Retour” redirigent vers la bonne vue d’origine (positions, cours, etc.).
+
+**DoD**
+- Navigation cohérente pour les 3 rôles (CTA visibles, wording professeur).
+- Retour vers la bonne liste après un détail (ex: positions prof/admin).
+- Homepage liste les modules par rôle + health badge.
+
+---
+
 ## Règles de qualité (obligatoires)
 
 - Pas de “gros refacto” : petites PR/commits par step
