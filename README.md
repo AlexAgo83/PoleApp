@@ -20,6 +20,14 @@ docker run -d --name poleapp-postgres -e POSTGRES_PASSWORD=devpassword -e POSTGR
 ```
 Puis dans `.env` : `DATABASE_URL="postgresql://postgres:devpassword@localhost:5432/poleapp?schema=public"`
 
+Option docker-compose (web + postgres) :
+```bash
+cd web
+docker-compose up --build
+# la webapp sera sur http://localhost:3000
+```
+La commande web lance `npm run db:push && npm run db:seed` avant `npm run start`.
+
 Scripts utiles :
 - `npm run db:push` : synchro schéma.
 - `npm run db:seed` : push + seed.

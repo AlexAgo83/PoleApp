@@ -25,3 +25,8 @@
 - `.env.example` mis à jour (Postgres + NextAuth). `.env` exemple local Postgres.
 - Ajout `render.yaml` (web service Next + base Postgres, postdeploy db:push + db:seed).
 - Pages positions forcées en dynamique pour éviter besoin DB au build local.
+
+## 2025-12-19 — Dockerisation
+- Ajout Dockerfile multi-stage (Next + Prisma) à la racine.
+- Ajout docker-compose (web + Postgres) pour un run local : `docker-compose up --build`.
+- `.dockerignore` pour alléger l’image.
