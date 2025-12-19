@@ -1,8 +1,9 @@
 # 03 — Modèle de données (MVP)
 
 ## Principes
+- Provider Prisma : **PostgreSQL** (`DATABASE_URL` requis).
 - Une **School** possède des Users (élèves/profs/admin).
-- Une **Position** est globale (ou scoped école plus tard).
+- Une **Position** est globale (scopée école plus tard si besoin).
 - La progression = relation **Student ↔ Position**.
 - Un **Course** relie prof + élèves + positions + notes.
 
@@ -11,45 +12,45 @@
 ## Entités (MVP)
 
 ### User
-- id (uuid)
+- id (cuid)
 - email (unique)
 - passwordHash
 - role: STUDENT | TEACHER | SCHOOL_ADMIN
-- schoolId
+- schoolId (nullable)
 - isPremium (bool) — prototype (paiement plus tard)
 - createdAt, updatedAt
 
 ### School
-- id
-- name
+- id (cuid)
+- name (unique)
 - createdAt
 
 ### Position
-- id
-- name
+- id (cuid)
+- name (unique)
 - description
-- levelRequired (enum/string)
-- type (enum/string)
-- grips (string[] ou relation)
+- levelRequired (enum: BEGINNER | INTERMEDIATE | ADVANCED)
+- type (enum: SPIN | TRICK | TRANSITION | WARMUP | STRENGTH)
+- grips (string, libre)
 - tips (text)
 - contraindications (text) — MVP simple
 - createdByUserId (prof/admin)
 - createdAt, updatedAt
 
 ### PositionMedia
-- id
+- id (cuid)
 - positionId
 - kind: PHOTO | VIDEO
 - url
 - createdAt
 
 ### InjuryType
-- id
-- name (ex: “Épaule”, “Poignet”, “Bas du dos”)
+- id (cuid)
+- name (unique, ex: “Épaule”, “Poignet”, “Bas du dos”)
 - createdAt
 
 ### StudentInjury
-- id
+- id (cuid)
 - studentId (User.id)
 - injuryTypeId
 - notes
@@ -57,17 +58,17 @@
 - createdAt, updatedAt
 
 ### StudentPositionProgress
-- id
+- id (cuid)
 - studentId
 - positionId
 - learningStatus: NOT_STARTED | IN_PROGRESS | PASSED | MASTERED
 - masteryLevel: INITIATED | PASSED | FLUID | CHOREO
 - comment (text)
 - lastUpdatedByUserId (prof)
-- updatedAt
+- createdAt, updatedAt
 
 ### Course
-- id
+- id (cuid)
 - schoolId
 - teacherId
 - title (optional)
@@ -75,17 +76,17 @@
 - createdAt
 
 ### CourseAttendance
-- id
+- id (cuid)
 - courseId
 - studentId
 
 ### CoursePosition
-- id
+- id (cuid)
 - courseId
 - positionId
 
 ### CourseNote
-- id
+- id (cuid)
 - courseId
 - studentId
 - positionId

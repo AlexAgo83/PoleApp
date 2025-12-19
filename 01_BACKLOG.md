@@ -2,6 +2,7 @@
 
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (MVP), P1 (post-MVP), P2 (plus tard).
+> Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (sauf positions prof en `/teacher/...`), NextAuth Credentials, Docker compose (web + Postgres), déploiement Render via `render.yaml`.
 
 ---
 
