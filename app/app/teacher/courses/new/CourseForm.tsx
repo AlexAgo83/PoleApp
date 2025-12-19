@@ -10,6 +10,14 @@ type Props = {
   students: Student[];
   positions: Position[];
   action: (formData: FormData) => Promise<void>;
+  defaultTitle?: string | null;
+  defaultDate?: string;
+  defaultSelectedStudents?: string[];
+  defaultSelectedPositions?: string[];
+  defaultNotes?: Record<string, Note>;
+  submitLabel?: string;
+  cancelHref?: string;
+  courseId?: string;
 };
 
 type Note = {
@@ -19,10 +27,25 @@ type Note = {
   comment?: string;
 };
 
-export function CourseForm({ students, positions, action }: Props) {
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
-  const [notes, setNotes] = useState<Record<string, Note>>({});
+export function CourseForm({
+  students,
+  positions,
+  action,
+  defaultTitle = "",
+  defaultDate,
+  defaultSelectedStudents = [],
+  defaultSelectedPositions = [],
+  defaultNotes = {},
+  submitLabel = "Créer le cours",
+  cancelHref,
+  courseId,
+}: Props) {
+  const [selectedStudents, setSelectedStudents] =
+    useState<string[]>(defaultSelectedStudents);
+  const [selectedPositions, setSelectedPositions] = useState<string[]>(
+    defaultSelectedPositions
+  );
+  const [notes, setNotes] = useState<Record<string, Note>>(defaultNotes);
 
   const masteryOptions = useMemo(
     () => [
@@ -52,7 +75,7 @@ export function CourseForm({ students, positions, action }: Props) {
             type="datetime-local"
             name="date"
             required
-            defaultValue={new Date().toISOString().slice(0, 16)}
+            defaultValue={defaultDate ?? new Date().toISOString().slice(0, 16)}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
           />
         </label>
@@ -62,6 +85,7 @@ export function CourseForm({ students, positions, action }: Props) {
             type="text"
             name="title"
             placeholder="Cours du soir - Spins inter"
+            defaultValue={defaultTitle ?? ""}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
           />
         </label>
@@ -143,6 +167,7 @@ export function CourseForm({ students, positions, action }: Props) {
         name="positionIds"
         value={JSON.stringify(selectedPositions)}
       />
+      {courseId && <input type="hidden" name="courseId" value={courseId} />}
       <input type="hidden" name="notes" value={JSON.stringify(notesArray)} />
 
       <button
@@ -150,8 +175,16 @@ export function CourseForm({ students, positions, action }: Props) {
         className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={selectedStudents.length === 0 || selectedPositions.length === 0}
       >
-        Créer le cours
+        {submitLabel}
       </button>
+      {cancelHref && (
+        <a
+          href={cancelHref}
+          className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+        >
+          Annuler
+        </a>
+      )}
     </form>
   );
 }

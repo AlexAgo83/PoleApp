@@ -60,6 +60,12 @@ export default async function TeacherCourseDetailPage({ params }: PageProps) {
             Nouveau cours
           </Link>
           <Link
+            href={`/app/teacher/courses/${course.id}/edit`}
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Éditer
+          </Link>
+          <Link
             href="/app/teacher/courses"
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
