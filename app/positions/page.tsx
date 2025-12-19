@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
+const PAGE_SIZE = 10;
 
 const typeLabels: Record<PositionType, string> = {
   SPIN: "Spin",
@@ -23,12 +24,26 @@ const levelLabels: Record<PositionLevel, string> = {
   ADVANCED: "Avancé",
 };
 
-export default async function PositionsPage() {
+type SearchParams =
+  | { page?: string }
+  | Promise<{
+      page?: string;
+    }>;
+
+export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
+  const resolvedParams = (await Promise.resolve(searchParams)) ?? {};
+  const rawPage = Number(resolvedParams.page ?? "1");
+  const totalCount = await prisma.position.count();
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
   const session = await getServerSession(authOptions);
   const homeForRole = defaultHomeForRole(session?.user?.role);
   const positions = await prisma.position.findMany({
     orderBy: { updatedAt: "desc" },
-    take: 50,
+    skip,
+    take: PAGE_SIZE,
     include: {
       media: { take: 1 },
     },
@@ -149,7 +164,7 @@ export default async function PositionsPage() {
                       {p.grips ?? "Grip ?"}
                     </p>
                     <Link
-                      href={`/positions/${p.id}?from=/positions`}
+                      href={`/positions/${p.id}?from=/positions?page=${currentPage}`}
                       className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                     >
                       Voir
@@ -162,6 +177,35 @@ export default async function PositionsPage() {
           {positions.length === 0 && (
             <p className="py-4 text-slate-200">Aucune position pour le moment.</p>
           )}
+        </div>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
+          <span>
+            Page {currentPage} / {totalPages} · {totalCount} positions
+          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/positions?page=${Math.max(1, currentPage - 1)}`}
+              aria-disabled={currentPage === 1}
+              className={`rounded-full border border-white/10 px-3 py-2 ${
+                currentPage === 1
+                  ? "cursor-not-allowed text-slate-500"
+                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              }`}
+            >
+              Précédent
+            </Link>
+            <Link
+              href={`/positions?page=${Math.min(totalPages, currentPage + 1)}`}
+              aria-disabled={currentPage === totalPages}
+              className={`rounded-full border border-white/10 px-3 py-2 ${
+                currentPage === totalPages
+                  ? "cursor-not-allowed text-slate-500"
+                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              }`}
+            >
+              Suivant
+            </Link>
+          </div>
         </div>
       </section>
     </main>
