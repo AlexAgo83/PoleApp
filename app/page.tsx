@@ -19,7 +19,7 @@ const moduleSections = [
   },
   {
     title: "Mini-jeu",
-    href: "/student/game",
+    href: "/app/student/game",
     description: "Photo → nom, pool positions débloquées, score final.",
     status: "Étape 6",
   },
@@ -38,7 +38,7 @@ const buildSteps = [
   { label: "Step 3 — Blessures élève (UI + prof)", done: true },
   { label: "Step 4 — Progression par position", done: true },
   { label: "Step 5 — Fiche cours (notes + progression)", done: true },
-  { label: "Step 6 — Mini-jeu", done: false },
+  { label: "Step 6 — Mini-jeu", done: true },
   { label: "Step 7 — Admin école", done: false },
 ];
 
@@ -144,15 +144,17 @@ export default function Home() {
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-white">Nouveautés</h3>
           <p className="text-slate-300">
-            Dernière étape livrée : <strong>Step 5 — Fiche cours</strong>
+            Dernière étape livrée : <strong>Step 6 — Mini-jeu</strong>
             <br />
-            Création cours `/app/teacher/courses/new` (élèves, positions, notes
-            élève×position) avec mise à jour automatique de la progression.
-            Liste : `/app/teacher/courses`. Historique élève : `/app/student/courses`.
+            Quiz photo → nom sur les positions débloquées (ou toutes si premium).
+            Route : `/app/student/game`. 10 questions, score final, correction
+            par question. Si tu as moins de 4 positions débloquées, un message
+            t’invite à enrichir ta base avant de jouer.
           </p>
           <div className="space-y-2 text-sm text-slate-300">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
+              <li>• Step 6 : Mini-jeu — quiz photo→nom sur positions débloquées</li>
               <li>• Step 5 : Cours — création + progression auto</li>
               <li>• Step 4 : Progression — élève/prof</li>
               <li>• Step 3 : Blessures — déclaration élève, lecture prof</li>
@@ -164,7 +166,7 @@ export default function Home() {
           <div className="space-y-1 text-sm text-slate-300">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Step 6 : Mini-jeu (photo → nom)</li>
+              <li>• Step 7 : Admin école</li>
             </ul>
           </div>
         </div>

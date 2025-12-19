@@ -40,6 +40,11 @@
 - Élève : `/app/student/progress` affiche progression par position (accès complet si premium, sinon positions vues).
 - Prof : `/app/teacher/students/[id]` enrichi avec mise à jour progression (statut, niveau, commentaire) par position.
 
-## 2025-12-19 — Step 5 (Cours - en cours)
+## 2025-12-19 — Step 5 (Cours)
 - Formulaire création cours `/app/teacher/courses/new` (date/titre, élèves, positions, notes élève×position) avec mise à jour progression automatique.
-- Liste stub des cours `/app/teacher/courses` (dernier 20).
+- Liste des cours `/app/teacher/courses` (dernier 20) + historique élève `/app/student/courses`.
+
+## 2025-12-19 — Step 6 (Mini-jeu)
+- Route élève `/app/student/game` : quiz photo → nom (10 questions) sur les positions débloquées (ou toute la base si premium).
+- Résumé score + correction détaillée en fin de partie; fallback message si <4 positions disponibles.
+- Home mise à jour (modules + timeline) pour signaler Step 6 livrée.

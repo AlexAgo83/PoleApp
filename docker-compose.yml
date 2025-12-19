@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   db:
     image: postgres:16
@@ -22,13 +21,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: poleapp-web
-    ports:
-      - "3000:3000"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/poleapp?schema=public
       NEXTAUTH_SECRET: dev-secret-change-me
       NEXTAUTH_URL: http://localhost:3000
-      NODE_ENV: production
+      NODE_ENV: development
     depends_on:
       db:
         condition: service_healthy
@@ -36,8 +33,28 @@ services:
       sh -c "
         npm run db:push &&
         npm run db:seed &&
-        npm run start
+        npm run dev -- --hostname 0.0.0.0 --port 3000
       "
+    develop:
+      watch:
+        - path: .
+          target: /app
+          action: sync
+          ignore:
+            - node_modules/
+            - .next/
+            - .git/
+            - docker-compose.yml
+            - Dockerfile
+            - prisma/dev.db
+        - path: package-lock.json
+          action: rebuild
+        - path: package.json
+          action: rebuild
+        - path: prisma/schema.prisma
+          action: rebuild
+    ports:
+      - "3000:3000"
 
 volumes:
   db_data:
