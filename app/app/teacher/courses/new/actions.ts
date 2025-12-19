@@ -47,7 +47,7 @@ export async function createCourseAction(formData: FormData) {
     throw new Error("Form invalid");
   }
 
-  return prisma.$transaction(async (tx) => {
+  const courseId = await prisma.$transaction(async (tx) => {
     const course = await tx.course.create({
       data: {
         title: parsed.data.title || null,
@@ -57,7 +57,6 @@ export async function createCourseAction(formData: FormData) {
       },
     });
 
-    // Attendance
     await tx.courseAttendance.createMany({
       data: parsed.data.studentIds.map((studentId) => ({
         courseId: course.id,
@@ -65,7 +64,6 @@ export async function createCourseAction(formData: FormData) {
       })),
     });
 
-    // Positions taught
     await tx.coursePosition.createMany({
       data: parsed.data.positionIds.map((positionId) => ({
         courseId: course.id,
@@ -73,7 +71,6 @@ export async function createCourseAction(formData: FormData) {
       })),
     });
 
-    // Notes
     if (parsed.data.notes && parsed.data.notes.length > 0) {
       await tx.courseNote.createMany({
         data: parsed.data.notes.map((n) => ({
@@ -85,13 +82,14 @@ export async function createCourseAction(formData: FormData) {
         })),
       });
 
-      // Update progression for impacted students/positions
       await upsertProgressFromNotes(tx, parsed.data.notes, session.user.id);
     }
 
-    revalidatePath("/app/teacher/courses");
-    redirect(`/app/teacher/courses`);
+    return course.id;
   });
+
+  revalidatePath("/app/teacher/courses");
+  redirect(`/app/teacher/courses`);
 }
 
 async function upsertProgressFromNotes(

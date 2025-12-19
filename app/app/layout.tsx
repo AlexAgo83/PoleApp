@@ -33,19 +33,6 @@ export default async function AppLayout({
           </p>
         </div>
         <div className="flex flex-col items-start gap-3 text-sm text-slate-200 md:items-end md:text-right">
-          {session?.user && (
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-                Session
-                <span className="text-white text-[11px] normal-case tracking-normal">
-                  {session.user.email}
-                </span>
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
-                Rôle : {session.user.role}
-              </span>
-            </div>
-          )}
           <div className="flex w-full flex-wrap items-center gap-2 md:justify-end">
             {session?.user ? (
               <>

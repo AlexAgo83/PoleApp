@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 import { CourseForm } from "../../new/CourseForm";
-import { updateCourseAction } from "../actions";
+import { deleteCourseAction, updateCourseAction } from "../actions";
 
 type Props = {
   params: { id: string } | Promise<{ id?: string }>;
@@ -74,7 +74,8 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   const defaultDate = `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
     dateObj.getDate()
   )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
-  const rawFrom = searchParams?.from;
+  const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
+  const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom
@@ -109,12 +110,21 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
         />
       </section>
 
-      <Link
-        href={backHref}
-        className="text-sm text-cyan-300 underline underline-offset-4"
-      >
-        Retour au détail
-      </Link>
+      <section className="panel border-red-500/30 bg-red-500/5 p-6">
+        <h2 className="text-lg font-semibold text-white">Supprimer ce cours</h2>
+        <p className="text-sm text-slate-200">
+          Action irréversible. Les présences, positions et notes liées seront supprimées.
+        </p>
+        <form action={deleteCourseAction} className="mt-4">
+          <input type="hidden" name="courseId" value={course.id} />
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-red-400"
+          >
+            Supprimer
+          </button>
+        </form>
+      </section>
     </main>
   );
 }

@@ -81,25 +81,7 @@ export default async function Home() {
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10 md:px-8">
       <section className="panel relative flex flex-col gap-3 overflow-hidden p-5 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
-        <div className="relative flex flex-wrap items-center gap-2">
-          {session?.user ? (
-            <>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-indigo-500/15 px-3 py-1 text-xs uppercase tracking-[0.14em] text-indigo-100">
-                Session
-                <span className="text-white text-[11px] normal-case tracking-normal">
-                  {session.user.email}
-                </span>
-              </span>
-              <span className="rounded-full border border-white/15 bg-cyan-500/15 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-100">
-                Rôle : {session.user.role}
-              </span>
-            </>
-          ) : (
-            <span className="text-xs uppercase tracking-[0.18em] text-cyan-200">
-              Pole App — MVP v0.2.1
-            </span>
-          )}
-        </div>
+        <div className="relative flex flex-wrap items-center gap-2" />
         <div className="relative flex flex-wrap items-center gap-2 md:justify-end">
           {session?.user ? (
             <>
