@@ -1,101 +1,75 @@
-# Pole App — MVP (Steps 0 → 7)
+# Pole App — MVP v0.2.0 (Steps 0 → 8)
 
-Base Next.js + Prisma setup derived from the provided markdown specs (roles, positions, courses, injuries, mini-jeu).
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination.
 
 ## Stack
-- Next.js (App Router) + TypeScript + Tailwind
+- Next.js 16 (App Router) + TypeScript + Tailwind
 - Prisma + PostgreSQL
-- NextAuth (Credentials) + middleware RBAC (student/teacher/admin)
-- Vitest + Testing Library (unit smoke)
+- NextAuth (Credentials) + middleware RBAC
+- Docker (multi-stage) + docker-compose
+- Render : `render.yaml` (web + Postgres)
 
-## Setup rapide
-1) `npm install` (à la racine)  
-2) `.env` : `DATABASE_URL` doit pointer vers un Postgres (ex: `postgresql://USER:PASSWORD@localhost:5432/poleapp?schema=public`), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (http://localhost:3000 en dev).  
-3) `npm run db:seed` — applique le schéma + seed (école, users, positions).  
-4) `npm run dev` — app sur http://localhost:3000.
-
-Postgres local (option rapide, Docker) :
+## Démarrage local
 ```bash
-docker run -d --name poleapp-postgres -e POSTGRES_PASSWORD=devpassword -e POSTGRES_DB=poleapp -p 5432:5432 postgres:16
-```
-Puis dans `.env` : `DATABASE_URL="postgresql://postgres:devpassword@localhost:5432/poleapp?schema=public"`
-
-Option docker-compose (web + postgres) :
-```bash
-docker-compose up --build
-# la webapp sera sur http://localhost:3000
-```
-La commande web lance `npm run db:push && npm run db:seed` avant `npm run dev -- --hostname 0.0.0.0 --port 3000` (mode dev dans le conteneur).
-
-Option docker-compose avec watch (auto-refresh code) :
-```bash
-# nécessite Docker Desktop 4.22+ ou docker compose v2.22+
-docker compose watch
-# monte le code en live + relance quand package-lock/schema changent (service web en mode dev)
+npm install
+cp .env.example .env        # remplir DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL
+npm run db:push
+npm run db:seed
+npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ```
 
-Scripts utiles :
-- `npm run db:push` : synchro schéma.
-- `npm run db:seed` : push + seed.
-- `npm test` : Vitest.
-- `npm run lint`
+### Docker
+- Hot reload conseillé : `docker compose watch` (si lock, `docker compose down` puis relancer).
+- Rebuild complet : `docker-compose up --build`.
 
-## Auth (Step 1)
-- Route login : `/login` (Credentials provider).
-- Middleware RBAC protège : `/app/student`, `/app/teacher`, `/app/admin` (+ `/student|/teacher|/admin` pour la suite).
-- Redirection auto selon rôle : admin → `/app/admin`, teacher → `/app/teacher`, student → `/app/student` (prend en compte `callbackUrl` si fourni et même origine).
-- Logout renvoie vers `/login` (bouton “Se déconnecter”).
-- Besoin d’un `NEXTAUTH_SECRET` dans `.env` (+ `NEXTAUTH_URL` recommandé). Exemple dans `.env.example`.
+## Auth & rôles
+- Login: `/login` (presets seed).
+- Rôles: `STUDENT`, `TEACHER`, `SCHOOL_ADMIN`.
+- RBAC: middleware protège `/app/...`; redirections selon rôle après login; logout renvoie à la home.
 
-## Positions (Step 2)
-- Liste publique `/positions` avec filtres type/niveau et détail `/positions/[id]`.
-- Gating élève : stub affiché (gratuit vs premium), en attente de la logique “débloqué”.
-- Prof/Admin : création via `/teacher/positions/new` (form zod + server action) et liste rapide `/teacher/positions`.
+## Navigation / Profile (Step 8)
+- Bandeau session/rôle avec `Accueil`, `Mon espace`, `Se déconnecter` sur toutes les pages.
+- Salutation “Bonjour <prénom|nom|email>” + bouton “Éditer” → `/app/profile`.
+- Page profil `/app/profile` : consultation email/rôle/école, édition prénom/nom (affichage app).
+- Homepage “Modules” inclut la carte Profile.
 
-## Blessures (Step 3)
-- Élève : `/app/student/injuries` (CRUD blessures, toggle actif/inactif).
-- Prof : `/app/teacher/students` + `/app/teacher/students/[id]` (consultation blessures élèves de l’école).
-- Seed : 1 blessure active pour student1.
+## Positions
+- `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`.
+- Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin.
+- CRUD : `/teacher/positions/new` et `/teacher/positions/[id]/edit` (Professeur/Admin).
 
-## Progression (Step 4)
-- Élève : `/app/student/progress` (vue progression par position, accès complet si premium, sinon positions vues).
-- Prof : mise à jour progression sur `/app/teacher/students/[id]` (statut, niveau, commentaire, piste : prise en compte des blessures visibles).
+## Blessures & progression
+- Élève : `/app/student/injuries` (CRUD, pagination 10) ; `/app/student/progress` (pagination 10).
+- Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste.
 
-## Cours (Step 5)
-- Création cours : `/app/teacher/courses/new` (date/titre, élèves, positions, notes élève×position).
-- Notes impactent la progression (status + niveau via server action).
-- Liste `/app/teacher/courses`. Historique élève : `/app/student/courses`.
+## Cours
+- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition.
+- Élève : `/app/student/courses` historique (pagination 10) + détail.
+- Détail cours correct par id; updates progression lors de la création/édition.
 
-## Mini-jeu (Step 6)
-- Quiz photo → nom : `/app/student/game` (10 questions).
-- Pool = positions débloquées de l’élève (ou toute la base si premium).
-- Score final + correction détaillée; message si <4 positions disponibles.
+## Mini-jeu
+- `/app/student/game` : quiz photo → nom sur positions débloquées (ou toutes si premium).
 
-## Admin école (Step 7)
-- Dashboard admin : `/app/admin` (stats école : utilisateurs, premium, cours, positions, blessures actives).
-- Gestion des utilisateurs : `/app/admin/users` (créer prof/élève/admin, premium on/off, suppression).
+## Admin école
+- `/app/admin` : stats école, actions rapides.
+- `/app/admin/users` : CRUD users (rôle, premium, mot de passe).
+
+## Pagination (v0.2.0)
+- Listes dynamiques paginées par 10 : cours élève/prof, progression élève, blessures élève, liste élèves prof/admin.
+
+## Santé & diagnostics
+- `/health` (200 OK), logs DB Prisma.
+- En cas de panics Turbopack : supprimer `.next/.turbo` et/ou `NEXT_USE_TURBOPACK=0`.
+
+## Seeds (dev)
+- Comptes : `admin@poleapp.test`, `teacher@poleapp.test`, `student1@poleapp.test`, `student2@poleapp.test` (`change-me-password`).
+- Généré : 2 écoles, 5 professeurs + 10 élèves/école, cours de démo, positions/médias, blessures types.
 
 ## Déploiement Render
-- Fichier `render.yaml` fourni (web service + Postgres). Render va créer la base `poleapp-db` et injecter `DATABASE_URL`.
-- Build command : `npm install && npx prisma generate && npm run build` (rootDir=web). Start : `npm run start`.
-- Post-deploy : `npm run db:push && npm run db:seed` pour préparer la base distante.
-- Variables à prévoir : `NEXTAUTH_SECRET` (auto-généré dans render.yaml), `NEXTAUTH_URL` (`https://<service>.onrender.com`).
+- Build : `npm install && npx prisma generate && npm run build`
+- Start : `npm run start`
+- Post-deploy : `npm run db:push && npm run db:seed`
+- Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
 
-## Comptes seed (mot de passe : `change-me-password`)
-- admin@poleapp.test — SCHOOL_ADMIN (premium)
-- teacher@poleapp.test — TEACHER
-- student1@poleapp.test — STUDENT (gratuit)
-- student2@poleapp.test — STUDENT (premium)
-- Générés en plus : 2 écoles (École 1, École 2) avec 5 profs + 10 élèves par école (premium 1/2), et 1 cours de démo par école (prof 1 + 3 élèves + 2 positions). Les comptes fixes sont rattachés à École 1.
-
-## Contenu seed
-- 2 écoles (École 1 / École 2).
-- 10 positions (types/niveaux/grips + image placeholder) + 1 progression élève “Jasmine”.
-- 5 injury types.
-- 1 cours de démo par école.
-
-## Healthcheck
-- `GET /health` retourne `{ status: "ok", timestamp, uptimeSeconds }`.
-
-## Notes
-- Changelog : voir `CHANGELOG.md`.
+## Changelog
+- v0.2.0 : profil utilisateur, salutations harmonisées, pagination 10 items, unification positions, tri cours desc. Voir `CHANGELOG.md`.
