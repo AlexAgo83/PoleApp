@@ -167,13 +167,19 @@ function LoginContent() {
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {["Élève", "Professeur", "Admin école"].map((label) => (
+            <Link
+              href="/signup"
+              className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
+            >
+              Créer un compte Élève
+            </Link>
+            {["Professeur", "Admin école"].map((label) => (
               <button
                 key={label}
                 type="button"
                 aria-disabled
                 className="cursor-not-allowed rounded-full border border-dashed border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200"
-                title="Ouverture de compte à venir"
+                title="Création réservée à l’école"
               >
                 Créer un compte {label}
               </button>
@@ -181,8 +187,8 @@ function LoginContent() {
           </div>
           <p className="text-xs text-slate-300">
             Freemium : accès de base (positions vues, modules ouverts). Premium : base complète
-            des positions + explications et mini-jeu renforcé. Les CTA de création seront activés
-            quand l&apos;onboarding sera branché.
+            des positions + explications et mini-jeu renforcé. Création self-serve activée pour les
+            élèves uniquement ; prof/admin restent gérés par l’école.
           </p>
         </div>
       </section>
