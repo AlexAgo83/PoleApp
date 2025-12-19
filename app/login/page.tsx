@@ -3,7 +3,7 @@
 import { signIn, getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { defaultHomeForRole } from "@/lib/rbac";
 
@@ -19,7 +19,7 @@ const presets: PresetUser[] = [
   { label: "Student premium", email: "student2@poleapp.test" },
 ];
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/app";
@@ -146,5 +146,21 @@ export default function LoginPage() {
         </Link>
       </aside>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-16">
+          <div className="panel w-full max-w-md p-6 text-center text-slate-200">
+            Chargement du formulaire…
+          </div>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
