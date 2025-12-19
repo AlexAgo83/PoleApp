@@ -7,16 +7,16 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction } from "./actions";
 
-type Props = {
-  params: { id: string };
-  searchParams?: { from?: string };
-};
+type Props =
+  | { params: { id: string }; searchParams?: { from?: string } }
+  | { params: Promise<{ id?: string }>; searchParams?: { from?: string } };
 
 export default async function TeacherStudentDetailPage({
   params,
   searchParams,
 }: Props) {
-  const studentId = params?.id;
+  const resolvedParams = await Promise.resolve(params);
+  const studentId = resolvedParams?.id;
 
   if (!studentId) {
     notFound();
