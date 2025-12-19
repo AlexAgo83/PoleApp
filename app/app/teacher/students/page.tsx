@@ -49,22 +49,22 @@ export default async function TeacherStudentsPage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+      <header className="panel border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
           Professeur / Admin
         </p>
         <h1 className="text-3xl font-semibold text-white">Élèves</h1>
-        <p className="text-sm text-slate-300">
+        <p className="text-sm text-slate-200">
           Aperçu des élèves de ton école et de leurs blessures déclarées.
         </p>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <div className="flex flex-col divide-y divide-white/5">
           {students.map((student) => (
             <article
               key={student.id}
-              className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-2 py-4 transition hover:bg-indigo-500/10 md:flex-row md:items-center md:justify-between"
             >
               <div>
                 <p className="text-base font-semibold text-white">

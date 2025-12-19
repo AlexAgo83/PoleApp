@@ -38,25 +38,25 @@ export default async function TeacherCoursesPage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             Professeur / Admin
           </p>
           <h1 className="text-3xl font-semibold text-white">Cours</h1>
-          <p className="text-sm text-slate-300">
-            Derniers cours créés (max 20). Le détail viendra plus tard.
+          <p className="text-sm text-slate-200">
+            Derniers cours créés. Tri par date desc, pagination x10.
           </p>
         </div>
         <Link
           href="/app/teacher/courses/new"
-          className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+          className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
         >
           Nouveau cours
         </Link>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => (
             <a
@@ -64,7 +64,7 @@ export default async function TeacherCoursesPage({
               href={`/app/teacher/courses/${course.id}?from=${encodeURIComponent(
                 `/app/teacher/courses?page=${currentPage}`
               )}`}
-              className="group block rounded-xl transition hover:-translate-y-0.5 hover:bg-white/5"
+              className="group block rounded-xl transition hover:-translate-y-0.5 hover:bg-indigo-500/10"
             >
               <article className="flex flex-col gap-2 py-3 px-2 md:flex-row md:items-center md:justify-between">
                 <div>
@@ -82,7 +82,7 @@ export default async function TeacherCoursesPage({
             </a>
           ))}
           {courses.length === 0 && (
-            <p className="py-4 text-slate-200">Aucun cours créé pour le moment.</p>
+              <p className="py-4 text-slate-200">Aucun cours créé pour le moment.</p>
           )}
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
