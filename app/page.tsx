@@ -65,12 +65,12 @@ export default function Home() {
             <p className="font-semibold text-white">Status build</p>
             <ul className="mt-2 space-y-1">
               <li>✅ Step 0 — Bootstrap + health</li>
-              <li>⏳ Step 1 — Auth/RBAC</li>
+              <li>✅ Step 1 — Auth/RBAC (login + middleware)</li>
               <li>⬜ Step 2 — Positions CRUD</li>
             </ul>
             <p className="mt-3 text-xs text-slate-400">
               See `/health` for runtime status, `npm run db:seed` pour la base
-              locale.
+              locale. Login via `/login` (seed: admin/teacher/student).
             </p>
           </div>
         </div>

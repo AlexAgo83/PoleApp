@@ -5,6 +5,7 @@ Base Next.js + Prisma setup derived from the provided markdown specs (roles, pos
 ## Stack
 - Next.js (App Router) + TypeScript + Tailwind
 - Prisma + SQLite (dev)
+- NextAuth (Credentials) + middleware RBAC (student/teacher/admin)
 - Vitest + Testing Library (unit smoke)
 
 ## Setup rapide
@@ -18,6 +19,12 @@ Scripts utiles :
 - `npm run db:seed` : push + seed.
 - `npm test` : Vitest.
 - `npm run lint`
+
+## Auth (Step 1)
+- Route login : `/login` (Credentials provider).
+- Middleware RBAC protège : `/app/student`, `/app/teacher`, `/app/admin` (+ `/student|/teacher|/admin` pour la suite).
+- Redirection auto selon rôle : admin → `/app/admin`, teacher → `/app/teacher`, student → `/app/student`.
+- Besoin d’un `NEXTAUTH_SECRET` dans `.env` (+ `NEXTAUTH_URL` recommandé). Exemple dans `.env.example`.
 
 ## Comptes seed (mot de passe : `change-me-password`)
 - admin@poleapp.test — SCHOOL_ADMIN (premium)
