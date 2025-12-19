@@ -1,11 +1,6 @@
-import { getServerSession } from "next-auth";
-
-import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 
 export default async function TeacherDashboard() {
-  const session = await getServerSession(authOptions);
-
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
@@ -13,14 +8,6 @@ export default async function TeacherDashboard() {
         <p className="text-slate-300">
           Accès réservé aux profs/admins de l’école pour gérer élèves, cours et progression.
         </p>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-          <p>
-            Connecté en : <strong>{session?.user?.email}</strong>
-          </p>
-          <p>
-            Rôle : <strong>{session?.user?.role}</strong>
-          </p>
-        </div>
       </section>
 
       <section className="panel p-6">

@@ -23,6 +23,14 @@ body {
   color: var(--foreground);
 }
 
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a[role="button"] {
+  font-weight: 700;
+}
+
 a {
   text-decoration: none;
 }

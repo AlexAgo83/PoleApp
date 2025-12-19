@@ -14,15 +14,6 @@ export default async function StudentDashboard() {
         <p className="text-slate-300">
           Accès réservé aux rôles étudiant (ou admin pour debug). Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-          <p>
-            Connecté en : <strong>{session?.user?.email}</strong>
-          </p>
-          <p>
-            Rôle : <strong>{session?.user?.role}</strong> ·{" "}
-            {isPremium ? "Premium" : "Gratuit"}
-          </p>
-        </div>
       </section>
 
       <section className="panel p-6">
