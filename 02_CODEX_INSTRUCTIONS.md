@@ -25,6 +25,7 @@ Objectif : prototyper rapidement une **web app** (responsive) validant le MVP :
 - React Hook Form (optionnel) pour forms
 - Testing: Vitest (unit)
 - Run dev : `npm run dev` (ou `docker compose watch` pour hot-reload conteneur, target `dev` avec code + schema embarqués, sans bind mount)
+- Si Turbopack panique : supprimer `.next`/`.turbo` puis forcer Webpack avec `NEXT_USE_TURBOPACK=0 npm run dev` (ou la variable dans Docker/Render).
 - DB : `npm run db:push` puis `npm run db:seed` (les scripts pointent sur `prisma/schema.prisma`)
 - Seed : 2 écoles (École 1/École 2) + 5 profs et 10 élèves par école (mot de passe `poleapp123`, premium 1/2) + comptes fixes admin/teacher/student1/2
 - Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma generate && npm run build`, start `npm run start`
