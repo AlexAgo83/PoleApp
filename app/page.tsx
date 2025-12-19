@@ -14,6 +14,7 @@ const moduleSections = [
       "Base positions + médias, filtres, vignettes 2 colonnes, détail partageable, retour contextuel.",
     status: "Étape 8",
     role: "Élève / Professeur / Admin",
+    icon: "🌀",
   },
   {
     title: "Cours",
@@ -21,6 +22,7 @@ const moduleSections = [
     description: "Création cours, présences, notes et mise à jour progression.",
     status: "Étape 5",
     role: "Professeur",
+    icon: "📅",
   },
   {
     title: "Élèves",
@@ -29,6 +31,7 @@ const moduleSections = [
       "Fiches élèves, progression, blessures visibles par professeur.",
     status: "Étapes 3-4",
     role: "Professeur / Admin",
+    icon: "🧑‍🎓",
   },
   {
     title: "Mini-jeu",
@@ -36,6 +39,7 @@ const moduleSections = [
     description: "Photo → nom, pool positions débloquées, score final.",
     status: "Étape 6",
     role: "Student",
+    icon: "🎯",
   },
   {
     title: "Admin école",
@@ -43,6 +47,7 @@ const moduleSections = [
     description: "Pilotage école : utilisateurs, stats rapides.",
     status: "Étape 7",
     role: "Admin",
+    icon: "🏢",
   },
   {
     title: "Profile",
@@ -50,6 +55,7 @@ const moduleSections = [
     description: "Consulter et mettre à jour prénom/nom, voir email, rôle et école.",
     status: "Étape 8",
     role: "Élève / Professeur / Admin",
+    icon: "👤",
   },
 ];
 
@@ -247,6 +253,14 @@ export default async function Home() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-400/10 opacity-0 transition group-hover:opacity-100" />
               <div className="relative">
+              <div className="flex items-center gap-2 text-sm text-indigo-100">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-base">
+                  {module.icon}
+                </span>
+                <span className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+                  Module
+                </span>
+              </div>
               <h3 className="text-lg font-semibold text-white">
                 {module.title}
               </h3>

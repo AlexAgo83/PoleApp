@@ -38,7 +38,7 @@ export default function HealthBadge() {
 
   return (
     <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
-      <span className={`h-2.5 w-2.5 rounded-full ${color}`} />
+      <span className={`h-2.5 w-2.5 rounded-full ${color} animate-pulse`} />
       {label}
     </div>
   );
