@@ -71,3 +71,43 @@ export async function updatePositionAction(formData: FormData) {
   revalidatePath("/positions");
   redirect(`/positions/${data.id}?from=/positions`);
 }
+
+const deleteSchema = z.object({
+  positionId: z.string().cuid(),
+});
+
+export async function deletePositionAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.role;
+  if (!role || (role !== "TEACHER" && role !== "SCHOOL_ADMIN")) {
+    redirect("/access-denied");
+  }
+
+  const parsed = deleteSchema.safeParse({
+    positionId: formData.get("positionId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Formulaire invalide.");
+  }
+
+  const existing = await prisma.position.findUnique({
+    where: { id: parsed.data.positionId },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    redirect("/positions");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.coursePosition.deleteMany({ where: { positionId: parsed.data.positionId } });
+    await tx.courseNote.deleteMany({ where: { positionId: parsed.data.positionId } });
+    await tx.studentPositionProgress.deleteMany({ where: { positionId: parsed.data.positionId } });
+    await tx.positionMedia.deleteMany({ where: { positionId: parsed.data.positionId } });
+    await tx.position.delete({ where: { id: parsed.data.positionId } });
+  });
+
+  revalidatePath("/positions");
+  redirect("/positions");
+}

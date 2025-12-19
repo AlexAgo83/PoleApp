@@ -173,7 +173,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             <div className="flex justify-end">
               <Link
                 href={`/teacher/positions/${position.id}/edit`}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg shadow-cyan-500/30 transition hover:translate-y-[-1px] hover:shadow-xl hover:shadow-cyan-500/40"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/gear.svg" alt="" className="h-4 w-4" />

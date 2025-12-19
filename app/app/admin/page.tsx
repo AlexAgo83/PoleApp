@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { updateSchoolAction } from "./actions";
 
 type RoleCounts = {
   total: number;
@@ -32,7 +33,8 @@ export default async function AdminDashboard() {
     );
   }
 
-  const [users, positionsCount, coursesCount, activeInjuries] = await Promise.all([
+  const [school, users, positionsCount, coursesCount, activeInjuries] = await Promise.all([
+    prisma.school.findUnique({ where: { id: session.user.schoolId } }),
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId },
       select: { role: true, isPremium: true },
@@ -58,7 +60,9 @@ export default async function AdminDashboard() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
       <header className="panel p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">Dashboard école</h1>
+        <h1 className="text-3xl font-semibold text-white">
+          Dashboard {school?.name ?? "école"},
+        </h1>
         <p className="text-sm text-slate-300">
           Vue synthétique de l’école et accès rapide aux actions admin.
         </p>
@@ -86,7 +90,7 @@ export default async function AdminDashboard() {
 
       <section className="grid gap-4 md:grid-cols-2">
         <div className="panel space-y-3 p-6">
-          <h2 className="text-xl font-semibold text-white">École</h2>
+          <h2 className="text-xl font-semibold text-white">{school?.name ?? "École"}</h2>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
             <Stat label="Utilisateurs" value={counts.total} />
             <Stat label="Étudiants" value={counts.STUDENT} />
@@ -125,6 +129,33 @@ export default async function AdminDashboard() {
             cta="Voir les cours"
           />
         </div>
+      </section>
+
+      <section className="panel p-6">
+        <h2 className="text-lg font-semibold text-white">Informations école</h2>
+        <p className="text-sm text-slate-300">
+          Mets à jour le nom affiché pour cette école. Visible par les professeurs et élèves rattachés.
+        </p>
+        <form action={updateSchoolAction} className="mt-4 space-y-3">
+          <input type="hidden" name="schoolId" value={session.user.schoolId} />
+          <label className="block text-sm text-slate-200">
+            Nom de l’école
+            <input
+              name="name"
+              defaultValue={school?.name ?? ""}
+              required
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+          </label>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+            >
+              Sauvegarder
+            </button>
+          </div>
+        </form>
       </section>
     </main>
   );
