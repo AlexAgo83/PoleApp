@@ -68,5 +68,7 @@ export async function updateProgressAction(formData: FormData) {
     },
   });
 
-  revalidatePath(`/app/teacher/students/${parsed.data.studentId}`);
+  const targetPath = `/app/teacher/students/${parsed.data.studentId}`;
+  revalidatePath(targetPath);
+  redirect(targetPath);
 }
