@@ -56,23 +56,24 @@ export async function createUserAction(formData: FormData) {
     isPremium: formData.get("isPremium") || undefined,
   });
   if (!parsed.success) {
-    redirectWithMessage("Formulaire invalide", "error");
+    throw new Error("Formulaire invalide");
   }
+  const data = parsed.data;
 
-  const existing = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  const existing = await prisma.user.findUnique({ where: { email: data.email } });
   if (existing) {
     redirectWithMessage("Email déjà utilisé", "error");
   }
 
-  const passwordHash = await bcrypt.hash(parsed.data.password, 10);
+  const passwordHash = await bcrypt.hash(data.password, 10);
 
   await prisma.user.create({
     data: {
-      email: parsed.data.email,
-      name: parsed.data.name?.toString().trim() || null,
+      email: data.email,
+      name: data.name?.toString().trim() || null,
       passwordHash,
-      role: parsed.data.role,
-      isPremium: Boolean(parsed.data.isPremium),
+      role: data.role,
+      isPremium: Boolean(data.isPremium),
       schoolId: admin.schoolId,
     },
   });
@@ -90,11 +91,12 @@ export async function updateUserAction(formData: FormData) {
     isPremium: formData.get("isPremium") || undefined,
   });
   if (!parsed.success) {
-    redirectWithMessage("Formulaire invalide", "error");
+    throw new Error("Formulaire invalide");
   }
+  const data = parsed.data;
 
   const user = await prisma.user.findUnique({
-    where: { id: parsed.data.userId },
+    where: { id: data.userId },
     select: { schoolId: true },
   });
   if (!user || user.schoolId !== admin.schoolId) {
@@ -102,11 +104,11 @@ export async function updateUserAction(formData: FormData) {
   }
 
   await prisma.user.update({
-    where: { id: parsed.data.userId },
+    where: { id: data.userId },
     data: {
-      role: parsed.data.role,
-      name: parsed.data.name?.toString().trim() || null,
-      isPremium: Boolean(parsed.data.isPremium),
+      role: data.role,
+      name: data.name?.toString().trim() || null,
+      isPremium: Boolean(data.isPremium),
     },
   });
 
@@ -118,15 +120,16 @@ export async function deleteUserAction(formData: FormData) {
   const admin = await requireAdmin();
   const parsed = deleteSchema.safeParse({ userId: formData.get("userId") });
   if (!parsed.success) {
-    redirectWithMessage("Formulaire invalide", "error");
+    throw new Error("Formulaire invalide");
   }
+  const data = parsed.data;
 
-  if (parsed.data.userId === admin.id) {
+  if (data.userId === admin.id) {
     redirectWithMessage("Impossible de supprimer votre propre compte", "error");
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: parsed.data.userId },
+    where: { id: data.userId },
     select: { schoolId: true },
   });
   if (!user || user.schoolId !== admin.schoolId) {
@@ -134,7 +137,7 @@ export async function deleteUserAction(formData: FormData) {
   }
 
   try {
-    await prisma.user.delete({ where: { id: parsed.data.userId } });
+    await prisma.user.delete({ where: { id: data.userId } });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
       redirectWithMessage("Suppression impossible (liens cours/progression)", "error");

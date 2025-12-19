@@ -1,5 +1,6 @@
 import { PositionLevel, PositionType } from "@prisma/client";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -26,6 +27,10 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 export default async function PositionDetailPage({ params }: Props) {
+  if (!params?.id) {
+    notFound();
+  }
+
   const session = await getServerSession(authOptions);
 
   const position = await prisma.position.findUnique({
