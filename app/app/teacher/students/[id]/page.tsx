@@ -1,5 +1,5 @@
 import { LearningStatus } from "@prisma/client";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -11,31 +11,38 @@ type Props = {
 };
 
 export default async function TeacherStudentDetailPage({ params }: Props) {
+  const resolvedParams = await Promise.resolve(params);
+  const studentId = resolvedParams?.id;
+
+  if (!studentId) {
+    notFound();
+  }
+
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     redirect("/access-denied");
   }
 
-const student = await prisma.user.findFirst({
-  where: {
-    id: params.id,
-    schoolId: session.user.schoolId,
-    role: "STUDENT",
-  },
-  select: {
-    id: true,
-    email: true,
-    name: true,
-    isPremium: true,
-    injuries: {
-      include: { injuryType: true },
-      orderBy: { createdAt: "desc" },
+  const student = await prisma.user.findFirst({
+    where: {
+      id: studentId,
+      schoolId: session.user.schoolId,
+      role: "STUDENT",
     },
-    progress: {
-      include: { position: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      isPremium: true,
+      injuries: {
+        include: { injuryType: true },
+        orderBy: { createdAt: "desc" },
+      },
+      progress: {
+        include: { position: true },
+      },
     },
-  },
-});
+  });
 
   if (!student) {
     redirect("/access-denied");

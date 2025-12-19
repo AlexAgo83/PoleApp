@@ -9,7 +9,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
-  name: z
+  firstName: z
+    .string()
+    .trim()
+    .max(60, "Prénom trop long")
+    .optional(),
+  lastName: z
     .string()
     .trim()
     .max(120, "Nom trop long")
@@ -23,18 +28,20 @@ export async function updateProfileAction(formData: FormData) {
   }
 
   const parsed = schema.safeParse({
-    name: formData.get("name")?.toString() || undefined,
+    firstName: formData.get("firstName")?.toString() || undefined,
+    lastName: formData.get("lastName")?.toString() || undefined,
   });
 
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
   }
 
-  const { name } = parsed.data;
+  const { firstName, lastName } = parsed.data;
+  const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || null;
 
   await prisma.user.update({
     where: { id: session.user.id },
-    data: { name: name || null },
+    data: { name: displayName },
   });
 
   revalidatePath("/app/profile");

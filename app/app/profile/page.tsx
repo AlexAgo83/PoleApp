@@ -28,6 +28,12 @@ export default async function ProfilePage() {
   }
 
   const roleLabel = roleLabels[user.role] ?? user.role;
+  const [firstNameDefault, ...restName] =
+    (user.name ?? "")
+      .trim()
+      .split(" ")
+      .filter(Boolean);
+  const lastNameDefault = restName.join(" ");
 
   return (
     <main className="mx-auto grid max-w-4xl gap-6">
@@ -39,8 +45,8 @@ export default async function ProfilePage() {
           Informations du compte
         </h1>
         <p className="text-slate-300">
-          Consulte ou mets à jour ton nom d&apos;affichage. Les autres champs sont
-          informatifs et liés à ton compte existant.
+          Consulte ou mets à jour ton nom d&apos;affichage (prénom / nom). Les autres
+          champs sont informatifs et liés à ton compte existant.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <InfoRow label="Email" value={user.email} />
@@ -67,32 +73,38 @@ export default async function ProfilePage() {
 
         <form action={updateProfileAction} className="mt-4 space-y-4">
           <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-200">Prénom</span>
+            <input
+              type="text"
+              name="firstName"
+              defaultValue={firstNameDefault}
+              placeholder="Ton prénom"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+            />
+          </label>
+
+          <label className="block space-y-2">
             <span className="text-sm font-medium text-slate-200">Nom</span>
             <input
               type="text"
-              name="name"
-              defaultValue={user.name ?? ""}
-              placeholder="Ton nom ou pseudo"
+              name="lastName"
+              defaultValue={lastNameDefault}
+              placeholder="Ton nom de famille"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
             />
-            <span className="text-xs text-slate-400">
-              Utilisé pour l&apos;affichage dans l&apos;app (cours, listes, messages).
-            </span>
           </label>
 
-          <div className="flex items-center gap-3">
+          <p className="text-xs text-slate-400">
+            Utilisé pour l&apos;affichage dans l&apos;app (cours, listes, messages).
+          </p>
+
+          <div className="flex items-center justify-end gap-3">
             <button
               type="submit"
               className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
             >
               Enregistrer
             </button>
-            <a
-              href="/app"
-              className="rounded-full border border-white/15 px-4 py-2 font-semibold text-white/90 transition hover:border-cyan-400/70 hover:text-white"
-            >
-              Retour à l&apos;accueil
-            </a>
           </div>
         </form>
       </section>
