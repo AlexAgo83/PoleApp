@@ -64,6 +64,20 @@ export default async function StudentDashboard() {
             </p>
           </Link>
           <Link
+            href="/positions"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              Positions
+            </p>
+            <p className="text-base font-semibold text-white">
+              Consulter les figures
+            </p>
+            <p className="text-sm text-slate-300">
+              Parcours filtrable des positions (images seed). Accès complet si premium, sinon selon progression.
+            </p>
+          </Link>
+          <Link
             href="/app/student/game"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
