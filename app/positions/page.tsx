@@ -104,7 +104,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       </header>
 
       <section className="panel p-6">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           {positions.map((p) => {
             const cover = p.media?.[0];
             return (
