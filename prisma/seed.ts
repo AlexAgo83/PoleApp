@@ -212,7 +212,7 @@ async function main() {
 
     const studentData = Array.from({ length: 10 }).map((_, idx) => ({
       email: `student${idx + 1}.${slug}@poleapp.test`,
-      name: `Student ${idx + 1} (${name})`,
+      name: `Student ${idx + 1}`,
       passwordHash,
       role: Role.STUDENT,
       schoolId,

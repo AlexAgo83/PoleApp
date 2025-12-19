@@ -4,30 +4,35 @@ const moduleSections = [
     href: "/positions",
     description: "Base positions + médias, filtres, progression par élève.",
     status: "Étape 2",
+    role: "Public / Prof",
   },
   {
     title: "Cours",
     href: "/app/teacher/courses",
     description: "Création cours, présences, notes et mise à jour progression.",
     status: "Étape 5",
+    role: "Prof",
   },
   {
     title: "Élèves",
     href: "/app/teacher/students",
     description: "Fiches élèves, progression, blessures visibles par prof.",
     status: "Étapes 3-4",
+    role: "Prof / Admin",
   },
   {
     title: "Mini-jeu",
     href: "/app/student/game",
     description: "Photo → nom, pool positions débloquées, score final.",
     status: "Étape 6",
+    role: "Student",
   },
   {
     title: "Admin école",
     href: "/admin",
     description: "Pilotage école : utilisateurs, stats rapides.",
     status: "Étape 7",
+    role: "Admin",
   },
 ];
 
@@ -124,9 +129,14 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-white">
                   {module.title}
                 </h3>
-                <span className="rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-200">
-                  {module.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-slate-200">
+                    {module.role}
+                  </span>
+                  <span className="rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-200">
+                    {module.status}
+                  </span>
+                </div>
               </div>
               <p className="text-sm text-slate-300">{module.description}</p>
               <div className="flex items-center gap-2 text-sm font-semibold text-cyan-300">

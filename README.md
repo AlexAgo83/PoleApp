@@ -43,7 +43,7 @@ Scripts utiles :
 ## Auth (Step 1)
 - Route login : `/login` (Credentials provider).
 - Middleware RBAC protège : `/app/student`, `/app/teacher`, `/app/admin` (+ `/student|/teacher|/admin` pour la suite).
-- Redirection auto selon rôle : admin → `/app/admin`, teacher → `/app/teacher`, student → `/app/student`.
+- Redirection auto selon rôle : admin → `/app/admin`, teacher → `/app/teacher`, student → `/app/student` (prend en compte `callbackUrl` si fourni et même origine).
 - Besoin d’un `NEXTAUTH_SECRET` dans `.env` (+ `NEXTAUTH_URL` recommandé). Exemple dans `.env.example`.
 
 ## Positions (Step 2)
@@ -85,11 +85,13 @@ Scripts utiles :
 - teacher@poleapp.test — TEACHER
 - student1@poleapp.test — STUDENT (gratuit)
 - student2@poleapp.test — STUDENT (premium)
+- Générés en plus : 2 écoles (École 1, École 2) avec 5 profs + 10 élèves par école (premium 1/2), et 1 cours de démo par école (prof 1 + 3 élèves + 2 positions). Les comptes fixes sont rattachés à École 1.
 
 ## Contenu seed
-- 1 école (“Pole Pilot School”).
+- 2 écoles (École 1 / École 2).
 - 10 positions (types/niveaux/grips + image placeholder) + 1 progression élève “Jasmine”.
 - 5 injury types.
+- 1 cours de démo par école.
 
 ## Healthcheck
 - `GET /health` retourne `{ status: "ok", timestamp, uptimeSeconds }`.
