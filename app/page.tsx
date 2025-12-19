@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
-import { HealthBadge } from "@/components/HealthBadge";
+import HealthBadge from "@/components/HealthBadge";
 import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 
@@ -58,11 +58,22 @@ const buildSteps = [
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const homeForRole = defaultHomeForRole(session?.user?.role);
+  const isAuthenticated = Boolean(session?.user);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-10 px-6 py-12 md:px-10">
-      <section className="panel flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-slate-200">
-        <div className="flex flex-wrap items-center gap-2">
+      <section
+        className={`panel p-4 text-sm text-slate-200 ${
+          isAuthenticated
+            ? "flex flex-col gap-3 items-end text-right md:flex-row md:items-center md:justify-between md:text-left"
+            : "flex flex-col gap-2 text-left md:flex-row md:items-center md:justify-between"
+        }`}
+      >
+        <div
+          className={`flex flex-wrap items-center gap-2 ${
+            isAuthenticated ? "justify-end md:justify-start" : "justify-start"
+          }`}
+        >
           {session?.user ? (
             <>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
@@ -74,6 +85,20 @@ export default async function Home() {
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.14em] text-cyan-200">
                 Rôle : {session.user.role}
               </span>
+            </>
+          ) : (
+            <span className="text-xs uppercase tracking-[0.18em] text-cyan-200">
+              Pole App — MVP v0.1.0
+            </span>
+          )}
+        </div>
+        <div
+          className={`flex flex-wrap items-center gap-2 ${
+            isAuthenticated ? "justify-end md:justify-start" : "justify-start md:justify-end"
+          }`}
+        >
+          {session?.user ? (
+            <>
               <Link
                 href={homeForRole}
                 role="button"
@@ -87,13 +112,11 @@ export default async function Home() {
             <Link
               href="/login"
               className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
             >
               Se connecter
             </Link>
           )}
-        </div>
-        <div className="text-xs text-slate-400">
-          Accès différencié élève / prof / admin via NextAuth + RBAC.
         </div>
       </section>
 
@@ -101,9 +124,11 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-amber-400/10" />
         <div className="relative flex flex-col gap-4 p-10 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
-            <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-              Pole App — MVP v0.1.0
-            </p>
+            {session?.user && (
+              <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
+                Pole App — MVP v0.1.0
+              </p>
+            )}
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
               Suivi élève complet : positions, progression, cours et révision ludique.
             </h1>
