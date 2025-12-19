@@ -31,6 +31,17 @@ const moduleSections = [
   },
 ];
 
+const buildSteps = [
+  { label: "Step 0 — Bootstrap + health", done: true },
+  { label: "Step 1 — Auth/RBAC (login + middleware)", done: true },
+  { label: "Step 2 — Positions (browse + create prof)", done: true },
+  { label: "Step 3 — Blessures élève (UI + prof)", done: true },
+  { label: "Step 4 — Progression par position", done: false },
+  { label: "Step 5 — Fiche cours (notes + progression)", done: false },
+  { label: "Step 6 — Mini-jeu", done: false },
+  { label: "Step 7 — Admin école", done: false },
+];
+
 export default function Home() {
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-10 px-6 py-12 md:px-10">
@@ -54,7 +65,7 @@ export default function Home() {
                 Next.js App Router
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1">
-                Prisma + SQLite
+                Prisma + PostgreSQL
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1">
                 Auth + RBAC (prochaines étapes)
@@ -64,9 +75,18 @@ export default function Home() {
           <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg backdrop-blur">
             <p className="font-semibold text-white">Status build</p>
             <ul className="mt-2 space-y-1">
-              <li>✅ Step 0 — Bootstrap + health</li>
-              <li>✅ Step 1 — Auth/RBAC (login + middleware)</li>
-              <li>✅ Step 2 — Positions (browse + create prof)</li>
+              {buildSteps.map((step) => (
+                <li key={step.label} className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                      step.done ? "bg-emerald-400" : "bg-slate-500"
+                    }`}
+                  />
+                  <span className={step.done ? "text-white" : "text-slate-300"}>
+                    {step.label}
+                  </span>
+                </li>
+              ))}
             </ul>
             <p className="mt-3 text-xs text-slate-400">
               See `/health` for runtime status, `npm run db:seed` pour la base
@@ -119,37 +139,30 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="panel grid gap-6 p-8 md:grid-cols-2">
+      <section className="panel p-8">
         <div className="space-y-3">
-          <h3 className="text-xl font-semibold text-white">Ce qui arrive</h3>
+          <h3 className="text-xl font-semibold text-white">Nouveautés</h3>
           <p className="text-slate-300">
-            Step 1 : auth Credentials + middleware RBAC (student/teacher/admin)
-            avec NextAuth. Step 2 : CRUD positions + gating free/premium.
+            Dernière étape livrée : <strong>Step 3 — Blessures</strong>
+            <br />
+            Élève : déclaration/édition/suppression sur `/app/student/injuries`.
+            Prof : lecture des blessures élèves dans `/app/teacher/students` et
+            la fiche détail.
           </p>
-          <ul className="space-y-2 text-sm text-slate-300">
-            <li>• Pages protégées `/app/student`, `/app/teacher`, `/app/admin`</li>
-            <li>• Positions : liste, détail, création prof</li>
-            <li>• Seed stable (école + prof + élèves + positions)</li>
-          </ul>
-        </div>
-        <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-200">
-          <h4 className="font-semibold text-white">Raccourcis dev</h4>
-          <ul className="space-y-2">
-            <li>
-              <code className="rounded bg-black/40 px-2 py-1">npm run dev</code>{" "}
-              — lance Next.js
-            </li>
-            <li>
-              <code className="rounded bg-black/40 px-2 py-1">
-                npm run db:seed
-              </code>{" "}
-              — push schéma + seed SQLite
-            </li>
-            <li>
-              <code className="rounded bg-black/40 px-2 py-1">npm test</code>{" "}
-              — tests unitaires (Vitest)
-            </li>
-          </ul>
+          <div className="space-y-2 text-sm text-slate-300">
+            <p className="text-slate-200">Historique rapide :</p>
+            <ul className="space-y-1">
+              <li>• Step 2 : Positions — liste/détail + création prof</li>
+              <li>• Step 1 : Auth/RBAC — login credentials + middleware</li>
+              <li>• Step 0 : Bootstrap — Next.js + Prisma + seed + /health</li>
+            </ul>
+          </div>
+          <div className="space-y-1 text-sm text-slate-300">
+            <p className="text-slate-200">Prochain focus :</p>
+            <ul className="space-y-1">
+              <li>• Step 4 : Progression par position (élève/prof)</li>
+            </ul>
+          </div>
         </div>
       </section>
     </main>
