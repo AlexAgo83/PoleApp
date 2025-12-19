@@ -61,7 +61,7 @@ export default async function Home() {
   const isAuthenticated = Boolean(session?.user);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-10 px-6 py-12 md:px-10">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10 md:px-8">
       <section
         className={`panel p-4 text-sm text-slate-200 ${
           isAuthenticated
@@ -120,9 +120,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <header className="panel relative overflow-hidden">
+      <header className="panel relative overflow-hidden p-6">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-amber-400/10" />
-        <div className="relative flex flex-col gap-4 p-10 md:flex-row md:items-center md:justify-between">
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             {session?.user && (
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
