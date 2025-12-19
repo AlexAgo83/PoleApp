@@ -57,27 +57,27 @@ export default async function StudentCourseDetailPage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             Élève
           </p>
           <h1 className="text-3xl font-semibold text-white">
             {course.title ?? "Cours"}
           </h1>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-slate-200">
             {new Date(course.date).toLocaleString()} · {teacherName}
           </p>
         </div>
         <Link
           href={backHref}
-          className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
         >
           Retour à mes cours
         </Link>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Positions couvertes</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.positions.map((cp) => (
@@ -99,7 +99,7 @@ export default async function StudentCourseDetailPage({
         </ul>
       </section>
 
-      <section className="panel p-6">
+      <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Notes / progression</h2>
         {course.notes.length === 0 ? (
           <p className="text-slate-300">Aucune note pour ce cours.</p>
