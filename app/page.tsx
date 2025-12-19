@@ -100,8 +100,10 @@ export default async function Home() {
               <Link
                 href={homeForRole}
                 role="button"
-                className="rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-1.5 font-semibold text-white transition hover:border-indigo-300 hover:bg-indigo-500/30"
+                className="inline-flex items-center gap-2 rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-1.5 font-semibold text-white transition hover:border-indigo-300 hover:bg-indigo-500/30"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/house.svg" alt="" className="h-4 w-4" />
                 Mon espace
               </Link>
               <SignOutButton />
