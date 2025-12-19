@@ -21,13 +21,14 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
     return notFound();
   }
 
-  if (!id) {
+  if (!id || !session.user.schoolId) {
     return notFound();
   }
 
   const course = await prisma.course.findUnique({
     where: {
       id,
+      schoolId: session.user.schoolId,
       attendances: { some: { studentId: session.user.id } },
     },
     include: {
@@ -44,7 +45,8 @@ export default async function StudentCourseDetailPage({ params }: PageProps) {
     return notFound();
   }
 
-  const teacherName = course.teacher?.name ?? course.teacher?.email ?? "Prof";
+  const teacherName =
+    course.teacher?.name ?? course.teacher?.email ?? "Professeur";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
