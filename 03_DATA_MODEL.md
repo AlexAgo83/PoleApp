@@ -6,7 +6,7 @@
 - Une **Position** est globale (scopée école plus tard si besoin).
 - La progression = relation **Student ↔ Position**.
 - Un **Course** relie prof + élèves + positions + notes.
-- Seed : 2 écoles créées par défaut (École 1, École 2) avec comptes profs/élèves rattachés; les comptes fixes sont attachés à École 1.
+- Seed : 2 écoles créées par défaut (École 1, École 2) avec comptes profs/élèves rattachés; les comptes fixes sont attachés à École 1. Chaque école reçoit 1 cours de démo (prof 1 + 3 élèves + 2 positions).
 
 ---
 
