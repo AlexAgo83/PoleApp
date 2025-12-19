@@ -56,6 +56,9 @@ const buildSteps = [
   { label: "Step 6 — Mini-jeu", done: true },
   { label: "Step 7 — Admin école", done: true },
   { label: "Step 8 — Navigation par rôle + Positions unifiées", done: true },
+  { label: "Step 9 — Journal d’audit", done: false },
+  { label: "Step 10 — Contre-indications", done: false },
+  { label: "Step 11 — UX + Badges", done: false },
 ];
 
 export default async function Home() {
@@ -246,9 +249,7 @@ export default async function Home() {
           <div className="space-y-1">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
-              <li>
-                • Step 8 : Navigation par rôle — bandeau commun, positions unifiées
-              </li>
+              <li>• Step 8 : Navigation — bandeau commun, positions unifiées</li>
               <li>• Step 7 : Admin — dashboard + gestion utilisateurs</li>
               <li>• Step 6 : Mini-jeu — quiz photo→nom sur positions débloquées</li>
               <li>• Step 5 : Cours — création + progression auto</li>
@@ -262,7 +263,9 @@ export default async function Home() {
           <div className="space-y-1">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Stabilisation & QA</li>
+              <li>• Step 9 : Journal d’audit (logs mutations)</li>
+              <li>• Step 10 : Contre-indications Position ↔ Blessure</li>
+              <li>• Step 11 : UX + Badges mini-jeu</li>
             </ul>
           </div>
         </div>

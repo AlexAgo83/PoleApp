@@ -182,6 +182,46 @@ Structure proposée :
 
 ---
 
+## Step 9 — Journal d’audit (A2/P1)
+
+**Tâches**
+- Ajouter modèle Prisma `AuditLog` (actorId, action, entityType, entityId, metadata JSON, createdAt).
+- Instrumenter les server actions sensibles (cours, progression, blessures, positions) pour écrire un log.
+- Page admin `/app/admin/audit` minimaliste (liste, filtres action/acteur, pagination simple).
+
+**DoD**
+- Chaque mutation sensible enregistre un log avec acteur et horodatage.
+- Admin peut consulter/filtrer les entrées.
+
+---
+
+## Step 10 — Contre-indications (B3/P1)
+
+**Tâches**
+- Modèle `PositionContraindication` (positionId, injuryTypeId, severity: INFO|WARN|BLOCK, notes).
+- UI sur fiche position (Professeur/Admin) pour ajouter/supprimer/modifier ces liens.
+- Affichage côté élève : badge/alerte si blessure active correspond à une contre-indication.
+- Influence mini-jeu (warn ou exclure si BLOCK optionnel).
+
+**DoD**
+- Contre-indications stockées et visibles.
+- UX claire sur les positions impactées par une blessure active.
+
+---
+
+## Step 11 — Améliorations UX + Badges (E2/P1)
+
+**Tâches**
+- Table `UserBadge` (userId, badgeId, unlockedAt) + référentiel de badges (série 5 bonnes, 10 sessions jouées, 100% score).
+- Attribution badges dans le mini-jeu + affichage badge dans dashboard élève.
+- Petites améliorations UX : états vides/error uniformisés, focus sur formulaires, marges/paddings cohérents.
+
+**DoD**
+- Badges persistés et affichés dans le dashboard élève.
+- UX harmonisée (espacements, états vides/error) sur les modules existants.
+
+---
+
 ## Règles de qualité (obligatoires)
 
 - Pas de “gros refacto” : petites PR/commits par step
