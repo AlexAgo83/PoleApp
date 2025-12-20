@@ -25,7 +25,7 @@ export async function purchaseCourseAction(formData: FormData) {
     throw new Error("Formulaire invalide");
   }
 
-  let course: {
+  type CourseWithCounts = {
     id: string;
     date: Date;
     durationMinutes: number | null;
@@ -33,7 +33,9 @@ export async function purchaseCourseAction(formData: FormData) {
     costCredits?: number | null;
     _count: { attendances: number };
     attendances: { id: string }[];
-  } | null = null;
+  };
+
+  let course: CourseWithCounts | null = null;
   try {
     course = (await prisma.course.findUnique({
       where: { id: parsed.data.courseId, schoolId: session.user.schoolId ?? undefined },
@@ -46,7 +48,7 @@ export async function purchaseCourseAction(formData: FormData) {
         _count: { select: { attendances: true } },
         attendances: { where: { studentId: session.user.id }, select: { id: true } },
       },
-    })) as typeof course;
+    })) as CourseWithCounts | null;
   } catch (error) {
     const isMissingColumn =
       error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2022";
@@ -61,7 +63,7 @@ export async function purchaseCourseAction(formData: FormData) {
           _count: { select: { attendances: true } },
           attendances: { where: { studentId: session.user.id }, select: { id: true } },
         },
-      })) as typeof course;
+      })) as CourseWithCounts | null;
     } else {
       throw error;
     }
@@ -98,14 +100,14 @@ export async function purchaseCourseAction(formData: FormData) {
       throw new Error("Crédits insuffisants");
     }
 
-    let latest:
-      | {
-          date: Date;
-          durationMinutes: number | null;
-          maxSeats?: number | null;
-          _count: { attendances: number };
-        }
-      | null = null;
+    type LatestCourse = {
+      date: Date;
+      durationMinutes: number | null;
+      maxSeats?: number | null;
+      _count: { attendances: number };
+    };
+
+    let latest: LatestCourse | null = null;
     try {
       latest = (await tx.course.findUnique({
         where: { id: course.id },
@@ -115,7 +117,7 @@ export async function purchaseCourseAction(formData: FormData) {
           maxSeats: true,
           _count: { select: { attendances: true } },
         },
-      })) as typeof latest;
+      })) as LatestCourse | null;
     } catch (error) {
       const isMissingColumn =
         error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2022";
@@ -128,7 +130,7 @@ export async function purchaseCourseAction(formData: FormData) {
             durationMinutes: true,
             _count: { select: { attendances: true } },
           },
-        })) as typeof latest;
+        })) as LatestCourse | null;
       } else {
         throw error;
       }
