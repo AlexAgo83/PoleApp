@@ -15,6 +15,15 @@ const createSchema = z.object({
   kind: z.string().min(2),
   website: z.string().url().optional(),
   description: z.string().optional(),
+  sponsored: z
+    .array(
+      z.object({
+        category: z.string().min(2),
+        label: z.string().optional(),
+        url: z.string().url(),
+      })
+    )
+    .optional(),
 });
 
 const updateSchema = z.object({
@@ -23,6 +32,16 @@ const updateSchema = z.object({
   kind: z.string().min(2),
   website: z.string().url().optional(),
   description: z.string().optional(),
+  sponsored: z
+    .array(
+      z.object({
+        id: z.string().cuid().optional(),
+        category: z.string().min(2),
+        label: z.string().optional(),
+        url: z.string().url(),
+      })
+    )
+    .optional(),
 });
 
 const deleteSchema = z.object({
@@ -44,6 +63,7 @@ export async function createPartnerAction(formData: FormData) {
     kind: formData.get("kind") || "SERVICE",
     website: formData.get("website") || undefined,
     description: formData.get("description") || undefined,
+    sponsored: safeParseSponsored(formData.get("sponsored") as string),
   });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
@@ -56,6 +76,15 @@ export async function createPartnerAction(formData: FormData) {
       website: parsed.data.website || null,
       description: parsed.data.description || null,
       schoolId,
+      sponsoredLinks: parsed.data.sponsored
+        ? {
+            create: parsed.data.sponsored.map((s) => ({
+              category: s.category,
+              label: s.label || null,
+              url: s.url,
+            })),
+          }
+        : undefined,
     },
   });
 
@@ -71,6 +100,7 @@ export async function updatePartnerAction(formData: FormData) {
     kind: formData.get("kind"),
     website: formData.get("website") || undefined,
     description: formData.get("description") || undefined,
+    sponsored: safeParseSponsored(formData.get("sponsored") as string),
   });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
@@ -91,6 +121,16 @@ export async function updatePartnerAction(formData: FormData) {
       kind: parsed.data.kind,
       website: parsed.data.website || null,
       description: parsed.data.description || null,
+      sponsoredLinks: parsed.data.sponsored
+        ? {
+            deleteMany: {},
+            create: parsed.data.sponsored.map((s) => ({
+              category: s.category,
+              label: s.label || null,
+              url: s.url,
+            })),
+          }
+        : { deleteMany: {} },
     },
   });
 
@@ -116,4 +156,23 @@ export async function deletePartnerAction(formData: FormData) {
   await prisma.partner.delete({ where: { id: parsed.data.id } });
   revalidatePath(basePath);
   redirect(basePath);
+}
+
+function safeParseSponsored(raw: string | undefined) {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item) => ({
+          category: item?.category,
+          label: item?.label,
+          url: item?.url,
+        }))
+        .filter((s) => s.category && s.url);
+    }
+    return undefined;
+  } catch {
+    return undefined;
+  }
 }

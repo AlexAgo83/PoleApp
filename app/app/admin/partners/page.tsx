@@ -7,8 +7,13 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+const PAGE_SIZE = 10;
 
-export default async function AdminPartnersPage() {
+export default async function AdminPartnersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
@@ -24,10 +29,36 @@ export default async function AdminPartnersPage() {
     );
   }
 
-  const partners = await prisma.partner.findMany({
+  const resolved = (await searchParams) ?? {};
+  const rawPage = Number(resolved.page ?? "1");
+  const currentPage = Math.max(1, Number.isFinite(rawPage) ? rawPage : 1);
+
+  const totalCount = await prisma.partner.count({
     where: { schoolId: session.user.schoolId },
-    orderBy: { name: "asc" },
   });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const skip = (safePage - 1) * PAGE_SIZE;
+
+  let partners: Awaited<ReturnType<typeof prisma.partner.findMany>> = [];
+  let supportsSponsored = true;
+  try {
+    partners = await prisma.partner.findMany({
+      where: { schoolId: session.user.schoolId },
+      orderBy: { name: "asc" },
+      include: { sponsoredLinks: true },
+      skip,
+      take: PAGE_SIZE,
+    });
+  } catch {
+    supportsSponsored = false;
+    partners = await prisma.partner.findMany({
+      where: { schoolId: session.user.schoolId },
+      orderBy: { name: "asc" },
+      skip,
+      take: PAGE_SIZE,
+    });
+  }
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -48,50 +79,61 @@ export default async function AdminPartnersPage() {
       </header>
 
       <section className="panel p-6">
-        <h2 className="text-lg font-semibold text-white">Ajouter un partenaire</h2>
-        <form action={createPartnerAction} className="mt-3 grid gap-3 md:grid-cols-2">
-          <label className="text-sm text-slate-200">
-            Nom
-            <input
-              name="name"
-              required
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Type
-            <input
-              name="kind"
-              placeholder="SERVICE ou REVENDEUR"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              defaultValue="SERVICE"
-            />
-          </label>
-          <label className="text-sm text-slate-200 md:col-span-2">
-            Site web (optionnel)
-            <input
-              name="website"
-              type="url"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200 md:col-span-2">
-            Description (optionnel)
-            <textarea
-              name="description"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              rows={2}
-            />
-          </label>
-          <div className="md:col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-            >
-              Ajouter
-            </button>
-          </div>
-        </form>
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Ajouter un partenaire</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form
+            action={createPartnerAction}
+            className="mt-3 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2"
+          >
+            <label className="text-sm text-slate-200">
+              Nom
+              <input
+                name="name"
+                required
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Type
+              <input
+                name="kind"
+                placeholder="SERVICE ou REVENDEUR"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                defaultValue="SERVICE"
+              />
+            </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Site web (optionnel)
+              <input
+                name="website"
+                type="url"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Description (optionnel)
+              <textarea
+                name="description"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                rows={2}
+              />
+            </label>
+            <input type="hidden" name="sponsored" value="[]" />
+            <div className="md:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Ajouter
+              </button>
+            </div>
+          </form>
+        </details>
       </section>
 
       <section className="panel space-y-4 p-6">
@@ -135,6 +177,48 @@ export default async function AdminPartnersPage() {
                   placeholder="Description"
                   className="w-56 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
+                <input
+                  type="hidden"
+                  name="sponsored"
+                  value={
+                    supportsSponsored
+                      ? JSON.stringify(
+                          // @ts-expect-error optional fallback
+                          (partner as any).sponsoredLinks?.map((s: any) => ({
+                            category: s.category,
+                            label: s.label ?? "",
+                            url: s.url,
+                          })) ?? []
+                        )
+                      : "[]"
+                  }
+                />
+                {supportsSponsored ? (
+                  <div className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-200">
+                      Liens sponsorisés (JSON)
+                    </p>
+                    <p className="text-slate-300">
+                      Catégorie, label optionnel, URL. Édite le JSON dans le champ caché si besoin.
+                    </p>
+                    <pre className="mt-2 max-h-32 overflow-auto rounded-lg bg-black/30 p-2 text-[11px] text-slate-100">
+{JSON.stringify(
+  // @ts-expect-error optional fallback
+  (partner as any).sponsoredLinks?.map((s: any) => ({
+    category: s.category,
+    label: s.label ?? "",
+    url: s.url,
+  })) ?? [],
+  null,
+  2
+)}
+                    </pre>
+                  </div>
+                ) : (
+                  <p className="text-xs text-amber-200">
+                    Liens sponsorisés indisponibles (migration Prisma non appliquée).
+                  </p>
+                )}
                 <button
                   type="submit"
                   className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -155,6 +239,36 @@ export default async function AdminPartnersPage() {
           ))}
         </div>
       </section>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
+        <span>
+          Page {safePage} / {totalPages} · {totalCount} partenaires
+        </span>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/app/admin/partners?page=${Math.max(1, safePage - 1)}`}
+            aria-disabled={safePage === 1}
+            className={`rounded-full border border-white/10 px-3 py-2 ${
+              safePage === 1
+                ? "cursor-not-allowed text-slate-500"
+                : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            }`}
+          >
+            Précédent
+          </Link>
+          <Link
+            href={`/app/admin/partners?page=${Math.min(totalPages, safePage + 1)}`}
+            aria-disabled={safePage === totalPages}
+            className={`rounded-full border border-white/10 px-3 py-2 ${
+              safePage === totalPages
+                ? "cursor-not-allowed text-slate-500"
+                : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            }`}
+          >
+            Suivant
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }
