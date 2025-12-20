@@ -27,7 +27,7 @@ export default async function NewCoursePage() {
     );
   }
 
-  const [students, positions, teachers] = await Promise.all([
+  const [students, positions, teachers, studios] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -44,6 +44,11 @@ export default async function NewCoursePage() {
           orderBy: { name: "asc" },
         })
       : Promise.resolve([]),
+    prisma.studio.findMany({
+      where: { schoolId },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   return (
@@ -66,6 +71,7 @@ export default async function NewCoursePage() {
           action={createCourseAction}
           teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : []}
           defaultTeacherId={session.user.role === "TEACHER" ? teacherId : teachers[0]?.id}
+          studios={studios}
         />
       </section>
     </main>

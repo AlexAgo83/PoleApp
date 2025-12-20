@@ -74,6 +74,12 @@ export default async function AdminDashboard() {
             Gérer les utilisateurs
           </Link>
           <Link
+            href="/app/admin/studios"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Studios
+          </Link>
+          <Link
             href="/app/teacher/students"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >

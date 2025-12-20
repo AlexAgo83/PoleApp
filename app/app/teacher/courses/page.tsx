@@ -11,11 +11,15 @@ export const dynamic = "force-dynamic";
 export default async function TeacherCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string }>;
+  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string; studio?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
   const teacherFilter = typeof resolvedParams.teacher === "string" ? resolvedParams.teacher : undefined;
+  const studioFilter =
+    typeof resolvedParams.studio === "string" && resolvedParams.studio.length > 0
+      ? resolvedParams.studio
+      : undefined;
   const fromDate = resolvedParams.from ? new Date(resolvedParams.from) : undefined;
   const toDate = resolvedParams.to ? new Date(resolvedParams.to) : undefined;
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
@@ -25,6 +29,7 @@ export default async function TeacherCoursesPage({
     validFrom,
     validTo,
     teacherFilter,
+    studioFilter,
     withNotes ? "notes" : null,
   ].filter(Boolean).length;
   const hasFilters = Boolean(validFrom || validTo || teacherFilter || withNotes);
@@ -37,16 +42,22 @@ export default async function TeacherCoursesPage({
   const whereClause = {
     schoolId: session.user.schoolId,
     ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+    ...(studioFilter ? { studioId: studioFilter } : {}),
     ...(validFrom ? { date: { gte: validFrom } } : {}),
     ...(validTo ? { date: { lte: validTo } } : {}),
     ...(withNotes ? { notes: { some: {} } } : {}),
   };
 
-  const [totalCount, teachers] = await Promise.all([
+  const [totalCount, teachers, studios] = await Promise.all([
     prisma.course.count({ where: whereClause }),
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId, role: "TEACHER" },
       select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.studio.findMany({
+      where: { schoolId: session.user.schoolId },
+      select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
   ]);
@@ -63,6 +74,7 @@ export default async function TeacherCoursesPage({
       attendances: true,
       positions: true,
       teacher: { select: { name: true, email: true } },
+      studio: { select: { name: true } },
       _count: { select: { notes: true } },
     },
   });
@@ -111,7 +123,7 @@ export default async function TeacherCoursesPage({
             </span>
           </summary>
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${withNotes ? "notes" : "all"}`}
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${withNotes ? "notes" : "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -147,8 +159,23 @@ export default async function TeacherCoursesPage({
                   {t.name ?? t.email}
                 </option>
               ))}
-            </select>
-          </label>
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Studio
+              <select
+                name="studio"
+                defaultValue={studioFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les studios</option>
+                {studios.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </label>
           <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 md:col-span-2">
             <input
               type="checkbox"
@@ -193,12 +220,15 @@ export default async function TeacherCoursesPage({
                     <p className="text-base font-semibold text-white">
                       {course.title ?? "Cours sans titre"}
                     </p>
-                    <p className="text-sm text-slate-200">
-                      {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                    </p>
-                    <p className="text-sm text-slate-300">
-                      {new Date(course.date).toLocaleString()}
-                    </p>
+                  <p className="text-sm text-slate-200">
+                    {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                  </p>
+                  {course.studio && (
+                    <p className="text-sm text-slate-300">Studio : {course.studio.name}</p>
+                  )}
+                  <p className="text-sm text-slate-300">
+                    {new Date(course.date).toLocaleString()}
+                  </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
                     <span>

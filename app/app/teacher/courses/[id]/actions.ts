@@ -16,6 +16,7 @@ const updateSchema = z.object({
   studentIds: z.array(z.string().cuid()).min(1),
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
+  studioId: z.string().cuid().optional().nullable(),
   notes: z
     .array(
       z.object({
@@ -44,6 +45,7 @@ export async function updateCourseAction(formData: FormData) {
     studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
+    studioId: formData.get("studioId") || null,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
@@ -55,10 +57,19 @@ export async function updateCourseAction(formData: FormData) {
 
   const existing = await prisma.course.findFirst({
     where: { id: data.id, schoolId: session.user.schoolId },
-    select: { id: true, teacherId: true },
+    select: { id: true, teacherId: true, studioId: true },
   });
   if (!existing) {
     redirect("/access-denied");
+  }
+  if (data.studioId) {
+    const studioValid = await prisma.studio.findFirst({
+      where: { id: data.studioId, schoolId: session.user.schoolId },
+      select: { id: true },
+    });
+    if (!studioValid) {
+      redirect("/access-denied");
+    }
   }
 
   let teacherId: string | null = null;
@@ -91,6 +102,7 @@ export async function updateCourseAction(formData: FormData) {
         title: data.title || null,
         date: data.date,
         teacherId: teacherId ?? existing.teacherId ?? null,
+        studioId: data.studioId ?? null,
       },
     });
 

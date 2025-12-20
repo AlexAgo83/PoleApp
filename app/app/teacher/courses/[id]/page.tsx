@@ -31,6 +31,7 @@ export default async function TeacherCourseDetailPage({
     where: { id, schoolId: session.user.schoolId },
     include: {
       teacher: { select: { name: true, email: true } },
+      studio: { select: { name: true, address: true } },
       attendances: {
         include: { student: { select: { name: true, email: true } } },
       },
@@ -77,6 +78,12 @@ export default async function TeacherCourseDetailPage({
           </div>
           <p className="text-sm text-slate-200">{teacherName}</p>
           <p className="text-sm text-slate-200">{new Date(course.date).toLocaleString()}</p>
+          {course.studio && (
+            <p className="text-sm text-slate-300">
+              Studio : {course.studio.name}
+              {course.studio.address ? ` — ${course.studio.address}` : ""}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link

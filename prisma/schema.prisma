@@ -53,6 +53,7 @@ model School {
 
   users   User[]
   courses Course[]
+  studios Studio[]
 
   @@unique([name])
 }
@@ -150,11 +151,13 @@ model Course {
   id        String   @id @default(cuid())
   schoolId  String
   teacherId String
+  studioId  String?
   title     String?
   date      DateTime
   createdAt DateTime @default(now())
   school    School   @relation(fields: [schoolId], references: [id])
   teacher   User     @relation("CourseTeacher", fields: [teacherId], references: [id])
+  studio    Studio?  @relation(fields: [studioId], references: [id])
 
   attendances CourseAttendance[]
   positions   CoursePosition[]
@@ -194,4 +197,17 @@ model CourseNote {
   position     Position     @relation(fields: [positionId], references: [id])
 
   @@unique([courseId, studentId, positionId])
+}
+
+model Studio {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  schoolId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  school    School   @relation(fields: [schoolId], references: [id])
+  courses   Course[]
+
+  @@index([schoolId])
 }
