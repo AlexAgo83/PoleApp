@@ -38,12 +38,6 @@ export default async function TeacherSchoolPage() {
           <h1 className="text-3xl font-semibold text-white">École</h1>
           <p className="text-sm text-slate-200">{school.name}</p>
         </div>
-        <Link
-          href="/app/teacher"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          ↩ Dashboard prof
-        </Link>
       </header>
 
       <section className="panel p-6">
