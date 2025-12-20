@@ -21,6 +21,7 @@ export default async function AdminUsersPage({
       ? params.role
       : undefined;
   const premiumFilter = params.premium === "true";
+  const activeFilters = [roleFilter, premiumFilter ? "premium" : null].filter(Boolean).length;
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     return null;
@@ -173,10 +174,18 @@ export default async function AdminUsersPage({
         </div>
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Filtres</span>
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres</span>
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  {activeFilters}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
           </summary>
           <form
+            key={`filters-${roleFilter ?? "all"}-${premiumFilter ? "premium" : "all"}`}
             method="get"
             className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >

@@ -21,6 +21,11 @@ export default async function TeacherStudentsPage({
       ? "none"
       : undefined;
   const q = resolvedParams.q?.toString().trim() || "";
+  const activeFilters = [
+    premiumOnly ? "premium" : null,
+    injuryFilter,
+    q && q.length > 0 ? "q" : null,
+  ].filter(Boolean).length;
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return null;
@@ -90,12 +95,22 @@ export default async function TeacherStudentsPage({
       <section className="panel space-y-4 border-indigo-400/15 p-6">
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Filtres</span>
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres</span>
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  {activeFilters}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
               ▼
             </span>
           </summary>
-        <form method="get" className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end">
+        <form
+          key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}`}
+          method="get"
+          className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end">
           <label className="text-sm text-slate-200">
             Recherche
             <input

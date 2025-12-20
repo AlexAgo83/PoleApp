@@ -55,6 +55,9 @@ export default async function StudentProgressPage({
       ? (resolvedParams.level as PositionLevel)
       : undefined;
   const q = resolvedParams.q?.toString().trim() || "";
+  const activeFilters = [typeFilter, levelFilter, q && q.length > 0 ? "q" : null].filter(
+    Boolean
+  ).length;
 
   const [progressEntries, totalPositions] = await Promise.all([
     prisma.studentPositionProgress.findMany({
@@ -130,7 +133,14 @@ export default async function StudentProgressPage({
         )}
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Filtres</span>
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres</span>
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  {activeFilters}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
               ▼
             </span>
