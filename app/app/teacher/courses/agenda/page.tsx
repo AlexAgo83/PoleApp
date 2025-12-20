@@ -347,7 +347,7 @@ export default async function CoursesAgendaPage({
                         <span className="text-[10px] text-cyan-100">{formatDuration(course.durationMinutes ?? 60)}</span>
                         {course.studio?.name ? (
                           <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                            Studio · {course.studio.name}
+                            {course.studio.name}
                           </span>
                         ) : null}
                       </Link>
