@@ -86,7 +86,9 @@ export default async function TeacherCourseDetailPage({
             )}
           </div>
           <p className="text-sm text-slate-200">{teacherName}</p>
-          <p className="text-sm text-slate-200">{new Date(course.date).toLocaleString()}</p>
+          <p className="text-sm text-slate-200">
+            {new Date(course.date).toLocaleString("fr-FR", { hour12: false })}
+          </p>
           <p className="text-sm text-slate-200">
             Durée : {formatDuration(course.durationMinutes ?? 60)}
           </p>

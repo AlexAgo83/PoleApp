@@ -382,7 +382,7 @@ export default async function StudentCoursesPage({
                             </span>
                           )}
                         </div>
-                        <span>{new Date(course.date).toLocaleString()}</span>
+                        <span>{new Date(course.date).toLocaleString("fr-FR", { hour12: false })}</span>
                         <span>Durée : {formatDuration(course.durationMinutes ?? 60)}</span>
                       </div>
                     </div>
