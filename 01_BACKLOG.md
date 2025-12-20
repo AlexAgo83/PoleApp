@@ -1,9 +1,9 @@
-# 01 — Backlog Produit (MVP → V2)
+# 01 — Backlog Produit (v0.4.4 → produit complet)
 
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
-> Priorité: P0 (MVP), P1 (post-MVP), P2 (plus tard).
+> Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (positions listées pour tous sur `/positions`, création/édition prof/admin sous `/teacher/positions/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
-> Statut : Steps 0→9 livrées/en cours (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA). Home affiche les modules, la santé (`/health`) et le bandeau session/rôle.
+> Statut : Steps 0→9 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA), tag `v0.4.4` figé comme baseline. Phase produit enclenchée : fiabilité/observabilité/sécurité/perf/billing sont à intégrer dans chaque Step.
 
 ---
 
@@ -25,7 +25,7 @@
 ---
 
 ### Step 9 — Discovery QA (P1) — livré v0.4.4
-Voir le plan détaillé: `01_BACKLOG_STEP_009.md`. Statut: terminé (durée cours + crédits, gating premium, agendas semaine, studios/maps, cohérence params/searchParams).
+Voir le plan détaillé: `01_BACKLOG_STEP_009.md`. Statut: terminé (durée cours + crédits, gating premium, agendas semaine, studios/maps, cohérence params/searchParams) et sert de baseline produit v0.4.4.
 
 ---
 
