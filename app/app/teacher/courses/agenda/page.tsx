@@ -31,6 +31,7 @@ export default async function CoursesAgendaPage({
 
   const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
+  const hasMonthFilter = Boolean(monthParam);
   const baseDate = monthParam
     ? new Date(`${monthParam}-01T00:00:00`)
     : new Date();
@@ -93,29 +94,49 @@ export default async function CoursesAgendaPage({
       </header>
 
       <section className="panel p-6">
-        <form className="mb-4 flex flex-wrap items-center gap-3 text-sm" method="get">
-          <label className="text-slate-200">
-            Mois
-            <input
-              type="month"
-              name="month"
-              defaultValue={monthValue}
-              className="ml-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <button
-            type="submit"
-            className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+        <details className="group" open>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres</span>
+              {hasMonthFilter && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  1
+                </span>
+              )}
+            </span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form
+            method="get"
+            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
           >
-            Filtrer
-          </button>
-          <Link
-            href="/app/teacher/courses/agenda"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Mois courant
-          </Link>
-        </form>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Mois
+              <input
+                type="month"
+                name="month"
+                defaultValue={monthValue}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/app/teacher/courses/agenda"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Mois courant
+              </Link>
+            </div>
+          </form>
+        </details>
         <div className="grid grid-cols-7 gap-2 text-center text-sm text-slate-200">
           {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
             <div key={d} className="py-2 font-semibold text-white/80">
@@ -139,10 +160,14 @@ export default async function CoursesAgendaPage({
               )}
               {cell.courses &&
                 cell.courses.slice(0, 3).map((course) => (
-                  <div key={course.id} className="mt-1 rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white">
+                  <Link
+                    key={course.id}
+                    href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                    className="mt-1 block rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border hover:border-cyan-300/60 hover:bg-white/15"
+                  >
                     {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
                     {course.title ?? "Cours"}
-                  </div>
+                  </Link>
                 ))}
               {cell.courses && cell.courses.length > 3 && (
                 <div className="mt-1 text-[11px] text-slate-300">
