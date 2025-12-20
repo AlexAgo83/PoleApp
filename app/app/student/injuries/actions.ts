@@ -16,18 +16,20 @@ const createSchema = z.object({
 const updateSchema = z.object({
   injuryId: z.string().cuid(),
   notes: z.string().optional(),
-  isActive: z.preprocess(
-    (value) => {
-      if (typeof value === "string") {
-        return value === "true";
-      }
-      if (typeof value === "boolean") {
-        return value;
-      }
-      return undefined;
-    },
-    z.boolean()
-  ),
+  isActive: z
+    .preprocess(
+      (value) => {
+        if (typeof value === "string") {
+          return value === "true";
+        }
+        if (typeof value === "boolean") {
+          return value;
+        }
+        return undefined;
+      },
+      z.boolean()
+    )
+    .optional(),
 });
 
 const deleteSchema = z.object({
@@ -78,24 +80,26 @@ export async function updateInjuryAction(formData: FormData) {
 
   const injury = await prisma.studentInjury.findUnique({
     where: { id: parsed.data.injuryId },
-    select: { studentId: true },
+    select: { studentId: true, isActive: true },
   });
   if (!injury || injury.studentId !== session.user.id) {
     throw new Error("Injury introuvable");
   }
 
+  const nextIsActive = parsed.data.isActive ?? injury.isActive;
+
   await prisma.studentInjury.update({
     where: { id: parsed.data.injuryId },
     data: {
       notes: parsed.data.notes?.toString().trim() || null,
-      isActive: parsed.data.isActive,
+      isActive: nextIsActive,
     },
   });
 
   revalidatePath("/app/student/injuries");
   redirect(
     `/app/student/injuries?success=${encodeURIComponent(
-      parsed.data.isActive ? "Blessure marquée active" : "Blessure marquée résolue"
+      nextIsActive ? "Blessure marquée active" : "Blessure marquée résolue"
     )}`
   );
 }
