@@ -44,8 +44,8 @@ export default async function AdminUsersPage({
   }
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-        <section className="panel p-6">
+      <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+        <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Utilisateurs</h1>
           <p className="text-slate-300">Aucune école associée à ce compte admin.</p>
         </section>
@@ -90,8 +90,8 @@ export default async function AdminUsersPage({
   });
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel p-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <header className="panel p-4 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <h1 className="text-3xl font-semibold text-white">Utilisateurs</h1>
         <p className="text-sm text-slate-300">
@@ -119,7 +119,7 @@ export default async function AdminUsersPage({
         </div>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel p-4 md:p-6">
         <details className="group">
           <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white">
             <span>Créer un utilisateur</span>
