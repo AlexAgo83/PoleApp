@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
 
 import { createUserAction, deleteUserAction, updateUserAction } from "./actions";
 import { authOptions } from "@/lib/auth";
@@ -52,15 +53,15 @@ export default async function AdminUsersPage({
     );
   }
 
-  const whereClause = {
+  const whereClause: Prisma.UserWhereInput = {
     schoolId: session.user.schoolId,
-    ...(roleFilter ? { role: roleFilter as any } : {}),
+    ...(roleFilter ? { role: roleFilter as Prisma.Role } : {}),
     ...(premiumFilter ? { isPremium: true } : {}),
     ...(q
       ? {
           OR: [
-            { name: { contains: q, mode: "insensitive" as const } },
-            { email: { contains: q, mode: "insensitive" as const } },
+            { name: { contains: q, mode: Prisma.QueryMode.insensitive } },
+            { email: { contains: q, mode: Prisma.QueryMode.insensitive } },
           ],
         }
       : {}),

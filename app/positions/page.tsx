@@ -1,4 +1,4 @@
-import { PositionLevel, PositionType } from "@prisma/client";
+import { PositionLevel, PositionType, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
@@ -48,12 +48,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const q = resolvedParams.q?.toString().trim() || "";
   const activeFilters = [typeFilter, levelFilter, q && q.length > 0].filter(Boolean).length;
 
-  const where = {
+  const where: Prisma.PositionWhereInput = {
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
     ...(q
       ? {
-          name: { contains: q, mode: "insensitive" },
+          name: { contains: q, mode: Prisma.QueryMode.insensitive },
         }
       : {}),
   };
