@@ -11,8 +11,22 @@ export default async function AdminUsersPage({
   searchParams,
 }: {
   searchParams?:
-    | { success?: string; error?: string; page?: string; role?: string; premium?: string }
-    | Promise<{ success?: string; error?: string; page?: string; role?: string; premium?: string }>;
+    | {
+        success?: string;
+        error?: string;
+        page?: string;
+        role?: string;
+        premium?: string;
+        q?: string;
+      }
+    | Promise<{
+        success?: string;
+        error?: string;
+        page?: string;
+        role?: string;
+        premium?: string;
+        q?: string;
+      }>;
 }) {
   const params = (await Promise.resolve(searchParams)) ?? {};
   const rawPage = Number(params.page ?? "1");
@@ -21,7 +35,8 @@ export default async function AdminUsersPage({
       ? params.role
       : undefined;
   const premiumFilter = params.premium === "true";
-  const activeFilters = [roleFilter, premiumFilter ? "premium" : null].filter(Boolean).length;
+  const q = params.q?.toString().trim() || "";
+  const activeFilters = [roleFilter, premiumFilter ? "premium" : null, q && q.length > 0 ? "q" : null].filter(Boolean).length;
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     return null;
@@ -41,6 +56,14 @@ export default async function AdminUsersPage({
     schoolId: session.user.schoolId,
     ...(roleFilter ? { role: roleFilter as any } : {}),
     ...(premiumFilter ? { isPremium: true } : {}),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" as const } },
+            { email: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
   };
 
   const totalCount = await prisma.user.count({
@@ -185,10 +208,20 @@ export default async function AdminUsersPage({
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
           </summary>
           <form
-            key={`filters-${roleFilter ?? "all"}-${premiumFilter ? "premium" : "all"}`}
+            key={`filters-${roleFilter ?? "all"}-${premiumFilter ? "premium" : "all"}-${q || "all"}`}
             method="get"
             className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Recherche (nom ou email)
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Nom, prénom ou email"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
             <label className="text-sm text-slate-200">
               Rôle
               <select
@@ -314,9 +347,7 @@ export default async function AdminUsersPage({
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-200">
           <Link
-            href={`/app/admin/users?page=${Math.max(1, currentPage - 1)}${
-              roleFilter ? `&role=${roleFilter}` : ""
-            }${premiumFilter ? "&premium=true" : ""}`}
+            href={`/app/admin/users?page=${Math.max(1, currentPage - 1)}${roleFilter ? `&role=${roleFilter}` : ""}${premiumFilter ? "&premium=true" : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
             aria-disabled={currentPage === 1}
             className={`rounded-full border border-white/10 px-3 py-2 ${
               currentPage === 1
@@ -327,9 +358,7 @@ export default async function AdminUsersPage({
             Précédent
           </Link>
           <Link
-            href={`/app/admin/users?page=${Math.min(totalPages, currentPage + 1)}${
-              roleFilter ? `&role=${roleFilter}` : ""
-            }${premiumFilter ? "&premium=true" : ""}`}
+            href={`/app/admin/users?page=${Math.min(totalPages, currentPage + 1)}${roleFilter ? `&role=${roleFilter}` : ""}${premiumFilter ? "&premium=true" : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
             aria-disabled={currentPage === totalPages}
             className={`rounded-full border border-white/10 px-3 py-2 ${
               currentPage === totalPages

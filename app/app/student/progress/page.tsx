@@ -1,4 +1,4 @@
-import { LearningStatus, MasteryLevel, PositionLevel, PositionType } from "@prisma/client";
+import { LearningStatus, MasteryLevel, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -79,13 +79,13 @@ export default async function StudentProgressPage({
     ? undefined
     : progressEntries.map((p) => p.positionId);
 
-  const where = {
+  const where: Prisma.PositionWhereInput = {
     ...(visibleIds ? { id: { in: visibleIds } } : {}),
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
     ...(q
       ? {
-          name: { contains: q, mode: "insensitive" },
+          name: { contains: q, mode: "insensitive" as Prisma.QueryMode },
         }
       : {}),
   };
