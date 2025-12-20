@@ -15,6 +15,7 @@ const courseSchema = z.object({
   studentIds: z.array(z.string().cuid()).min(1),
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
+  studioId: z.string().cuid().optional().nullable(),
   notes: z
     .array(
       z.object({
@@ -42,6 +43,7 @@ export async function createCourseAction(formData: FormData) {
     studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
+    studioId: formData.get("studioId") || null,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
@@ -71,6 +73,16 @@ export async function createCourseAction(formData: FormData) {
     }
   }
 
+  if (parsed.data.studioId) {
+    const studioValid = await prisma.studio.findFirst({
+      where: { id: parsed.data.studioId, schoolId: session.user.schoolId },
+      select: { id: true },
+    });
+    if (!studioValid) {
+      redirect("/access-denied");
+    }
+  }
+
   const courseId = await prisma.$transaction(async (tx) => {
     const course = await tx.course.create({
       data: {
@@ -78,6 +90,7 @@ export async function createCourseAction(formData: FormData) {
         date: parsed.data.date,
         schoolId: session.user.schoolId!,
         teacherId: teacherId ?? session.user.id,
+        studioId: parsed.data.studioId || null,
       },
     });
 

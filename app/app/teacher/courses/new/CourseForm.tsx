@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string };
 type Teacher = { id: string; name: string | null; email: string };
+type Studio = { id: string; name: string };
 
 type Props = {
   students: Student[];
@@ -21,6 +22,8 @@ type Props = {
   courseId?: string;
   teachers?: Teacher[];
   defaultTeacherId?: string | null;
+  studios?: Studio[];
+  defaultStudioId?: string | null;
 };
 
 type Note = {
@@ -44,6 +47,8 @@ export function CourseForm({
   courseId,
   teachers = [],
   defaultTeacherId,
+  studios = [],
+  defaultStudioId,
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -109,6 +114,24 @@ export function CourseForm({
             {teachers.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name ?? t.email}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      {studios.length > 0 && (
+        <label className="block text-sm text-slate-200">
+          Studio (optionnel)
+          <select
+            name="studioId"
+            defaultValue={defaultStudioId ?? ""}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          >
+            <option value="">(Aucun studio)</option>
+            {studios.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
               </option>
             ))}
           </select>
