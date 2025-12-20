@@ -219,13 +219,15 @@ export default async function StudentCoursesAgendaPage({
                     href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
                     className="mt-1 block rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border hover:border-cyan-300/60 hover:bg-white/15"
                   >
-                    {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
-                    {a.course.title ?? "Cours"}
                     {a.course.studio?.name ? (
                       <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
                         {a.course.studio.name}
                       </span>
                     ) : null}
+                    <div className="mt-1 text-[10px] text-slate-200">
+                      {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                      {a.course.title ?? "Cours"}
+                    </div>
                   </Link>
                 ))}
               {cell.attendances && cell.attendances.length > 3 && (

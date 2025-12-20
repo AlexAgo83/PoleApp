@@ -31,7 +31,10 @@ export default async function CoursesAgendaPage({
 
   const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
-  const teacherFilter = resolved.teacher;
+  const teacherFilter =
+    typeof resolved.teacher === "string" && resolved.teacher.length > 0
+      ? resolved.teacher
+      : undefined;
   const studioFilter =
     typeof resolved.studio === "string" && resolved.studio.length > 0
       ? resolved.studio
@@ -43,10 +46,12 @@ export default async function CoursesAgendaPage({
   const start = startOfMonth(baseDate);
   const end = endOfMonth(baseDate);
 
+  const effectiveTeacherFilter = isTeacher ? teacherFilter ?? session.user.id : teacherFilter;
+
   const courses = await prisma.course.findMany({
     where: {
       schoolId: session.user.schoolId,
-      ...(isTeacher ? { teacherId: session.user.id } : teacherFilter ? { teacherId: teacherFilter } : {}),
+      ...(effectiveTeacherFilter ? { teacherId: effectiveTeacherFilter } : {}),
       ...(studioFilter ? { studioId: studioFilter } : {}),
       date: { gte: start, lte: end },
     },
@@ -58,13 +63,11 @@ export default async function CoursesAgendaPage({
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
-  const teachers = isTeacher
-    ? []
-    : await prisma.user.findMany({
-        where: { schoolId: session.user.schoolId, role: "TEACHER" },
-        select: { id: true, name: true, email: true },
-        orderBy: { name: "asc" },
-      });
+  const teachers = await prisma.user.findMany({
+    where: { schoolId: session.user.schoolId, role: "TEACHER" },
+    select: { id: true, name: true, email: true },
+    orderBy: { name: "asc" },
+  });
 
   const daysInMonth = end.getDate();
   const firstDay = start.getDay() === 0 ? 7 : start.getDay(); // Monday=1 ... Sunday=7
@@ -116,9 +119,9 @@ export default async function CoursesAgendaPage({
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span className="inline-flex items-center gap-2">
               <span>Filtres</span>
-              {(hasMonthFilter || studioFilter) && (
+              {(hasMonthFilter || studioFilter || teacherFilter) && (
                 <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {(hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0)}
+                  {(hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0)}
                 </span>
               )}
             </span>
@@ -155,23 +158,21 @@ export default async function CoursesAgendaPage({
                 ))}
               </select>
             </label>
-            {!isTeacher && (
-              <label className="text-sm text-slate-200">
-                Professeur
-                <select
-                  name="teacher"
-                  defaultValue={teacherFilter ?? ""}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                >
-                  <option value="">Tous les profs</option>
-                  {teachers.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name ?? t.email}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
+            <label className="text-sm text-slate-200">
+              Professeur
+              <select
+                name="teacher"
+                defaultValue={teacherFilter ?? (isTeacher ? session.user.id : "")}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les profs</option>
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name ?? t.email}
+                  </option>
+                ))}
+              </select>
+            </label>
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
                 type="submit"
@@ -216,8 +217,15 @@ export default async function CoursesAgendaPage({
                     href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
                     className="mt-1 block rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border hover:border-cyan-300/60 hover:bg-white/15"
                   >
-                    {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
-                    {course.title ?? "Cours"}
+                    {course.studio?.name ? (
+                      <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                        {course.studio.name}
+                      </span>
+                    ) : null}
+                    <div className="mt-1 text-[10px] text-slate-200">
+                      {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                      {course.title ?? "Cours"}
+                    </div>
                   </Link>
                 ))}
               {cell.courses && cell.courses.length > 3 && (
