@@ -346,49 +346,54 @@ export default async function CoursesAgendaPage({
       </section>
 
       <section className="panel p-6">
-        <h3 className="text-lg font-semibold text-white">Vue semaine</h3>
-        <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
-          {weekDays.map((day, idx) => {
-            const dayCourses = coursesByDay[idx];
-            return (
-              <div key={day.toISOString()} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200">
-                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
-                  <span className="flex items-center gap-1">
-                    <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
-                  </span>
-                  <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
+            <span>Vue semaine</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
+            {weekDays.map((day, idx) => {
+              const dayCourses = coursesByDay[idx];
+              return (
+                <div key={day.toISOString()} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200">
+                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
+                    <span className="flex items-center gap-1">
+                      <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
+                    </span>
+                    <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5 md:gap-2">
+                    {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
+                    {dayCourses.map((course) => {
+                      const past = isPastCourse(course.date, course.durationMinutes);
+                      return (
+                        <Link
+                          key={course.id}
+                          href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                          className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                            past
+                              ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                              : "border-white/10 bg-white/10 text-white"
+                          }`}
+                          title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
+                        >
+                          <span>{new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}</span>
+                          <span className="truncate">{course.title ?? "Cours"}</span>
+                          <span className="text-[10px] text-cyan-100 hidden md:inline">{formatDuration(course.durationMinutes ?? 60)}</span>
+                          {course.studio?.name ? (
+                            <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                              {course.studio.name}
+                            </span>
+                          ) : null}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="flex flex-col gap-1.5 md:gap-2">
-                  {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
-                  {dayCourses.map((course) => {
-                    const past = isPastCourse(course.date, course.durationMinutes);
-                    return (
-                      <Link
-                        key={course.id}
-                        href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                        className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                          past
-                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                            : "border-white/10 bg-white/10 text-white"
-                        }`}
-                        title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
-                      >
-                        <span>{new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}</span>
-                        <span className="truncate">{course.title ?? "Cours"}</span>
-                        <span className="text-[10px] text-cyan-100 hidden md:inline">{formatDuration(course.durationMinutes ?? 60)}</span>
-                        {course.studio?.name ? (
-                          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                            {course.studio.name}
-                          </span>
-                        ) : null}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </details>
       </section>
     </main>
   );
