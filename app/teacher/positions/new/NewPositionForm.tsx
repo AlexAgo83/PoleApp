@@ -16,6 +16,7 @@ const schema = z.object({
   tips: z.string().optional(),
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
+  videoUrl: z.string().url().optional(),
 });
 
 export function NewPositionForm() {
@@ -36,6 +37,7 @@ export function NewPositionForm() {
       tips: formData.get("tips") || undefined,
       contraindications: formData.get("contraindications") || undefined,
       imageUrl: formData.get("imageUrl") || undefined,
+      videoUrl: formData.get("videoUrl") || undefined,
     });
 
     if (!data.success) {
@@ -63,6 +65,7 @@ export function NewPositionForm() {
       <Field label="Conseils" name="tips" textarea />
       <Field label="Contre-indications" name="contraindications" textarea />
       <Field label="Image URL (placeholder accepté)" name="imageUrl" />
+      <Field label="Vidéo (URL)" name="videoUrl" placeholder="https://..." />
 
       {error && (
         <p className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">

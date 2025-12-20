@@ -78,7 +78,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     skip,
     take: PAGE_SIZE,
     include: {
-      media: { take: 1 },
+      media: true,
     },
   });
   const canManage =
@@ -220,13 +220,14 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         </details>
         <div className="grid gap-4 md:grid-cols-3">
           {positions.map((p) => {
-            const cover = p.media?.[0];
+            const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];
             const premiumContent =
               Boolean(p.description) ||
               Boolean(p.tips) ||
               p.media?.some((m) => m.kind === "VIDEO");
             const hasVideo = p.media?.some((m) => m.kind === "VIDEO");
             const showPremiumBadge = premiumContent && isStudent && !isPremium;
+            const canViewPremium = !isStudent || isPremium;
             return (
               <article
                 key={p.id}
@@ -265,7 +266,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                   </div>
                   <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                   <p className="text-sm text-slate-300 line-clamp-2">
-                    {p.tips ?? p.description ?? "Aucun détail"}
+                    {canViewPremium
+                      ? p.tips ?? p.description ?? "Aucun détail"
+                      : "Détails réservés aux élèves premium."}
                   </p>
                   <div className="mt-auto flex items-center justify-between gap-2">
                     <p className="text-xs text-slate-400">

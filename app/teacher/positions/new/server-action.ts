@@ -18,6 +18,7 @@ const schema = z.object({
   tips: z.string().optional(),
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
+  videoUrl: z.string().url().optional(),
 });
 
 export async function createPositionAction(input: z.infer<typeof schema>) {
@@ -39,14 +40,17 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
       tips: data.tips,
       contraindications: data.contraindications,
       createdByUserId: session?.user?.id,
-      media: data.imageUrl
-        ? {
-            create: {
-              kind: MediaKind.PHOTO,
-              url: data.imageUrl,
-            },
-          }
-        : undefined,
+      media:
+        data.imageUrl || data.videoUrl
+          ? {
+              create: [
+                ...(data.imageUrl
+                  ? [{ kind: MediaKind.PHOTO, url: data.imageUrl }]
+                  : []),
+                ...(data.videoUrl ? [{ kind: MediaKind.VIDEO, url: data.videoUrl }] : []),
+              ],
+            }
+          : undefined,
     },
   });
 
