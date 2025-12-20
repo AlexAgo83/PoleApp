@@ -123,8 +123,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         </div>
       </header>
 
-      <section className="panel px-6 py-4 md:py-6">
-        <details className="group mb-4" open>
+      <section className="panel space-y-4 px-6 py-4 md:py-6">
+        <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span>Filtres</span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">

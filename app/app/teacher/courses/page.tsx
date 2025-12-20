@@ -81,7 +81,7 @@ export default async function TeacherCoursesPage({
         </Link>
       </header>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel space-y-4 border-indigo-400/15 p-6">
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span>Filtres avancés</span>

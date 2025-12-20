@@ -1,4 +1,4 @@
-# Pole App — MVP v0.2.1 (Steps 0 → 8)
+# Pole App — MVP v0.2.2 (Steps 0 → 8)
 
 Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Step 9 (Discovery QA) en préparation — plan dans `01_BACKLOG_STEP_009.md`.
 
@@ -55,7 +55,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - `/app/admin` : stats école, actions rapides.
 - `/app/admin/users` : CRUD users (rôle, premium, mot de passe).
 
-## Pagination (v0.2.1)
+## Pagination (v0.2.2)
 - Listes dynamiques paginées par 10 : cours élève/prof, progression élève, blessures élève, liste élèves prof/admin.
 
 ## Santé & diagnostics
@@ -73,4 +73,4 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
 
 ## Changelog
-- v0.2.1 : profil utilisateur, salutations harmonisées, pagination 10 items, unification positions, tri cours desc. Voir `CHANGELOG.md`.
+- v0.2.2 : filtres admin/positions/élèves, UI filtres harmonisée, pagination 10 items, page profil et navigation role-based. Voir `CHANGELOG.md`.
