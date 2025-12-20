@@ -11,24 +11,42 @@ export const dynamic = "force-dynamic";
 export default async function TeacherCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
+  const teacherFilter = typeof resolvedParams.teacher === "string" ? resolvedParams.teacher : undefined;
+  const fromDate = resolvedParams.from ? new Date(resolvedParams.from) : undefined;
+  const toDate = resolvedParams.to ? new Date(resolvedParams.to) : undefined;
+  const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
+  const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
+
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return null;
   }
 
-  const totalCount = await prisma.course.count({
-    where: { schoolId: session.user.schoolId },
-  });
+  const whereClause = {
+    schoolId: session.user.schoolId,
+    ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+    ...(validFrom ? { date: { gte: validFrom } } : {}),
+    ...(validTo ? { date: { lte: validTo } } : {}),
+  };
+
+  const [totalCount, teachers] = await Promise.all([
+    prisma.course.count({ where: whereClause }),
+    prisma.user.findMany({
+      where: { schoolId: session.user.schoolId, role: "TEACHER" },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
 
   const courses = await prisma.course.findMany({
-    where: { schoolId: session.user.schoolId },
+    where: whereClause,
     orderBy: { date: "desc" },
     skip,
     take: PAGE_SIZE,
@@ -59,6 +77,55 @@ export default async function TeacherCoursesPage({
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
+        <form className="mb-4 grid gap-3 md:grid-cols-4" method="get">
+          <label className="text-sm text-slate-200">
+            Date min
+            <input
+              type="date"
+              name="from"
+              defaultValue={resolvedParams.from}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </label>
+          <label className="text-sm text-slate-200">
+            Date max
+            <input
+              type="date"
+              name="to"
+              defaultValue={resolvedParams.to}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </label>
+          <label className="text-sm text-slate-200">
+            Professeur
+            <select
+              name="teacher"
+              defaultValue={teacherFilter ?? ""}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            >
+              <option value="">Tous les professeurs</option>
+              {teachers.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name ?? t.email}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="flex items-end gap-2">
+            <button
+              type="submit"
+              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            >
+              Filtrer
+            </button>
+            <Link
+              href="/app/teacher/courses"
+              className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Réinitialiser
+            </Link>
+          </div>
+        </form>
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => (
             <a
