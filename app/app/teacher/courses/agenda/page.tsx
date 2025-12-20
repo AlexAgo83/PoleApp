@@ -109,8 +109,11 @@ export default async function CoursesAgendaPage({
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
 
-  // Vue semaine (7 jours à partir du lundi de la semaine du start)
-  const startWeek = new Date(start);
+  // Vue semaine (7 jours à partir du lundi de la semaine courante si dans le mois, sinon début de mois)
+  const today = new Date();
+  const inSelectedMonth = today >= start && today <= end;
+  const baseWeekDate = inSelectedMonth ? today : start;
+  const startWeek = new Date(baseWeekDate);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
   const weekDays = Array.from({ length: 7 }).map((_, idx) => {
