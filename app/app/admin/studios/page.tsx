@@ -187,54 +187,67 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
         )}
         <div className="divide-y divide-white/5">
           {studios.map((studio) => (
-            <div
-              key={studio.id}
-              className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
-            >
+            <article key={studio.id} className="flex flex-col gap-4 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-indigo-100">
+                    Studio
+                  </span>
+                  {studio.address && (
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
+                    >
+                      Ouvrir dans Google Maps
+                    </a>
+                  )}
+                </div>
+                <form action={deleteStudioAction}>
+                  <input type="hidden" name="studioId" value={studio.id} />
+                  <button
+                    type="submit"
+                    className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
+                  >
+                    Supprimer
+                  </button>
+                </form>
+              </div>
+
               <form
                 action={updateStudioAction}
-                className="flex flex-wrap items-center gap-2 text-sm text-slate-200"
+                className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/10 text-sm text-slate-200 md:grid-cols-2 md:gap-4"
               >
                 <input type="hidden" name="studioId" value={studio.id} />
-                <input
-                  name="name"
-                  defaultValue={studio.name}
-                  className="w-48 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                  required
-                />
-                <input
-                  name="address"
-                  defaultValue={studio.address ?? ""}
-                  placeholder="Adresse"
-                  className="w-64 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
-                {studio.address && (
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs font-semibold text-cyan-300 transition hover:text-cyan-200"
+                <label className="grid gap-1">
+                  Nom
+                  <input
+                    name="name"
+                    defaultValue={studio.name}
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                    required
+                  />
+                </label>
+                <label className="grid gap-1">
+                  Adresse (optionnel)
+                  <input
+                    name="address"
+                    defaultValue={studio.address ?? ""}
+                    placeholder="Adresse"
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <div className="md:col-span-2 flex justify-end">
+                  <button
+                    type="submit"
+                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                   >
-                    Ouvrir dans Google Maps
-                  </a>
-                )}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Sauvegarder
-                </button>
+                    Sauvegarder
+                  </button>
+                </div>
               </form>
-              <form action={deleteStudioAction}>
-                <input type="hidden" name="studioId" value={studio.id} />
-                <button
-                  type="submit"
-                  className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
-                >
-                  Supprimer
-                </button>
-              </form>
-            </div>
+            </article>
           ))}
         </div>
         {totalCount > 0 && (
