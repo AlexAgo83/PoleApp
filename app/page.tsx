@@ -116,7 +116,7 @@ export default async function Home() {
   const isAuthenticated = Boolean(session?.user);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10 md:px-8">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
       <section className="panel relative flex flex-col gap-3 overflow-hidden p-5 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
         <div className="relative flex flex-wrap items-center gap-2">
