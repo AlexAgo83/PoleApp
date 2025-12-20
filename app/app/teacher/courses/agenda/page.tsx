@@ -81,7 +81,7 @@ export default async function CoursesAgendaPage({
             href="/app/teacher/courses"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            ↩ Retour cours
+            ↩ Liste
           </Link>
           <Link
             href="/app/teacher/courses/new"
@@ -107,7 +107,7 @@ export default async function CoursesAgendaPage({
             type="submit"
             className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
           >
-            Mettre à jour
+            Filtrer
           </button>
           <Link
             href="/app/teacher/courses/agenda"
