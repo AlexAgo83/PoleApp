@@ -18,7 +18,7 @@ function endOfMonth(date: Date) {
 export default async function CoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string }>;
+  searchParams?: Promise<{ month?: string; teacher?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId || !session.user.role) {
@@ -31,6 +31,7 @@ export default async function CoursesAgendaPage({
 
   const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
+  const teacherFilter = resolved.teacher;
   const hasMonthFilter = Boolean(monthParam);
   const baseDate = monthParam
     ? new Date(`${monthParam}-01T00:00:00`)
@@ -41,12 +42,19 @@ export default async function CoursesAgendaPage({
   const courses = await prisma.course.findMany({
     where: {
       schoolId: session.user.schoolId,
-      ...(isTeacher ? { teacherId: session.user.id } : {}),
+      ...(isTeacher ? { teacherId: session.user.id } : teacherFilter ? { teacherId: teacherFilter } : {}),
       date: { gte: start, lte: end },
     },
     include: { teacher: { select: { name: true, email: true } } },
     orderBy: { date: "asc" },
   });
+  const teachers = isTeacher
+    ? []
+    : await prisma.user.findMany({
+        where: { schoolId: session.user.schoolId, role: "TEACHER" },
+        select: { id: true, name: true, email: true },
+        orderBy: { name: "asc" },
+      });
 
   const daysInMonth = end.getDate();
   const firstDay = start.getDay() === 0 ? 7 : start.getDay(); // Monday=1 ... Sunday=7
@@ -122,6 +130,23 @@ export default async function CoursesAgendaPage({
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
+            {!isTeacher && (
+              <label className="text-sm text-slate-200">
+                Professeur
+                <select
+                  name="teacher"
+                  defaultValue={teacherFilter ?? ""}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                >
+                  <option value="">Tous les profs</option>
+                  {teachers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name ?? t.email}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
                 type="submit"
