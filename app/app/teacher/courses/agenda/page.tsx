@@ -1,0 +1,131 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function endOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+}
+
+export default async function CoursesAgendaPage() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.schoolId || !session.user.role) {
+    redirect("/access-denied");
+  }
+  const isTeacher = session.user.role === "TEACHER";
+  if (!isTeacher && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const now = new Date();
+  const start = startOfMonth(now);
+  const end = endOfMonth(now);
+
+  const courses = await prisma.course.findMany({
+    where: {
+      schoolId: session.user.schoolId,
+      ...(isTeacher ? { teacherId: session.user.id } : {}),
+      date: { gte: start, lte: end },
+    },
+    include: { teacher: { select: { name: true, email: true } } },
+    orderBy: { date: "asc" },
+  });
+
+  const daysInMonth = end.getDate();
+  const firstDay = start.getDay() === 0 ? 7 : start.getDay(); // Monday=1 ... Sunday=7
+  const calendarCells: Array<{ day?: number; courses?: typeof courses }> = [];
+  for (let i = 1; i < firstDay; i += 1) {
+    calendarCells.push({});
+  }
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const dateStr = new Date(start.getFullYear(), start.getMonth(), day).toDateString();
+    const dayCourses = courses.filter(
+      (c) => new Date(c.date).toDateString() === dateStr
+    );
+    calendarCells.push({ day, courses: dayCourses });
+  }
+
+  const monthLabel = now.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+  return (
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+            {isTeacher ? "Professeur" : "Admin"}
+          </p>
+          <h1 className="text-3xl font-semibold text-white">Agenda des cours</h1>
+          <p className="text-sm text-slate-200">
+            Mois courant : {monthLabel}. Les journées avec cours sont signalées.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/app/teacher/courses"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ↩ Retour cours
+          </Link>
+          <Link
+            href="/app/teacher/courses/new"
+            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+          >
+            Nouveau cours
+          </Link>
+        </div>
+      </header>
+
+      <section className="panel p-6">
+        <div className="grid grid-cols-7 gap-2 text-center text-sm text-slate-200">
+          {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
+            <div key={d} className="py-2 font-semibold text-white/80">
+              {d}
+            </div>
+          ))}
+          {calendarCells.map((cell, idx) => (
+            <div
+              key={idx}
+              className="min-h-[80px] rounded-xl border border-white/10 bg-white/5 p-2 text-left"
+            >
+              {cell.day && (
+                <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+                  <span>{cell.day}</span>
+                  {cell.courses && cell.courses.length > 0 && (
+                    <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                      {cell.courses.length}
+                    </span>
+                  )}
+                </div>
+              )}
+              {cell.courses &&
+                cell.courses.slice(0, 3).map((course) => (
+                  <div key={course.id} className="mt-1 rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white">
+                    {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                    {course.title ?? "Cours"}
+                  </div>
+                ))}
+              {cell.courses && cell.courses.length > 3 && (
+                <div className="mt-1 text-[11px] text-slate-300">
+                  +{cell.courses.length - 3} autres
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        {courses.length === 0 && (
+          <p className="mt-4 text-sm text-slate-200">
+            Aucun cours prévu pour ce mois.
+          </p>
+        )}
+      </section>
+    </main>
+  );
+}
