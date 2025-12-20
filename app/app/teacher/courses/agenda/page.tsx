@@ -15,7 +15,11 @@ function endOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
 }
 
-export default async function CoursesAgendaPage() {
+export default async function CoursesAgendaPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ month?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId || !session.user.role) {
     redirect("/access-denied");
@@ -25,9 +29,13 @@ export default async function CoursesAgendaPage() {
     redirect("/access-denied");
   }
 
-  const now = new Date();
-  const start = startOfMonth(now);
-  const end = endOfMonth(now);
+  const resolved = (await searchParams) ?? {};
+  const monthParam = resolved.month;
+  const baseDate = monthParam
+    ? new Date(`${monthParam}-01T00:00:00`)
+    : new Date();
+  const start = startOfMonth(baseDate);
+  const end = endOfMonth(baseDate);
 
   const courses = await prisma.course.findMany({
     where: {
@@ -53,7 +61,8 @@ export default async function CoursesAgendaPage() {
     calendarCells.push({ day, courses: dayCourses });
   }
 
-  const monthLabel = now.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const monthLabel = start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -84,6 +93,29 @@ export default async function CoursesAgendaPage() {
       </header>
 
       <section className="panel p-6">
+        <form className="mb-4 flex flex-wrap items-center gap-3 text-sm" method="get">
+          <label className="text-slate-200">
+            Mois
+            <input
+              type="month"
+              name="month"
+              defaultValue={monthValue}
+              className="ml-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </label>
+          <button
+            type="submit"
+            className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+          >
+            Mettre à jour
+          </button>
+          <Link
+            href="/app/teacher/courses/agenda"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Mois courant
+          </Link>
+        </form>
         <div className="grid grid-cols-7 gap-2 text-center text-sm text-slate-200">
           {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
             <div key={d} className="py-2 font-semibold text-white/80">
