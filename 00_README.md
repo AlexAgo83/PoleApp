@@ -1,6 +1,6 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.4.1
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.4.2
 
-Date: 2025-12-19 (MAJ v0.4.1)
+Date: 2025-12-19 (MAJ v0.4.2)
 
 Ce dossier contient :
 - `01_BACKLOG.md` : backlog structuré (epics → features → user stories → critères d’acceptation).

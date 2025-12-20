@@ -139,7 +139,7 @@ export default async function Home() {
           <div className="space-y-3">
             {session?.user && (
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — MVP v0.4.1
+                Pole App — MVP v0.4.2
               </p>
             )}
             <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">
