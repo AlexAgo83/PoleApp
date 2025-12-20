@@ -76,6 +76,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
   const canViewPremium = !isStudent || isPremium;
+  const hasVideo = Boolean(video);
   const isStaff =
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
 
@@ -213,9 +214,16 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-semibold text-white">Vidéo</p>
-                <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
-                  Premium
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full border border-cyan-400/40 bg-cyan-500/15 px-2 py-0.5 text-[11px] font-semibold text-cyan-50">
+                    Vidéo
+                  </span>
+                  {isStudent && !isPremium && (
+                    <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                      Premium
+                    </span>
+                  )}
+                </div>
               </div>
               {canViewPremium ? (
                 <a
