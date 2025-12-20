@@ -9,7 +9,7 @@ const PAGE_SIZE = 10;
 export default async function TeacherStudentsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; premium?: string; injury?: string; q?: string }>;
+  searchParams?: Promise<{ page?: string; premium?: string; injury?: string; q?: string; sort?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
@@ -21,10 +21,12 @@ export default async function TeacherStudentsPage({
       ? "none"
       : undefined;
   const q = resolvedParams.q?.toString().trim() || "";
+  const sort = resolvedParams.sort === "name_desc" ? "name_desc" : "name_asc";
   const activeFilters = [
     premiumOnly ? "premium" : null,
     injuryFilter,
     q && q.length > 0 ? "q" : null,
+    sort === "name_desc" ? "sort" : null,
   ].filter(Boolean).length;
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
@@ -35,6 +37,7 @@ export default async function TeacherStudentsPage({
   if (premiumOnly) queryParams.set("premium", "true");
   if (injuryFilter) queryParams.set("injury", injuryFilter);
   if (q) queryParams.set("q", q);
+  if (sort === "name_desc") queryParams.set("sort", "name_desc");
   const qs = queryParams.toString();
 
   const whereClause = {
@@ -75,7 +78,7 @@ export default async function TeacherStudentsPage({
       },
       progress: true,
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: sort === "name_desc" ? { name: "desc" } : { name: "asc" },
     skip,
     take: PAGE_SIZE,
   });
@@ -108,7 +111,7 @@ export default async function TeacherStudentsPage({
             </span>
           </summary>
         <form
-          key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}`}
+          key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}-${sort}`}
           method="get"
           className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end">
           <label className="text-sm text-slate-200">
@@ -143,6 +146,17 @@ export default async function TeacherStudentsPage({
               className="h-4 w-4 rounded border-white/20 bg-white/5"
             />
             Premium uniquement
+          </label>
+          <label className="text-sm text-slate-200">
+            Tri
+            <select
+              name="sort"
+              defaultValue={sort}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            >
+              <option value="name_asc">Nom (A→Z)</option>
+              <option value="name_desc">Nom (Z→A)</option>
+            </select>
           </label>
           <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
             <button

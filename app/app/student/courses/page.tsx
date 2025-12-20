@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 export default async function StudentCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string }>;
+  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string; sort?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
@@ -25,11 +25,13 @@ export default async function StudentCoursesPage({
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = resolvedParams.withNotes === "true";
+  const sort = resolvedParams.sort === "date_asc" ? "date_asc" : "date_desc";
   const activeFilters = [
     validFrom,
     validTo,
     teacherFilter,
     withNotes ? "notes" : null,
+    sort === "date_asc" ? "sort" : null,
   ].filter(Boolean).length;
 
   const whereClause = {
@@ -52,7 +54,7 @@ export default async function StudentCoursesPage({
   const [attendances, teachers] = await Promise.all([
     prisma.courseAttendance.findMany({
       where: whereClause,
-      orderBy: { course: { date: "desc" } },
+      orderBy: { course: { date: sort === "date_desc" ? "desc" : "asc" } },
       skip,
       take: 10,
       include: {
@@ -82,6 +84,7 @@ export default async function StudentCoursesPage({
   if (resolvedParams.to) queryParams.set("to", resolvedParams.to);
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
   if (withNotes) queryParams.set("withNotes", "true");
+  if (sort === "date_asc") queryParams.set("sort", "date_asc");
   const qs = queryParams.toString();
 
   return (
@@ -148,6 +151,17 @@ export default async function StudentCoursesPage({
                     {t.name ?? t.email}
                   </option>
                 ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Tri
+              <select
+                name="sort"
+                defaultValue={sort}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="date_desc">Date descendante</option>
+                <option value="date_asc">Date ascendante</option>
               </select>
             </label>
             <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
