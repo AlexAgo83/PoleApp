@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
+import { BuyCreditsButton } from "./BuyCreditsButton";
 
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
@@ -32,18 +33,22 @@ export default async function StudentDashboard() {
             <img src="/gear.svg" alt="" className="h-4 w-4" />
             Éditer
           </Link>
+          <span
+            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${
+              isPremium
+                ? "border border-emerald-400/70 bg-emerald-400/10 text-emerald-100"
+                : "border border-white/15 bg-white/5 text-white/80"
+            }`}
+          >
+            {isPremium ? "Premium" : "Freemium"}
+          </span>
         </div>
         <p className="text-slate-300">
           Accès réservé aux rôles étudiant. Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
-        <div className="flex flex-wrap items-center gap-3 text-sm">
+        <div className="flex flex-wrap items-center gap-3 text-sm md:ml-auto md:justify-end">
           <p className="text-sm text-cyan-100">Crédits : {credits}</p>
-          <button
-            type="button"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Acheter des crédits
-          </button>
+          <BuyCreditsButton currentCredits={credits} showUpgrade={!isPremium} />
         </div>
       </section>
 
