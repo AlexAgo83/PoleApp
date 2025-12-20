@@ -1,4 +1,4 @@
-import { LearningStatus, MasteryLevel } from "@prisma/client";
+import { LearningStatus, MasteryLevel, PositionLevel, PositionType } from "@prisma/client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -33,7 +33,7 @@ const PAGE_SIZE = 10;
 export default async function StudentProgressPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; type?: string; level?: string; q?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
@@ -45,6 +45,16 @@ export default async function StudentProgressPage({
     : resolvedParams.page;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const skip = (page - 1) * PAGE_SIZE;
+  const typeFilter =
+    resolvedParams.type && Object.values(PositionType).includes(resolvedParams.type as PositionType)
+      ? (resolvedParams.type as PositionType)
+      : undefined;
+  const levelFilter =
+    resolvedParams.level &&
+    Object.values(PositionLevel).includes(resolvedParams.level as PositionLevel)
+      ? (resolvedParams.level as PositionLevel)
+      : undefined;
+  const q = resolvedParams.q?.toString().trim() || "";
 
   const [progressEntries, totalPositions] = await Promise.all([
     prisma.studentPositionProgress.findMany({
@@ -66,8 +76,23 @@ export default async function StudentProgressPage({
     ? undefined
     : progressEntries.map((p) => p.positionId);
 
+  const where = {
+    ...(visibleIds ? { id: { in: visibleIds } } : {}),
+    ...(typeFilter ? { type: typeFilter } : {}),
+    ...(levelFilter ? { levelRequired: levelFilter } : {}),
+    ...(q
+      ? {
+          name: { contains: q, mode: "insensitive" },
+        }
+      : {}),
+  };
+
+  const filteredCount = await prisma.position.count({
+    where,
+  });
+
   const positions = await prisma.position.findMany({
-    where: visibleIds ? { id: { in: visibleIds } } : undefined,
+    where,
     orderBy: { name: "asc" },
     include: { media: { take: 1 } },
     skip,
@@ -75,7 +100,13 @@ export default async function StudentProgressPage({
   });
 
   const lockedCount = 0;
-  const totalPages = Math.max(1, Math.ceil(totalPositions / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filteredCount / PAGE_SIZE));
+
+  const queryParams = new URLSearchParams();
+  if (typeFilter) queryParams.set("type", typeFilter);
+  if (levelFilter) queryParams.set("level", levelFilter);
+  if (q) queryParams.set("q", q);
+  const qs = queryParams.toString();
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
@@ -91,12 +122,84 @@ export default async function StudentProgressPage({
         </p>
       </header>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel space-y-4 border-indigo-400/15 p-6">
         {!session.user.isPremium && lockedCount > 0 && (
           <div className="mb-4 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
             {lockedCount} position(s) verrouillées. Passe en premium pour tout voir.
           </div>
         )}
+        <details className="group" open>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Filtres</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form
+            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
+            method="get"
+            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+          >
+            <label className="text-sm text-slate-200">
+              Recherche
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Nom de la position"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Type
+              <select
+                name="type"
+                defaultValue={typeFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les types</option>
+                {Object.values(PositionType).map((t) => (
+                  <option key={t} value={t}>
+                    {typeLabels[t]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Niveau
+              <select
+                name="level"
+                defaultValue={levelFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous niveaux</option>
+                {Object.values(PositionLevel).map((lvl) => (
+                  <option key={lvl} value={lvl}>
+                    {lvl === "BEGINNER"
+                      ? "Beginner"
+                      : lvl === "INTERMEDIATE"
+                      ? "Intermédiaire"
+                      : "Avancé"}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="md:col-span-3 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/app/student/progress"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </details>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {positions.map((position) => {
             const progress = progressMap.get(position.id);
@@ -168,7 +271,7 @@ export default async function StudentProgressPage({
         <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-200">
           <Link
             aria-disabled={page <= 1}
-            href={page <= 1 ? "#" : `/app/student/progress?page=${page - 1}`}
+            href={page <= 1 ? "#" : `/app/student/progress?page=${page - 1}${qs ? `&${qs}` : ""}`}
             className={`rounded-full border px-3 py-1 font-semibold transition ${
               page <= 1
                 ? "cursor-not-allowed border-white/10 text-slate-500"
@@ -183,7 +286,9 @@ export default async function StudentProgressPage({
           <Link
             aria-disabled={page >= totalPages}
             href={
-              page >= totalPages ? "#" : `/app/student/progress?page=${page + 1}`
+              page >= totalPages
+                ? "#"
+                : `/app/student/progress?page=${page + 1}${qs ? `&${qs}` : ""}`
             }
             className={`rounded-full border px-3 py-1 font-semibold transition ${
               page >= totalPages
