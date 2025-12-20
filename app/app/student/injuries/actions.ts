@@ -15,7 +15,18 @@ const createSchema = z.object({
 const updateSchema = z.object({
   injuryId: z.string().cuid(),
   notes: z.string().optional(),
-  isActive: z.coerce.boolean(),
+  isActive: z.preprocess(
+    (value) => {
+      if (typeof value === "string") {
+        return value === "true";
+      }
+      if (typeof value === "boolean") {
+        return value;
+      }
+      return undefined;
+    },
+    z.boolean()
+  ),
 });
 
 const deleteSchema = z.object({
