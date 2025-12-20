@@ -90,19 +90,29 @@ export default async function AdminUsersPage({
         </p>
         <form action={createUserAction} className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="grid gap-1 text-sm text-slate-200">
-            Email
+            Prénom
             <input
-              name="email"
-              type="email"
+              name="firstName"
+              type="text"
               required
               className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
             />
           </label>
           <label className="grid gap-1 text-sm text-slate-200">
-            Nom (optionnel)
+            Nom
             <input
-              name="name"
+              name="lastName"
               type="text"
+              required
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
+            />
+          </label>
+          <label className="grid gap-1 text-sm text-slate-200">
+            Email
+            <input
+              name="email"
+              type="email"
+              required
               className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
             />
           </label>
@@ -180,6 +190,7 @@ export default async function AdminUsersPage({
                     defaultValue={user.name?.split(" ")[0] ?? ""}
                     placeholder="Prénom"
                     className="min-w-[120px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                    required
                   />
                   <input
                     type="text"
@@ -187,6 +198,7 @@ export default async function AdminUsersPage({
                     defaultValue={user.name?.split(" ").slice(1).join(" ") ?? ""}
                     placeholder="Nom"
                     className="min-w-[120px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                    required
                   />
                   <select
                     name="role"
