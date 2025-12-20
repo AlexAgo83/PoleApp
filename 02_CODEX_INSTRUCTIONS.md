@@ -1,6 +1,6 @@
 # 02 — Instructions pour CODEX (phase produit)
 
-Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.5 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
+Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.6 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions
 - Fiches cours / fiches élève
 - Blessures
@@ -45,7 +45,7 @@ Structure proposée :
 
 ---
 
-Les Steps 0→9 ci-dessous constituent le socle livré (tag `v0.4.5`). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
+Les Steps 0→9 ci-dessous constituent le socle livré (tag `v0.4.6`). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
 
 ## Step 0 — Bootstrap projet (doit compiler)
 

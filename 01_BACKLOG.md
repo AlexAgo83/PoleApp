@@ -1,9 +1,9 @@
-# 01 — Backlog Produit (v0.4.5 → produit complet)
+# 01 — Backlog Produit (v0.4.6 → produit complet)
 
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (positions listées pour tous sur `/positions`, création/édition prof/admin sous `/teacher/positions/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
-> Statut : Steps 0→9 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA), tag `v0.4.5` figé comme baseline. Phase produit enclenchée : fiabilité/observabilité/sécurité/perf/billing sont à intégrer dans chaque Step.
+> Statut : Steps 0→9 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA), tag `v0.4.6` figé comme baseline. Phase produit enclenchée : fiabilité/observabilité/sécurité/perf/billing sont à intégrer dans chaque Step.
 
 ---
 

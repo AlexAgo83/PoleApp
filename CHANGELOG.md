@@ -2,14 +2,14 @@
 
 # Changelog
 
-## 2025-02-03 — UI cours & médias (v0.4.5+)
+## 2025-02-03 — UI cours & médias (v0.4.6+)
 - Cours : photos optionnelles (placeholder), listes prof/élève alignées (titre en haut, stats en bas, CTA “Voir le cours”), détails élève repositionnés comme la vue prof.
 - Admin/Prof/Élève : avatars/placeholder affichés dans les listes (utilisateurs, élèves, professeurs), admin peut éditer les fiches prof comme le prof.
 - Admin : filtres ajoutés sur Studios/Partenaires, panels corrigés (filtre ouvert par défaut, pagination/panels repositionnés).
 - Modèle de données : `Course.photoUrl` + colonnes sièges/crédits, `User.age/avatarUrl/diplomas`, `TeacherFavoritePosition`. Migrations ajoutées et baselined localement (`20250130_add_course_seats_credits`, `20250201_add_student_age`, `20250202_profile_media_teacher_meta`, `20250203_add_course_photo`).
 - Homepage : panels “Status build” et “Nouveautés” retirés pour alléger; filtres de l’app repliés par défaut avec persistance locale.
 
-## 2025-12-24 — Release v0.4.5 (Profils enrichis)
+## 2025-12-24 — Release v0.4.6 (Profils enrichis)
 - Ajout photo de profil (URL) et âge éditables pour tous, avec placeholders neutres (élève/prof).
 - Professeurs : diplômes texte libre, positions préférées (multi-select) et affichage dans la fiche publique.
 - Nouvelles pages : fiche prof `/app/teachers/[id]` (élèves/profs/admin de la même école) et liste des profs déjà eus `/app/student/teachers` (élève).
