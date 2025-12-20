@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { SponsoredLinksField } from "@/components/SponsoredLinksField";
 import { createPartnerAction, deletePartnerAction, updatePartnerAction } from "./actions";
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -128,16 +129,15 @@ export default async function AdminPartnersPage({
       </header>
 
       <section className="panel p-4 md:p-6">
-        <details className="group">
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Ajouter un partenaire</span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:admin-partners-create"
+          title="Ajouter un partenaire"
+          className="group"
+          contentClassName="mt-3"
+        >
           <form
             action={createPartnerAction}
-            className="mt-3 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2"
+            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2"
           >
             <label className="text-sm text-slate-200">
               Nom
@@ -168,7 +168,7 @@ export default async function AdminPartnersPage({
               Description (optionnel)
               <textarea
                 name="description"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 rows={2}
               />
             </label>
@@ -188,20 +188,21 @@ export default async function AdminPartnersPage({
               </button>
             </div>
           </form>
-        </details>
+        </FilterPanel>
       </section>
 
       <section className="panel space-y-4 p-6">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-white">Partenaires existants</h2>
-          <details className="group w-full" open>
-            <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-              <span>Filtres</span>
-              <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
-            </summary>
+          <FilterPanel
+            storageKey="filters:admin-partners-list"
+            title="Filtres"
+            className="group w-full"
+            contentClassName="mt-3"
+          >
             <form
               method="get"
-              className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:items-end"
+              className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:items-end"
             >
               <label className="text-sm text-slate-200 md:col-span-2">
                 Recherche (nom, type, site, description)
@@ -238,7 +239,7 @@ export default async function AdminPartnersPage({
                 </Link>
               </div>
             </form>
-          </details>
+          </FilterPanel>
         </div>
         {partners.length === 0 && (
           <p className="text-slate-200">Aucun partenaire pour le moment.</p>

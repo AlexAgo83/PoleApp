@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -101,23 +102,16 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold text-white">Professeurs de l&apos;école</h2>
         </div>
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:admin-teachers"
+          title="Filtres"
+          activeCount={activeFilters}
+          className="group"
+          contentClassName="mt-3"
+        >
           <form
             method="get"
-            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
           >
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (nom ou email)
@@ -153,7 +147,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         {teachers.length === 0 ? (
           <p className="text-slate-300">Aucun professeur trouvé.</p>
         ) : (

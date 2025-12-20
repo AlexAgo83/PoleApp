@@ -23,7 +23,18 @@ export function FilterPanel({
   className,
   contentClassName,
 }: FilterPanelProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved === "true" || saved === "false") {
+        return saved === "true";
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  });
 
   useEffect(() => {
     try {
