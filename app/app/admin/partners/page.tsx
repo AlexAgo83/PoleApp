@@ -134,13 +134,13 @@ export default async function AdminPartnersPage({
           storageKey="panel:admin-partners-create"
           title="Ajouter un partenaire"
           className="group"
-          contentClassName="mt-3"
+          contentClassName="mt-4"
         >
           <form
             action={createPartnerAction}
-            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2"
+            className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:gap-6"
           >
-            <label className="text-sm text-slate-200">
+            <label className="text-sm text-slate-200 md:col-span-2">
               Nom
               <input
                 name="name"
@@ -180,7 +180,7 @@ export default async function AdminPartnersPage({
             ) : (
               <input type="hidden" name="sponsored" value="[]" />
             )}
-            <div className="md:col-span-2 flex justify-end">
+            <div className="md:col-span-2 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
