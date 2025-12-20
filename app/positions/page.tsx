@@ -68,6 +68,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (!session?.user) {
     return null;
   }
+  const userKey = session.user.id ?? "anon";
   const homeForRole = defaultHomeForRole(session.user.role);
   const isStudent = session.user.role === "STUDENT";
   const isPremium = Boolean(session.user.isPremium);
@@ -168,6 +169,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           storageKey="filters:positions"
           title="Filtres"
           activeCount={activeFilters}
+          userKey={userKey}
         >
           {/* key force le rerender des inputs lorsque les filtres changent pour que “Réinitialiser” remette bien les valeurs par défaut. */}
           <form

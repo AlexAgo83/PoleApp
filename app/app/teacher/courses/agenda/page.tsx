@@ -34,6 +34,7 @@ export default async function CoursesAgendaPage({
   if (!session?.user?.schoolId || !session.user.role) {
     redirect("/access-denied");
   }
+  const userKey = session.user.id ?? "anon";
   const isTeacher = session.user.role === "TEACHER";
   if (!isTeacher && session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
@@ -180,6 +181,7 @@ export default async function CoursesAgendaPage({
           storageKey="filters:teacher-agenda"
           title="Filtres"
           activeCount={(hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0)}
+          userKey={userKey}
         >
           <form
             key={`agenda-${monthParam ?? "current"}`}

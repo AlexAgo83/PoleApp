@@ -35,6 +35,7 @@ export default async function TeacherStudentsPage({
   if (!session?.user?.schoolId) {
     return null;
   }
+  const userKey = session.user.id ?? "anon";
   const isTeacherOnly = session.user.role === "TEACHER";
 
   const queryParams = new URLSearchParams();
@@ -137,6 +138,7 @@ export default async function TeacherStudentsPage({
           storageKey="filters:teacher-students"
           title="Filtres"
           activeCount={activeFilters}
+          userKey={userKey}
         >
           <form
             key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}-${sort}`}

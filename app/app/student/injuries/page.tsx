@@ -22,6 +22,7 @@ export default async function StudentInjuriesPage({
   if (!session?.user?.id) {
     return null;
   }
+  const userKey = session.user.id ?? "anon";
 
   const resolvedParams = (await searchParams) ?? {};
   const pageParam = Array.isArray(resolvedParams.page)
@@ -71,6 +72,7 @@ export default async function StudentInjuriesPage({
         <FilterPanel
           storageKey="filters:student-injuries-add"
           title="Ajouter une blessure"
+          userKey={userKey}
         >
           <form action={createInjuryAction} className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="text-sm text-slate-200">

@@ -49,6 +49,7 @@ export default async function TeacherCoursesPage({
   if (!session?.user?.schoolId) {
     return null;
   }
+  const userKey = session.user.id ?? "anon";
 
   const whereClause = {
     schoolId: session.user.schoolId,
@@ -164,6 +165,7 @@ export default async function TeacherCoursesPage({
           storageKey="filters:teacher-courses"
           title="Filtres avancés"
           activeCount={activeFilters}
+          userKey={userKey}
         >
           <form
             key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${withNotes ? "notes" : "all"}`}

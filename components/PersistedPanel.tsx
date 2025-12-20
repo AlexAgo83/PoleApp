@@ -10,6 +10,7 @@ type PersistedPanelProps = {
   className?: string;
   contentClassName?: string;
   defaultOpen?: boolean;
+  userKey?: string;
 };
 
 /**
@@ -24,11 +25,13 @@ export function PersistedPanel({
   className,
   contentClassName,
   defaultOpen = false,
+  userKey = "anon",
 }: PersistedPanelProps) {
+  const fullKey = `${userKey}:${storageKey}`;
   const [open, setOpen] = useState<boolean>(() => {
     if (typeof window === "undefined") return defaultOpen;
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
         return saved === "true";
       }
@@ -40,22 +43,22 @@ export function PersistedPanel({
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
         setOpen(saved === "true");
       }
     } catch {
       // ignore
     }
-  }, [storageKey]);
+  }, [fullKey]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, open ? "true" : "false");
+      localStorage.setItem(fullKey, open ? "true" : "false");
     } catch {
       // ignore
     }
-  }, [storageKey, open]);
+  }, [fullKey, open]);
 
   return (
     <details

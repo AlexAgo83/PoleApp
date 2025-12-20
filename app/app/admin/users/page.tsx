@@ -45,6 +45,7 @@ export default async function AdminUsersPage({
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     return null;
   }
+  const userKey = session.user.id ?? "anon";
   if (!session.user.schoolId) {
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -130,6 +131,7 @@ export default async function AdminUsersPage({
           subtitle="Un mot de passe par défaut est prérempli, change-le si besoin."
           className="group"
           contentClassName="mt-4"
+          userKey={userKey}
         >
           <form action={createUserAction} className="grid gap-4 md:grid-cols-2">
             <label className="grid gap-1 text-sm text-slate-200">
@@ -210,6 +212,7 @@ export default async function AdminUsersPage({
           activeCount={activeFilters}
           className="group"
           contentClassName="mt-4"
+          userKey={userKey}
         >
           <form
             key={`filters-${roleFilter ?? "all"}-${premiumFilter ? "premium" : "all"}-${q || "all"}`}

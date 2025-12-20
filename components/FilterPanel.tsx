@@ -9,6 +9,7 @@ type FilterPanelProps = {
   children: React.ReactNode;
   className?: string;
   contentClassName?: string;
+  userKey?: string;
 };
 
 /**
@@ -22,11 +23,13 @@ export function FilterPanel({
   children,
   className,
   contentClassName,
+  userKey = "anon",
 }: FilterPanelProps) {
+  const fullKey = `${userKey}:${storageKey}`;
   const [open, setOpen] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
         return saved === "true";
       }
@@ -38,22 +41,22 @@ export function FilterPanel({
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
         setOpen(saved === "true");
       }
     } catch {
       // ignore
     }
-  }, [storageKey]);
+  }, [fullKey]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, open ? "true" : "false");
+      localStorage.setItem(fullKey, open ? "true" : "false");
     } catch {
       // ignore
     }
-  }, [storageKey, open]);
+  }, [fullKey, open]);
 
   return (
     <details
@@ -74,7 +77,7 @@ export function FilterPanel({
           ▼
         </span>
       </summary>
-      {open && <div className={contentClassName}>{children}</div>}
+      <div className={contentClassName}>{children}</div>
     </details>
   );
 }

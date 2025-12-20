@@ -34,6 +34,7 @@ export default async function StudentCoursesAgendaPage({
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     redirect("/access-denied");
   }
+  const userKey = session.user.id ?? "anon";
 
   const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
@@ -219,6 +220,7 @@ export default async function StudentCoursesAgendaPage({
           storageKey="filters:student-agenda"
           title="Filtres"
           activeCount={activeFilters}
+          userKey={userKey}
         >
           <form
             method="get"

@@ -20,6 +20,7 @@ export default async function StudentTeachersPage({
   if (!session?.user?.id) {
     redirect("/login?callbackUrl=/app/student/teachers");
   }
+  const userKey = session.user.id ?? "anon";
   if (!session.user.schoolId) {
     redirect("/access-denied");
   }
@@ -109,6 +110,7 @@ export default async function StudentTeachersPage({
           activeCount={activeFilters}
           className="mt-4"
           contentClassName="mt-3"
+          userKey={userKey}
         >
           <form
             className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
