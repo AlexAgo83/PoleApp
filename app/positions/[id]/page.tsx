@@ -56,7 +56,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   if (!position) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-16">
+      <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4 py-12 md:px-6 md:py-16">
         <div className="panel w-full max-w-xl p-6 text-center text-slate-200">
           <p>Position introuvable.</p>
           <Link
@@ -82,7 +82,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel flex flex-wrap items-center justify-between gap-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
