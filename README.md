@@ -1,12 +1,13 @@
 # Pole App — Produit v0.4.6 (Steps 0 → 9)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.6` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step.
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.6` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
 
 ## Phase produit — exigences transverses
-- Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données.
-- Observabilité : logging structuré, métriques/health checks actionnables, alertes pour erreurs/latences.
-- Fiabilité/perf : budgets (TTFB/CLS/LCP côté web), limites de pagination, requêtes Prisma indexées, feature flags/dark launch.
-- Sécurité/PII : secrets hors code, RBAC déjà en place, audit trail à intégrer sur actions sensibles.
+- Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données. Seed idempotent.
+- Observabilité : logging structuré, métriques/health checks actionnables, alertes pour erreurs/latences, traces sur actions sensibles.
+- Fiabilité/perf : budgets (TTFB/CLS/LCP côté web), pagination 10 items par défaut, requêtes Prisma indexées, feature flags/dark launch.
+- Sécurité/PII : secrets hors code, RBAC déjà en place, audit trail à intégrer sur actions sensibles, validations zod côté serveur.
+- Média : intégrer Cloudinary quand on ouvrira les uploads (avatars, photos cours/positions), avec signatures côté serveur et stockage des URLs/public_id.
 
 ## Stack
 - Next.js 16 (App Router) + TypeScript + Tailwind
@@ -47,13 +48,14 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`.
 - Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin.
 - CRUD : `/teacher/positions/new` et `/teacher/positions/[id]/edit` (Professeur/Admin).
+- Médias : image placeholder si absent, vignettes 2 colonnes sur la liste.
 
 ## Blessures & progression
 - Élève : `/app/student/injuries` (CRUD, pagination 10) ; `/app/student/progress` (pagination 10).
 - Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste.
 
 ## Cours
-- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”.
+- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés.
 - Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA.
 - Détail cours correct par id; updates progression lors de la création/édition.
 
@@ -61,8 +63,10 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - `/app/student/game` : quiz photo → nom sur positions débloquées (ou toutes si premium).
 
 ## Admin école
-- `/app/admin` : stats école, actions rapides.
-- `/app/admin/users` : CRUD users (rôle, premium, mot de passe).
+- `/app/admin` : stats école, actions rapides, vue semaine des cours de l’école.
+- `/app/admin/users` : CRUD users (rôle, premium, mot de passe), pastilles rôle/premium harmonisées, pagination.
+- `/app/admin/studios` et `/app/admin/partners` : filtres persistés, cellules remaniées, pagination.
+- `/app/admin/teachers` : liste profs avec filtres persistés.
 
 ## Pagination (v0.2.2)
 - Listes dynamiques paginées par 10 : cours élève/prof, progression élève, blessures élève, liste élèves prof/admin.
@@ -80,9 +84,10 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Start : `npm run db:push && npm run db:seed && npm run start` (seed idempotent).
 - Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
 - Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`).
-- Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds.
+- Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds. Si warning “middleware” : migrer vers `proxy` à terme.
 
 ## Changelog
+- v0.4.6 : Panel filtres persistés par utilisateur, panels création admin repliables, harmonisation UI studios/partenaires/utilisateurs, versioning bump et préparations Cloudinary.
 - v0.4.5 : Profils enrichis (photo, âge, diplômes, positions préférées prof) + fiches prof publiques accessibles aux élèves. Cours avec photos optionnelles, listes/détails alignés élèves/profs, filtres studios/partenaires/admin, avatars dans les listes (élèves/profs/users).
 - v0.4.4 : Steps 0→9 livrées (Discovery QA terminée), passage en phase produit et tag `v0.4.4` figé comme baseline.
 - v0.2.2 : filtres admin/positions/élèves, UI filtres harmonisée, pagination 10 items, page profil et navigation role-based. Voir `CHANGELOG.md`.
