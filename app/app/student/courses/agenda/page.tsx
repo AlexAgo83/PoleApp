@@ -221,6 +221,11 @@ export default async function StudentCoursesAgendaPage({
                   >
                     {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
                     {a.course.title ?? "Cours"}
+                    {a.course.studio?.name ? (
+                      <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                        {a.course.studio.name}
+                      </span>
+                    ) : null}
                   </Link>
                 ))}
               {cell.attendances && cell.attendances.length > 3 && (

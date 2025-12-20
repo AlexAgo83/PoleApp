@@ -7,7 +7,15 @@ import { prisma } from "@/lib/prisma";
 export default async function StudentCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string; sort?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    from?: string;
+    to?: string;
+    teacher?: string;
+    studio?: string;
+    withNotes?: string;
+    sort?: string;
+  }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
@@ -20,6 +28,10 @@ export default async function StudentCoursesPage({
     typeof resolvedParams.teacher === "string" && resolvedParams.teacher.length > 0
       ? resolvedParams.teacher
       : undefined;
+  const studioFilter =
+    typeof resolvedParams.studio === "string" && resolvedParams.studio.length > 0
+      ? resolvedParams.studio
+      : undefined;
   const fromDate = resolvedParams.from ? new Date(resolvedParams.from) : undefined;
   const toDate = resolvedParams.to ? new Date(resolvedParams.to) : undefined;
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
@@ -30,6 +42,7 @@ export default async function StudentCoursesPage({
     validFrom,
     validTo,
     teacherFilter,
+    studioFilter,
     withNotes ? "notes" : null,
     sort === "date_asc" ? "sort" : null,
   ].filter(Boolean).length;
@@ -40,6 +53,7 @@ export default async function StudentCoursesPage({
       ...(validFrom ? { date: { gte: validFrom } } : {}),
       ...(validTo ? { date: { lte: validTo } } : {}),
       ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+      ...(studioFilter ? { studioId: studioFilter } : {}),
       ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
     },
   };
@@ -51,7 +65,7 @@ export default async function StudentCoursesPage({
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * 10;
 
-  const [attendances, teachers] = await Promise.all([
+  const [attendances, teachers, studios] = await Promise.all([
     prisma.courseAttendance.findMany({
       where: whereClause,
       orderBy: { course: { date: sort === "date_desc" ? "desc" : "asc" } },
@@ -62,6 +76,7 @@ export default async function StudentCoursesPage({
           include: {
             teacher: { select: { name: true, email: true } },
             positions: { include: { position: true } },
+            studio: { select: { name: true } },
             notes: {
               where: { studentId: session.user.id },
               include: { position: true },
@@ -77,12 +92,20 @@ export default async function StudentCoursesPage({
           orderBy: { name: "asc" },
         })
       : Promise.resolve([]),
+    session.user.schoolId
+      ? prisma.studio.findMany({
+          where: { schoolId: session.user.schoolId },
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve([]),
   ]);
 
   const queryParams = new URLSearchParams();
   if (resolvedParams.from) queryParams.set("from", resolvedParams.from);
   if (resolvedParams.to) queryParams.set("to", resolvedParams.to);
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
+  if (studioFilter) queryParams.set("studio", studioFilter);
   if (withNotes) queryParams.set("withNotes", "true");
   if (sort === "date_asc") queryParams.set("sort", "date_asc");
   const qs = queryParams.toString();
@@ -127,7 +150,7 @@ export default async function StudentCoursesPage({
           <form
             key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}`}
             method="get"
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Date min
@@ -164,6 +187,21 @@ export default async function StudentCoursesPage({
               </select>
             </label>
             <label className="text-sm text-slate-200">
+              Studio
+              <select
+                name="studio"
+                defaultValue={studioFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les studios</option>
+                {studios.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
               Tri
               <select
                 name="sort"
@@ -185,7 +223,7 @@ export default async function StudentCoursesPage({
               />
               Avec notes
             </label>
-            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+            <div className="md:col-span-5 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
@@ -221,6 +259,11 @@ export default async function StudentCoursesPage({
                       <div className="flex flex-col text-sm text-slate-300">
                         <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
                         <span>{new Date(course.date).toLocaleString()}</span>
+                        {course.studio?.name && (
+                          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                            Studio · {course.studio.name}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <p className="text-xs text-slate-400">

@@ -34,6 +34,7 @@ export default async function StudentCourseDetailPage({
     },
     include: {
       teacher: { select: { name: true, email: true } },
+      studio: { select: { name: true, address: true } },
       positions: { include: { position: true } },
       notes: {
         where: { studentId: session.user.id },
@@ -72,6 +73,14 @@ export default async function StudentCourseDetailPage({
           <p className="text-sm text-slate-200">
             {new Date(course.date).toLocaleString()}
           </p>
+          {course.studio?.name && (
+            <p className="mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-cyan-100">
+              Studio · {course.studio.name}
+              {course.studio.address ? (
+                <span className="text-[11px] text-slate-200">({course.studio.address})</span>
+              ) : null}
+            </p>
+          )}
         </div>
         <Link
           href={backHref}

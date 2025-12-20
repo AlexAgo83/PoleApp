@@ -43,12 +43,6 @@ export default async function StudentSchoolPage() {
           <h1 className="text-3xl font-semibold text-white">Mon école</h1>
           <p className="text-sm text-slate-200">{school.name}</p>
         </div>
-        <Link
-          href="/app/student"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          ↩ Dashboard élève
-        </Link>
       </header>
 
       <section className="panel p-6">
