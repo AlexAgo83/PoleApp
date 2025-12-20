@@ -63,7 +63,7 @@ export function PersistedPanel({
       open={open}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >
-      <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+      <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white">
         <div className="flex flex-col">
           <span>{title}</span>
           {subtitle && <span className="text-xs font-normal text-slate-300">{subtitle}</span>}
