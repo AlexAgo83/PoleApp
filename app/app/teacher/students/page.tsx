@@ -33,6 +33,7 @@ export default async function TeacherStudentsPage({
   if (!session?.user?.schoolId) {
     return null;
   }
+  const isTeacherOnly = session.user.role === "TEACHER";
 
   const queryParams = new URLSearchParams();
   if (premiumOnly) queryParams.set("premium", "true");
@@ -57,6 +58,13 @@ export default async function TeacherStudentsPage({
       ? { injuries: { some: { isActive: true } } }
       : injuryFilter === "none"
       ? { injuries: { none: { isActive: true } } }
+      : {}),
+    ...(isTeacherOnly
+      ? {
+          attendances: {
+            some: { course: { teacherId: session.user.id } },
+          },
+        }
       : {}),
   };
 

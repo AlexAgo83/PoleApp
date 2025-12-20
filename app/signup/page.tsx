@@ -6,7 +6,11 @@ import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 
-export default async function SignupPage({ searchParams }: { searchParams?: { error?: string } }) {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ error?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (session?.user?.role) {
     // Already logged in: send back to home to avoid creating duplicate accounts
@@ -37,11 +41,14 @@ export default async function SignupPage({ searchParams }: { searchParams?: { er
     );
   }
 
-  const schools = await prisma.school.findMany({
-    orderBy: { name: "asc" },
-    select: { id: true, name: true },
-  });
-  const error = searchParams?.error;
+  const [schools, resolvedParams] = await Promise.all([
+    prisma.school.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
+    Promise.resolve(searchParams),
+  ]);
+  const error = resolvedParams?.error;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-12">
