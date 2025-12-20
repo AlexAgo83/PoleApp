@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -16,17 +15,84 @@ export default async function TeacherSchoolPage() {
     redirect("/access-denied");
   }
 
-  const school = await prisma.school.findUnique({
-    where: { id: session.user.schoolId },
-    include: {
-      studios: true,
-      partners: {
-        include: {
-          sponsoredLinks: true,
+  type SchoolView = {
+    id: string;
+    name: string;
+    website: string | null;
+    studios: { id: string; name: string; address: string | null }[];
+    partners: {
+      id: string;
+      name: string;
+      kind: string | null;
+      description: string | null;
+      website: string | null;
+      sponsoredLinks: { id: string; category: string | null; label: string | null; url: string }[];
+    }[];
+  };
+
+  let school: SchoolView | null = null;
+  try {
+    const fetched = await prisma.school.findUnique({
+      where: { id: session.user.schoolId },
+      select: {
+        id: true,
+        name: true,
+        website: true,
+        studios: { select: { id: true, name: true, address: true } },
+        partners: {
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            description: true,
+            website: true,
+            sponsoredLinks: { select: { id: true, category: true, label: true, url: true } },
+          },
         },
       },
-    },
-  });
+    });
+    if (fetched) {
+      school = {
+        id: fetched.id,
+        name: fetched.name,
+        website: fetched.website ?? null,
+        studios: fetched.studios,
+        partners: fetched.partners,
+      };
+    }
+  } catch (err) {
+    const message = (err as Error)?.message ?? "";
+    if (!message.toLowerCase().includes("website")) {
+      throw err;
+    }
+    const fetched = await prisma.school.findUnique({
+      where: { id: session.user.schoolId },
+      select: {
+        id: true,
+        name: true,
+        studios: { select: { id: true, name: true, address: true } },
+        partners: {
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            description: true,
+            website: true,
+            sponsoredLinks: { select: { id: true, category: true, label: true, url: true } },
+          },
+        },
+      },
+    });
+    if (fetched) {
+      school = {
+        id: fetched.id,
+        name: fetched.name,
+        website: null,
+        studios: fetched.studios,
+        partners: fetched.partners,
+      };
+    }
+  }
 
   if (!school) {
     redirect("/access-denied");
@@ -41,6 +107,16 @@ export default async function TeacherSchoolPage() {
           </p>
           <h1 className="text-3xl font-semibold text-white">École</h1>
           <p className="text-sm text-slate-200">{school.name}</p>
+          {school.website ? (
+            <a
+              href={school.website}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
+            >
+              Site web
+            </a>
+          ) : null}
         </div>
       </header>
 

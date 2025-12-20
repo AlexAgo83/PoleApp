@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateSchoolAction } from "./actions";
 
 type RoleCounts = {
   total: number;
@@ -42,23 +41,38 @@ export default async function AdminDashboard() {
     );
   }
 
-  const [
-    school,
-    users,
-    positionsCount,
-    coursesCount,
-    activeInjuries,
-    studiosCount,
-    partnersCount,
-  ] =
+  const baseSchool = await prisma.school.findUnique({
+    where: { id: session.user.schoolId },
+    select: { id: true, name: true },
+  });
+  let schoolWebsite: string | null = null;
+  try {
+    const withWebsite = await prisma.school.findUnique({
+      where: { id: session.user.schoolId },
+      select: { website: true },
+    });
+    schoolWebsite = withWebsite?.website ?? null;
+  } catch {
+    // Column may not exist yet in the DB; ignore.
+  }
+
+  const [users, positionsCount, coursesCount, coursesTodayCount, activeInjuries, studiosCount, partnersCount] =
     await Promise.all([
-      prisma.school.findUnique({ where: { id: session.user.schoolId } }),
       prisma.user.findMany({
         where: { schoolId: session.user.schoolId },
         select: { role: true, isPremium: true },
       }),
       prisma.position.count(),
       prisma.course.count({ where: { schoolId: session.user.schoolId } }),
+      prisma.course.count({
+        where: {
+          schoolId: session.user.schoolId,
+          date: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            lte: new Date(new Date().setHours(23, 59, 59, 999)),
+          },
+        },
+      }),
       prisma.studentInjury.count({
         where: { isActive: true, student: { schoolId: session.user.schoolId } },
       }),
@@ -113,8 +127,29 @@ export default async function AdminDashboard() {
       <header className="panel p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <h1 className="text-3xl font-semibold text-white">
-          Dashboard {school?.name ?? "école"},
+          Dashboard {baseSchool?.name ?? "école"},
         </h1>
+        {schoolWebsite ? (
+          <a
+            href={schoolWebsite}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
+          >
+            Site web
+          </a>
+        ) : null}
+        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+          <Link
+            href="/app/admin/school"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            aria-label="Éditer la fiche école"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gear.svg" alt="" className="h-4 w-4" />
+            Éditer l&apos;école
+          </Link>
+        </div>
         <p className="text-sm text-slate-300">
           Vue synthétique de l’école et accès rapide aux actions admin.
         </p>
@@ -166,7 +201,7 @@ export default async function AdminDashboard() {
 
       <section className="grid gap-4 md:grid-cols-2">
         <div className="panel space-y-3 p-6">
-          <h2 className="text-xl font-semibold text-white">{school?.name ?? "École"}</h2>
+          <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
             <Stat label="Utilisateurs" value={counts.total} />
             <Stat label="Étudiants" value={counts.STUDENT} />
@@ -182,6 +217,7 @@ export default async function AdminDashboard() {
           <h2 className="text-xl font-semibold text-white">Activité</h2>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
             <Stat label="Cours" value={coursesCount} />
+            <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
             <Stat label="Positions" value={positionsCount} />
             <Stat label="Blessures actives" value={activeInjuries} />
           </div>
@@ -192,7 +228,14 @@ export default async function AdminDashboard() {
       </section>
 
       <section className="panel p-6">
-        <h2 className="text-lg font-semibold text-white">Vue semaine</h2>
+        <details className="group" open={false}>
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
+            <span className="inline-flex items-center gap-2">
+              <span>Vue semaine</span>
+              <span className="text-xs font-normal text-slate-300">(cette semaine)</span>
+            </span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
+          </summary>
         <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
           {weekDays.map((day, idx) => {
             const dayCourses = coursesByDay[idx];
@@ -239,6 +282,7 @@ export default async function AdminDashboard() {
             );
           })}
         </div>
+        </details>
       </section>
 
       <section className="panel p-6">
@@ -259,32 +303,6 @@ export default async function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel p-6">
-        <h2 className="text-lg font-semibold text-white">Informations école</h2>
-        <p className="text-sm text-slate-300">
-          Mets à jour le nom affiché pour cette école. Visible par les professeurs et élèves rattachés.
-        </p>
-        <form action={updateSchoolAction} className="mt-4 space-y-3">
-          <input type="hidden" name="schoolId" value={session.user.schoolId} />
-          <label className="block text-sm text-slate-200">
-            Nom de l’école
-            <input
-              name="name"
-              defaultValue={school?.name ?? ""}
-              required
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-          </label>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
-            >
-              Sauvegarder
-            </button>
-          </div>
-        </form>
-      </section>
     </main>
   );
 }
