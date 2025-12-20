@@ -254,7 +254,7 @@ export default async function StudentCoursesPage({
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
           <h1 className="text-3xl font-semibold text-white">Mes cours</h1>
           <p className="text-sm text-slate-200">
-            Historique des cours suivis. Page {currentPage} / {totalPages} · {totalCount} entrées
+            Historique des cours suivis.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-center">

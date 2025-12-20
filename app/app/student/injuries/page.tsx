@@ -67,38 +67,45 @@ export default async function StudentInjuriesPage({
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Ajouter</h2>
-        <form action={createInjuryAction} className="mt-3 grid gap-3 md:grid-cols-2">
-          <label className="text-sm text-slate-200">
-            Type de blessure
-            <select
-              name="injuryTypeId"
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            >
-              {injuryTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm text-slate-200">
-            Notes (optionnel)
-            <input
-              name="notes"
-              placeholder="Douleur à l'épaule droite, éviter inversions."
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-          </label>
-          <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
-            >
-              Ajouter
-            </button>
-          </div>
-        </form>
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
+            <span>Ajouter une blessure</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form action={createInjuryAction} className="mt-4 grid gap-3 md:grid-cols-2">
+            <label className="text-sm text-slate-200">
+              Type de blessure
+              <select
+                name="injuryTypeId"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              >
+                {injuryTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Notes (optionnel)
+              <input
+                name="notes"
+                placeholder="Douleur à l'épaule droite, éviter inversions."
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              />
+            </label>
+            <div className="md:col-span-2">
+              <button
+                type="submit"
+                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+              >
+                Ajouter
+              </button>
+            </div>
+          </form>
+        </details>
       </section>
 
       <section className="panel border-indigo-400/15 p-6">

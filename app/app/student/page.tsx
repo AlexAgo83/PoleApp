@@ -55,7 +55,9 @@ export default async function StudentDashboard() {
           Accès réservé aux rôles étudiant. Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
         <div className="flex flex-wrap items-center gap-3 text-sm md:ml-auto md:justify-end">
-          <p className="text-sm text-cyan-100">Crédits : {credits}</p>
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-50 shadow-sm">
+            Crédits : {credits}
+          </span>
           <BuyCreditsButton currentCredits={credits} showUpgrade={!isPremium} />
         </div>
       </section>
