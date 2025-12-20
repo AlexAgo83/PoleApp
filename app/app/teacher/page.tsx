@@ -69,7 +69,7 @@ export default async function TeacherDashboard() {
             Présences, positions, notes élève×position, impact progression.
           </p>
         </Link>
-        <Link
+          <Link
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
@@ -81,6 +81,18 @@ export default async function TeacherDashboard() {
             </p>
             <p className="text-sm text-slate-300">
               Voir/ajouter des positions (types, niveaux, médias) utilisables en cours.
+            </p>
+          </Link>
+          <Link
+            href="/app/teacher/school"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              École
+            </p>
+            <p className="text-base font-semibold text-white">Fiche école</p>
+            <p className="text-sm text-slate-300">
+              Studios et partenaires rattachés à ton école.
             </p>
           </Link>
           <Link
