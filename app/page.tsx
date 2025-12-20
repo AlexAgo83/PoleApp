@@ -12,15 +12,15 @@ const moduleSections = [
     href: "/positions",
     description:
       "Base positions + médias, filtres, vignettes 2 colonnes, détail partageable, retour contextuel.",
-    status: "Étape 8",
+    status: "Étape 8-9",
     role: "Élève / Professeur / Admin",
     icon: "🌀",
   },
   {
     title: "Cours",
     href: "/app/teacher/courses",
-    description: "Création cours, présences, notes et mise à jour progression.",
-    status: "Étape 5",
+    description: "Création cours, présences, notes, durée et mise à jour progression.",
+    status: "Étape 5-9",
     role: "Professeur",
     icon: "📅",
   },
@@ -69,7 +69,7 @@ const buildSteps = [
   { label: "Step 6 — Mini-jeu", done: true },
   { label: "Step 7 — Admin école", done: true },
   { label: "Step 8 — Navigation par rôle + Positions unifiées", done: true },
-  { label: "Step 9 — Discovery QA", done: false },
+  { label: "Step 9 — Discovery QA", done: true },
 ];
 
 const roleLabels: Record<string, string> = {
@@ -139,7 +139,7 @@ export default async function Home() {
           <div className="space-y-3">
             {session?.user && (
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — MVP v0.2.2
+                Pole App — MVP v0.3.0
               </p>
             )}
             <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">
@@ -147,9 +147,11 @@ export default async function Home() {
             </h1>
             <p className="max-w-2xl text-slate-200">
               Une plateforme pour que professeurs et élèves alignent entraînement,
-              sécurité et progression : base de positions, suivi des blessures,
-              fiches cours et mini-jeu de révision. Cette homepage sert de guide
-              vers chaque module clé, avec un bandeau de navigation commun par rôle.
+              sécurité et progression : base de positions (gating premium),
+              suivi des blessures, fiches cours (durée) et mini-jeu de révision.
+              Crédits élèves visibles, studios avec adresses cliquables. Cette
+              homepage sert de guide vers chaque module clé, avec un bandeau de
+              navigation commun par rôle.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-slate-200">
               <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
@@ -163,6 +165,12 @@ export default async function Home() {
               </span>
               <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
                 Navigation unifiée (session, rôle, Mon espace)
+              </span>
+              <span className="rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1">
+                Premium : gating positions + crédits élèves
+              </span>
+              <span className="rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1">
+                Agenda semaine avec durées proportionnelles
               </span>
             </div>
           </div>
@@ -302,14 +310,16 @@ export default async function Home() {
         <div className="mt-4 space-y-3 text-sm text-slate-300">
           <p>
             Dernière étape livrée :{" "}
-            <strong>Step 8 — Navigation par rôle & Positions unifiées</strong>
+            <strong>Step 9 — Discovery QA</strong>
             <br />
-            Bandeau session/rôle/Accueil harmonisé, positions partagées en 2
-            colonnes avec retour contextuel et édition réservée Professeur/Admin.
+            Durée cours (min 30, pas 15), crédits élèves (premium = 1000),
+            gating premium positions, agenda semaine (durées proportionnelles),
+            studios avec adresses Maps (autocomplete mock).
           </p>
           <div className="space-y-1">
             <p className="text-slate-200">Historique rapide :</p>
             <ul className="space-y-1">
+              <li>• Step 9 : Discovery QA — filtres, gating premium, durées cours, crédits</li>
               <li>• Step 8 : Navigation — bandeau commun, positions unifiées</li>
               <li>• Step 7 : Admin — dashboard + gestion utilisateurs</li>
               <li>• Step 6 : Mini-jeu — quiz photo→nom sur positions débloquées</li>
@@ -324,8 +334,7 @@ export default async function Home() {
           <div className="space-y-1">
             <p className="text-slate-200">Prochain focus :</p>
             <ul className="space-y-1">
-              <li>• Step 9 : Discovery QA</li>
-              <li>• À cadrer ensuite : journal d’audit, contre-indications, badges/UX</li>
+              <li>• Step 10+ : audit log, billing/credits réels, contre-indications, badges/UX</li>
             </ul>
           </div>
         </div>
