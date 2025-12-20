@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -40,15 +41,15 @@ export default async function TeacherStudentsPage({
   if (sort === "name_desc") queryParams.set("sort", "name_desc");
   const qs = queryParams.toString();
 
-  const whereClause = {
+  const whereClause: Prisma.UserWhereInput = {
     role: "STUDENT" as const,
     schoolId: session.user.schoolId,
     ...(premiumOnly ? { isPremium: true } : {}),
     ...(q
       ? {
           OR: [
-            { name: { contains: q, mode: "insensitive" } },
-            { email: { contains: q, mode: "insensitive" } },
+            { name: { contains: q, mode: "insensitive" as Prisma.QueryMode } },
+            { email: { contains: q, mode: "insensitive" as Prisma.QueryMode } },
           ],
         }
       : {}),
