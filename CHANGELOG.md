@@ -64,8 +64,8 @@
 - Dashboards élève/prof : salutation personnalisée (prénom/nom/email fallback) avec bouton “Éditer” renvoyant vers le profil.
 - Homepage modules : pastilles rôle/étape déplacées sous la description pour plus de lisibilité.
 
-## 2025-12-21 — Maintenance & release v0.2.1
-- Version bump `0.2.1` (README, homepage, package.json).
+## 2025-12-21 — Maintenance & release v0.2.2
+- Version bump `0.2.2` (README, homepage, package.json).
 
 ## 2025-12-21 — Pagination & release v0.2.0
 - Version bump `0.2.0` (README, homepage, package.json).

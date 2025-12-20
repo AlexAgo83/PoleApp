@@ -9,30 +9,57 @@ const PAGE_SIZE = 10;
 export default async function TeacherStudentsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; premium?: string; injury?: string; q?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
+  const premiumOnly = resolvedParams.premium === "true";
+  const injuryFilter =
+    resolvedParams.injury === "active"
+      ? "active"
+      : resolvedParams.injury === "none"
+      ? "none"
+      : undefined;
+  const q = resolvedParams.q?.toString().trim() || "";
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
     return null;
   }
 
+  const queryParams = new URLSearchParams();
+  if (premiumOnly) queryParams.set("premium", "true");
+  if (injuryFilter) queryParams.set("injury", injuryFilter);
+  if (q) queryParams.set("q", q);
+  const qs = queryParams.toString();
+
+  const whereClause = {
+    role: "STUDENT" as const,
+    schoolId: session.user.schoolId,
+    ...(premiumOnly ? { isPremium: true } : {}),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { email: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+    ...(injuryFilter === "active"
+      ? { injuries: { some: { isActive: true } } }
+      : injuryFilter === "none"
+      ? { injuries: { none: { isActive: true } } }
+      : {}),
+  };
+
   const totalCount = await prisma.user.count({
-    where: {
-      role: "STUDENT",
-      schoolId: session.user.schoolId,
-    },
+    where: whereClause,
   });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
 
   const students = await prisma.user.findMany({
-    where: {
-      role: "STUDENT",
-      schoolId: session.user.schoolId,
-    },
+    where: whereClause,
     select: {
       id: true,
       email: true,
@@ -60,7 +87,64 @@ export default async function TeacherStudentsPage({
         </p>
       </header>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel space-y-4 border-indigo-400/15 p-6">
+        <details className="group" open>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Filtres</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+        <form method="get" className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end">
+          <label className="text-sm text-slate-200">
+            Recherche
+            <input
+              type="text"
+              name="q"
+              defaultValue={q}
+              placeholder="Nom, prénom ou email"
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </label>
+          <label className="text-sm text-slate-200">
+            Blessures
+            <select
+              name="injury"
+              defaultValue={injuryFilter ?? ""}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            >
+              <option value="">Toutes</option>
+              <option value="active">Avec blessure active</option>
+              <option value="none">Aucune blessure active</option>
+            </select>
+          </label>
+          <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+            <input
+              type="checkbox"
+              name="premium"
+              value="true"
+              defaultChecked={premiumOnly}
+              key={premiumOnly ? "premium-only" : "all-students"}
+              className="h-4 w-4 rounded border-white/20 bg-white/5"
+            />
+            Premium uniquement
+          </label>
+          <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="submit"
+              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            >
+              Filtrer
+            </button>
+            <Link
+              href="/app/teacher/students"
+              className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Réinitialiser
+            </Link>
+          </div>
+        </form>
+        </details>
         <div className="flex flex-col divide-y divide-white/5">
           {students.map((student) => (
             <article
@@ -103,7 +187,9 @@ export default async function TeacherStudentsPage({
           </span>
           <div className="flex items-center gap-2">
             <Link
-              href={`/app/teacher/students?page=${Math.max(1, currentPage - 1)}`}
+              href={`/app/teacher/students?page=${Math.max(1, currentPage - 1)}${
+                qs ? `&${qs}` : ""
+              }`}
               aria-disabled={currentPage === 1}
               className={`rounded-full border border-white/10 px-3 py-2 ${
                 currentPage === 1
@@ -114,7 +200,9 @@ export default async function TeacherStudentsPage({
               Précédent
             </Link>
             <Link
-              href={`/app/teacher/students?page=${Math.min(totalPages, currentPage + 1)}`}
+              href={`/app/teacher/students?page=${Math.min(totalPages, currentPage + 1)}${
+                qs ? `&${qs}` : ""
+              }`}
               aria-disabled={currentPage === totalPages}
               className={`rounded-full border border-white/10 px-3 py-2 ${
                 currentPage === totalPages

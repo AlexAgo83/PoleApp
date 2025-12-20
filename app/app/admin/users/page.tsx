@@ -164,14 +164,14 @@ export default async function AdminUsersPage({
         </form>
       </section>
 
-      <section className="panel p-6">
+      <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-white">Utilisateurs existants</h2>
           <p className="text-sm text-slate-300">
             Page {currentPage} / {totalPages} · {totalCount} comptes
           </p>
         </div>
-        <details className="group mb-4" open>
+        <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span>Filtres</span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
