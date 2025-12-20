@@ -16,6 +16,15 @@ type RoleCounts = {
 
 export const dynamic = "force-dynamic";
 
+function formatDuration(minutes: number) {
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hrs > 0) {
+    return `${hrs}h${mins.toString().padStart(2, "0")}`;
+  }
+  return `${mins} min`;
+}
+
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
@@ -66,6 +75,38 @@ export default async function AdminDashboard() {
     },
     { total: 0, STUDENT: 0, TEACHER: 0, SCHOOL_ADMIN: 0, premium: 0 } as RoleCounts
   ) satisfies RoleCounts;
+
+  const today = new Date();
+  const startWeek = new Date(today);
+  const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
+  startWeek.setDate(startWeek.getDate() - dayOffset);
+  const endWeek = new Date(startWeek);
+  endWeek.setDate(endWeek.getDate() + 6);
+  const now = Date.now();
+  const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
+    const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
+    return end < now;
+  };
+  const weekCourses = await prisma.course.findMany({
+    where: {
+      schoolId: session.user.schoolId,
+      date: { gte: startWeek, lte: endWeek },
+    },
+    include: {
+      teacher: { select: { name: true, email: true } },
+      studio: { select: { name: true } },
+    },
+    orderBy: { date: "asc" },
+  });
+  const weekDays = Array.from({ length: 7 }).map((_, idx) => {
+    const d = new Date(startWeek);
+    d.setDate(startWeek.getDate() + idx);
+    return d;
+  });
+  const coursesByDay = weekDays.map((d) => {
+    const dayStr = d.toDateString();
+    return weekCourses.filter((c) => new Date(c.date).toDateString() === dayStr);
+  });
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -147,6 +188,56 @@ export default async function AdminDashboard() {
           <p className="text-xs text-slate-400">
             Cours et blessures filtrés sur l’école de l’admin.
           </p>
+        </div>
+      </section>
+
+      <section className="panel p-6">
+        <h2 className="text-lg font-semibold text-white">Vue semaine</h2>
+        <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
+          {weekDays.map((day, idx) => {
+            const dayCourses = coursesByDay[idx];
+            return (
+              <div key={day.toISOString()} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200">
+                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
+                  <span className="flex items-center gap-1">
+                    <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
+                  </span>
+                  <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
+                </div>
+                <div className="flex flex-col gap-1.5 md:gap-2">
+                  {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
+                  {dayCourses.map((course) => {
+                    const past = isPastCourse(course.date, course.durationMinutes);
+                    return (
+                      <Link
+                        key={course.id}
+                        href={`/app/teacher/courses/${course.id}?from=/app/admin`}
+                        className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                          past
+                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                            : "border-white/10 bg-white/10 text-white"
+                        }`}
+                        title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
+                      >
+                        <span>
+                          {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}
+                        </span>
+                        <span className="truncate">{course.title ?? "Cours"}</span>
+                        <span className="text-[10px] text-cyan-100 hidden md:inline">
+                          {formatDuration(course.durationMinutes ?? 60)}
+                        </span>
+                        {course.studio?.name ? (
+                          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                            {course.studio.name}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
