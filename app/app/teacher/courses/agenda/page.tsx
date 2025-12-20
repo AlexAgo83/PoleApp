@@ -99,8 +99,9 @@ export default async function CoursesAgendaPage({
     const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
     return end < now;
   };
+  const teacherParamForNav = teacherFilter ?? (isTeacher ? session.user.id : undefined);
   const baseParams = new URLSearchParams();
-  if (teacherFilter) baseParams.set("teacher", teacherFilter);
+  if (teacherParamForNav) baseParams.set("teacher", teacherParamForNav);
   if (studioFilter) baseParams.set("studio", studioFilter);
   const prevMonth = new Date(start);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
@@ -292,7 +293,7 @@ export default async function CoursesAgendaPage({
           <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
             <input type="hidden" name="month" value={prevMonthValue} />
             {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-            {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+            {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
             <button
               type="submit"
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -303,7 +304,7 @@ export default async function CoursesAgendaPage({
           <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
             <input type="hidden" name="month" value={nextMonthValue} />
             {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-            {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+            {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
             <button
               type="submit"
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
