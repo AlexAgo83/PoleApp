@@ -40,6 +40,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
 
   const session = await getServerSession(authOptions);
   const homeForRole = defaultHomeForRole(session?.user?.role);
+  const isStudent = session?.user?.role === "STUDENT";
+  const isPremium = Boolean(session?.user?.isPremium);
   const positions = await prisma.position.findMany({
     orderBy: { updatedAt: "desc" },
     skip,
@@ -111,6 +113,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               Boolean(p.description) ||
               Boolean(p.tips) ||
               p.media?.some((m) => m.kind === "VIDEO");
+            const hasVideo = p.media?.some((m) => m.kind === "VIDEO");
+            const showPremiumBadge = premiumContent && isStudent && !isPremium;
             return (
               <article
                 key={p.id}
@@ -135,11 +139,18 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       {levelLabels[p.levelRequired]}
                     </span>
                   </div>
-                  {premiumContent && (
-                    <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-50">
-                      Premium
-                    </span>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {showPremiumBadge && (
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-50">
+                        Premium
+                      </span>
+                    )}
+                    {hasVideo && (
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-2 py-1 text-[11px] font-semibold text-cyan-50">
+                        Vidéo
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                   <p className="text-sm text-slate-300 line-clamp-2">
                     {p.tips ?? p.description ?? "Aucun détail"}
