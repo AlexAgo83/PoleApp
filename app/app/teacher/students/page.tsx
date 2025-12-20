@@ -102,6 +102,22 @@ export default async function TeacherStudentsPage({
         <p className="text-sm text-slate-200">
           Aperçu des élèves de ton école et de leurs blessures déclarées.
         </p>
+        {session.user.role === "SCHOOL_ADMIN" ? (
+          <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
+            <Link
+              href="/app/admin/users?role=STUDENT"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Gérer via utilisateurs
+            </Link>
+            <Link
+              href="/app/admin"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+          </div>
+        ) : null}
       </header>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">

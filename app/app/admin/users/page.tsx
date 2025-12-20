@@ -109,12 +109,12 @@ export default async function AdminUsersPage({
             {params?.error ?? params?.success}
           </p>
         )}
-        <div className="mt-4 flex flex-wrap gap-3 text-sm">
+        <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
           <Link
             href="/app/admin"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            ↩ Dashboard admin
+            ← Retour dashboard
           </Link>
         </div>
       </header>
