@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 export default async function StudentCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
@@ -16,31 +16,67 @@ export default async function StudentCoursesPage({
     return null;
   }
 
+  const teacherFilter =
+    typeof resolvedParams.teacher === "string" && resolvedParams.teacher.length > 0
+      ? resolvedParams.teacher
+      : undefined;
+  const fromDate = resolvedParams.from ? new Date(resolvedParams.from) : undefined;
+  const toDate = resolvedParams.to ? new Date(resolvedParams.to) : undefined;
+  const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
+  const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
+  const withNotes = resolvedParams.withNotes === "true";
+
+  const whereClause = {
+    studentId: session.user.id,
+    course: {
+      ...(validFrom ? { date: { gte: validFrom } } : {}),
+      ...(validTo ? { date: { lte: validTo } } : {}),
+      ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+      ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
+    },
+  };
+
   const totalCount = await prisma.courseAttendance.count({
-    where: { studentId: session.user.id },
+    where: whereClause,
   });
   const totalPages = Math.max(1, Math.ceil(totalCount / 10));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * 10;
 
-  const attendances = await prisma.courseAttendance.findMany({
-    where: { studentId: session.user.id },
-    orderBy: { course: { date: "desc" } },
-    skip,
-    take: 10,
-    include: {
-      course: {
-        include: {
-          teacher: { select: { name: true, email: true } },
-          positions: { include: { position: true } },
-          notes: {
-            where: { studentId: session.user.id },
-            include: { position: true },
+  const [attendances, teachers] = await Promise.all([
+    prisma.courseAttendance.findMany({
+      where: whereClause,
+      orderBy: { course: { date: "desc" } },
+      skip,
+      take: 10,
+      include: {
+        course: {
+          include: {
+            teacher: { select: { name: true, email: true } },
+            positions: { include: { position: true } },
+            notes: {
+              where: { studentId: session.user.id },
+              include: { position: true },
+            },
           },
         },
       },
-    },
-  });
+    }),
+    session.user.schoolId
+      ? prisma.user.findMany({
+          where: { schoolId: session.user.schoolId, role: "TEACHER" },
+          select: { id: true, name: true, email: true },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const queryParams = new URLSearchParams();
+  if (resolvedParams.from) queryParams.set("from", resolvedParams.from);
+  if (resolvedParams.to) queryParams.set("to", resolvedParams.to);
+  if (teacherFilter) queryParams.set("teacher", teacherFilter);
+  if (withNotes) queryParams.set("withNotes", "true");
+  const qs = queryParams.toString();
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -54,7 +90,80 @@ export default async function StudentCoursesPage({
         </p>
       </header>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel space-y-4 border-indigo-400/15 p-6">
+        <details className="group" open>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Filtres</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}`}
+            method="get"
+            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+          >
+            <label className="text-sm text-slate-200">
+              Date min
+              <input
+                type="date"
+                name="from"
+                defaultValue={resolvedParams.from}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Date max
+              <input
+                type="date"
+                name="to"
+                defaultValue={resolvedParams.to}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Professeur
+              <select
+                key={teacherFilter ?? "all-teachers"}
+                name="teacher"
+                defaultValue={teacherFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les professeurs</option>
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name ?? t.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input
+                type="checkbox"
+                name="withNotes"
+                value="true"
+                defaultChecked={withNotes}
+                key={withNotes ? "with-notes" : "all-courses"}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Cours avec notes
+            </label>
+            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/app/student/courses"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </details>
         <div className="flex flex-col divide-y divide-white/5">
           {attendances.map((attendance) => {
             const course = attendance.course;
@@ -109,7 +218,9 @@ export default async function StudentCoursesPage({
         {totalPages > 1 && (
           <div className="mt-6 flex items-center justify-between">
             <Link
-              href={`/app/student/courses?page=${Math.max(1, currentPage - 1)}`}
+              href={`/app/student/courses?page=${Math.max(1, currentPage - 1)}${
+                qs ? `&${qs}` : ""
+              }`}
               className={`rounded-full px-3 py-2 text-sm font-semibold ${
                 currentPage === 1
                   ? "cursor-not-allowed border border-white/10 text-slate-500"
@@ -123,7 +234,9 @@ export default async function StudentCoursesPage({
               Page {currentPage} / {totalPages}
             </span>
             <Link
-              href={`/app/student/courses?page=${Math.min(totalPages, currentPage + 1)}`}
+              href={`/app/student/courses?page=${Math.min(totalPages, currentPage + 1)}${
+                qs ? `&${qs}` : ""
+              }`}
               className={`rounded-full px-3 py-2 text-sm font-semibold ${
                 currentPage === totalPages
                   ? "cursor-not-allowed border border-white/10 text-slate-500"
