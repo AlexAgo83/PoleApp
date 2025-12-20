@@ -13,7 +13,7 @@ const updateSchema = z.object({
   id: z.string().cuid(),
   title: z.string().optional(),
   date: z.coerce.date(),
-  studentIds: z.array(z.string().cuid()).min(1),
+  studentIds: z.array(z.string().cuid()).default([]),
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
@@ -21,6 +21,8 @@ const updateSchema = z.object({
     .coerce.number()
     .min(30)
     .refine((n) => n % 15 === 0, { message: "La durée doit être un multiple de 15 minutes" }),
+  maxSeats: z.coerce.number().min(1).default(30),
+  costCredits: z.coerce.number().min(0).default(100),
   notes: z
     .array(
       z.object({
@@ -51,6 +53,8 @@ export async function updateCourseAction(formData: FormData) {
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
     durationMinutes: formData.get("durationMinutes") ?? 60,
+    maxSeats: formData.get("maxSeats") ?? 30,
+    costCredits: formData.get("costCredits") ?? 100,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
@@ -66,6 +70,12 @@ export async function updateCourseAction(formData: FormData) {
   });
   if (!existing) {
     redirect("/access-denied");
+  }
+  const existingAttendanceCount = await prisma.courseAttendance.count({
+    where: { courseId: data.id },
+  });
+  if (data.maxSeats < existingAttendanceCount) {
+    throw new Error("Places max inférieures aux élèves déjà inscrits");
   }
   if (data.studioId) {
     const studioValid = await prisma.studio.findFirst({
@@ -101,27 +111,48 @@ export async function updateCourseAction(formData: FormData) {
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.course.update({
-      where: { id: data.id },
-      data: {
-        title: data.title || null,
-        date: data.date,
-        teacherId: teacherId ?? existing.teacherId ?? null,
-        studioId: data.studioId ?? null,
-        durationMinutes: data.durationMinutes,
-      },
-    });
+    try {
+      await tx.course.update({
+        where: { id: data.id },
+        data: {
+          title: data.title || null,
+          date: data.date,
+          teacherId: teacherId ?? existing.teacherId ?? null,
+          studioId: data.studioId ?? null,
+          durationMinutes: data.durationMinutes,
+          maxSeats: data.maxSeats ?? 30,
+          costCredits: data.costCredits ?? 100,
+        },
+      });
+    } catch (error) {
+      const message = (error as Error)?.message ?? "";
+      const missingColumns =
+        message.includes("maxSeats") || message.includes("costCredits");
+      if (!missingColumns) throw error;
+      await tx.course.update({
+        where: { id: data.id },
+        data: {
+          title: data.title || null,
+          date: data.date,
+          teacherId: teacherId ?? existing.teacherId ?? null,
+          studioId: data.studioId ?? null,
+          durationMinutes: data.durationMinutes,
+        },
+      });
+    }
 
     await tx.courseAttendance.deleteMany({ where: { courseId: data.id } });
     await tx.coursePosition.deleteMany({ where: { courseId: data.id } });
     await tx.courseNote.deleteMany({ where: { courseId: data.id } });
 
-    await tx.courseAttendance.createMany({
-      data: data.studentIds.map((studentId) => ({
-        courseId: data.id,
-        studentId,
-      })),
-    });
+    if (data.studentIds.length > 0) {
+      await tx.courseAttendance.createMany({
+        data: data.studentIds.map((studentId) => ({
+          courseId: data.id,
+          studentId,
+        })),
+      });
+    }
 
     await tx.coursePosition.createMany({
       data: data.positionIds.map((positionId) => ({

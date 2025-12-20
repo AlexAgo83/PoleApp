@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
+
+import { demoAddCreditsAction } from "./actions";
 
 type CreditPack = {
   id: string;
@@ -22,6 +25,8 @@ type Props = {
 };
 
 export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
@@ -99,7 +104,19 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
           sélectionné ({selectedPack.name}).
         </div>
 
-        <div className="mt-6 flex items-center justify-end gap-3">
+        <form
+          action={(formData) =>
+            startTransition(async () => {
+              await demoAddCreditsAction(formData);
+              setIsCreditsOpen(false);
+              router.refresh();
+            })
+          }
+          className="mt-6 flex items-center justify-end gap-3"
+        >
+          <input type="hidden" name="credits" value={selectedPack.credits} />
+          <input type="hidden" name="packId" value={selectedPack.id} />
+          <input type="hidden" name="packName" value={selectedPack.name} />
           <button
             type="button"
             className="rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
@@ -108,14 +125,14 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
             Fermer
           </button>
           <button
-            type="button"
-            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 opacity-70 transition"
-            disabled
-            aria-label="Paiement indisponible pour l'instant"
+            type="submit"
+            disabled={pending}
+            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+            aria-label="Ajouter les crédits pour la démo"
           >
-            Continuer (bientôt)
+            {pending ? "Chargement..." : "Continuer (crédits ajoutés)"}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

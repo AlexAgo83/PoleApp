@@ -25,6 +25,8 @@ type Props = {
   studios?: Studio[];
   defaultStudioId?: string | null;
   defaultDurationMinutes?: number;
+  defaultMaxSeats?: number;
+  defaultCostCredits?: number;
 };
 
 type Note = {
@@ -51,6 +53,8 @@ export function CourseForm({
   studios = [],
   defaultStudioId,
   defaultDurationMinutes = 60,
+  defaultMaxSeats = 30,
+  defaultCostCredits = 100,
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -153,6 +157,32 @@ export function CourseForm({
         <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
       </label>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="text-sm text-slate-200">
+          Places maximum
+          <input
+            type="number"
+            name="maxSeats"
+            min={1}
+            defaultValue={defaultMaxSeats}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
+          <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
+        </label>
+        <label className="text-sm text-slate-200">
+          Coût en crédits
+          <input
+            type="number"
+            name="costCredits"
+            min={0}
+            step={10}
+            defaultValue={defaultCostCredits}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
+          <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits.</p>
+        </label>
+      </div>
+
       <label className="block text-sm text-slate-200">
         Élèves présents
         <div className="mt-2 grid gap-2 md:grid-cols-2">
@@ -247,7 +277,7 @@ export function CourseForm({
         <button
           type="submit"
           className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={selectedStudents.length === 0 || selectedPositions.length === 0}
+          disabled={selectedPositions.length === 0}
         >
           {submitLabel}
         </button>

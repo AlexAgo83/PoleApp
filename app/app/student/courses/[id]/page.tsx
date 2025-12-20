@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { purchaseCourseAction } from "../actions";
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
@@ -31,26 +32,58 @@ export default async function StudentCourseDetailPage({
     return notFound();
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { credits: true, schoolId: true },
+  });
+  if (!user?.schoolId) {
+    return notFound();
+  }
+
   if (!id || !session.user.schoolId) {
     return notFound();
   }
 
-  const course = await prisma.course.findUnique({
-    where: {
-      id,
-      schoolId: session.user.schoolId,
-      attendances: { some: { studentId: session.user.id } },
-    },
-    include: {
-      teacher: { select: { name: true, email: true } },
-      studio: { select: { name: true, address: true } },
-      positions: { include: { position: true } },
-      notes: {
-        where: { studentId: session.user.id },
-        include: { position: true },
+  const course = await prisma.course
+    .findUnique({
+      where: {
+        id,
+        schoolId: user.schoolId,
       },
-    },
-  });
+      include: {
+        teacher: { select: { name: true, email: true } },
+        studio: { select: { name: true, address: true } },
+        positions: { include: { position: true } },
+        notes: {
+          where: { studentId: session.user.id },
+          include: { position: true },
+        },
+        attendances: { where: { studentId: session.user.id }, select: { id: true } },
+        _count: { select: { attendances: true } },
+      },
+    })
+    .catch((error) => {
+      const message = (error as Error)?.message ?? "";
+      const missingColumns =
+        message.includes("maxSeats") || message.includes("costCredits");
+      if (missingColumns) {
+        return prisma.course.findUnique({
+          where: { id, schoolId: session.user.schoolId },
+          include: {
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true, address: true } },
+            positions: { include: { position: true } },
+            notes: {
+              where: { studentId: session.user.id },
+              include: { position: true },
+            },
+            attendances: { where: { studentId: session.user.id }, select: { id: true } },
+            _count: { select: { attendances: true } },
+          },
+        });
+      }
+      throw error;
+    });
 
   if (!course) {
     return notFound();
@@ -65,6 +98,17 @@ export default async function StudentCourseDetailPage({
       ? rawFrom
       : undefined;
   const backHref = safeFrom ?? "/app/student/courses";
+  const seatsUsed = course._count?.attendances ?? 0;
+  const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+  const cost = course.costCredits ?? 100;
+  const isAttending = course.attendances.length > 0;
+  const endTime =
+    new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
+  const canBuy =
+    !isAttending &&
+    endTime > Date.now() &&
+    remainingSeats > 0 &&
+    (user.credits ?? 0) >= cost;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -85,6 +129,9 @@ export default async function StudentCourseDetailPage({
           <p className="text-sm text-slate-200">
             Durée : {formatDuration(course.durationMinutes ?? 60)}
           </p>
+          <p className="text-sm text-slate-200">
+            {remainingSeats} place(s) restante(s) · {cost} crédits
+          </p>
           {course.studio?.name && (
             <p className="mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-cyan-100">
               Studio · {course.studio.name}
@@ -94,12 +141,41 @@ export default async function StudentCourseDetailPage({
             </p>
           )}
         </div>
-        <Link
-          href={backHref}
-          className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-        >
-          Retour à mes cours
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          {!isAttending && (
+            <form action={purchaseCourseAction}>
+              <input type="hidden" name="courseId" value={course.id} />
+              <button
+                type="submit"
+                disabled={!canBuy}
+                className={`rounded-full px-3 py-2 text-sm font-semibold transition ${
+                  canBuy
+                    ? "border border-cyan-400/70 bg-cyan-500/20 text-white hover:bg-cyan-400/30"
+                    : "border border-white/10 bg-white/5 text-slate-400 cursor-not-allowed"
+                }`}
+                title={
+                  canBuy
+                    ? "Acheter ce cours"
+                    : remainingSeats <= 0
+                    ? "Plus de places"
+                    : endTime <= Date.now()
+                    ? "Cours passé"
+                    : (session.user.credits ?? 0) < cost
+                    ? "Crédits insuffisants"
+                    : "Non disponible"
+                }
+              >
+                Acheter ({cost} crédits)
+              </button>
+            </form>
+          )}
+          <Link
+            href={backHref}
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+          >
+            Retour à mes cours
+          </Link>
+        </div>
       </header>
 
       <section className="panel border-indigo-400/15 p-6">

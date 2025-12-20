@@ -1,0 +1,4 @@
+-- Add seats and credit cost to courses
+ALTER TABLE "Course"
+ADD COLUMN IF NOT EXISTS "maxSeats" INTEGER NOT NULL DEFAULT 30,
+ADD COLUMN IF NOT EXISTS "costCredits" INTEGER NOT NULL DEFAULT 100;

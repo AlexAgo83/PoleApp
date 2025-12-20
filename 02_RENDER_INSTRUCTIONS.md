@@ -20,6 +20,7 @@
    - Appliquer les migrations : `DATABASE_URL="<render-url>" npx prisma migrate deploy`.
    - Si vous n’avez pas de migrations et souhaitez juste synchroniser le schéma, utiliser `DATABASE_URL="..." npx prisma db push` (à éviter en production si cela supprime des colonnes).
    - Vérifier l’état : `DATABASE_URL="..." npx prisma migrate status`.
+   - Pour cette version (maxSeats / costCredits sur Course), lancer `npm run db:migrate:deploy` avec la `DATABASE_URL` Render avant le déploiement, puis `npx prisma generate`.
 
 3) **Commiter et pousser**
    - Commiter le schéma et le dossier `prisma/migrations/`.

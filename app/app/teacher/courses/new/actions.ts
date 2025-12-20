@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 const courseSchema = z.object({
   title: z.string().optional(),
   date: z.coerce.date(),
-  studentIds: z.array(z.string().cuid()).min(1),
+  studentIds: z.array(z.string().cuid()).default([]),
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
@@ -20,6 +20,8 @@ const courseSchema = z.object({
     .coerce.number()
     .min(30)
     .refine((n) => n % 15 === 0, { message: "La durée doit être un multiple de 15 minutes" }),
+  maxSeats: z.coerce.number().min(1).default(30),
+  costCredits: z.coerce.number().min(0).default(100),
   notes: z
     .array(
       z.object({
@@ -49,6 +51,8 @@ export async function createCourseAction(formData: FormData) {
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
     durationMinutes: formData.get("durationMinutes") ?? 60,
+    maxSeats: formData.get("maxSeats") ?? 30,
+    costCredits: formData.get("costCredits") ?? 100,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
@@ -89,23 +93,45 @@ export async function createCourseAction(formData: FormData) {
   }
 
   const courseId = await prisma.$transaction(async (tx) => {
-    const course = await tx.course.create({
-      data: {
-        title: parsed.data.title || null,
-        date: parsed.data.date,
-        schoolId: session.user.schoolId!,
-        teacherId: teacherId ?? session.user.id,
-        studioId: parsed.data.studioId || null,
-        durationMinutes: parsed.data.durationMinutes,
-      },
-    });
+    let course;
+    try {
+      course = await tx.course.create({
+        data: {
+          title: parsed.data.title || null,
+          date: parsed.data.date,
+          schoolId: session.user.schoolId!,
+          teacherId: teacherId ?? session.user.id,
+          studioId: parsed.data.studioId || null,
+          durationMinutes: parsed.data.durationMinutes,
+          maxSeats: parsed.data.maxSeats ?? 30,
+          costCredits: parsed.data.costCredits ?? 100,
+        },
+      });
+    } catch (error) {
+      const message = (error as Error)?.message ?? "";
+      const missingColumns =
+        message.includes("maxSeats") || message.includes("costCredits");
+      if (!missingColumns) throw error;
+      course = await tx.course.create({
+        data: {
+          title: parsed.data.title || null,
+          date: parsed.data.date,
+          schoolId: session.user.schoolId!,
+          teacherId: teacherId ?? session.user.id,
+          studioId: parsed.data.studioId || null,
+          durationMinutes: parsed.data.durationMinutes,
+        },
+      });
+    }
 
-    await tx.courseAttendance.createMany({
-      data: parsed.data.studentIds.map((studentId) => ({
-        courseId: course.id,
-        studentId,
-      })),
-    });
+    if (parsed.data.studentIds.length > 0) {
+      await tx.courseAttendance.createMany({
+        data: parsed.data.studentIds.map((studentId) => ({
+          courseId: course.id,
+          studentId,
+        })),
+      });
+    }
 
     await tx.coursePosition.createMany({
       data: parsed.data.positionIds.map((positionId) => ({
