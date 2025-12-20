@@ -7,6 +7,14 @@
 - **Cache Next/Turbopack** : éviter de pousser avec des caches corrompus; si des panics apparaissent, supprimer `.next` et refaire le build avant push.
 - **Middleware** : la convention `middleware.ts` est dépréciée; quand on sera prêt, basculer vers `proxy` pour supprimer l’avertissement de build.
 
+## Commandes Render actuelles (prod)
+
+À renseigner dans Render (service web) :
+- **Build command** : `npm install && npx prisma db push && npx prisma generate && npm run build`
+  - Raison : la base Render existante n’a pas d’historique de migrations (P3005). `db push` synchronise le schéma (colonnes `maxSeats`/`costCredits`, etc.) sans exiger de baseline.
+- **Start command** : `npm run db:push && npm run db:seed && npm run start`
+  - Attention : `db:seed` se lance à chaque start. Vérifier que le seed reste idempotent ou retirer le seed si inutile en prod.
+
 ## Procédure Render lorsqu’on change le schéma Prisma
 
 1) **Préparer localement**
@@ -24,7 +32,7 @@
 
 3) **Commiter et pousser**
    - Commiter le schéma et le dossier `prisma/migrations/`.
-   - Pousser sur Render. Le build `npm install && npx prisma generate && npm run build` doit passer car la base est déjà à jour.
+   - Pousser sur Render. Le build passe avec `db push` (commande actuelle). Dès que possible, prévoir un baselining pour revenir à `migrate deploy`.
 
 4) **En cas de rollback ou data loss**
    - Ne jamais passer `--accept-data-loss` sur la base Render sans sauvegarde.

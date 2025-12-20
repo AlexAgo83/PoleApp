@@ -172,6 +172,9 @@ export default async function Home() {
               <span className="rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1">
                 Agenda semaine avec durées proportionnelles
               </span>
+              <span className="rounded-full border border-slate-400/30 bg-slate-500/15 px-3 py-1">
+                Render : build via `db push` + generate
+              </span>
             </div>
           </div>
           <div className="rounded-2xl border border-indigo-400/20 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg shadow-indigo-500/20 backdrop-blur">
