@@ -1,6 +1,6 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.4.5 (baseline produit)
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.4.6 (baseline produit)
 
-Date: 2025-12-24 (MAJ v0.4.5)
+Date: 2025-12-24 (MAJ v0.4.6)
 
 Ce dossier contient :
 - `01_BACKLOG.md` : backlog structuré (epics → features → user stories → critères d’acceptation).
@@ -9,7 +9,7 @@ Ce dossier contient :
 - `04_ROUTES_AND_SCREENS.md` : écrans clés + routes + états.
 - `05_SEED_CONTENT.md` : contenu de seed (positions, types, niveaux) pour démarrer vite.
 
-## Fonctionnalités livrées (baseline produit v0.4.5)
+## Fonctionnalités livrées (baseline produit v0.4.6)
 - Base positions (médias + attributs), fiche élève (progression + blessures), fiche cours (présence + positions vues + commentaires).
 - Mini-jeu de révision photo→nom (score + gating premium).
 - Auth + rôles (Élève / Prof / École admin) + navigation unifiée par rôle.
@@ -31,7 +31,7 @@ Ce dossier contient :
 - Step 0 → 8 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + homepage “Profile”).
 - v0.2.2 : filtres admin/positions/élèves, harmonisation UI des filtres, pagination (10 items), page profil utilisateur et navigation par rôle.
 - **Step 9 (terminée)** : Discovery QA — voir synthèse dans `01_BACKLOG_STEP_009.md`.
-- **Basculé en phase produit** : tag `v0.4.5` figé comme baseline; prochaines Steps à aborder sous l’angle produit (fiabilité, sécurité, observabilité, billing/credits).
+- **Basculé en phase produit** : tag `v0.4.6` figé comme baseline; prochaines Steps à aborder sous l’angle produit (fiabilité, sécurité, observabilité, billing/credits).
 
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.

@@ -1,7 +1,7 @@
 # Bonnes pratiques avant push Render
 
 - **Schéma Prisma à jour** : si le schéma change (ex. ajout de `School.website`), faire `DATABASE_URL=... npx prisma db push` sur un env local raccordé à la base Render avant de pousser. Sinon les colonnes manquantes provoquent des erreurs au runtime.
-- **Nouvelles colonnes** (v0.4.5+) : `User.age`, `User.avatarUrl`, `User.diplomas`, table `TeacherFavoritePosition`, `Course.maxSeats`, `Course.costCredits`, `Course.photoUrl`. Appliquer `DATABASE_URL="..." npx prisma db push` (ou `npm run db:migrate:deploy` si une baseline existe) avant déploiement Render.
+- **Nouvelles colonnes** (v0.4.6) : `User.age`, `User.avatarUrl`, `User.diplomas`, table `TeacherFavoritePosition`, `Course.maxSeats`, `Course.costCredits`, `Course.photoUrl`. Appliquer `DATABASE_URL="..." npx prisma db push` (ou `npm run db:migrate:deploy` si une baseline existe) avant déploiement Render.
 - **Génération Prisma** : après modification du schéma, lancer `npx prisma generate` pour que le client soit à jour (Render le refera, mais cela détecte les soucis tôt).
 - **Build de validation** : exécuter `npm run build` en local. En cas de panics Turbopack, nettoyer `.next/.turbo` et utiliser `NEXT_USE_TURBOPACK=0 npm run build`.
 - **Variables d’environnement** : vérifier que `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` sont définies dans Render. Sans `DATABASE_URL`, Prisma échouera dès le chargement.

@@ -1,6 +1,6 @@
-# Pole App — Produit v0.4.5 (Steps 0 → 9)
+# Pole App — Produit v0.4.6 (Steps 0 → 9)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.5` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step.
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.6` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step.
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données.
