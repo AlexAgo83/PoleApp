@@ -9,12 +9,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const createSchema = z.object({
-  injuryTypeId: z.string().cuid(),
+  injuryTypeId: z.string().min(1),
   notes: z.string().optional(),
 });
 
 const updateSchema = z.object({
-  injuryId: z.string().cuid(),
+  injuryId: z.string().min(1),
   notes: z.string().optional(),
   isActive: z
     .preprocess(
@@ -71,7 +71,7 @@ export async function updateInjuryAction(formData: FormData) {
   const session = await assertStudentSession();
   const parsed = updateSchema.safeParse({
     injuryId: formData.get("injuryId"),
-    notes: formData.get("notes"),
+    notes: formData.get("notes") ?? "",
     isActive: formData.get("isActive"),
   });
   if (!parsed.success) {
