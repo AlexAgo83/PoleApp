@@ -283,23 +283,25 @@ export default async function AdminUsersPage({
                   alt={`Avatar de ${user.name ?? user.email}`}
                   className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
                 />
-                <div>
+                <div className="space-y-1">
                   <p className="text-base font-semibold text-white">
                     {user.name ?? user.email}
-                    <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-200">
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-200">
                       {user.role}
                     </span>
-                    <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] ${
-                      user.isPremium
-                        ? "border border-amber-300/60 bg-amber-400/10 text-amber-100"
-                        : "border border-white/10 bg-white/5 text-slate-200"
-                    }`}>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] ${
+                        user.isPremium
+                          ? "border border-amber-300/60 bg-amber-400/10 text-amber-100"
+                          : "border border-white/10 bg-white/5 text-slate-200"
+                      }`}
+                    >
                       {user.isPremium ? "Premium" : "Free"}
                     </span>
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    {user.email}
-                  </p>
+                  </div>
+                  <p className="text-sm text-slate-300">{user.email}</p>
                   <p className="text-xs text-slate-400">
                     Créé le {new Date(user.createdAt).toLocaleDateString()}
                   </p>
