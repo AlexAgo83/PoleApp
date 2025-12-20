@@ -72,6 +72,12 @@ const buildSteps = [
   { label: "Step 9 — Discovery QA", done: false },
 ];
 
+const roleLabels: Record<string, string> = {
+  STUDENT: "Élève",
+  TEACHER: "Professeur",
+  SCHOOL_ADMIN: "Admin école",
+};
+
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const homeForRole = defaultHomeForRole(session?.user?.role);
@@ -81,7 +87,26 @@ export default async function Home() {
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10 md:px-8">
       <section className="panel relative flex flex-col gap-3 overflow-hidden p-5 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
-        <div className="relative flex flex-wrap items-center gap-2" />
+        <div className="relative flex flex-wrap items-center gap-2">
+          {isAuthenticated && (
+            <>
+              <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/50 bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-indigo-500/20">
+                <span className="text-[11px] uppercase tracking-[0.14em] text-indigo-100">
+                  Session
+                </span>
+                <span className="truncate">{session?.user?.email}</span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-cyan-500/20">
+                <span className="text-[11px] uppercase tracking-[0.14em] text-cyan-100">
+                  Rôle
+                </span>
+                <span>
+                  {roleLabels[session?.user?.role ?? ""] ?? session?.user?.role}
+                </span>
+              </span>
+            </>
+          )}
+        </div>
         <div className="relative flex flex-wrap items-center gap-2 md:justify-end">
           {session?.user ? (
             <>

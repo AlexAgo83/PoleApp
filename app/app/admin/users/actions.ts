@@ -142,6 +142,41 @@ export async function deleteUserAction(formData: FormData) {
     redirect("/access-denied");
   }
 
+  const [
+    attendanceCount,
+    noteCount,
+    progressCount,
+    injuryCount,
+    coursesTaught,
+    positionsAuthored,
+  ] = await prisma.$transaction([
+    prisma.courseAttendance.count({ where: { studentId: data.userId } }),
+    prisma.courseNote.count({ where: { studentId: data.userId } }),
+    prisma.studentPositionProgress.count({
+      where: {
+        OR: [{ studentId: data.userId }, { lastUpdatedByUserId: data.userId }],
+      },
+    }),
+    prisma.studentInjury.count({ where: { studentId: data.userId } }),
+    prisma.course.count({ where: { teacherId: data.userId } }),
+    prisma.position.count({ where: { createdByUserId: data.userId } }),
+  ]);
+
+  const linkedTotal =
+    attendanceCount +
+    noteCount +
+    progressCount +
+    injuryCount +
+    coursesTaught +
+    positionsAuthored;
+
+  if (linkedTotal > 0) {
+    redirectWithMessage(
+      "Suppression impossible : cet utilisateur a des présences, notes, progression ou cours liés.",
+      "error"
+    );
+  }
+
   try {
     await prisma.user.delete({ where: { id: data.userId } });
   } catch (err) {

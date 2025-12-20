@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { SignOutButton } from "@/components/auth/SignOutButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { SessionNavBar } from "@/components/SessionNavBar";
+import { defaultHomeForRole } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const backHref = safeFrom ?? "/positions";
 
   const session = await getServerSession(authOptions);
+  const homeForRole = defaultHomeForRole(session?.user?.role);
 
   const position = await prisma.position.findUnique({
     where: { id: awaitedParams.id },
@@ -75,7 +77,47 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-12">
-      <SessionNavBar session={session} />
+      <header className="panel flex flex-wrap items-center justify-between gap-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+            {session?.user?.role === "SCHOOL_ADMIN"
+              ? "Espace admin"
+              : session?.user?.role === "TEACHER"
+              ? "Espace prof"
+              : session?.user?.role === "STUDENT"
+              ? "Espace élève"
+              : "Accueil"}
+          </p>
+          <h1 className="text-2xl font-semibold text-white">Positions</h1>
+          <p className="text-sm text-slate-200">
+            Catalogue des positions avec filtres et détail. Visible selon tes droits.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {session?.user ? (
+            <>
+              <Link
+                href={homeForRole}
+                role="button"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-indigo-300 hover:bg-indigo-500/15"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/house.svg" alt="" className="h-4 w-4" />
+                Mon espace
+              </Link>
+              <SignOutButton />
+            </>
+          ) : (
+            <Link
+              href="/login"
+              role="button"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+            >
+              Se connecter
+            </Link>
+          )}
+        </div>
+      </header>
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">

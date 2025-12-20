@@ -160,12 +160,7 @@ function LoginContent() {
         </form>
 
         <div className="mt-6 space-y-3 rounded-xl border border-indigo-400/25 bg-white/5 p-4 text-sm text-slate-200">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold text-white">Pas encore de compte ?</p>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] uppercase tracking-[0.14em] text-cyan-200">
-              Démo
-            </span>
-          </div>
+          <p className="font-semibold text-white">Pas encore de compte ?</p>
           <div className="flex flex-wrap gap-2">
             <Link
               href="/signup"
