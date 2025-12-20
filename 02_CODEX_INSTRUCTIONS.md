@@ -13,6 +13,7 @@ Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.6 (Steps 
 - Fiabilité/perf : requêtes Prisma indexées/paginées, budgets Core Web Vitals (TTFB/LCP/CLS), feature flags/dark launch pour nouvelles surfaces.
 - Sécurité/PII : secrets hors code, vérif inputs (zod), durcir RBAC, audit trail à instrumenter sur les actions écoles/prof.
 - Delivery : migrations rétro-compatibles, scripts idempotents, docs/changelog mis à jour, seed cohérent avec les nouvelles features.
+- Média : quand on ouvrira les uploads (prof/élève/cours), intégrer Cloudinary (ou équivalent) avec upload signé et stockage des URLs en base.
 
 > CODEX : avance **étape par étape**. À chaque étape :
 > 1) implémenter,
