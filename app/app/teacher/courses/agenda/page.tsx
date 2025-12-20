@@ -262,16 +262,16 @@ export default async function CoursesAgendaPage({
                           : "bg-white/10 text-white"
                       }`}
                     >
-                      {course.studio?.name ? (
-                        <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                          {course.studio.name}
-                        </span>
-                      ) : null}
                       <div className="mt-1 text-[10px] leading-snug">
                         {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
                         {course.title ?? "Cours"}
                         <div className="text-[10px] text-slate-300">Durée : {formatDuration(course.durationMinutes ?? 60)}</div>
                       </div>
+                      {course.studio?.name ? (
+                        <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                          Studio · {course.studio.name}
+                        </span>
+                      ) : null}
                     </Link>
                   );
                 })}
@@ -345,6 +345,11 @@ export default async function CoursesAgendaPage({
                         <span>{new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}</span>
                         <span className="truncate">{course.title ?? "Cours"}</span>
                         <span className="text-[10px] text-cyan-100">{formatDuration(course.durationMinutes ?? 60)}</span>
+                        {course.studio?.name ? (
+                          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                            Studio · {course.studio.name}
+                          </span>
+                        ) : null}
                       </Link>
                     );
                   })}
