@@ -1,21 +1,29 @@
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
-import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import { BuyCreditsButton } from "./BuyCreditsButton";
 
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
-  const isPremium = Boolean(session?.user?.isPremium);
+  if (!session?.user?.id) {
+    return null;
+  }
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, email: true, isPremium: true, credits: true },
+  });
+  const isPremium = Boolean(user?.isPremium);
   const nameParts =
-    session?.user?.name
+    user?.name
       ?.trim()
       .split(/\s+/)
       .filter(Boolean) ?? [];
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
-  const displayName = firstName ?? lastName ?? session?.user?.email ?? "élève";
-  const credits = session?.user?.credits ?? 0;
+  const displayName = firstName ?? lastName ?? user?.email ?? "élève";
+  const credits = user?.credits ?? 0;
 
   return (
     <main className="grid gap-6">

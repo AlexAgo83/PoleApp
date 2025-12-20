@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { purchaseCourseAction } from "./actions";
 
 type CourseNote = {
   id: string;
@@ -16,10 +17,13 @@ type CourseRow = {
   title: string | null;
   date: Date;
   durationMinutes: number | null;
+  maxSeats: number;
+  costCredits: number;
   teacher: { name: string | null; email: string | null } | null;
   studio: { name: string } | null;
   positions: { position: { id: string; name: string } }[];
   notes: CourseNote[];
+  _count: { attendances: number };
   attendances?: { id: string }[];
 };
 
@@ -60,6 +64,10 @@ export default async function StudentCoursesPage({
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
   }
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { credits: true },
+  });
 
   const mineParam = paramValue(resolvedParams.mine);
   const onlyMine = Boolean(
@@ -83,6 +91,7 @@ export default async function StudentCoursesPage({
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = paramValue(resolvedParams.withNotes) === "true";
   const sort = paramValue(resolvedParams.sort) === "date_asc" ? "date_asc" : "date_desc";
+  const userCredits = user?.credits ?? session.user.credits ?? 0;
   const activeFilters = [
     validFrom,
     validTo,
@@ -109,39 +118,36 @@ export default async function StudentCoursesPage({
   const [countsAndData, teachers, studios] = await Promise.all([
     (async () => {
       if (onlyMine) {
-        const totalCount = await prisma.courseAttendance.count({
-          where: {
-            studentId: session.user.id,
-            course: courseFilters,
-          },
-        });
+        const mineWhere = {
+          ...courseWhere,
+          attendances: { some: { studentId: session.user.id } },
+        };
+        const totalCount = await prisma.course.count({ where: mineWhere });
         const totalPages = Math.max(1, Math.ceil(totalCount / 10));
         const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
         const skip = (currentPage - 1) * 10;
 
-        const attendances = await prisma.courseAttendance.findMany({
-          where: {
-            studentId: session.user.id,
-            course: courseFilters,
-          },
-          orderBy: { course: { date: sort === "date_desc" ? "desc" : "asc" } },
+        const courses = await prisma.course.findMany({
+          where: mineWhere,
+          orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
           skip,
           take: 10,
           include: {
-            course: {
-              include: {
-                teacher: { select: { name: true, email: true } },
-                positions: { include: { position: true } },
-                studio: { select: { name: true } },
-                notes: {
-                  where: { studentId: session.user.id },
-                  include: { position: true },
-                },
-              },
+            teacher: { select: { name: true, email: true } },
+            positions: { include: { position: true } },
+            studio: { select: { name: true } },
+            notes: {
+              where: { studentId: session.user.id },
+              include: { position: true },
             },
+            attendances: {
+              where: { studentId: session.user.id },
+              select: { id: true },
+            },
+            _count: { select: { attendances: true } },
           },
         });
-        return { totalCount, totalPages, currentPage, items: attendances };
+        return { totalCount, totalPages, currentPage, items: courses };
       }
 
       if (!session.user.schoolId) {
@@ -155,25 +161,55 @@ export default async function StudentCoursesPage({
       const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
       const skip = (currentPage - 1) * 10;
 
-      const courses = await prisma.course.findMany({
-        where: courseWhere,
-        orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
-        skip,
-        take: 10,
-        include: {
-          teacher: { select: { name: true, email: true } },
-          positions: { include: { position: true } },
-          studio: { select: { name: true } },
-          notes: {
-            where: { studentId: session.user.id },
-            include: { position: true },
+      const courses = await prisma.course
+        .findMany({
+          where: courseWhere,
+          orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
+          skip,
+          take: 10,
+          include: {
+            teacher: { select: { name: true, email: true } },
+            positions: { include: { position: true } },
+            studio: { select: { name: true } },
+            notes: {
+              where: { studentId: session.user.id },
+              include: { position: true },
+            },
+            attendances: {
+              where: { studentId: session.user.id },
+              select: { id: true },
+            },
+            _count: { select: { attendances: true } },
           },
-          attendances: {
-            where: { studentId: session.user.id },
-            select: { id: true },
-          },
-        },
-      });
+        })
+        .catch((error) => {
+          const message = (error as Error)?.message ?? "";
+          const missingColumns =
+            message.includes("maxSeats") || message.includes("costCredits");
+          if (missingColumns) {
+            return prisma.course.findMany({
+              where: courseWhere,
+              orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
+              skip,
+              take: 10,
+              include: {
+                teacher: { select: { name: true, email: true } },
+                positions: { include: { position: true } },
+                studio: { select: { name: true } },
+                notes: {
+                  where: { studentId: session.user.id },
+                  include: { position: true },
+                },
+                attendances: {
+                  where: { studentId: session.user.id },
+                  select: { id: true },
+                },
+                _count: { select: { attendances: true } },
+              },
+            });
+          }
+          throw error;
+        });
       return { totalCount, totalPages, currentPage, items: courses };
     })(),
     session.user.schoolId
@@ -193,17 +229,13 @@ export default async function StudentCoursesPage({
   ]);
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
-  const coursesList: { key: string; course: CourseRow; isAttending: boolean }[] = onlyMine
-    ? (items as { id: string; course: CourseRow }[]).map((attendance) => ({
-        key: attendance.id,
-        course: attendance.course,
-        isAttending: true,
-      }))
-    : (items as CourseRow[]).map((course) => ({
-        key: course.id,
-        course,
-        isAttending: Boolean(course.attendances?.length),
-      }));
+  const coursesList: { key: string; course: CourseRow; isAttending: boolean }[] = (
+    items as CourseRow[]
+  ).map((course) => ({
+    key: course.id,
+    course,
+    isAttending: onlyMine ? true : Boolean(course.attendances?.length),
+  }));
 
   const queryParams = new URLSearchParams();
   if (resolvedParams.from) queryParams.set("from", resolvedParams.from);
@@ -365,6 +397,9 @@ export default async function StudentCoursesPage({
         </details>
         <div className="flex flex-col divide-y divide-white/5">
           {coursesList.map(({ key, course, isAttending }) => {
+            const courseDate = new Date(course.date);
+            const seatsUsed = course._count?.attendances ?? 0;
+            const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
             return (
               <a
                 key={key}
@@ -390,6 +425,7 @@ export default async function StudentCoursesPage({
                         </div>
                         <span>{new Date(course.date).toLocaleString("fr-FR", { hour12: false })}</span>
                         <span>Durée : {formatDuration(course.durationMinutes ?? 60)}</span>
+                        <span>{remainingSeats} place(s) restante(s)</span>
                       </div>
                     </div>
                     <p className="text-xs text-slate-400">

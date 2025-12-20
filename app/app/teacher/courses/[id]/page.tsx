@@ -36,23 +36,51 @@ export default async function TeacherCourseDetailPage({
     return notFound();
   }
 
-  const course = await prisma.course.findUnique({
-    where: { id, schoolId: session.user.schoolId },
-    include: {
-      teacher: { select: { name: true, email: true } },
-      studio: { select: { name: true, address: true } },
-      attendances: {
-        include: { student: { select: { name: true, email: true } } },
-      },
-      positions: { include: { position: true } },
-      notes: {
-        include: {
-          student: { select: { name: true, email: true } },
-          position: true,
+  const course = await prisma.course
+    .findUnique({
+      where: { id, schoolId: session.user.schoolId },
+      include: {
+        teacher: { select: { name: true, email: true } },
+        studio: { select: { name: true, address: true } },
+        attendances: {
+          include: { student: { select: { name: true, email: true } } },
         },
+        positions: { include: { position: true } },
+        notes: {
+          include: {
+            student: { select: { name: true, email: true } },
+            position: true,
+          },
+        },
+        _count: { select: { attendances: true } },
       },
-    },
-  });
+    })
+    .catch((error) => {
+      const message = (error as Error)?.message ?? "";
+      const missingColumns =
+        message.includes("maxSeats") || message.includes("costCredits");
+      if (missingColumns) {
+        return prisma.course.findUnique({
+          where: { id, schoolId: session.user.schoolId },
+          include: {
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true, address: true } },
+            attendances: {
+              include: { student: { select: { name: true, email: true } } },
+            },
+            positions: { include: { position: true } },
+            notes: {
+              include: {
+                student: { select: { name: true, email: true } },
+                position: true,
+              },
+            },
+            _count: { select: { attendances: true } },
+          },
+        });
+      }
+      throw error;
+    });
 
   if (!course) {
     return notFound();
@@ -67,6 +95,9 @@ export default async function TeacherCourseDetailPage({
       ? rawFrom
       : undefined;
   const backHref = safeFrom ?? "/app/teacher/courses";
+  const seatsUsed = course._count?.attendances ?? 0;
+  const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+  const cost = course.costCredits ?? 100;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -91,6 +122,9 @@ export default async function TeacherCourseDetailPage({
           </p>
           <p className="text-sm text-slate-200">
             Durée : {formatDuration(course.durationMinutes ?? 60)}
+          </p>
+          <p className="text-sm text-slate-200">
+            {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
           </p>
           {course.studio && (
             <p className="text-sm text-slate-300">

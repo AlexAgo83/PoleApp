@@ -74,19 +74,41 @@ export default async function TeacherCoursesPage({
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
 
-  const courses = await prisma.course.findMany({
-    where: whereClause,
-    orderBy: { date: "desc" },
-    skip,
-    take: PAGE_SIZE,
-    include: {
-      attendances: true,
-      positions: true,
-      teacher: { select: { name: true, email: true } },
-      studio: { select: { name: true } },
-      _count: { select: { notes: true } },
-    },
-  });
+  const courses = await prisma.course
+    .findMany({
+      where: whereClause,
+      orderBy: { date: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      include: {
+        attendances: true,
+        positions: true,
+        teacher: { select: { name: true, email: true } },
+        studio: { select: { name: true } },
+        _count: { select: { notes: true, attendances: true } },
+      },
+    })
+    .catch((error) => {
+      const message = (error as Error)?.message ?? "";
+      const missingColumns =
+        message.includes("maxSeats") || message.includes("costCredits");
+      if (missingColumns) {
+        return prisma.course.findMany({
+          where: whereClause,
+          orderBy: { date: "desc" },
+          skip,
+          take: PAGE_SIZE,
+          include: {
+            attendances: true,
+            positions: true,
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true } },
+            _count: { select: { notes: true, attendances: true } },
+          },
+        });
+      }
+      throw error;
+    });
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -234,6 +256,9 @@ export default async function TeacherCoursesPage({
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => {
             const isPast = new Date(course.date).getTime() < Date.now();
+            const seatsUsed = course._count?.attendances ?? course.attendances.length ?? 0;
+            const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+            const cost = course.costCredits ?? 100;
             const faded = isPast ? "opacity-60" : "";
             return (
               <a
@@ -261,6 +286,9 @@ export default async function TeacherCoursesPage({
                   </p>
                   <p className="text-sm text-slate-300">
                     Durée : {formatDuration(course.durationMinutes ?? 60)}
+                  </p>
+                  <p className="text-sm text-slate-300">
+                    {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
                   </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">

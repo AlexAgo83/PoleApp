@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:push": "prisma db push --schema prisma/schema.prisma",
-    "db:seed": "npm run db:push && prisma db seed --schema prisma/schema.prisma"
+    "db:seed": "npm run db:push && prisma db seed --schema prisma/schema.prisma",
+    "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^6.2.0",
