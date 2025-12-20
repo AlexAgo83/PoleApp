@@ -29,7 +29,7 @@ export default async function GamePage() {
 
   if (eligible.length < 4) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-16">
+      <main className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 px-6 py-12">
         <div className="panel w-full max-w-md p-6 text-center text-slate-200">
           <p>Pas assez de positions pour générer un jeu.</p>
           <p className="text-sm text-slate-300">
@@ -41,6 +41,14 @@ export default async function GamePage() {
           >
             Voir les positions
           </Link>
+          <div className="mt-2 flex justify-center">
+            <Link
+              href="/app/student"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
+            </Link>
+          </div>
         </div>
       </main>
     );
