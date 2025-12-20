@@ -43,6 +43,7 @@ export async function updateCourseAction(formData: FormData) {
     date: formData.get("date"),
     studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
+    teacherId: formData.get("teacherId") || undefined,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
@@ -60,12 +61,16 @@ export async function updateCourseAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  const teacherId =
-    session.user.role === "TEACHER"
-      ? session.user.id
-      : data.teacherId || existing.teacherId || session.user.id;
+  let teacherId: string | null = null;
+  if (session.user.role === "TEACHER") {
+    teacherId = session.user.id;
+  } else if (data.teacherId) {
+    teacherId = data.teacherId;
+  } else if (existing.teacherId) {
+    teacherId = existing.teacherId;
+  }
 
-  if (session.user.role === "SCHOOL_ADMIN") {
+  if (session.user.role === "SCHOOL_ADMIN" && teacherId) {
     const teacherValid = await prisma.user.findFirst({
       where: {
         id: teacherId,
@@ -85,7 +90,7 @@ export async function updateCourseAction(formData: FormData) {
       data: {
         title: data.title || null,
         date: data.date,
-        teacherId,
+        teacherId: teacherId ?? existing.teacherId ?? null,
       },
     });
 
