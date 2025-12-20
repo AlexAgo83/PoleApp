@@ -6,6 +6,7 @@ import { SponsoredLinksField } from "@/components/SponsoredLinksField";
 import { createPartnerAction, deletePartnerAction, updatePartnerAction } from "./actions";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
+import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -129,60 +130,66 @@ export default async function AdminPartnersPage({
       </header>
 
       <section className="panel p-4 md:p-6">
-        <h2 className="text-xl font-semibold text-white">Ajouter un partenaire</h2>
-        <form
-          action={createPartnerAction}
-          className="mt-3 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2"
+        <PersistedPanel
+          storageKey="panel:admin-partners-create"
+          title="Ajouter un partenaire"
+          className="group"
+          contentClassName="mt-3"
         >
-          <label className="text-sm text-slate-200">
-            Nom
-            <input
-              name="name"
-              required
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Type
-            <input
-              name="kind"
-              placeholder="SERVICE ou REVENDEUR"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              defaultValue="SERVICE"
-            />
-          </label>
-          <label className="text-sm text-slate-200 md:col-span-2">
-            Site web (optionnel)
-            <input
-              name="website"
-              type="url"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200 md:col-span-2">
-            Description (optionnel)
-            <textarea
-              name="description"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              rows={2}
-            />
-          </label>
-          {supportsSponsored ? (
-            <div className="md:col-span-2">
-              <SponsoredLinksField name="sponsored" initialLinks={[]} />
+          <form
+            action={createPartnerAction}
+            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2"
+          >
+            <label className="text-sm text-slate-200">
+              Nom
+              <input
+                name="name"
+                required
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Type
+              <input
+                name="kind"
+                placeholder="SERVICE ou REVENDEUR"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                defaultValue="SERVICE"
+              />
+            </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Site web (optionnel)
+              <input
+                name="website"
+                type="url"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Description (optionnel)
+              <textarea
+                name="description"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                rows={2}
+              />
+            </label>
+            {supportsSponsored ? (
+              <div className="md:col-span-2">
+                <SponsoredLinksField name="sponsored" initialLinks={[]} />
+              </div>
+            ) : (
+              <input type="hidden" name="sponsored" value="[]" />
+            )}
+            <div className="md:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Ajouter
+              </button>
             </div>
-          ) : (
-            <input type="hidden" name="sponsored" value="[]" />
-          )}
-          <div className="md:col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-            >
-              Ajouter
-            </button>
-          </div>
-        </form>
+          </form>
+        </PersistedPanel>
       </section>
 
       <section className="panel space-y-4 p-6">
