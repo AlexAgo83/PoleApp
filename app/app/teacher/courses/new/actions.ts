@@ -102,10 +102,8 @@ export async function createCourseAction(formData: FormData) {
           title: parsed.data.title || null,
           date: parsed.data.date,
           schoolId: session.user.schoolId!,
-          teacher: { connect: { id: teacherId ?? session.user.id } },
-          ...(parsed.data.studioId
-            ? { studio: { connect: { id: parsed.data.studioId } } }
-            : {}),
+          teacherId: teacherId ?? session.user.id,
+          studioId: parsed.data.studioId ?? null,
           durationMinutes: parsed.data.durationMinutes,
           maxSeats: parsed.data.maxSeats ?? 30,
           costCredits: parsed.data.costCredits ?? 100,
@@ -122,10 +120,8 @@ export async function createCourseAction(formData: FormData) {
           title: parsed.data.title || null,
           date: parsed.data.date,
           schoolId: session.user.schoolId!,
-          teacher: { connect: { id: teacherId ?? session.user.id } },
-          ...(parsed.data.studioId
-            ? { studio: { connect: { id: parsed.data.studioId } } }
-            : {}),
+          teacherId: teacherId ?? session.user.id,
+          studioId: parsed.data.studioId ?? null,
           durationMinutes: parsed.data.durationMinutes,
           photoUrl: parsed.data.photoUrl ?? null,
         },
