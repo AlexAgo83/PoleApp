@@ -4,10 +4,28 @@ Date: 2025-12-24 (MAJ v0.4.6)
 
 Ce dossier contient :
 - `01_BACKLOG.md` : backlog structuré (epics → features → user stories → critères d’acceptation).
+- `01_BACKLOG_CLOUDINARY.md` : backlog dédié à l’intégration Cloudinary (uploads médias).
 - `02_CODEX_INSTRUCTIONS.md` : consignes “pas à pas” pour que CODEX prototype le projet.
 - `03_DATA_MODEL.md` : modèle de données (MVP + évolutions).
 - `04_ROUTES_AND_SCREENS.md` : écrans clés + routes + états.
 - `05_SEED_CONTENT.md` : contenu de seed (positions, types, niveaux) pour démarrer vite.
+- `06_QA_S001.md` : plan de test QA.
+- `CHANGELOG.md` : journal des changements.
+- `README.md` : vue produit synthétique.
+
+## Arborescence des fichiers .md
+- `00_README.md` (index)
+- `01_BACKLOG.md`
+- `01_BACKLOG_CLOUDINARY.md`
+- `01_BACKLOG_STEP_009.md`
+- `02_CODEX_INSTRUCTIONS.md`
+- `02_RENDER_INSTRUCTIONS.md`
+- `03_DATA_MODEL.md`
+- `04_ROUTES_AND_SCREENS.md`
+- `05_SEED_CONTENT.md`
+- `06_QA_S001.md`
+- `CHANGELOG.md`
+- `README.md`
 
 ## Fonctionnalités livrées (baseline produit v0.4.6)
 - Base positions (médias + attributs), fiche élève (progression + blessures), fiche cours (présence + positions vues + commentaires).
@@ -45,4 +63,4 @@ Ce dossier contient :
 - Généré : 2 écoles (École 1, École 2) + 5 profs et 10 élèves par école (mot de passe `change-me-password`, premium 1/2) + 1 cours de démo par école (prof 1 + 3 élèves + 2 positions).
 
 > Si vous voulez partir direct sur du mobile, remplacez Next.js par Expo/React Native,
-> mais la base “données + flows” est déjà validée côté web (v0.4.5).
+> mais la base “données + flows” est déjà validée côté web (v0.4.6).
