@@ -128,7 +128,7 @@ export default async function AdminDashboard() {
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <h1 className="text-3xl font-semibold text-white">
-            Dashboard {baseSchool?.name ?? "école"},
+            {baseSchool?.name ?? "École"},
           </h1>
           <Link
             href="/app/admin/school"
