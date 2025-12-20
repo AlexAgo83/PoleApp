@@ -215,20 +215,11 @@ export default async function StudentCoursesAgendaPage({
       </header>
 
       <section className="panel p-4 md:p-6">
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:student-agenda"
+          title="Filtres"
+          activeCount={activeFilters}
+        >
           <form
             method="get"
             key={`agenda-${monthParam ?? "current"}`}
@@ -298,7 +289,7 @@ export default async function StudentCoursesAgendaPage({
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
 
         <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
           {cells.map((cell, idx) => {

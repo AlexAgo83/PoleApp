@@ -4,6 +4,7 @@ import { Prisma, Role } from "@prisma/client";
 
 import { createUserAction, deleteUserAction } from "./actions";
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -122,14 +123,13 @@ export default async function AdminUsersPage({
       </header>
 
       <section className="panel p-4 md:p-6">
-        <details className="group">
-          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white">
-            <span>Créer un utilisateur</span>
-            <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
-          <p className="mt-2 text-sm text-slate-300">
+        <FilterPanel
+          storageKey="filters:admin-users-create"
+          title="Créer un utilisateur"
+          className="group"
+          contentClassName="mt-2"
+        >
+          <p className="text-sm text-slate-300">
             Un mot de passe par défaut est prérempli, change-le si besoin.
           </p>
           <form action={createUserAction} className="mt-4 grid gap-4 md:grid-cols-2">
@@ -195,7 +195,7 @@ export default async function AdminUsersPage({
               </button>
             </div>
           </form>
-        </details>
+        </FilterPanel>
       </section>
 
       <section className="panel space-y-4 p-6">
@@ -205,22 +205,17 @@ export default async function AdminUsersPage({
             Page {currentPage} / {totalPages} · {totalCount} comptes
           </p>
         </div>
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:admin-users-list"
+          title="Filtres"
+          activeCount={activeFilters}
+          className="group"
+          contentClassName="mt-4"
+        >
           <form
             key={`filters-${roleFilter ?? "all"}-${premiumFilter ? "premium" : "all"}-${q || "all"}`}
             method="get"
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+            className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (nom ou email)
@@ -272,7 +267,7 @@ export default async function AdminUsersPage({
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         <div className="mt-4 divide-y divide-white/5">
           {users.map((user) => (
             <div

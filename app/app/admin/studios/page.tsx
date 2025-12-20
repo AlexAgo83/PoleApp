@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { createStudioAction, deleteStudioAction, updateStudioAction } from "./actions";
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -97,12 +98,13 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       </header>
 
       <section className="panel p-4 md:p-6">
-        <details className="group">
-          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
-            <span>Ajouter un studio</span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
-          </summary>
-          <form action={createStudioAction} className="mt-4 grid gap-3 md:grid-cols-2">
+        <FilterPanel
+          storageKey="filters:admin-studios-create"
+          title="Ajouter un studio"
+          className="group"
+          contentClassName="mt-4"
+        >
+          <form action={createStudioAction} className="grid gap-3 md:grid-cols-2">
             <label className="text-sm text-slate-200">
               Nom
               <input
@@ -136,20 +138,21 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
               </button>
             </div>
           </form>
-        </details>
+        </FilterPanel>
       </section>
 
       <section className="panel space-y-4 p-4 md:p-6">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-white">Studios existants</h2>
-          <details className="group w-full" open>
-            <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-              <span>Filtres</span>
-              <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
-            </summary>
+          <FilterPanel
+            storageKey="filters:admin-studios-list"
+            title="Filtres"
+            className="group w-full"
+            contentClassName="mt-3"
+          >
             <form
               method="get"
-              className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:items-end"
+              className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:items-end"
             >
               <label className="text-sm text-slate-200 md:col-span-2">
                 Recherche (nom ou adresse)
@@ -176,7 +179,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                 </Link>
               </div>
             </form>
-          </details>
+          </FilterPanel>
         </div>
         {studios.length === 0 && (
           <p className="text-slate-200">Aucun studio pour le moment.</p>

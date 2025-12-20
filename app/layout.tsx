@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pole App MVP",
-  description: "MVP Pole app prototype (positions, élèves, cours, jeu).",
+  title: "Pole App",
+  description: "Pole app website.",
 };
 
 export default function RootLayout({
