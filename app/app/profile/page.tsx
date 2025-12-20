@@ -34,12 +34,16 @@ export default async function ProfilePage() {
       .split(" ")
       .filter(Boolean);
   const lastNameDefault = restName.join(" ");
+  const displayName = user.name?.trim() || user.email;
 
   return (
     <main className="mx-auto grid max-w-4xl gap-6">
       <section className="panel p-6">
         <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
           Profil
+        </p>
+        <p className="mt-1 text-lg font-semibold text-white">
+          Bonjour {displayName},
         </p>
         <h1 className="text-2xl font-semibold text-white">
           Informations du compte
@@ -99,7 +103,8 @@ export default async function ProfilePage() {
           </label>
 
           <p className="text-xs text-slate-400">
-            Utilisé pour l&apos;affichage dans l&apos;app (cours, listes, messages).
+            Ce nom est affiché dans les listes, cours et messages. Les autres
+            champs (email, rôle, école) restent informatifs et non éditables ici.
           </p>
 
           <div className="flex items-center justify-end gap-3">
