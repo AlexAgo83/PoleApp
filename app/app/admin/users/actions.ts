@@ -14,7 +14,8 @@ const basePath = "/app/admin/users";
 
 const createSchema = z.object({
   email: z.string().email(),
-  name: z.string().optional(),
+  firstName: z.string(),
+  lastName: z.string(),
   password: z.string().min(6),
   role: z.enum(["STUDENT", "TEACHER", "SCHOOL_ADMIN"]),
   isPremium: z.string().optional(),
@@ -23,8 +24,8 @@ const createSchema = z.object({
 const updateSchema = z.object({
   userId: z.string().cuid(),
   role: z.enum(["STUDENT", "TEACHER", "SCHOOL_ADMIN"]),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  firstName: z.string(),
+  lastName: z.string(),
   isPremium: z.string().optional(),
 });
 
@@ -57,7 +58,8 @@ export async function createUserAction(formData: FormData) {
   }
   const parsed = createSchema.safeParse({
     email: formData.get("email"),
-    name: formData.get("name") || undefined,
+    firstName: formData.get("firstName") || undefined,
+    lastName: formData.get("lastName") || undefined,
     password: formData.get("password"),
     role: formData.get("role"),
     isPremium: formData.get("isPremium") || undefined,
@@ -66,6 +68,12 @@ export async function createUserAction(formData: FormData) {
     throw new Error("Formulaire invalide");
   }
   const data = parsed.data;
+
+  const firstName = data.firstName?.toString().trim();
+  const lastName = data.lastName?.toString().trim();
+  if (!firstName || !lastName) {
+    redirectWithMessage("Prénom et nom sont requis", "error");
+  }
 
   const existing = await prisma.user.findUnique({ where: { email: data.email } });
   if (existing) {
@@ -77,7 +85,7 @@ export async function createUserAction(formData: FormData) {
   await prisma.user.create({
     data: {
       email: data.email,
-      name: data.name?.toString().trim() || null,
+      name: `${firstName} ${lastName}`.trim(),
       passwordHash,
       role: data.role,
       isPremium: Boolean(data.isPremium),
@@ -111,12 +119,12 @@ export async function updateUserAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  const fullName =
-    [parsed.data.firstName, parsed.data.lastName]
-      .map((v) => v?.toString().trim())
-      .filter(Boolean)
-      .join(" ")
-      .trim() || null;
+  const firstName = data.firstName?.toString().trim();
+  const lastName = data.lastName?.toString().trim();
+  if (!firstName || !lastName) {
+    redirectWithMessage("Prénom et nom sont requis", "error");
+  }
+  const fullName = `${firstName} ${lastName}`.trim();
 
   await prisma.user.update({
     where: { id: data.userId },
