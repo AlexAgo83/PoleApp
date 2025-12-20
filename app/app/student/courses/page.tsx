@@ -65,6 +65,7 @@ export default async function StudentCoursesPage({
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
   }
+  const userKey = session.user.id ?? "anon";
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { credits: true },
@@ -283,6 +284,7 @@ export default async function StudentCoursesPage({
           storageKey="filters:student-courses"
           title="Filtres"
           activeCount={activeFilters}
+          userKey={userKey}
         >
           <form
             key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}`}

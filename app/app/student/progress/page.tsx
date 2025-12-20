@@ -46,6 +46,7 @@ export default async function StudentProgressPage({
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
   if (session.user.role !== "STUDENT") redirect("/access-denied");
+  const userKey = session.user.id ?? "anon";
 
   const resolvedParams = (await searchParams) ?? {};
   const pageParam = Array.isArray(resolvedParams.page)
@@ -151,6 +152,7 @@ export default async function StudentProgressPage({
           storageKey="filters:student-progress"
           title="Filtres"
           activeCount={activeFilters}
+          userKey={userKey}
         >
           <form
             key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}

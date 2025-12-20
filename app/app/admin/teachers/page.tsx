@@ -28,6 +28,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
   }
+  const userKey = session.user.id ?? "anon";
   if (!session.user.schoolId) {
     return (
       <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -108,6 +109,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
           activeCount={activeFilters}
           className="group"
           contentClassName="mt-3"
+          userKey={userKey}
         >
           <form
             method="get"
