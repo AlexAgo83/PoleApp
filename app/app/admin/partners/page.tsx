@@ -177,22 +177,30 @@ export default async function AdminPartnersPage({
                   placeholder="Description"
                   className="w-56 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
-                <input
-                  type="hidden"
-                  name="sponsored"
-                  value={
-                    supportsSponsored
-                      ? JSON.stringify(
-                          // @ts-expect-error optional fallback
-                          (partner as any).sponsoredLinks?.map((s: any) => ({
-                            category: s.category,
-                            label: s.label ?? "",
-                            url: s.url,
-                          })) ?? []
-                        )
-                      : "[]"
-                  }
-                />
+                {(() => {
+                  const rawSponsored = supportsSponsored
+                    ? (Array.isArray((partner as any).sponsoredLinks)
+                        ? (partner as any).sponsoredLinks
+                        : [])
+                    : [];
+                  const serializedSponsored = JSON.stringify(
+                    rawSponsored.map((s: any) => ({
+                      category: s?.category,
+                      label: s?.label ?? "",
+                      url: s?.url,
+                    })),
+                    null,
+                    0
+                  );
+                  return (
+                    <input
+                      type="hidden"
+                      name="sponsored"
+                      value={serializedSponsored}
+                      readOnly
+                    />
+                  );
+                })()}
                 {supportsSponsored ? (
                   <div className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
                     <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-200">
@@ -202,16 +210,18 @@ export default async function AdminPartnersPage({
                       Catégorie, label optionnel, URL. Édite le JSON dans le champ caché si besoin.
                     </p>
                     <pre className="mt-2 max-h-32 overflow-auto rounded-lg bg-black/30 p-2 text-[11px] text-slate-100">
-{JSON.stringify(
-  // @ts-expect-error optional fallback
-  (partner as any).sponsoredLinks?.map((s: any) => ({
-    category: s.category,
-    label: s.label ?? "",
-    url: s.url,
-  })) ?? [],
-  null,
-  2
-)}
+                      {JSON.stringify(
+                        (Array.isArray((partner as any).sponsoredLinks)
+                          ? (partner as any).sponsoredLinks
+                          : []
+                        ).map((s: any) => ({
+                          category: s?.category,
+                          label: s?.label ?? "",
+                          url: s?.url,
+                        })),
+                        null,
+                        2
+                      )}
                     </pre>
                   </div>
                 ) : (
