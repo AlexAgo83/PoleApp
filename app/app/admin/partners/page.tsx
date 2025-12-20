@@ -247,69 +247,104 @@ export default async function AdminPartnersPage({
         )}
         <div className="divide-y divide-white/5">
           {partners.map((partner) => (
-            <div
+            <article
               key={partner.id}
-              className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-4 py-4"
             >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-indigo-100">
+                    {partner.kind || "PARTENAIRE"}
+                  </span>
+                  {partner.website && (
+                    <a
+                      href={partner.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
+                    >
+                      Ouvrir le site
+                    </a>
+                  )}
+                  {partner.description && (
+                    <span className="text-xs text-slate-400">· {partner.description}</span>
+                  )}
+                </div>
+                <form action={deletePartnerAction}>
+                  <input type="hidden" name="partnerId" value={partner.id} />
+                  <button
+                    type="submit"
+                    className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
+                  >
+                    Supprimer
+                  </button>
+                </form>
+              </div>
+
               <form
                 action={updatePartnerAction}
-                className="flex flex-wrap items-center gap-2 text-sm text-slate-200"
+                className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/10 text-sm text-slate-200 md:grid-cols-2 md:gap-4"
               >
                 <input type="hidden" name="partnerId" value={partner.id} />
-                <input
-                  name="name"
-                  defaultValue={partner.name}
-                  className="w-48 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                  required
-                />
-                <input
-                  name="kind"
-                  defaultValue={partner.kind}
-                  className="w-36 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                  placeholder="SERVICE/REVENDEUR"
-                />
-                <input
-                  name="website"
-                  type="url"
-                  defaultValue={partner.website ?? ""}
-                  placeholder="https://..."
-                  className="w-48 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
-                <input
-                  name="description"
-                  defaultValue={partner.description ?? ""}
-                  placeholder="Description"
-                  className="w-56 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
+                <label className="grid gap-1">
+                  Nom
+                  <input
+                    name="name"
+                    defaultValue={partner.name}
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                    required
+                  />
+                </label>
+                <label className="grid gap-1">
+                  Type
+                  <input
+                    name="kind"
+                    defaultValue={partner.kind}
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                    placeholder="SERVICE/REVENDEUR"
+                  />
+                </label>
+                <label className="grid gap-1 md:col-span-2">
+                  Site web (optionnel)
+                  <input
+                    name="website"
+                    type="url"
+                    defaultValue={partner.website ?? ""}
+                    placeholder="https://..."
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <label className="grid gap-1 md:col-span-2">
+                  Description (optionnel)
+                  <input
+                    name="description"
+                    defaultValue={partner.description ?? ""}
+                    placeholder="Description"
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
                 {supportsSponsored ? (
-                  <div className="w-full">
+                  <div className="md:col-span-2">
                     <SponsoredLinksField
                       name="sponsored"
                       initialLinks={Array.isArray((partner as any).sponsoredLinks) ? (partner as any).sponsoredLinks : []}
                     />
                   </div>
                 ) : (
-                  <p className="text-xs text-amber-200">
+                  <p className="md:col-span-2 text-xs text-amber-200">
                     Liens sponsorisés indisponibles (migration Prisma non appliquée).
                   </p>
                 )}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Sauvegarder
-                </button>
+                <div className="md:col-span-2 flex justify-end">
+                  <button
+                    type="submit"
+                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  >
+                    Sauvegarder
+                  </button>
+                </div>
               </form>
-              <form action={deletePartnerAction}>
-                <input type="hidden" name="partnerId" value={partner.id} />
-                <button
-                  type="submit"
-                  className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
-                >
-                  Supprimer
-                </button>
-              </form>
-            </div>
+            </article>
           ))}
         </div>
 
