@@ -27,7 +27,7 @@ function formatDuration(minutes: number) {
 export default async function StudentCoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string; studio?: string; teacher?: string }>;
+  searchParams?: Promise<{ month?: string; studio?: string; teacher?: string; mine?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
@@ -44,29 +44,72 @@ export default async function StudentCoursesAgendaPage({
     typeof resolved.studio === "string" && resolved.studio.length > 0
       ? resolved.studio
       : undefined;
+  const mineFilter =
+    resolved.mine === "true" ||
+    resolved.mine === "1" ||
+    resolved.mine === "on" ||
+    resolved.mine === "";
+  const onlyMine = mineFilter;
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const start = startOfMonth(baseDate);
   const end = endOfMonth(baseDate);
 
-  const attendances = await prisma.courseAttendance.findMany({
-    where: {
-      studentId: session.user.id,
-      course: {
-        date: { gte: start, lte: end },
-        ...(teacherFilter ? { teacherId: teacherFilter } : {}),
-        ...(studioFilter ? { studioId: studioFilter } : {}),
-      },
-    },
-    include: {
-      course: {
-        include: {
-          teacher: { select: { name: true, email: true } },
-          studio: { select: { name: true } },
+  const attendances = onlyMine
+    ? await prisma.courseAttendance.findMany({
+        where: {
+          studentId: session.user.id,
+          course: {
+            date: { gte: start, lte: end },
+            ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+            ...(studioFilter ? { studioId: studioFilter } : {}),
+          },
         },
-      },
-    },
-    orderBy: { course: { date: "asc" } },
-  });
+        include: {
+          course: {
+            include: {
+              teacher: { select: { name: true, email: true } },
+              studio: { select: { name: true } },
+            },
+          },
+        },
+        orderBy: { course: { date: "asc" } },
+      })
+    : [];
+
+  const schoolCourses =
+    !onlyMine && session.user.schoolId
+      ? await prisma.course.findMany({
+          where: {
+            schoolId: session.user.schoolId,
+            date: { gte: start, lte: end },
+            ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+            ...(studioFilter ? { studioId: studioFilter } : {}),
+          },
+          include: {
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true } },
+            attendances: {
+              where: { studentId: session.user.id },
+              select: { id: true },
+            },
+          },
+          orderBy: { date: "asc" },
+        })
+      : [];
+
+  const agendaItems = onlyMine
+    ? attendances.map((a) => ({
+        id: a.id,
+        courseId: a.courseId,
+        course: a.course,
+        isMine: true,
+      }))
+    : schoolCourses.map((c) => ({
+        id: c.id,
+        courseId: c.id,
+        course: c,
+        isMine: Boolean(c.attendances?.length),
+      }));
 
   const studiosPromise = session.user.schoolId
     ? prisma.studio.findMany({
@@ -88,13 +131,13 @@ export default async function StudentCoursesAgendaPage({
 
   const daysInMonth = end.getDate();
   const firstDay = start.getDay() === 0 ? 7 : start.getDay(); // Monday=1 ... Sunday=7
-  const cells: Array<{ day?: number; attendances?: typeof attendances }> = [];
+  const cells: Array<{ day?: number; attendances?: typeof agendaItems }> = [];
   for (let i = 1; i < firstDay; i += 1) {
     cells.push({});
   }
   for (let day = 1; day <= daysInMonth; day += 1) {
     const dateStr = new Date(start.getFullYear(), start.getMonth(), day).toDateString();
-    const daily = attendances.filter(
+    const daily = agendaItems.filter(
       (a) => new Date(a.course.date).toDateString() === dateStr
     );
     cells.push({ day, attendances: daily });
@@ -104,10 +147,32 @@ export default async function StudentCoursesAgendaPage({
   const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
   const hasMonthFilter = Boolean(monthParam);
   const activeFilters =
-    (hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0);
+    (hasMonthFilter ? 1 : 0) +
+    (studioFilter ? 1 : 0) +
+    (teacherFilter ? 1 : 0) +
+    (onlyMine ? 1 : 0);
+  const now = Date.now();
+  const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
+    const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
+    return end < now;
+  };
 
-  // Vue semaine (7 jours à partir du lundi de la semaine du start)
-  const startWeek = new Date(start);
+  const monthParams = new URLSearchParams();
+  if (studioFilter) monthParams.set("studio", studioFilter);
+  if (teacherFilter) monthParams.set("teacher", teacherFilter);
+  if (onlyMine) monthParams.set("mine", "true");
+  const prevMonth = new Date(start);
+  prevMonth.setMonth(prevMonth.getMonth() - 1);
+  const nextMonth = new Date(start);
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+  const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
+
+  // Vue semaine (7 jours à partir du lundi de la semaine courante si dans le mois, sinon début de mois)
+  const today = new Date();
+  const inSelectedMonth = today >= start && today <= end;
+  const baseWeekDate = inSelectedMonth ? today : start;
+  const startWeek = new Date(baseWeekDate);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
   const weekDays = Array.from({ length: 7 }).map((_, idx) => {
@@ -117,7 +182,7 @@ export default async function StudentCoursesAgendaPage({
   });
   const attendancesByDay = weekDays.map((d) => {
     const dayStr = d.toDateString();
-    return attendances.filter((a) => new Date(a.course.date).toDateString() === dayStr);
+    return agendaItems.filter((a) => new Date(a.course.date).toDateString() === dayStr);
   });
 
   return (
@@ -132,8 +197,10 @@ export default async function StudentCoursesAgendaPage({
         </div>
         <Link
           href="/app/student/courses"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/list.svg" alt="" className="h-4 w-4" />
           Liste
         </Link>
       </header>
@@ -197,6 +264,16 @@ export default async function StudentCoursesAgendaPage({
                 ))}
               </select>
             </label>
+            <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input
+                type="checkbox"
+                name="mine"
+                value="true"
+                defaultChecked={onlyMine}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Mes cours
+            </label>
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
                 type="submit"
@@ -236,26 +313,33 @@ export default async function StudentCoursesAgendaPage({
                 </div>
               )}
               {cell.attendances &&
-                cell.attendances.slice(0, 3).map((a) => (
-                  <Link
-                    key={a.id}
-                    href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                    className="mt-1 block rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border hover:border-cyan-300/60 hover:bg-white/15"
-                  >
-                    {a.course.studio?.name ? (
-                      <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                        {a.course.studio.name}
-                      </span>
-                    ) : null}
-                    <div className="mt-1 text-[10px] text-slate-200 leading-snug">
-                      {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
-                      {a.course.title ?? "Cours"}
-                      <div className="text-[10px] text-slate-300">
-                        Durée : {formatDuration(a.course.durationMinutes ?? 60)}
+                cell.attendances.slice(0, 3).map((a) => {
+                  const past = isPastCourse(a.course.date, a.course.durationMinutes);
+                  return (
+                    <Link
+                      key={a.id}
+                      href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
+                      className={`mt-1 block rounded-lg px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 ${
+                        past
+                          ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                          : "bg-white/10 text-white"
+                      }`}
+                    >
+                      {a.course.studio?.name ? (
+                        <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                          {a.course.studio.name}
+                        </span>
+                      ) : null}
+                      <div className="mt-1 text-[10px] leading-snug">
+                        {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                        {a.course.title ?? "Cours"}
+                        <div className="text-[10px] text-slate-300">
+                          Durée : {formatDuration(a.course.durationMinutes ?? 60)}
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               {cell.attendances && cell.attendances.length > 3 && (
                 <div className="mt-1 text-[11px] text-slate-300">
                   +{cell.attendances.length - 3} autres
@@ -264,7 +348,41 @@ export default async function StudentCoursesAgendaPage({
             </div>
           ))}
         </div>
-        {attendances.length === 0 && (
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+          <form
+            action="/app/student/courses/agenda"
+            method="get"
+            className="inline-flex"
+          >
+            <input type="hidden" name="month" value={prevMonthValue} />
+            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+            {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+            {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Mois précédent
+            </button>
+          </form>
+          <form
+            action="/app/student/courses/agenda"
+            method="get"
+            className="inline-flex"
+          >
+            <input type="hidden" name="month" value={nextMonthValue} />
+            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+            {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+            {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Mois suivant →
+            </button>
+          </form>
+        </div>
+        {agendaItems.length === 0 && (
           <p className="mt-4 text-sm text-slate-200">
             Aucun cours prévu pour ce mois.
           </p>
@@ -272,8 +390,8 @@ export default async function StudentCoursesAgendaPage({
       </section>
 
       <section className="panel p-6">
-        <h3 className="text-lg font-semibold text-white">Vue semaine (durée proportionnelle)</h3>
-        <div className="mt-3 grid gap-3 md:grid-cols-7">
+        <h3 className="text-lg font-semibold text-white">Vue semaine</h3>
+        <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
           {weekDays.map((day, idx) => {
             const dayAttendances = attendancesByDay[idx];
             return (
@@ -282,16 +400,19 @@ export default async function StudentCoursesAgendaPage({
                   <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
                   <span className="text-[11px] text-cyan-100">{dayAttendances.length} cours</span>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5 md:gap-2">
                   {dayAttendances.length === 0 && <span className="text-slate-400">—</span>}
                   {dayAttendances.map((a) => {
-                    const width = Math.max(50, Math.min(160, (a.course.durationMinutes ?? 60) * 2));
+                    const past = isPastCourse(a.course.date, a.course.durationMinutes);
                     return (
                       <Link
                         key={a.id}
                         href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                        className="inline-flex flex-col rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border-cyan-300/70 hover:bg-white/15"
-                        style={{ width }}
+                        className={`inline-flex w-full flex-col rounded-lg border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 ${
+                          past
+                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                            : "border-white/10 bg-white/10 text-white"
+                        }`}
                         title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
                       >
                         <span>{new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
