@@ -67,7 +67,10 @@ export default async function StudentCourseDetailPage({
             {course.title ?? "Cours"}
           </h1>
           <p className="text-sm text-slate-200">
-            {new Date(course.date).toLocaleString()} · {teacherName}
+            {teacherName}
+          </p>
+          <p className="text-sm text-slate-200">
+            {new Date(course.date).toLocaleString()}
           </p>
         </div>
         <Link

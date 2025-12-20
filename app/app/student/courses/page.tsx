@@ -73,8 +73,8 @@ export default async function StudentCoursesPage({
                         {course.title ?? "Cours"}
                       </p>
                       <div className="flex flex-col text-sm text-slate-300">
-                        <span>{new Date(course.date).toLocaleString()}</span>
                         <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
+                        <span>{new Date(course.date).toLocaleString()}</span>
                       </div>
                     </div>
                     <p className="text-xs text-slate-400">
