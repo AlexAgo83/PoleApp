@@ -220,8 +220,13 @@ export default async function TeacherCoursesPage({
                     <p className="text-base font-semibold text-white">
                       {course.title ?? "Cours sans titre"}
                     </p>
-                  <p className="text-sm text-slate-200">
-                    {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                  <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">
+                    <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
+                    {course.studio && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                        Studio · {course.studio.name}
+                      </span>
+                    )}
                   </p>
                   {course.studio && (
                     <span className="mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">

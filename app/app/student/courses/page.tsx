@@ -256,13 +256,15 @@ export default async function StudentCoursesPage({
                       <p className="text-base font-semibold text-white">
                         {course.title ?? "Cours"}
                       </p>
-                      <div className="flex flex-col text-sm text-slate-300">
-                        <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
-                        {course.studio?.name && (
-                          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
-                            Studio · {course.studio.name}
-                          </span>
-                        )}
+                      <div className="flex flex-col text-sm text-slate-300 gap-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
+                          {course.studio?.name && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                              Studio · {course.studio.name}
+                            </span>
+                          )}
+                        </div>
                         <span>{new Date(course.date).toLocaleString()}</span>
                       </div>
                     </div>
