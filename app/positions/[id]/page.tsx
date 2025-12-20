@@ -1,4 +1,4 @@
-import { PositionLevel, PositionType } from "@prisma/client";
+import { MediaKind, PositionLevel, PositionType } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -70,8 +70,12 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     );
   }
 
-  const cover = position.media[0];
+  const cover =
+    position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
+  const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
   const isPremium = Boolean(session?.user?.isPremium);
+  const isStudent = session?.user?.role === "STUDENT";
+  const canViewPremium = !isStudent || isPremium;
   const isStaff =
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
 
@@ -150,26 +154,35 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               Pas d’image
             </div>
           )}
-          <div className="space-y-2 text-slate-200">
-            <p className="text-sm text-cyan-200">Description</p>
-            <p className="text-sm text-slate-100">
-              {position.description ?? "Aucune description"}
-            </p>
-            {position.tips && (
-              <div>
-                <p className="text-sm text-cyan-200">Conseils</p>
-                <p className="text-sm text-slate-100">{position.tips}</p>
-              </div>
-            )}
-            {position.contraindications && (
-              <div>
-                <p className="text-sm text-cyan-200">Contre-indications</p>
-                <p className="text-sm text-slate-100">
-                  {position.contraindications}
-                </p>
-              </div>
-            )}
-          </div>
+          {canViewPremium ? (
+            <div className="space-y-2 text-slate-200">
+              <p className="text-sm text-cyan-200">Description</p>
+              <p className="text-sm text-slate-100">
+                {position.description ?? "Aucune description"}
+              </p>
+              {position.tips && (
+                <div>
+                  <p className="text-sm text-cyan-200">Conseils</p>
+                  <p className="text-sm text-slate-100">{position.tips}</p>
+                </div>
+              )}
+              {position.contraindications && (
+                <div>
+                  <p className="text-sm text-cyan-200">Contre-indications</p>
+                  <p className="text-sm text-slate-100">
+                    {position.contraindications}
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+              <p className="font-semibold text-white">Contenu Premium</p>
+              <p className="mt-1">
+                Description, conseils et vidéo sont réservés aux élèves premium.
+              </p>
+            </div>
+          )}
         </div>
         <aside className="panel space-y-4 p-6">
           <div>
@@ -196,6 +209,31 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               {position.createdBy?.name ?? "Seed"}
             </p>
           </div>
+          {video && (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-semibold text-white">Vidéo</p>
+                <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                  Premium
+                </span>
+              </div>
+              {canViewPremium ? (
+                <a
+                  href={video.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                >
+                  Ouvrir la vidéo
+                  <span aria-hidden>↗</span>
+                </a>
+              ) : (
+                <p className="mt-2 text-xs text-amber-100">
+                  Connecte-toi en Premium pour accéder à la vidéo.
+                </p>
+              )}
+            </div>
+          )}
           <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
             <p className="font-semibold text-white">Gating élève</p>
             <p className="mt-2">

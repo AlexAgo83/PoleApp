@@ -107,6 +107,10 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         <div className="grid gap-4 md:grid-cols-3">
           {positions.map((p) => {
             const cover = p.media?.[0];
+            const premiumContent =
+              Boolean(p.description) ||
+              Boolean(p.tips) ||
+              p.media?.some((m) => m.kind === "VIDEO");
             return (
               <article
                 key={p.id}
@@ -131,6 +135,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       {levelLabels[p.levelRequired]}
                     </span>
                   </div>
+                  {premiumContent && (
+                    <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-50">
+                      Premium
+                    </span>
+                  )}
                   <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                   <p className="text-sm text-slate-300 line-clamp-2">
                     {p.tips ?? p.description ?? "Aucun détail"}
