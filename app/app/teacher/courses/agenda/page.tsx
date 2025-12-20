@@ -228,60 +228,62 @@ export default async function CoursesAgendaPage({
             </div>
           </form>
         </details>
-        <div className="grid grid-cols-7 gap-2 text-center text-sm text-slate-200">
-          {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
-            <div key={d} className="py-2 font-semibold text-white/80">
-              {d}
-            </div>
-          ))}
-          {calendarCells.map((cell, idx) => (
-            <div
-              key={idx}
-              className="min-h-[80px] rounded-xl border border-white/10 bg-white/5 p-2 text-left"
-            >
-              {cell.day && (
+        <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
+          {calendarCells.map((cell, idx) => {
+            const weekDayIndex = (idx % 7) + 1;
+            const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
+            return (
+              <div
+                key={idx}
+                className="min-h-[80px] rounded-xl border border-white/10 bg-white/5 p-2 text-left"
+              >
                 <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                  <span>{cell.day}</span>
+                  <span className="flex items-center gap-1">
+                    <span className="text-[10px] uppercase tracking-wide text-cyan-100 md:text-xs">{label}</span>
+                    <span>{cell.day ?? "—"}</span>
+                  </span>
                   {cell.courses && cell.courses.length > 0 && (
                     <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
                       {cell.courses.length}
                     </span>
                   )}
                 </div>
-              )}
-              {cell.courses &&
-                cell.courses.slice(0, 3).map((course) => {
-                  const past = isPastCourse(course.date, course.durationMinutes);
-                  return (
-                    <Link
-                      key={course.id}
-                      href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                      className={`mt-1 block rounded-lg px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 ${
-                        past
-                          ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                          : "bg-white/10 text-white"
-                      }`}
-                    >
-                      <div className="mt-1 text-[10px] leading-snug">
-                        {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
-                        {course.title ?? "Cours"}
-                        <div className="text-[10px] text-slate-300">Durée : {formatDuration(course.durationMinutes ?? 60)}</div>
-                      </div>
-                      {course.studio?.name ? (
-                        <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                          {course.studio.name}
-                        </span>
-                      ) : null}
-                    </Link>
-                  );
-                })}
-              {cell.courses && cell.courses.length > 3 && (
-                <div className="mt-1 text-[11px] text-slate-300">
-                  +{cell.courses.length - 3} autres
-                </div>
-              )}
-            </div>
-          ))}
+                {cell.courses &&
+                  cell.courses.slice(0, 3).map((course) => {
+                    const past = isPastCourse(course.date, course.durationMinutes);
+                    return (
+                      <Link
+                        key={course.id}
+                        href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                        className={`mt-1 block rounded-md px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                          past
+                            ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                            : "bg-white/10 text-white"
+                        }`}
+                      >
+                        <div className="text-[10px] leading-snug">
+                          {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
+                          {course.title ?? "Cours"}
+                          <div className="text-[10px] text-slate-300 hidden md:block">
+                            Durée : {formatDuration(course.durationMinutes ?? 60)}
+                          </div>
+                        </div>
+                        {course.studio?.name ? (
+                          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                            {course.studio.name}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                {cell.courses && cell.courses.length > 3 && (
+                  <div className="mt-1 text-[11px] text-slate-300">
+                    +{cell.courses.length - 3} autres
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
         <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
           <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
@@ -315,8 +317,8 @@ export default async function CoursesAgendaPage({
       </section>
 
       <section className="panel p-6">
-        <h3 className="text-lg font-semibold text-white">Vue semaine (durée proportionnelle)</h3>
-        <div className="mt-3 grid gap-3 md:grid-cols-7">
+        <h3 className="text-lg font-semibold text-white">Vue semaine</h3>
+        <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
           {weekDays.map((day, idx) => {
             const dayCourses = coursesByDay[idx];
             return (
@@ -325,26 +327,24 @@ export default async function CoursesAgendaPage({
                   <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
                   <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5 md:gap-2">
                   {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
                   {dayCourses.map((course) => {
-                    const width = Math.max(50, Math.min(160, course.durationMinutes * 2));
                     const past = isPastCourse(course.date, course.durationMinutes);
                     return (
                       <Link
                         key={course.id}
                         href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                        className={`inline-flex flex-col rounded-lg border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 ${
+                        className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
                           past
                             ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                             : "border-white/10 bg-white/10 text-white"
                         }`}
-                        style={{ width }}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
                       >
                         <span>{new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}</span>
                         <span className="truncate">{course.title ?? "Cours"}</span>
-                        <span className="text-[10px] text-cyan-100">{formatDuration(course.durationMinutes ?? 60)}</span>
+                        <span className="text-[10px] text-cyan-100 hidden md:inline">{formatDuration(course.durationMinutes ?? 60)}</span>
                         {course.studio?.name ? (
                           <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
                             {course.studio.name}
