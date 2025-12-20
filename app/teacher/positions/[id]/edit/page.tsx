@@ -36,7 +36,8 @@ export default async function EditPositionPage({ params }: Props) {
 
   const types = Object.values(PositionType);
   const levels = Object.values(PositionLevel);
-  const cover = position.media[0];
+  const cover = position.media.find((m) => m.kind === "PHOTO") ?? position.media[0];
+  const video = position.media.find((m) => m.kind === "VIDEO");
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
@@ -93,6 +94,12 @@ export default async function EditPositionPage({ params }: Props) {
             label="Image URL (placeholder accepté)"
             name="imageUrl"
             defaultValue={cover?.url ?? ""}
+          />
+          <Field
+            label="Vidéo (URL)"
+            name="videoUrl"
+            defaultValue={video?.url ?? ""}
+            placeholder="https://..."
           />
 
           <div className="flex flex-wrap justify-end gap-3">

@@ -19,6 +19,7 @@ const schema = z.object({
   tips: z.string().optional(),
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
+  videoUrl: z.string().url().optional(),
 });
 
 export async function updatePositionAction(formData: FormData) {
@@ -38,6 +39,7 @@ export async function updatePositionAction(formData: FormData) {
     tips: formData.get("tips") || undefined,
     contraindications: formData.get("contraindications") || undefined,
     imageUrl: formData.get("imageUrl") || undefined,
+    videoUrl: formData.get("videoUrl") || undefined,
   });
 
   if (!parsed.success) {
@@ -56,15 +58,18 @@ export async function updatePositionAction(formData: FormData) {
       grips: data.grips ?? null,
       tips: data.tips,
       contraindications: data.contraindications,
-      media: data.imageUrl
-        ? {
-            deleteMany: { positionId: data.id },
-            create: {
-              kind: MediaKind.PHOTO,
-              url: data.imageUrl,
-            },
-          }
-        : undefined,
+      media:
+        data.imageUrl || data.videoUrl
+          ? {
+              deleteMany: { positionId: data.id },
+              create: [
+                ...(data.imageUrl
+                  ? [{ kind: MediaKind.PHOTO, url: data.imageUrl }]
+                  : []),
+                ...(data.videoUrl ? [{ kind: MediaKind.VIDEO, url: data.videoUrl }] : []),
+              ],
+            }
+          : undefined,
     },
   });
 
