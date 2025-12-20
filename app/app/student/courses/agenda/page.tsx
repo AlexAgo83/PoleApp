@@ -18,7 +18,7 @@ function endOfMonth(date: Date) {
 export default async function StudentCoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string }>;
+  searchParams?: Promise<{ month?: string; studio?: string; teacher?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
@@ -27,6 +27,14 @@ export default async function StudentCoursesAgendaPage({
 
   const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
+  const teacherFilter =
+    typeof resolved.teacher === "string" && resolved.teacher.length > 0
+      ? resolved.teacher
+      : undefined;
+  const studioFilter =
+    typeof resolved.studio === "string" && resolved.studio.length > 0
+      ? resolved.studio
+      : undefined;
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const start = startOfMonth(baseDate);
   const end = endOfMonth(baseDate);
@@ -36,17 +44,38 @@ export default async function StudentCoursesAgendaPage({
       studentId: session.user.id,
       course: {
         date: { gte: start, lte: end },
+        ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+        ...(studioFilter ? { studioId: studioFilter } : {}),
       },
     },
     include: {
       course: {
         include: {
           teacher: { select: { name: true, email: true } },
+          studio: { select: { name: true } },
         },
       },
     },
     orderBy: { course: { date: "asc" } },
   });
+
+  const studiosPromise = session.user.schoolId
+    ? prisma.studio.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+      })
+    : Promise.resolve([]);
+
+  const teachersPromise = session.user.schoolId
+    ? prisma.user.findMany({
+        where: { schoolId: session.user.schoolId, role: "TEACHER" },
+        select: { id: true, name: true, email: true },
+        orderBy: { name: "asc" },
+      })
+    : Promise.resolve([]);
+
+  const [studios, teachers] = await Promise.all([studiosPromise, teachersPromise]);
 
   const daysInMonth = end.getDate();
   const firstDay = start.getDay() === 0 ? 7 : start.getDay(); // Monday=1 ... Sunday=7
@@ -65,6 +94,8 @@ export default async function StudentCoursesAgendaPage({
   const monthLabel = start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
   const hasMonthFilter = Boolean(monthParam);
+  const activeFilters =
+    (hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -89,9 +120,9 @@ export default async function StudentCoursesAgendaPage({
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span className="inline-flex items-center gap-2">
               <span>Filtres</span>
-              {hasMonthFilter && (
+              {activeFilters > 0 && (
                 <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  1
+                  {activeFilters}
                 </span>
               )}
             </span>
@@ -104,7 +135,7 @@ export default async function StudentCoursesAgendaPage({
             key={`agenda-${monthParam ?? "current"}`}
             className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
           >
-            <label className="text-sm text-slate-200 md:col-span-2">
+            <label className="text-sm text-slate-200">
               Mois
               <input
                 type="month"
@@ -112,6 +143,36 @@ export default async function StudentCoursesAgendaPage({
                 defaultValue={monthValue}
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
+            </label>
+            <label className="text-sm text-slate-200">
+              Studio
+              <select
+                name="studio"
+                defaultValue={studioFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les studios</option>
+                {studios.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Professeur
+              <select
+                name="teacher"
+                defaultValue={teacherFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les profs</option>
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name ?? t.email}
+                  </option>
+                ))}
+              </select>
             </label>
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
