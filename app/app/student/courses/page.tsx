@@ -97,6 +97,14 @@ export default async function StudentCoursesPage({
         <p className="text-sm text-slate-200">
           Historique des cours suivis. Page {currentPage} / {totalPages} · {totalCount} entrées
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            href="/app/student/courses/agenda"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Agenda
+          </Link>
+        </div>
       </header>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">
