@@ -40,9 +40,9 @@ export default async function EditPositionPage({ params }: Props) {
   const video = position.media.find((m) => m.kind === "VIDEO");
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-6 md:py-10">
       <SessionNavBar session={session} />
-      <header className="panel p-8">
+      <header className="panel p-4 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
           Professeur / Admin
         </p>
@@ -53,7 +53,7 @@ export default async function EditPositionPage({ params }: Props) {
         </p>
       </header>
 
-      <section className="panel p-8">
+      <section className="panel p-4 md:p-6">
         <form action={updatePositionAction} className="space-y-4">
           <input type="hidden" name="id" value={position.id} />
           <div className="grid gap-4 md:grid-cols-2">

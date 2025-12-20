@@ -15,9 +15,9 @@ export default async function NewPositionPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-6 md:py-10">
       <SessionNavBar session={session} />
-      <header className="panel flex flex-wrap items-start justify-between gap-3 p-8">
+      <header className="panel flex flex-wrap items-start justify-between gap-3 p-4 md:p-6">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
             Professeur / Admin
@@ -27,6 +27,20 @@ export default async function NewPositionPage() {
             Formulaire léger pour alimenter la base. Les médias supplémentaires et
             l’édition seront ajoutés plus tard.
           </p>
+          <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/80">
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1">
+              Nom + Type
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1">
+              Niveau requis
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1">
+              Grips (optionnel)
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1">
+              Médias ajoutés après création
+            </span>
+          </div>
         </div>
         <div className="flex w-full justify-end">
           <Link
@@ -38,7 +52,7 @@ export default async function NewPositionPage() {
         </div>
       </header>
 
-      <section className="panel p-8">
+      <section className="panel p-4 md:p-6">
         <NewPositionForm />
       </section>
     </main>
