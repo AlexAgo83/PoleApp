@@ -40,7 +40,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Page profil `/app/profile` : consultation email/rôle/école, édition prénom/nom/âge/photo (placeholder si vide).
 - Prof : diplômes + positions préférées éditables (multi-sélection) et visibles sur la fiche publique.
 - Fiche prof publique `/app/teachers/[id]` (photo/diplômes/positions préférées), accessible aux élèves ayant eu cours avec ce prof (`/app/student/teachers`).
-- Homepage “Modules” inclut la carte Profile.
+- Homepage “Modules” épurée (panels statut/nouveautés retirés) et inclut la carte Profile.
+- Panneaux de filtres : repliés par défaut avec état mémorisé localement (localStorage).
 
 ## Positions
 - `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`.

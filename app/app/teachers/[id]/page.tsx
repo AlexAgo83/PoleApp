@@ -121,22 +121,15 @@ export default async function TeacherPublicProfilePage({
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={backHref}
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300 hover:text-cyan-200"
-            >
-              ← Retour
-            </Link>
-            {session.user.id === teacher.id && (
-              <Link
-                href="/app/profile"
-                className="inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
-              >
-                Éditer mon profil
-              </Link>
-            )}
-          </div>
+          <div className="flex flex-wrap items-center gap-2" />
+        </div>
+        <div className="mt-3 flex w-full justify-end">
+          <Link
+            href={backHref}
+            className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300 hover:text-cyan-200"
+          >
+            ← Retour
+          </Link>
         </div>
       </header>
 

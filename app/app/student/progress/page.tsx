@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 const statusLabels: Record<LearningStatus, string> = {
@@ -146,20 +147,11 @@ export default async function StudentProgressPage({
             {lockedCount} position(s) verrouillées. Passe en premium pour tout voir.
           </div>
         )}
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:student-progress"
+          title="Filtres"
+          activeCount={activeFilters}
+        >
           <form
             key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
             method="get"
@@ -224,7 +216,7 @@ export default async function StudentProgressPage({
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {positions.map((position) => {
             const progress = progressMap.get(position.id);

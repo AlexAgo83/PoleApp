@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
@@ -132,46 +133,38 @@ export default async function TeacherStudentsPage({
       </header>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
-        <form
-          key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}-${sort}`}
-          method="get"
-          className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end">
-          <label className="text-sm text-slate-200">
-            Recherche
-            <input
-              type="text"
-              name="q"
-              defaultValue={q}
-              placeholder="Nom, prénom ou email"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Blessures
-            <select
-              name="injury"
-              defaultValue={injuryFilter ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Toutes</option>
-              <option value="active">Avec blessure active</option>
-              <option value="none">Aucune blessure active</option>
-            </select>
-          </label>
+        <FilterPanel
+          storageKey="filters:teacher-students"
+          title="Filtres"
+          activeCount={activeFilters}
+        >
+          <form
+            key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}-${sort}`}
+            method="get"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+          >
+            <label className="text-sm text-slate-200">
+              Recherche
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Nom, prénom ou email"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Blessures
+              <select
+                name="injury"
+                defaultValue={injuryFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes</option>
+                <option value="active">Avec blessure active</option>
+                <option value="none">Aucune blessure active</option>
+              </select>
+            </label>
             <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
               <input
                 type="checkbox"
@@ -183,33 +176,33 @@ export default async function TeacherStudentsPage({
               />
               Premium
             </label>
-          <label className="text-sm text-slate-200">
-            Tri
-            <select
-              name="sort"
-              defaultValue={sort}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="name_asc">Nom (A→Z)</option>
-              <option value="name_desc">Nom (Z→A)</option>
-            </select>
-          </label>
-          <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-            >
-              Filtrer
-            </button>
-            <Link
-              href="/app/teacher/students"
-              className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Réinitialiser
-            </Link>
-          </div>
-        </form>
-        </details>
+            <label className="text-sm text-slate-200">
+              Tri
+              <select
+                name="sort"
+                defaultValue={sort}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="name_asc">Nom (A→Z)</option>
+                <option value="name_desc">Nom (Z→A)</option>
+              </select>
+            </label>
+            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/app/teacher/students"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </FilterPanel>
         <div className="flex flex-col divide-y divide-white/5">
           {students.map((student) => (
             <article

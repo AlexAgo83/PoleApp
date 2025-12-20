@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -175,20 +176,11 @@ export default async function CoursesAgendaPage({
       </header>
 
       <section className="panel p-4 md:p-6">
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {(hasMonthFilter || studioFilter || teacherFilter) && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {(hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0)}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:teacher-agenda"
+          title="Filtres"
+          activeCount={(hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0)}
+        >
           <form
             key={`agenda-${monthParam ?? "current"}`}
             method="get"
@@ -248,7 +240,7 @@ export default async function CoursesAgendaPage({
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
           {calendarCells.map((cell, idx) => {
             const weekDayIndex = (idx % 7) + 1;

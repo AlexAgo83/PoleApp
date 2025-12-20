@@ -7,6 +7,7 @@
 - Admin/Prof/Élève : avatars/placeholder affichés dans les listes (utilisateurs, élèves, professeurs), admin peut éditer les fiches prof comme le prof.
 - Admin : filtres ajoutés sur Studios/Partenaires, panels corrigés (filtre ouvert par défaut, pagination/panels repositionnés).
 - Modèle de données : `Course.photoUrl` + colonnes sièges/crédits, `User.age/avatarUrl/diplomas`, `TeacherFavoritePosition`. Migrations ajoutées et baselined localement (`20250130_add_course_seats_credits`, `20250201_add_student_age`, `20250202_profile_media_teacher_meta`, `20250203_add_course_photo`).
+- Homepage : panels “Status build” et “Nouveautés” retirés pour alléger; filtres de l’app repliés par défaut avec persistance locale.
 
 ## 2025-12-24 — Release v0.4.5 (Profils enrichis)
 - Ajout photo de profil (URL) et âge éditables pour tous, avec placeholders neutres (élève/prof).

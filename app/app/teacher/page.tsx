@@ -22,15 +22,17 @@ export default async function TeacherDashboard() {
           <h2 className="text-xl font-semibold text-white">
             Bonjour {displayName},
           </h2>
-          <Link
-            href="/app/profile"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
-            aria-label="Éditer le profil"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/gear.svg" alt="" className="h-4 w-4" />
-            Éditer
-          </Link>
+          {teacherProfileHref && (
+            <Link
+              href={teacherProfileHref}
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
+              aria-label="Éditer le profil"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/gear.svg" alt="" className="h-4 w-4" />
+              Éditer
+            </Link>
+          )}
         </div>
         <p className="text-slate-300">
           Accès réservé aux profs/admins de l’école pour gérer élèves, cours et progression.

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
