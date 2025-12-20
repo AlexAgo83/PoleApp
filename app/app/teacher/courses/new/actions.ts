@@ -14,6 +14,7 @@ const courseSchema = z.object({
   date: z.coerce.date(),
   studentIds: z.array(z.string().cuid()).min(1),
   positionIds: z.array(z.string().cuid()).min(1),
+  teacherId: z.string().cuid().optional(),
   notes: z
     .array(
       z.object({
@@ -40,11 +41,34 @@ export async function createCourseAction(formData: FormData) {
     date: formData.get("date"),
     studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
+    teacherId: formData.get("teacherId") || undefined,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
   if (!parsed.success) {
     throw new Error("Form invalid");
+  }
+
+  const teacherId =
+    session.user.role === "TEACHER"
+      ? session.user.id
+      : parsed.data.teacherId ?? null;
+
+  if (session.user.role === "SCHOOL_ADMIN") {
+    if (!teacherId) {
+      redirect("/access-denied");
+    }
+    const teacherValid = await prisma.user.findFirst({
+      where: {
+        id: teacherId,
+        schoolId: session.user.schoolId,
+        role: "TEACHER",
+      },
+      select: { id: true },
+    });
+    if (!teacherValid) {
+      redirect("/access-denied");
+    }
   }
 
   const courseId = await prisma.$transaction(async (tx) => {
@@ -53,7 +77,7 @@ export async function createCourseAction(formData: FormData) {
         title: parsed.data.title || null,
         date: parsed.data.date,
         schoolId: session.user.schoolId!,
-        teacherId: session.user.id,
+        teacherId: teacherId ?? session.user.id,
       },
     });
 

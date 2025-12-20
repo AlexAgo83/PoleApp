@@ -75,9 +75,8 @@ export default async function TeacherCourseDetailPage({
               </span>
             )}
           </div>
-          <p className="text-sm text-slate-200">
-            {new Date(course.date).toLocaleString()} · {teacherName}
-          </p>
+          <p className="text-sm text-slate-200">{teacherName}</p>
+          <p className="text-sm text-slate-200">{new Date(course.date).toLocaleString()}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link

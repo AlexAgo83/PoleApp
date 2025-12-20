@@ -102,8 +102,10 @@ export function CourseForm({
           <select
             name="teacherId"
             defaultValue={defaultTeacherId ?? ""}
+            required
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           >
+            {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
             {teachers.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name ?? t.email}

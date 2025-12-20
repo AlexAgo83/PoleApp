@@ -55,6 +55,7 @@ export default async function TeacherCoursesPage({
     include: {
       attendances: true,
       positions: true,
+      teacher: { select: { name: true, email: true } },
       _count: { select: { notes: true } },
     },
   });
@@ -152,6 +153,9 @@ export default async function TeacherCoursesPage({
                 <div>
                   <p className="text-base font-semibold text-white">
                     {course.title ?? "Cours sans titre"}
+                  </p>
+                  <p className="text-sm text-slate-200">
+                    {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
                   </p>
                   <p className="text-sm text-slate-300">
                     {new Date(course.date).toLocaleString()}
