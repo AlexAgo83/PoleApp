@@ -177,37 +177,41 @@ export default async function TeacherCoursesPage({
           </form>
         </details>
         <div className="flex flex-col divide-y divide-white/5">
-          {courses.map((course) => (
-            <a
-              key={course.id}
-              href={`/app/teacher/courses/${course.id}?from=${encodeURIComponent(
-                `/app/teacher/courses?page=${currentPage}`
-              )}`}
-              className="group block rounded-xl transition hover:-translate-y-0.5 hover:bg-indigo-500/10"
-            >
-              <article className="flex flex-col gap-2 py-3 px-2 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-base font-semibold text-white">
-                    {course.title ?? "Cours sans titre"}
-                  </p>
-                  <p className="text-sm text-slate-200">
-                    {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    {new Date(course.date).toLocaleString()}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
-                  <span>
-                    {course.attendances.length} élèves · {course.positions.length} positions
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
-                    Notes : {course._count.notes}
-                  </span>
-                </div>
-              </article>
-            </a>
-          ))}
+          {courses.map((course) => {
+            const isPast = new Date(course.date).getTime() < Date.now();
+            const faded = isPast ? "opacity-60" : "";
+            return (
+              <a
+                key={course.id}
+                href={`/app/teacher/courses/${course.id}?from=${encodeURIComponent(
+                  `/app/teacher/courses?page=${currentPage}`
+                )}`}
+                className={`group block rounded-xl transition hover:-translate-y-0.5 hover:bg-indigo-500/10 ${faded}`}
+              >
+                <article className="flex flex-col gap-2 py-3 px-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-base font-semibold text-white">
+                      {course.title ?? "Cours sans titre"}
+                    </p>
+                    <p className="text-sm text-slate-200">
+                      {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                    </p>
+                    <p className="text-sm text-slate-300">
+                      {new Date(course.date).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
+                    <span>
+                      {course.attendances.length} élèves · {course.positions.length} positions
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
+                      Notes : {course._count.notes}
+                    </span>
+                  </div>
+                </article>
+              </a>
+            );
+          })}
           {courses.length === 0 && (
             <div className="mt-2 rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200">
               Aucun cours créé pour le moment. Utilise le bouton “Nouveau cours” pour commencer.
