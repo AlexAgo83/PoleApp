@@ -74,12 +74,6 @@ export default async function TeacherCourseDetailPage({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href="/app/teacher/courses/new"
-            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
-          >
-            Nouveau cours
-          </Link>
-          <Link
             href={`/app/teacher/courses/${course.id}/edit${
               safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
             }`}

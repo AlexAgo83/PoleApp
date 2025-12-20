@@ -53,6 +53,7 @@ export default async function TeacherCoursesPage({
     include: {
       attendances: true,
       positions: true,
+      _count: { select: { notes: true } },
     },
   });
 
@@ -144,9 +145,14 @@ export default async function TeacherCoursesPage({
                     {new Date(course.date).toLocaleString()}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-slate-200">
-                  {course.attendances.length} élèves · {course.positions.length} positions
-                </p>
+                <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
+                  <span>
+                    {course.attendances.length} élèves · {course.positions.length} positions
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
+                    Notes : {course._count.notes}
+                  </span>
+                </div>
               </article>
             </a>
           ))}
