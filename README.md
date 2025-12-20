@@ -1,6 +1,12 @@
-# Pole App — MVP v0.2.2 (Steps 0 → 8)
+# Pole App — Produit v0.4.4 (Steps 0 → 9)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Step 9 (Discovery QA) en préparation — plan dans `01_BACKLOG_STEP_009.md`.
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.4` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step.
+
+## Phase produit — exigences transverses
+- Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données.
+- Observabilité : logging structuré, métriques/health checks actionnables, alertes pour erreurs/latences.
+- Fiabilité/perf : budgets (TTFB/CLS/LCP côté web), limites de pagination, requêtes Prisma indexées, feature flags/dark launch.
+- Sécurité/PII : secrets hors code, RBAC déjà en place, audit trail à intégrer sur actions sensibles.
 
 ## Stack
 - Next.js 16 (App Router) + TypeScript + Tailwind
@@ -75,4 +81,5 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds.
 
 ## Changelog
+- v0.4.4 : Steps 0→9 livrées (Discovery QA terminée), passage en phase produit et tag `v0.4.4` figé comme baseline.
 - v0.2.2 : filtres admin/positions/élèves, UI filtres harmonisée, pagination 10 items, page profil et navigation role-based. Voir `CHANGELOG.md`.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025-12-23 — Passage produit & tag v0.4.4
+- Tag `v0.4.4` figé comme baseline produit (Steps 0→9 livrées).
+- Documentation alignée (README, backlog, instructions CODEX) pour appliquer les exigences produit (fiabilité, observabilité, sécurité, perf, billing/credits) sur toutes les prochaines Steps.
+
 ## 2025-12-19 — Step 0 (Bootstrap)
 - Création du projet Next.js (App Router, Tailwind) avec homepage orientée modules + lien `/health`.
 - Ajout Prisma + SQLite : schéma complet (users, school, positions, médias, progression, cours, blessures).

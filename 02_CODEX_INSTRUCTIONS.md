@@ -1,11 +1,18 @@
-# 02 — Instructions pour CODEX (prototype step-by-step)
+# 02 — Instructions pour CODEX (phase produit)
 
-Objectif : prototyper rapidement une **web app** (responsive) validant le MVP :
+Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.4 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions
 - Fiches cours / fiches élève
 - Blessures
 - Mini-jeu photo→nom
 - Rôles & accès
+
+## Mode produit — règles pour toute nouvelle Step
+- Tests renforcés : units + intégration/contract lorsque des appels réseau/DB changent; couvrir RBAC et migrations (backfill + rollback).
+- Observabilité : logging structuré, métriques/health checks actionnables, alertes pour erreurs/latences; traces sur actions sensibles (auth, seed, cours, progression).
+- Fiabilité/perf : requêtes Prisma indexées/paginées, budgets Core Web Vitals (TTFB/LCP/CLS), feature flags/dark launch pour nouvelles surfaces.
+- Sécurité/PII : secrets hors code, vérif inputs (zod), durcir RBAC, audit trail à instrumenter sur les actions écoles/prof.
+- Delivery : migrations rétro-compatibles, scripts idempotents, docs/changelog mis à jour, seed cohérent avec les nouvelles features.
 
 > CODEX : avance **étape par étape**. À chaque étape :
 > 1) implémenter,
@@ -37,6 +44,8 @@ Structure proposée :
 - `/prisma` schema + seed
 
 ---
+
+Les Steps 0→9 ci-dessous constituent le socle livré (tag `v0.4.4`). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
 
 ## Step 0 — Bootstrap projet (doit compiler)
 
@@ -202,6 +211,7 @@ Structure proposée :
   - permissions denied proprement
 - Aucun secret en dur
 - Seed data stable (idempotent)
+- Migrations sécurisées (rétro-compatibles + rollback), observabilité active (logs/metrics), tests couvrant le RBAC et les parcours critiques.
 
 ---
 
