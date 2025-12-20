@@ -123,10 +123,8 @@ export async function updateCourseAction(formData: FormData) {
         data: {
           title: data.title || null,
           date: data.date,
-          teacher: { connect: { id: teacherToConnect } },
-          studio: data.studioId
-            ? { connect: { id: data.studioId } }
-            : { disconnect: true },
+          teacherId: teacherToConnect,
+          studioId: data.studioId ?? null,
           durationMinutes: data.durationMinutes,
           maxSeats: data.maxSeats ?? 30,
           costCredits: data.costCredits ?? 100,
@@ -147,10 +145,8 @@ export async function updateCourseAction(formData: FormData) {
         data: {
           title: data.title || null,
           date: data.date,
-          teacher: { connect: { id: teacherToConnect } },
-          studio: data.studioId
-            ? { connect: { id: data.studioId } }
-            : { disconnect: true },
+          teacherId: teacherToConnect,
+          studioId: data.studioId ?? null,
           durationMinutes: data.durationMinutes,
           photoUrl: data.photoUrl ?? null,
         },

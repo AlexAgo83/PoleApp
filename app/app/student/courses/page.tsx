@@ -20,6 +20,7 @@ type CourseRow = {
   durationMinutes: number | null;
   maxSeats: number;
   costCredits: number;
+  photoUrl?: string | null;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { name: string } | null;
   positions: { position: { id: string; name: string } }[];
