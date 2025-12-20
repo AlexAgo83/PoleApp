@@ -28,12 +28,14 @@ export default async function NewPositionPage() {
             l’édition seront ajoutés plus tard.
           </p>
         </div>
-        <Link
-          href="/positions"
-          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          ← Retour positions
-        </Link>
+        <div className="flex w-full justify-end">
+          <Link
+            href="/positions"
+            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour positions
+          </Link>
+        </div>
       </header>
 
       <section className="panel p-8">

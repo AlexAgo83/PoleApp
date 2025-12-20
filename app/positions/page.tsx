@@ -64,9 +64,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const skip = (currentPage - 1) * PAGE_SIZE;
 
   const session = await getServerSession(authOptions);
-  const homeForRole = defaultHomeForRole(session?.user?.role);
-  const isStudent = session?.user?.role === "STUDENT";
-  const isPremium = Boolean(session?.user?.isPremium);
+  if (!session?.user) {
+    return null;
+  }
+  const homeForRole = defaultHomeForRole(session.user.role);
+  const isStudent = session.user.role === "STUDENT";
+  const isPremium = Boolean(session.user.isPremium);
   const queryParams = new URLSearchParams();
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
@@ -81,21 +84,40 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       media: true,
     },
   });
-  const canManage =
-    session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
+  const canManage = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
+      <section className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+            Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
+          </p>
+          <p className="text-sm text-slate-300">
+            Accès aux positions et navigation retour selon ton rôle.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={homeForRole}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/house.svg" alt="" className="h-4 w-4" />
+            Mon espace
+          </Link>
+          <SignOutButton />
+        </div>
+      </section>
+
       <header className="panel flex flex-wrap items-center justify-between gap-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            {session?.user?.role === "SCHOOL_ADMIN"
+            {session.user.role === "SCHOOL_ADMIN"
               ? "Espace admin"
-              : session?.user?.role === "TEACHER"
+              : session.user.role === "TEACHER"
               ? "Espace prof"
-              : session?.user?.role === "STUDENT"
-              ? "Espace élève"
-              : "Accueil"}
+              : "Espace élève"}
           </p>
           <h1 className="text-3xl font-semibold text-white">Positions</h1>
           <p className="text-sm text-slate-200">
@@ -103,34 +125,36 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {session?.user ? (
-            <>
-              <Link
-                href={homeForRole}
-                role="button"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-indigo-300 hover:bg-indigo-500/15"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/house.svg" alt="" className="h-4 w-4" />
-                Mon espace
-              </Link>
-              <SignOutButton />
-            </>
-          ) : (
-            <Link
-              href="/login"
-              role="button"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
-            >
-              Se connecter
-            </Link>
-          )}
-          {canManage && (
+          {canManage ? (
             <Link
               href="/teacher/positions/new"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
             >
               Nouvelle position
+            </Link>
+          ) : null}
+        </div>
+        <div className="mt-2 flex w-full justify-end">
+          {session.user.role === "SCHOOL_ADMIN" ? (
+            <Link
+              href="/app/admin"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+          ) : session.user.role === "TEACHER" ? (
+            <Link
+              href="/app/teacher"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
+            </Link>
+          ) : (
+            <Link
+              href="/app/student"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
             </Link>
           )}
         </div>
