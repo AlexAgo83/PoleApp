@@ -27,7 +27,7 @@ function formatDuration(minutes: number) {
 export default async function CoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string; teacher?: string; studio?: string }>;
+  searchParams?: { month?: string; teacher?: string; studio?: string };
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId || !session.user.role) {
@@ -38,7 +38,7 @@ export default async function CoursesAgendaPage({
     redirect("/access-denied");
   }
 
-  const resolved = (await searchParams) ?? {};
+  const resolved = searchParams ?? {};
   const monthParam = resolved.month;
   const teacherFilter =
     typeof resolved.teacher === "string" && resolved.teacher.length > 0
@@ -94,6 +94,20 @@ export default async function CoursesAgendaPage({
 
   const monthLabel = start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
+  const now = Date.now();
+  const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
+    const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
+    return end < now;
+  };
+  const baseParams = new URLSearchParams();
+  if (teacherFilter) baseParams.set("teacher", teacherFilter);
+  if (studioFilter) baseParams.set("studio", studioFilter);
+  const prevMonth = new Date(start);
+  prevMonth.setMonth(prevMonth.getMonth() - 1);
+  const nextMonth = new Date(start);
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+  const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
 
   // Vue semaine (7 jours à partir du lundi de la semaine du start)
   const startWeek = new Date(start);
@@ -124,8 +138,10 @@ export default async function CoursesAgendaPage({
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/app/teacher/courses"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/list.svg" alt="" className="h-4 w-4" />
             Liste
           </Link>
           <Link
@@ -234,24 +250,31 @@ export default async function CoursesAgendaPage({
                 </div>
               )}
               {cell.courses &&
-                cell.courses.slice(0, 3).map((course) => (
-                  <Link
-                    key={course.id}
-                    href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                    className="mt-1 block rounded-lg bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border hover:border-cyan-300/60 hover:bg-white/15"
-                  >
-                    {course.studio?.name ? (
-                      <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                        {course.studio.name}
-                      </span>
-                    ) : null}
-                    <div className="mt-1 text-[10px] text-slate-200 leading-snug">
-                      {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
-                      {course.title ?? "Cours"}
-                      <div className="text-[10px] text-slate-300">Durée : {formatDuration(course.durationMinutes ?? 60)}</div>
-                    </div>
-                  </Link>
-                ))}
+                cell.courses.slice(0, 3).map((course) => {
+                  const past = isPastCourse(course.date, course.durationMinutes);
+                  return (
+                    <Link
+                      key={course.id}
+                      href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                      className={`mt-1 block rounded-lg px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 ${
+                        past
+                          ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                          : "bg-white/10 text-white"
+                      }`}
+                    >
+                      {course.studio?.name ? (
+                        <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                          {course.studio.name}
+                        </span>
+                      ) : null}
+                      <div className="mt-1 text-[10px] leading-snug">
+                        {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                        {course.title ?? "Cours"}
+                        <div className="text-[10px] text-slate-300">Durée : {formatDuration(course.durationMinutes ?? 60)}</div>
+                      </div>
+                    </Link>
+                  );
+                })}
               {cell.courses && cell.courses.length > 3 && (
                 <div className="mt-1 text-[11px] text-slate-300">
                   +{cell.courses.length - 3} autres
@@ -259,6 +282,30 @@ export default async function CoursesAgendaPage({
               )}
             </div>
           ))}
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+          <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
+            <input type="hidden" name="month" value={prevMonthValue} />
+            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+            {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Mois précédent
+            </button>
+          </form>
+          <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
+            <input type="hidden" name="month" value={nextMonthValue} />
+            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+            {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Mois suivant →
+            </button>
+          </form>
         </div>
         {courses.length === 0 && (
           <p className="mt-4 text-sm text-slate-200">
@@ -282,11 +329,16 @@ export default async function CoursesAgendaPage({
                   {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
                   {dayCourses.map((course) => {
                     const width = Math.max(50, Math.min(160, course.durationMinutes * 2));
+                    const past = isPastCourse(course.date, course.durationMinutes);
                     return (
                       <Link
                         key={course.id}
                         href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                        className="inline-flex flex-col rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border-cyan-300/70 hover:bg-white/15"
+                        className={`inline-flex flex-col rounded-lg border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 ${
+                          past
+                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                            : "border-white/10 bg-white/10 text-white"
+                        }`}
                         style={{ width }}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
                       >

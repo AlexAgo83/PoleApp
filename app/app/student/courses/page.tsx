@@ -4,6 +4,32 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+type CourseNote = {
+  id: string;
+  position: { name: string };
+  masteryLevel: string;
+  comment: string | null;
+};
+
+type CourseRow = {
+  id: string;
+  title: string | null;
+  date: Date;
+  durationMinutes: number | null;
+  teacher: { name: string | null; email: string | null } | null;
+  studio: { name: string } | null;
+  positions: { position: { id: string; name: string } }[];
+  notes: CourseNote[];
+  attendances?: { id: string }[];
+};
+
+function paramValue(value?: string | string[]) {
+  if (Array.isArray(value)) {
+    return value[value.length - 1];
+  }
+  return value;
+}
+
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -28,35 +54,35 @@ export default async function StudentCoursesPage({
   }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
-  const rawPage = Number(resolvedParams.page ?? "1");
+  const pageParam = paramValue(resolvedParams.page);
+  const rawPage = Number(pageParam ?? "1");
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
   }
 
-  const mineParam = Array.isArray(resolvedParams.mine)
-    ? resolvedParams.mine[resolvedParams.mine.length - 1]
-    : resolvedParams.mine;
-  const onlyMine =
-    mineParam === undefined ||
-    mineParam === "true" ||
-    mineParam === "1" ||
-    mineParam === "on" ||
-    mineParam === "";
+  const mineParam = paramValue(resolvedParams.mine);
+  const onlyMine = Boolean(
+    mineParam && (mineParam === "true" || mineParam === "1" || mineParam === "on" || mineParam === "")
+  );
   const teacherFilter =
-    typeof resolvedParams.teacher === "string" && resolvedParams.teacher.length > 0
-      ? resolvedParams.teacher
+    typeof paramValue(resolvedParams.teacher) === "string" &&
+    paramValue(resolvedParams.teacher)?.length
+      ? paramValue(resolvedParams.teacher)
       : undefined;
   const studioFilter =
-    typeof resolvedParams.studio === "string" && resolvedParams.studio.length > 0
-      ? resolvedParams.studio
+    typeof paramValue(resolvedParams.studio) === "string" &&
+    paramValue(resolvedParams.studio)?.length
+      ? paramValue(resolvedParams.studio)
       : undefined;
-  const fromDate = resolvedParams.from ? new Date(resolvedParams.from) : undefined;
-  const toDate = resolvedParams.to ? new Date(resolvedParams.to) : undefined;
+  const fromStr = paramValue(resolvedParams.from);
+  const toStr = paramValue(resolvedParams.to);
+  const fromDate = fromStr ? new Date(fromStr) : undefined;
+  const toDate = toStr ? new Date(toStr) : undefined;
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
-  const withNotes = resolvedParams.withNotes === "true";
-  const sort = resolvedParams.sort === "date_asc" ? "date_asc" : "date_desc";
+  const withNotes = paramValue(resolvedParams.withNotes) === "true";
+  const sort = paramValue(resolvedParams.sort) === "date_asc" ? "date_asc" : "date_desc";
   const activeFilters = [
     validFrom,
     validTo,
@@ -64,7 +90,7 @@ export default async function StudentCoursesPage({
     studioFilter,
     withNotes ? "notes" : null,
     sort === "date_asc" ? "sort" : null,
-    onlyMine ? null : "allCourses",
+    onlyMine ? "mine" : null,
   ].filter(Boolean).length;
 
   const courseFilters = {
@@ -167,13 +193,13 @@ export default async function StudentCoursesPage({
   ]);
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
-  const coursesList: { key: string; course: any; isAttending: boolean }[] = onlyMine
-    ? (items as any[]).map((attendance) => ({
+  const coursesList: { key: string; course: CourseRow; isAttending: boolean }[] = onlyMine
+    ? (items as { id: string; course: CourseRow }[]).map((attendance) => ({
         key: attendance.id,
         course: attendance.course,
         isAttending: true,
       }))
-    : (items as any[]).map((course) => ({
+    : (items as CourseRow[]).map((course) => ({
         key: course.id,
         course,
         isAttending: Boolean(course.attendances?.length),
@@ -186,7 +212,7 @@ export default async function StudentCoursesPage({
   if (studioFilter) queryParams.set("studio", studioFilter);
   if (withNotes) queryParams.set("withNotes", "true");
   if (sort === "date_asc") queryParams.set("sort", "date_asc");
-  if (!onlyMine) queryParams.set("mine", "false");
+  if (onlyMine) queryParams.set("mine", "true");
   const qs = queryParams.toString();
 
   return (
@@ -204,8 +230,10 @@ export default async function StudentCoursesPage({
         <div className="flex flex-wrap items-center gap-2 self-center">
           <Link
             href="/app/student/courses/agenda"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/agenda.svg" alt="" className="h-4 w-4" />
             Agenda
           </Link>
         </div>
@@ -303,12 +331,12 @@ export default async function StudentCoursesPage({
               Avec notes
             </label>
             <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
-              <input type="hidden" name="mine" value="false" />
               <input
                 type="checkbox"
                 name="mine"
                 value="true"
                 defaultChecked={onlyMine}
+                key={onlyMine ? "mine-true" : "mine-false"}
                 className="h-4 w-4 rounded border-white/20 bg-white/5"
               />
               Mes cours
@@ -369,13 +397,7 @@ export default async function StudentCoursesPage({
                         Notes
                       </p>
                       <ul className="mt-1 space-y-1">
-                        {course.notes.map(
-                          (note: {
-                            id: string;
-                            position: { name: string };
-                            masteryLevel: string;
-                            comment: string | null;
-                          }) => (
+                        {course.notes.map((note: CourseNote) => (
                           <li key={note.id}>
                             {note.position.name}: {note.masteryLevel}
                             {note.comment ? ` — ${note.comment}` : ""}
@@ -394,7 +416,7 @@ export default async function StudentCoursesPage({
             </div>
           )}
         </div>
-        {totalPages > 1 && (
+        {totalCount > 0 && (
           <div className="mt-6 flex items-center justify-between">
             <Link
               href={`/app/student/courses?page=${Math.max(1, currentPage - 1)}${
