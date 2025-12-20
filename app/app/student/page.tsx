@@ -85,6 +85,20 @@ export default async function StudentDashboard() {
             </p>
           </Link>
           <Link
+            href="/app/student/school"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              École
+            </p>
+            <p className="text-base font-semibold text-white">
+              Voir la fiche de ton école
+            </p>
+            <p className="text-sm text-slate-300">
+              Studios, partenaires et infos pratiques.
+            </p>
+          </Link>
+          <Link
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
