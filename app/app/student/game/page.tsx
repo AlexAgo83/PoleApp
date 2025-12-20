@@ -49,18 +49,28 @@ export default async function GamePage() {
   const questions = buildGameQuestions(eligible);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-          Élève
-        </p>
-        <h1 className="text-3xl font-semibold text-white">Mini-jeu Photo → Nom</h1>
-        <p className="text-sm text-slate-300">
-          10 questions, pool basé sur tes positions débloquées (ou toutes si premium).
-        </p>
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+            Élève
+          </p>
+          <h1 className="text-3xl font-semibold text-white">Mini-jeu Photo → Nom</h1>
+          <p className="text-sm text-slate-300">
+            10 questions, pool basé sur tes positions débloquées (ou toutes si premium).
+          </p>
+        </div>
+        <div className="flex w-full justify-end">
+          <Link
+            href="/app/student"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour accueil
+          </Link>
+        </div>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel w-full p-6">
         <GameClient questions={questions} />
       </section>
     </main>

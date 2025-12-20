@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -122,6 +123,14 @@ export default async function StudentSchoolPage() {
               Site web
             </a>
           ) : null}
+        </div>
+        <div className="flex w-full justify-end">
+          <Link
+            href="/app/student"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour accueil
+          </Link>
         </div>
       </header>
 

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -117,6 +118,23 @@ export default async function TeacherSchoolPage() {
               Site web
             </a>
           ) : null}
+        </div>
+        <div className="flex w-full justify-end">
+          {session.user.role === "SCHOOL_ADMIN" ? (
+            <Link
+              href="/app/admin"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/app/teacher"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
+            </Link>
+          )}
         </div>
       </header>
 
