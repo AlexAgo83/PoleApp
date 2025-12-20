@@ -25,15 +25,32 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 type SearchParams =
-  | { page?: string }
+  | { page?: string; type?: string; level?: string }
   | Promise<{
       page?: string;
+      type?: string;
+      level?: string;
     }>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
   const resolvedParams = (await Promise.resolve(searchParams)) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
-  const totalCount = await prisma.position.count();
+  const typeFilter =
+    resolvedParams.type && Object.values(PositionType).includes(resolvedParams.type as PositionType)
+      ? (resolvedParams.type as PositionType)
+      : undefined;
+  const levelFilter =
+    resolvedParams.level &&
+    Object.values(PositionLevel).includes(resolvedParams.level as PositionLevel)
+      ? (resolvedParams.level as PositionLevel)
+      : undefined;
+
+  const where = {
+    ...(typeFilter ? { type: typeFilter } : {}),
+    ...(levelFilter ? { levelRequired: levelFilter } : {}),
+  };
+
+  const totalCount = await prisma.position.count({ where });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
@@ -43,6 +60,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const isStudent = session?.user?.role === "STUDENT";
   const isPremium = Boolean(session?.user?.isPremium);
   const positions = await prisma.position.findMany({
+    where,
     orderBy: { updatedAt: "desc" },
     skip,
     take: PAGE_SIZE,
@@ -105,7 +123,66 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         </div>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel px-6 py-4 md:py-6">
+        <details className="group mb-4" open>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Filtres</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            method="get"
+          >
+            <label className="text-sm text-slate-200">
+              Type
+              <select
+                key={typeFilter ?? "all-types"}
+                name="type"
+                defaultValue={typeFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les types</option>
+                {Object.values(PositionType).map((t) => (
+                  <option key={t} value={t}>
+                    {typeLabels[t]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Niveau
+              <select
+                key={levelFilter ?? "all-levels"}
+                name="level"
+                defaultValue={levelFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous niveaux</option>
+                {Object.values(PositionLevel).map((lvl) => (
+                  <option key={lvl} value={lvl}>
+                    {levelLabels[lvl]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="md:col-span-3 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/positions"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </details>
         <div className="grid gap-4 md:grid-cols-3">
           {positions.map((p) => {
             const cover = p.media?.[0];

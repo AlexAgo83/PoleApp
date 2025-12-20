@@ -21,6 +21,7 @@ export default async function TeacherCoursesPage({
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = resolvedParams.withNotes === "true";
+  const hasFilters = Boolean(validFrom || validTo || teacherFilter || withNotes);
 
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
@@ -81,7 +82,7 @@ export default async function TeacherCoursesPage({
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
-        <details className="group">
+        <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span>Filtres avancés</span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
@@ -126,11 +127,11 @@ export default async function TeacherCoursesPage({
               ))}
             </select>
           </label>
-            <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
-              <input
-                type="checkbox"
-                name="withNotes"
-                value="true"
+          <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 md:col-span-2">
+            <input
+              type="checkbox"
+              name="withNotes"
+              value="true"
               defaultChecked={withNotes}
               key={withNotes ? "with-notes" : "all-courses"}
               className="h-4 w-4 rounded border-white/20 bg-white/5"

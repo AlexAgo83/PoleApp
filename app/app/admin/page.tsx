@@ -66,7 +66,7 @@ export default async function AdminDashboard() {
         <p className="text-sm text-slate-300">
           Vue synthétique de l’école et accès rapide aux actions admin.
         </p>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm">
+        <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
           <Link
             href="/app/admin/users"
             className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
