@@ -27,7 +27,7 @@ function formatDuration(minutes: number) {
 export default async function CoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: { month?: string; teacher?: string; studio?: string };
+  searchParams?: Promise<{ month?: string; teacher?: string; studio?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId || !session.user.role) {
@@ -38,7 +38,7 @@ export default async function CoursesAgendaPage({
     redirect("/access-denied");
   }
 
-  const resolved = searchParams ?? {};
+  const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
   const teacherFilter =
     typeof resolved.teacher === "string" && resolved.teacher.length > 0
