@@ -317,30 +317,30 @@ export default async function StudentCoursesAgendaPage({
                   cell.attendances.slice(0, 3).map((a) => {
                     const past = isPastCourse(a.course.date, a.course.durationMinutes);
                     return (
-                      <Link
-                        key={a.id}
-                        href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                        className={`mt-1 block rounded-md px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                          past
-                            ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                            : "bg-white/10 text-white"
-                        }`}
-                      >
-                        {a.course.studio?.name ? (
-                          <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                            {a.course.studio.name}
-                          </span>
-                        ) : null}
-                        <div className="mt-1 text-[10px] leading-snug">
-                          {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
-                          {a.course.title ?? "Cours"}
-                          <div className="text-[10px] text-slate-300 hidden md:block">
-                            Durée : {formatDuration(a.course.durationMinutes ?? 60)}
-                          </div>
+                    <Link
+                      key={a.id}
+                      href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
+                      className={`mt-1 block rounded-md px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                        past
+                          ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                          : "bg-white/10 text-white"
+                      }`}
+                    >
+                      <div className="text-[10px] leading-snug">
+                        {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
+                        {a.course.title ?? "Cours"}
+                        <div className="text-[10px] text-slate-300 hidden md:block">
+                          Durée : {formatDuration(a.course.durationMinutes ?? 60)}
                         </div>
-                      </Link>
-                    );
-                  })}
+                      </div>
+                      {a.course.studio?.name ? (
+                        <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                          Studio · {a.course.studio.name}
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })}
                 {cell.attendances && cell.attendances.length > 3 && (
                   <div className="mt-1 text-[11px] text-slate-300">
                     +{cell.attendances.length - 3} autres
@@ -426,6 +426,11 @@ export default async function StudentCoursesAgendaPage({
                         <span className="text-[10px] text-cyan-100 hidden md:inline">
                           {formatDuration(a.course.durationMinutes ?? 60)}
                         </span>
+                        {a.course.studio?.name ? (
+                          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100 md:mt-1.5">
+                            Studio · {a.course.studio.name}
+                          </span>
+                        ) : null}
                       </Link>
                     );
                   })}
