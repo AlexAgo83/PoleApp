@@ -61,7 +61,7 @@ export default async function TeacherCourseDetailPage({
         message.includes("maxSeats") || message.includes("costCredits");
       if (missingColumns) {
         return prisma.course.findUnique({
-          where: { id, schoolId: session.user.schoolId },
+          where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true, address: true } },
