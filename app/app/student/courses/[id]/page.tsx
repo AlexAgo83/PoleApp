@@ -6,8 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps =
-  | { params: { id: string }; searchParams?: { from?: string } }
-  | { params: Promise<{ id?: string }>; searchParams?: { from?: string } };
+  | { params: { id: string }; searchParams?: Promise<{ from?: string }> }
+  | { params: Promise<{ id?: string }>; searchParams?: Promise<{ from?: string }> };
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +48,8 @@ export default async function StudentCourseDetailPage({
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
-  const rawFrom = searchParams?.from;
+  const resolvedSearch = (await searchParams) ?? {};
+  const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom

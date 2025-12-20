@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 
 type PageProps = {
   params: { id: string } | Promise<{ id?: string }>;
-  searchParams?: { from?: string };
+  searchParams?: Promise<{ from?: string }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -50,7 +50,7 @@ export default async function TeacherCourseDetailPage({
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
-  const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
+  const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")

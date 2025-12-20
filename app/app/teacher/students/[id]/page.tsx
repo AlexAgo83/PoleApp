@@ -7,9 +7,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
 
-type Props =
-  | { params: { id: string }; searchParams?: { from?: string } }
-  | { params: Promise<{ id?: string }>; searchParams?: { from?: string } };
+type Props = {
+  params: { id: string } | Promise<{ id?: string }>;
+  searchParams?: Promise<{ from?: string }>;
+};
 
 export default async function TeacherStudentDetailPage({
   params,
@@ -60,7 +61,7 @@ export default async function TeacherStudentDetailPage({
   const progressMap = new Map(
     student.progress.map((p) => [p.positionId, p])
   );
-  const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
+  const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
