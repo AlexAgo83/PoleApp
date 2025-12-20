@@ -240,7 +240,7 @@ export default async function TeacherCoursesPage({
                     )}
                   </p>
                   <p className="text-sm text-slate-300">
-                    {new Date(course.date).toLocaleString()}
+                    {new Date(course.date).toLocaleString("fr-FR", { hour12: false })}
                   </p>
                   <p className="text-sm text-slate-300">
                     Durée : {formatDuration(course.durationMinutes ?? 60)}

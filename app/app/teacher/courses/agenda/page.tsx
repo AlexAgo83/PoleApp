@@ -268,7 +268,7 @@ export default async function CoursesAgendaPage({
                         </span>
                       ) : null}
                       <div className="mt-1 text-[10px] leading-snug">
-                        {new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                        {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
                         {course.title ?? "Cours"}
                         <div className="text-[10px] text-slate-300">Durée : {formatDuration(course.durationMinutes ?? 60)}</div>
                       </div>
@@ -342,7 +342,7 @@ export default async function CoursesAgendaPage({
                         style={{ width }}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
                       >
-                        <span>{new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                        <span>{new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}</span>
                         <span className="truncate">{course.title ?? "Cours"}</span>
                         <span className="text-[10px] text-cyan-100">{formatDuration(course.durationMinutes ?? 60)}</span>
                       </Link>

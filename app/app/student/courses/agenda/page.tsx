@@ -332,7 +332,7 @@ export default async function StudentCoursesAgendaPage({
                           </span>
                         ) : null}
                         <div className="mt-1 text-[10px] leading-snug">
-                          {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
+                          {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
                           {a.course.title ?? "Cours"}
                           <div className="text-[10px] text-slate-300 hidden md:block">
                             Durée : {formatDuration(a.course.durationMinutes ?? 60)}
@@ -418,7 +418,7 @@ export default async function StudentCoursesAgendaPage({
                         title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
                       >
                         <span className="text-[10px] md:text-[11px]">
-                          {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}
                         </span>
                         <span className="truncate text-[11px] md:text-[12px]">
                           {a.course.title ?? "Cours"}
