@@ -145,17 +145,17 @@ export default async function TeacherStudentsPage({
               <option value="none">Aucune blessure active</option>
             </select>
           </label>
-          <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
-            <input
-              type="checkbox"
-              name="premium"
-              value="true"
-              defaultChecked={premiumOnly}
-              key={premiumOnly ? "premium-only" : "all-students"}
-              className="h-4 w-4 rounded border-white/20 bg-white/5"
-            />
-            Premium uniquement
-          </label>
+            <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input
+                type="checkbox"
+                name="premium"
+                value="true"
+                defaultChecked={premiumOnly}
+                key={premiumOnly ? "premium-only" : "all-students"}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Premium
+            </label>
           <label className="text-sm text-slate-200">
             Tri
             <select

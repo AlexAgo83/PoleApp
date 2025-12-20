@@ -33,7 +33,15 @@ export default async function AdminDashboard() {
     );
   }
 
-  const [school, users, positionsCount, coursesCount, activeInjuries, studiosCount] =
+  const [
+    school,
+    users,
+    positionsCount,
+    coursesCount,
+    activeInjuries,
+    studiosCount,
+    partnersCount,
+  ] =
     await Promise.all([
       prisma.school.findUnique({ where: { id: session.user.schoolId } }),
       prisma.user.findMany({
@@ -46,6 +54,7 @@ export default async function AdminDashboard() {
         where: { isActive: true, student: { schoolId: session.user.schoolId } },
       }),
       prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
+      prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
     ]);
 
   const counts = users.reduce(
@@ -88,6 +97,12 @@ export default async function AdminDashboard() {
             Partenaires
           </Link>
           <Link
+            href="/app/admin/teachers"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Professeurs
+          </Link>
+          <Link
             href="/app/teacher/students"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
@@ -118,6 +133,7 @@ export default async function AdminDashboard() {
             <Stat label="Admins" value={counts.SCHOOL_ADMIN} />
             <Stat label="Premium" value={counts.premium} />
             <Stat label="Studios" value={studiosCount} />
+            <Stat label="Partenaires" value={partnersCount} />
           </div>
         </div>
 
