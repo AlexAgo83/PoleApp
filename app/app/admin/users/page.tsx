@@ -44,7 +44,7 @@ export default async function AdminUsersPage({
   }
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
+      <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
         <section className="panel p-6">
           <h1 className="text-3xl font-semibold text-white">Utilisateurs</h1>
           <p className="text-slate-300">Aucune école associée à ce compte admin.</p>
@@ -90,7 +90,7 @@ export default async function AdminUsersPage({
   });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
       <header className="panel p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <h1 className="text-3xl font-semibold text-white">Utilisateurs</h1>

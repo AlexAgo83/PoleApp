@@ -254,13 +254,13 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {showPremiumBadge && (
-                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-50">
-                        Premium
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
+                        🔒 Premium
                       </span>
                     )}
                     {hasVideo && (
-                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-2 py-1 text-[11px] font-semibold text-cyan-50">
-                        Vidéo
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
+                        🎥 Vidéo
                       </span>
                     )}
                   </div>
