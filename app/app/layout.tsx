@@ -13,7 +13,7 @@ export default async function AppLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white">

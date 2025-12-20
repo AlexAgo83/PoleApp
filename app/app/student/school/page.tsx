@@ -14,8 +14,8 @@ export default async function StudentSchoolPage() {
   }
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
-        <section className="panel p-6">
+      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+        <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Mon école</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
         </section>
@@ -107,8 +107,8 @@ export default async function StudentSchoolPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
           <h1 className="text-3xl font-semibold text-white">Mon école</h1>

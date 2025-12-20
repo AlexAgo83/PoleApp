@@ -28,8 +28,8 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   }
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
-        <section className="panel p-6">
+      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+        <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Studios</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
         </section>
@@ -54,8 +54,8 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
     });
   } catch (err) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
-        <section className="panel p-6">
+      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+        <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Studios</h1>
           <p className="text-sm text-amber-200">
             Modèle Studio indisponible. Lance `npx prisma generate` et la migration pour ajouter la table.
@@ -66,8 +66,8 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel p-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <header className="panel p-4 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <h1 className="text-3xl font-semibold text-white">Studios</h1>
         <p className="text-sm text-slate-300">
@@ -83,7 +83,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
         </div>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel p-4 md:p-6">
         <details className="group">
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
             <span>Ajouter un studio</span>
@@ -126,7 +126,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
         </details>
       </section>
 
-      <section className="panel space-y-4 p-6">
+      <section className="panel space-y-4 p-4 md:p-6">
         <h2 className="text-lg font-semibold text-white">Studios existants</h2>
         {studios.length === 0 && (
           <p className="text-slate-200">Aucun studio pour le moment.</p>
