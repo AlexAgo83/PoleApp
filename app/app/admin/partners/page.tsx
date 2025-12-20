@@ -138,7 +138,7 @@ export default async function AdminPartnersPage({
         >
           <form
             action={createPartnerAction}
-            className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:gap-6"
+            className="grid gap-4 md:grid-cols-2 md:gap-6"
           >
             <label className="text-sm text-slate-200 md:col-span-2">
               Nom
