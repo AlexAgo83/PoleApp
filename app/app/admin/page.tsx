@@ -126,9 +126,20 @@ export default async function AdminDashboard() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
       <header className="panel p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">
-          Dashboard {baseSchool?.name ?? "école"},
-        </h1>
+        <div className="mt-1 flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold text-white">
+            Dashboard {baseSchool?.name ?? "école"},
+          </h1>
+          <Link
+            href="/app/admin/school"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            aria-label="Éditer la fiche école"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/gear.svg" alt="" className="h-4 w-4" />
+            Éditer l&apos;école
+          </Link>
+        </div>
         {schoolWebsite ? (
           <a
             href={schoolWebsite}
@@ -139,42 +150,25 @@ export default async function AdminDashboard() {
             Site web
           </a>
         ) : null}
-        <div className="mt-2 flex flex-wrap gap-2 text-sm">
-          <Link
-            href="/app/admin/school"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            aria-label="Éditer la fiche école"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/gear.svg" alt="" className="h-4 w-4" />
-            Éditer l&apos;école
-          </Link>
-        </div>
         <p className="text-sm text-slate-300">
           Vue synthétique de l’école et accès rapide aux actions admin.
         </p>
         <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
           <Link
-            href="/app/admin/users"
-            className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
-          >
-            Gérer les utilisateurs
-          </Link>
-          <Link
             href="/app/admin/studios"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
           >
             Studios
           </Link>
           <Link
             href="/app/admin/partners"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
           >
             Partenaires
           </Link>
           <Link
             href="/app/admin/teachers"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
           >
             Professeurs
           </Link>
@@ -195,6 +189,12 @@ export default async function AdminDashboard() {
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             Positions
+          </Link>
+          <Link
+            href="/app/admin/users"
+            className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+          >
+            Gérer les utilisateurs
           </Link>
         </div>
       </header>
