@@ -65,9 +65,16 @@ export default async function TeacherCourseDetailPage({
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             Professeur / Admin
           </p>
-          <h1 className="text-3xl font-semibold text-white">
-            {course.title ?? "Cours sans titre"}
-          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-3xl font-semibold text-white">
+              {course.title ?? "Cours sans titre"}
+            </h1>
+            {course.notes.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs font-semibold text-white">
+                Notes : {course.notes.length}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-slate-200">
             {new Date(course.date).toLocaleString()} · {teacherName}
           </p>
