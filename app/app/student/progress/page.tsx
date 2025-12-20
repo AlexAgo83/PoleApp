@@ -148,7 +148,7 @@ export default async function StudentProgressPage({
           <form
             key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
             method="get"
-            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Recherche
