@@ -21,6 +21,12 @@ export default async function TeacherCoursesPage({
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = resolvedParams.withNotes === "true";
+  const activeFilters = [
+    validFrom,
+    validTo,
+    teacherFilter,
+    withNotes ? "notes" : null,
+  ].filter(Boolean).length;
   const hasFilters = Boolean(validFrom || validTo || teacherFilter || withNotes);
 
   const session = await getServerSession(authOptions);
@@ -84,12 +90,20 @@ export default async function TeacherCoursesPage({
       <section className="panel space-y-4 border-indigo-400/15 p-6">
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Filtres avancés</span>
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres avancés</span>
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  {activeFilters}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
               ▼
             </span>
           </summary>
           <form
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${withNotes ? "notes" : "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >

@@ -46,6 +46,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       ? (resolvedParams.level as PositionLevel)
       : undefined;
   const q = resolvedParams.q?.toString().trim() || "";
+  const activeFilters = [typeFilter, levelFilter, q && q.length > 0].filter(Boolean).length;
 
   const where = {
     ...(typeFilter ? { type: typeFilter } : {}),
@@ -138,7 +139,14 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       <section className="panel space-y-4 px-6 py-4 md:py-6">
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Filtres</span>
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres</span>
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  {activeFilters}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
               ▼
             </span>

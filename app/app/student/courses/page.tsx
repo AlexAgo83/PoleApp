@@ -25,6 +25,12 @@ export default async function StudentCoursesPage({
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = resolvedParams.withNotes === "true";
+  const activeFilters = [
+    validFrom,
+    validTo,
+    teacherFilter,
+    withNotes ? "notes" : null,
+  ].filter(Boolean).length;
 
   const whereClause = {
     studentId: session.user.id,
@@ -93,7 +99,14 @@ export default async function StudentCoursesPage({
       <section className="panel space-y-4 border-indigo-400/15 p-6">
         <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span>Filtres</span>
+            <span className="inline-flex items-center gap-2">
+              <span>Filtres</span>
+              {activeFilters > 0 && (
+                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                  {activeFilters}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
               ▼
             </span>
