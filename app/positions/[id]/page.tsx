@@ -77,6 +77,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const isStudent = session?.user?.role === "STUDENT";
   const canViewPremium = !isStudent || isPremium;
   const hasVideo = Boolean(video);
+  const showVideoPlaceholder = isStudent && isPremium && !hasVideo;
   const isStaff =
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
 
@@ -210,31 +211,37 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               {position.createdBy?.name ?? "Seed"}
             </p>
           </div>
-          {video && (
+          {(video || showVideoPlaceholder) && (
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-semibold text-white">Vidéo</p>
                 <div className="flex items-center gap-2">
                   <span className="rounded-full border border-cyan-400/40 bg-cyan-500/15 px-2 py-0.5 text-[11px] font-semibold text-cyan-50">
-                    Vidéo
+                    🎥 Vidéo
                   </span>
                   {isStudent && !isPremium && (
                     <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
-                      Premium
+                      🔒 Premium
                     </span>
                   )}
                 </div>
               </div>
               {canViewPremium ? (
-                <a
-                  href={video.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-                >
-                  Ouvrir la vidéo
-                  <span aria-hidden>↗</span>
-                </a>
+                video ? (
+                  <a
+                    href={video.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                  >
+                    Ouvrir la vidéo
+                    <span aria-hidden>↗</span>
+                  </a>
+                ) : (
+                  <p className="mt-2 text-xs text-slate-200">
+                    Aucune vidéo fournie pour le moment. Un lien sera ajouté prochainement.
+                  </p>
+                )
               ) : (
                 <p className="mt-2 text-xs text-amber-100">
                   Connecte-toi en Premium pour accéder à la vidéo.
