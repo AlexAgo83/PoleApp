@@ -98,47 +98,41 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       </header>
 
       <section className="panel p-4 md:p-6">
-        <FilterPanel
-          storageKey="filters:admin-studios-create"
-          title="Ajouter un studio"
-          className="group"
-          contentClassName="mt-4"
-        >
-          <form action={createStudioAction} className="grid gap-3 md:grid-cols-2">
-            <label className="text-sm text-slate-200">
-              Nom
-              <input
-                name="name"
-                required
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="text-sm text-slate-200">
-              Adresse (optionnel)
-              <input
-                name="address"
-                list="studio-address-suggestions"
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-              <p className="mt-1 text-xs text-slate-400">
-                Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement (autocomplete mock).
-              </p>
-              <datalist id="studio-address-suggestions">
-                <option value="10 Rue de la Paix, Paris" />
-                <option value="25 Avenue des Arts, Lyon" />
-                <option value="3 Rue des Lilas, Marseille" />
-              </datalist>
-            </label>
-            <div className="md:col-span-2 flex justify-end">
-              <button
-                type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-              >
-                Ajouter
-              </button>
-            </div>
-          </form>
-        </FilterPanel>
+        <h2 className="text-xl font-semibold text-white">Ajouter un studio</h2>
+        <form action={createStudioAction} className="mt-4 grid gap-3 md:grid-cols-2">
+          <label className="text-sm text-slate-200">
+            Nom
+            <input
+              name="name"
+              required
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </label>
+          <label className="text-sm text-slate-200">
+            Adresse (optionnel)
+            <input
+              name="address"
+              list="studio-address-suggestions"
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement (autocomplete mock).
+            </p>
+            <datalist id="studio-address-suggestions">
+              <option value="10 Rue de la Paix, Paris" />
+              <option value="25 Avenue des Arts, Lyon" />
+              <option value="3 Rue des Lilas, Marseille" />
+            </datalist>
+          </label>
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              type="submit"
+              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            >
+              Ajouter
+            </button>
+          </div>
+        </form>
       </section>
 
       <section className="panel space-y-4 p-4 md:p-6">
