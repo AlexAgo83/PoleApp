@@ -18,6 +18,7 @@ export default async function StudentCoursesPage({
 }: {
   searchParams?: Promise<{
     page?: string;
+    mine?: string | string[];
     from?: string;
     to?: string;
     teacher?: string;
@@ -33,6 +34,15 @@ export default async function StudentCoursesPage({
     return null;
   }
 
+  const mineParam = Array.isArray(resolvedParams.mine)
+    ? resolvedParams.mine[resolvedParams.mine.length - 1]
+    : resolvedParams.mine;
+  const onlyMine =
+    mineParam === undefined ||
+    mineParam === "true" ||
+    mineParam === "1" ||
+    mineParam === "on" ||
+    mineParam === "";
   const teacherFilter =
     typeof resolvedParams.teacher === "string" && resolvedParams.teacher.length > 0
       ? resolvedParams.teacher
@@ -54,46 +64,92 @@ export default async function StudentCoursesPage({
     studioFilter,
     withNotes ? "notes" : null,
     sort === "date_asc" ? "sort" : null,
+    onlyMine ? null : "allCourses",
   ].filter(Boolean).length;
 
-  const whereClause = {
-    studentId: session.user.id,
-    course: {
-      ...(validFrom ? { date: { gte: validFrom } } : {}),
-      ...(validTo ? { date: { lte: validTo } } : {}),
-      ...(teacherFilter ? { teacherId: teacherFilter } : {}),
-      ...(studioFilter ? { studioId: studioFilter } : {}),
-      ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
-    },
+  const courseFilters = {
+    ...(validFrom ? { date: { gte: validFrom } } : {}),
+    ...(validTo ? { date: { lte: validTo } } : {}),
+    ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+    ...(studioFilter ? { studioId: studioFilter } : {}),
+    ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
   };
 
-  const totalCount = await prisma.courseAttendance.count({
-    where: whereClause,
-  });
-  const totalPages = Math.max(1, Math.ceil(totalCount / 10));
-  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
-  const skip = (currentPage - 1) * 10;
+  const courseWhere = {
+    ...courseFilters,
+    ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}),
+  };
 
-  const [attendances, teachers, studios] = await Promise.all([
-    prisma.courseAttendance.findMany({
-      where: whereClause,
-      orderBy: { course: { date: sort === "date_desc" ? "desc" : "asc" } },
-      skip,
-      take: 10,
-      include: {
-        course: {
+  const [countsAndData, teachers, studios] = await Promise.all([
+    (async () => {
+      if (onlyMine) {
+        const totalCount = await prisma.courseAttendance.count({
+          where: {
+            studentId: session.user.id,
+            course: courseFilters,
+          },
+        });
+        const totalPages = Math.max(1, Math.ceil(totalCount / 10));
+        const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+        const skip = (currentPage - 1) * 10;
+
+        const attendances = await prisma.courseAttendance.findMany({
+          where: {
+            studentId: session.user.id,
+            course: courseFilters,
+          },
+          orderBy: { course: { date: sort === "date_desc" ? "desc" : "asc" } },
+          skip,
+          take: 10,
           include: {
-            teacher: { select: { name: true, email: true } },
-            positions: { include: { position: true } },
-            studio: { select: { name: true } },
-            notes: {
-              where: { studentId: session.user.id },
-              include: { position: true },
+            course: {
+              include: {
+                teacher: { select: { name: true, email: true } },
+                positions: { include: { position: true } },
+                studio: { select: { name: true } },
+                notes: {
+                  where: { studentId: session.user.id },
+                  include: { position: true },
+                },
+              },
             },
           },
+        });
+        return { totalCount, totalPages, currentPage, items: attendances };
+      }
+
+      if (!session.user.schoolId) {
+        return { totalCount: 0, totalPages: 1, currentPage: 1, items: [] };
+      }
+
+      const totalCount = await prisma.course.count({
+        where: courseWhere,
+      });
+      const totalPages = Math.max(1, Math.ceil(totalCount / 10));
+      const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+      const skip = (currentPage - 1) * 10;
+
+      const courses = await prisma.course.findMany({
+        where: courseWhere,
+        orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
+        skip,
+        take: 10,
+        include: {
+          teacher: { select: { name: true, email: true } },
+          positions: { include: { position: true } },
+          studio: { select: { name: true } },
+          notes: {
+            where: { studentId: session.user.id },
+            include: { position: true },
+          },
+          attendances: {
+            where: { studentId: session.user.id },
+            select: { id: true },
+          },
         },
-      },
-    }),
+      });
+      return { totalCount, totalPages, currentPage, items: courses };
+    })(),
     session.user.schoolId
       ? prisma.user.findMany({
           where: { schoolId: session.user.schoolId, role: "TEACHER" },
@@ -110,6 +166,19 @@ export default async function StudentCoursesPage({
       : Promise.resolve([]),
   ]);
 
+  const { totalCount, totalPages, currentPage, items } = countsAndData;
+  const coursesList: { key: string; course: any; isAttending: boolean }[] = onlyMine
+    ? (items as any[]).map((attendance) => ({
+        key: attendance.id,
+        course: attendance.course,
+        isAttending: true,
+      }))
+    : (items as any[]).map((course) => ({
+        key: course.id,
+        course,
+        isAttending: Boolean(course.attendances?.length),
+      }));
+
   const queryParams = new URLSearchParams();
   if (resolvedParams.from) queryParams.set("from", resolvedParams.from);
   if (resolvedParams.to) queryParams.set("to", resolvedParams.to);
@@ -117,6 +186,7 @@ export default async function StudentCoursesPage({
   if (studioFilter) queryParams.set("studio", studioFilter);
   if (withNotes) queryParams.set("withNotes", "true");
   if (sort === "date_asc") queryParams.set("sort", "date_asc");
+  if (!onlyMine) queryParams.set("mine", "false");
   const qs = queryParams.toString();
 
   return (
@@ -157,7 +227,7 @@ export default async function StudentCoursesPage({
             </span>
           </summary>
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}`}
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}`}
             method="get"
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
           >
@@ -232,6 +302,17 @@ export default async function StudentCoursesPage({
               />
               Avec notes
             </label>
+            <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input type="hidden" name="mine" value="false" />
+              <input
+                type="checkbox"
+                name="mine"
+                value="true"
+                defaultChecked={onlyMine}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Mes cours
+            </div>
             <div className="md:col-span-5 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
@@ -249,11 +330,10 @@ export default async function StudentCoursesPage({
           </form>
         </details>
         <div className="flex flex-col divide-y divide-white/5">
-          {attendances.map((attendance) => {
-            const course = attendance.course;
+          {coursesList.map(({ key, course, isAttending }) => {
             return (
               <a
-                key={attendance.id}
+                key={key}
                 href={`/app/student/courses/${course.id}?from=${encodeURIComponent(
                   `/app/student/courses?page=${currentPage}`
                 )}`}
@@ -280,15 +360,22 @@ export default async function StudentCoursesPage({
                     </div>
                     <p className="text-xs text-slate-400">
                       {course.positions.length} positions
+                      {isAttending ? " · inscrit" : ""}
                     </p>
                   </div>
-                  {course.notes.length > 0 && (
+                  {Array.isArray(course.notes) && course.notes.length > 0 && (
                     <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
                       <p className="text-xs uppercase tracking-[0.08em] text-cyan-200">
                         Notes
                       </p>
                       <ul className="mt-1 space-y-1">
-                        {course.notes.map((note) => (
+                        {course.notes.map(
+                          (note: {
+                            id: string;
+                            position: { name: string };
+                            masteryLevel: string;
+                            comment: string | null;
+                          }) => (
                           <li key={note.id}>
                             {note.position.name}: {note.masteryLevel}
                             {note.comment ? ` — ${note.comment}` : ""}
@@ -301,7 +388,7 @@ export default async function StudentCoursesPage({
               </a>
             );
           })}
-          {attendances.length === 0 && (
+          {coursesList.length === 0 && (
             <div className="mt-2 rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200">
               Aucun cours trouvé. Tes prochains cours apparaîtront ici.
             </div>
