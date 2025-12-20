@@ -24,7 +24,7 @@
 
 ---
 
-### Step 9 — Discovery QA (P1) — livré v0.4.3
+### Step 9 — Discovery QA (P1) — livré v0.4.4
 Voir le plan détaillé: `01_BACKLOG_STEP_009.md`. Statut: terminé (durée cours + crédits, gating premium, agendas semaine, studios/maps, cohérence params/searchParams).
 
 ---
