@@ -270,6 +270,20 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       ? p.tips ?? p.description ?? "Aucun détail"
                       : "Détails réservés aux élèves premium."}
                   </p>
+                  {showPremiumBadge && (
+                    <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
+                      <p className="font-semibold">Accès Premium requis</p>
+                      <p className="text-amber-100/80">
+                        Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
+                      </p>
+                      <Link
+                        href="/app/student#upgrade"
+                        className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-300/30"
+                      >
+                        Upgrade (placeholder)
+                      </Link>
+                    </div>
+                  )}
                   <div className="mt-auto flex items-center justify-between gap-2">
                     <p className="text-xs text-slate-400">
                       {p.grips ?? "Grip ?"}
