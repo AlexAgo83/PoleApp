@@ -119,73 +119,80 @@ export default async function AdminUsersPage({
       </header>
 
       <section className="panel p-6">
-        <h2 className="text-xl font-semibold text-white">Créer un utilisateur</h2>
-        <p className="text-sm text-slate-300">
-          Un mot de passe par défaut est prérempli, change-le si besoin.
-        </p>
-        <form action={createUserAction} className="mt-4 grid gap-4 md:grid-cols-2">
-          <label className="grid gap-1 text-sm text-slate-200">
-            Prénom
-            <input
-              name="firstName"
-              type="text"
-              required
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
-            />
-          </label>
-          <label className="grid gap-1 text-sm text-slate-200">
-            Nom
-            <input
-              name="lastName"
-              type="text"
-              required
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
-            />
-          </label>
-          <label className="grid gap-1 text-sm text-slate-200">
-            Email
-            <input
-              name="email"
-              type="email"
-              required
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
-            />
-          </label>
-          <label className="grid gap-1 text-sm text-slate-200">
-            Rôle
-            <select
-              name="role"
-              defaultValue="TEACHER"
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
-            >
-              <option value="TEACHER">Teacher</option>
-              <option value="STUDENT">Student</option>
-              <option value="SCHOOL_ADMIN">School admin</option>
-            </select>
-          </label>
-          <label className="grid gap-1 text-sm text-slate-200">
-            Mot de passe
-            <input
-              name="password"
-              type="text"
-              required
-              defaultValue="change-me-password"
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
-            />
-          </label>
-          <label className="mt-2 inline-flex items-center gap-2 text-sm text-slate-200">
-            <input type="checkbox" name="isPremium" className="h-4 w-4" />
-            Premium ?
-          </label>
-          <div className="flex items-end justify-end md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-            >
-              Créer
-            </button>
-          </div>
-        </form>
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white">
+            <span>Créer un utilisateur</span>
+            <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <p className="mt-2 text-sm text-slate-300">
+            Un mot de passe par défaut est prérempli, change-le si besoin.
+          </p>
+          <form action={createUserAction} className="mt-4 grid gap-4 md:grid-cols-2">
+            <label className="grid gap-1 text-sm text-slate-200">
+              Prénom
+              <input
+                name="firstName"
+                type="text"
+                required
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
+              />
+            </label>
+            <label className="grid gap-1 text-sm text-slate-200">
+              Nom
+              <input
+                name="lastName"
+                type="text"
+                required
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
+              />
+            </label>
+            <label className="grid gap-1 text-sm text-slate-200">
+              Email
+              <input
+                name="email"
+                type="email"
+                required
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
+              />
+            </label>
+            <label className="grid gap-1 text-sm text-slate-200">
+              Rôle
+              <select
+                name="role"
+                defaultValue="TEACHER"
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
+              >
+                <option value="TEACHER">Teacher</option>
+                <option value="STUDENT">Student</option>
+                <option value="SCHOOL_ADMIN">School admin</option>
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm text-slate-200">
+              Mot de passe
+              <input
+                name="password"
+                type="text"
+                required
+                defaultValue="change-me-password"
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
+              />
+            </label>
+            <label className="mt-2 inline-flex items-center gap-2 text-sm text-slate-200">
+              <input type="checkbox" name="isPremium" className="h-4 w-4" />
+              Premium ?
+            </label>
+            <div className="flex items-end justify-end md:col-span-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Créer
+              </button>
+            </div>
+          </form>
+        </details>
       </section>
 
       <section className="panel space-y-4 p-6">
