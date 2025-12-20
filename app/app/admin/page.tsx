@@ -32,8 +32,8 @@ export default async function AdminDashboard() {
 
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
-        <section className="panel p-6">
+      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+        <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Admin école</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
         </section>
@@ -123,10 +123,10 @@ export default async function AdminDashboard() {
   });
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel p-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <header className="panel p-3 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <div className="mt-1 flex flex-wrap items-center gap-3">
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           <h1 className="text-3xl font-semibold text-white">
             Dashboard {baseSchool?.name ?? "école"},
           </h1>
@@ -153,7 +153,7 @@ export default async function AdminDashboard() {
         <p className="text-sm text-slate-300">
           Vue synthétique de l’école et accès rapide aux actions admin.
         </p>
-        <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
+        <div className="mt-1 flex flex-wrap justify-end gap-2 text-sm">
           <Link
             href="/app/admin/studios"
             className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
@@ -199,7 +199,7 @@ export default async function AdminDashboard() {
         </div>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-3 md:gap-4 md:grid-cols-2">
         <div className="panel space-y-3 p-6">
           <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
