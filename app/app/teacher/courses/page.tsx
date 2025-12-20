@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function TeacherCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string }>;
+  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
@@ -20,6 +20,7 @@ export default async function TeacherCoursesPage({
   const toDate = resolvedParams.to ? new Date(resolvedParams.to) : undefined;
   const validFrom = fromDate && !Number.isNaN(fromDate.getTime()) ? fromDate : undefined;
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
+  const withNotes = resolvedParams.withNotes === "true";
 
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {
@@ -31,6 +32,7 @@ export default async function TeacherCoursesPage({
     ...(teacherFilter ? { teacherId: teacherFilter } : {}),
     ...(validFrom ? { date: { gte: validFrom } } : {}),
     ...(validTo ? { date: { lte: validTo } } : {}),
+    ...(withNotes ? { notes: { some: {} } } : {}),
   };
 
   const [totalCount, teachers] = await Promise.all([
@@ -111,6 +113,16 @@ export default async function TeacherCoursesPage({
                 </option>
               ))}
             </select>
+          </label>
+          <label className="mt-1 flex items-center gap-2 text-sm text-slate-200">
+            <input
+              type="checkbox"
+              name="withNotes"
+              value="true"
+              defaultChecked={withNotes}
+              className="h-4 w-4 rounded border-white/20 bg-white/5"
+            />
+            Cours avec notes uniquement
           </label>
           <div className="flex items-end gap-2">
             <button
