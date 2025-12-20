@@ -35,6 +35,7 @@ export default async function ProfilePage() {
       .filter(Boolean);
   const lastNameDefault = restName.join(" ");
   const displayName = user.name?.trim() || user.email;
+  const currentDisplay = [firstNameDefault, lastNameDefault].filter(Boolean).join(" ") || displayName;
 
   return (
     <main className="mx-auto grid max-w-4xl gap-6">
@@ -75,6 +76,9 @@ export default async function ProfilePage() {
                 <h2 className="text-xl font-semibold text-white">
                   Mettre à jour ton profil
                 </h2>
+                <p className="text-xs text-slate-300">
+                  Nom affiché actuellement : <span className="font-semibold text-white">{currentDisplay}</span>
+                </p>
               </div>
             </div>
           </div>
