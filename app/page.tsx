@@ -50,6 +50,38 @@ const moduleSections = [
     icon: "🏢",
   },
   {
+    title: "Agenda (élève)",
+    href: "/app/student/courses/agenda",
+    description: "Vue agenda mensuelle + semaine (collapsée), filtres studios/profs/« mes cours ».",
+    status: "Étape 9",
+    role: "Élève",
+    icon: "🗓️",
+  },
+  {
+    title: "Agenda (prof/admin)",
+    href: "/app/teacher/courses/agenda",
+    description: "Agenda cours avec filtres studio/prof, navigation mois, vue semaine collapsée.",
+    status: "Étape 9",
+    role: "Professeur / Admin",
+    icon: "📆",
+  },
+  {
+    title: "Crédits & achats",
+    href: "/app/student",
+    description: "Solde crédits visible, bouton Acheter des crédits (demo) et règles d’inscription.",
+    status: "Étape 9",
+    role: "Élève",
+    icon: "💳",
+  },
+  {
+    title: "Studios & partenaires",
+    href: "/app/admin/studios",
+    description: "Gestion studios (pagination, adresse), accès partenaires et navigation admin.",
+    status: "Étape 9",
+    role: "Admin",
+    icon: "🏬",
+  },
+  {
     title: "Profile",
     href: "/app/profile",
     description: "Consulter et mettre à jour prénom/nom, voir email, rôle et école.",
@@ -135,16 +167,16 @@ export default async function Home() {
 
       <header className="panel relative overflow-hidden p-6">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
-        <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-3">
-            {session?.user && (
+        <details className="relative flex flex-col gap-4 group">
+          <summary className="flex w-full cursor-pointer items-center justify-between gap-3 text-left text-white">
+            <div className="space-y-1">
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
                 Pole App — MVP v0.4.3
               </p>
-            )}
-            <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">
-              Suivi élève complet : positions, progression, cours et révision ludique.
-            </h1>
+            </div>
+            <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div className="space-y-3">
             <p className="max-w-2xl text-slate-200">
               Une plateforme pour que professeurs et élèves alignent entraînement,
               sécurité et progression : base de positions (gating premium),
@@ -177,9 +209,8 @@ export default async function Home() {
               </span>
             </div>
           </div>
-          <div className="rounded-2xl border border-indigo-400/20 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg shadow-indigo-500/20 backdrop-blur">
-            {/* Mobile: collapsed by défaut */}
-            <details className="group md:hidden">
+          <div className="w-full rounded-2xl border border-indigo-400/20 bg-white/5 px-6 py-4 text-sm text-slate-200 shadow-lg shadow-indigo-500/20 backdrop-blur mt-4">
+            <details className="group">
               <summary className="flex cursor-pointer items-center justify-between gap-3">
                 <span className="font-semibold text-white">Status build</span>
                 <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
@@ -210,41 +241,8 @@ export default async function Home() {
                 </p>
               </div>
             </details>
-
-            {/* Desktop : expanded par défaut */}
-            <details className="group hidden md:block" open>
-              <summary className="flex cursor-pointer items-center justify-between gap-3">
-                <span className="font-semibold text-white">Status build</span>
-                <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">
-                  ▼
-                </span>
-              </summary>
-              <div className="group-open:mt-3 group-open:space-y-3">
-                <ul className="space-y-1">
-                  {buildSteps.map((step) => (
-                    <li key={step.label} className="flex items-center gap-2">
-                      <span
-                        className={`inline-flex h-2.5 w-2.5 rounded-full ${
-                          step.done ? "bg-emerald-400" : "bg-slate-500"
-                        }`}
-                      />
-                      <span
-                        className={step.done ? "text-white" : "text-slate-300"}
-                      >
-                        {step.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs text-slate-400">
-                  See `/health` for runtime status, `npm run db:seed` pour la base
-                  locale. Login via `/login` (seed: admin/teacher/student).
-                  Création position : `/teacher/positions/new`.
-                </p>
-              </div>
-            </details>
           </div>
-        </div>
+        </details>
       </header>
 
       <details className="panel group p-8 border-indigo-400/25 shadow-indigo-900/30">
