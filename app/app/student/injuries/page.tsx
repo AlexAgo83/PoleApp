@@ -67,13 +67,10 @@ export default async function StudentInjuriesPage({
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
-        <details className="group">
-          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
-            <span>Ajouter une blessure</span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:student-injuries-add"
+          title="Ajouter une blessure"
+        >
           <form action={createInjuryAction} className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="text-sm text-slate-200">
               Type de blessure
@@ -105,7 +102,7 @@ export default async function StudentInjuriesPage({
               </button>
             </div>
           </form>
-        </details>
+        </FilterPanel>
       </section>
 
       <section className="panel border-indigo-400/15 p-6">

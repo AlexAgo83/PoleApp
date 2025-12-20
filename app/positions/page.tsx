@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { FilterPanel } from "@/components/FilterPanel";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
@@ -163,24 +164,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       </header>
 
       <section className="panel space-y-4 px-6 py-4 md:py-6">
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
-          {/* 
-            key force le rerender des inputs lorsque les filtres changent
-            pour que “Réinitialiser” remette bien les valeurs par défaut.
-          */}
+        <FilterPanel
+          storageKey="filters:positions"
+          title="Filtres"
+          activeCount={activeFilters}
+        >
+          {/* key force le rerender des inputs lorsque les filtres changent pour que “Réinitialiser” remette bien les valeurs par défaut. */}
           <form
             key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
@@ -243,7 +232,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         <div className="grid gap-4 md:grid-cols-3">
           {positions.map((p) => {
             const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];

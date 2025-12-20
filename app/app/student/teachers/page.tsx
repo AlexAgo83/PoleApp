@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { FilterPanel } from "@/components/FilterPanel";
 
 const TEACHER_AVATAR_PLACEHOLDER = "https://placehold.co/160x160/111827/ffffff?text=Prof";
 
@@ -102,22 +103,15 @@ export default async function StudentTeachersPage({
             Page {safePage} / {totalPages} · {totalCount} professeurs
           </div>
         </div>
-        <details className="group mt-4" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:student-teachers"
+          title="Filtres"
+          activeCount={activeFilters}
+          className="mt-4"
+          contentClassName="mt-3"
+        >
           <form
-            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
             method="get"
           >
             <label className="text-sm text-slate-200 md:col-span-2">
@@ -145,7 +139,7 @@ export default async function StudentTeachersPage({
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         {teachers.length === 0 ? (
           <p className="mt-3 text-slate-300">
             Aucun professeur associé pour le moment. Participe à un cours pour voir leur fiche.

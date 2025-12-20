@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 import { purchaseCourseAction } from "./actions";
 
@@ -278,20 +279,11 @@ export default async function StudentCoursesPage({
       </header>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">
-        <details className="group" open>
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Filtres</span>
-              {activeFilters > 0 && (
-                <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                  {activeFilters}
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
-              ▼
-            </span>
-          </summary>
+        <FilterPanel
+          storageKey="filters:student-courses"
+          title="Filtres"
+          activeCount={activeFilters}
+        >
           <form
             key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}`}
             method="get"
@@ -394,7 +386,7 @@ export default async function StudentCoursesPage({
               </Link>
             </div>
           </form>
-        </details>
+        </FilterPanel>
         <div className="flex flex-col divide-y divide-white/5">
           {coursesList.map(({ key, course, isAttending }) => {
             const courseDate = new Date(course.date);
