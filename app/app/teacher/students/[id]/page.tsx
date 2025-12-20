@@ -41,6 +41,7 @@ export default async function TeacherStudentDetailPage({
   if (!session?.user?.schoolId) {
     redirect("/access-denied");
   }
+  const isTeacherOnly = session.user.role === "TEACHER";
 
   const student = await prisma.user.findFirst({
     where: {
@@ -65,6 +66,14 @@ export default async function TeacherStudentDetailPage({
 
   if (!student) {
     redirect("/access-denied");
+  }
+  if (isTeacherOnly) {
+    const teachesStudent = await prisma.courseAttendance.count({
+      where: { studentId, course: { teacherId: session.user.id } },
+    });
+    if (!teachesStudent) {
+      redirect("/access-denied");
+    }
   }
 
   const positions = await prisma.position.findMany({

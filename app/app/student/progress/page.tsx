@@ -7,10 +7,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const statusLabels: Record<LearningStatus, string> = {
-  NOT_STARTED: "Non commencé",
-  IN_PROGRESS: "En cours",
+  NOT_STARTED: "Découverte",
+  IN_PROGRESS: "Tenté",
   PASSED: "Passé",
-  MASTERED: "Maîtrisé",
+  MASTERED: "Fluide",
 };
 
 const masteryLabels: Record<MasteryLevel, string> = {
@@ -18,6 +18,13 @@ const masteryLabels: Record<MasteryLevel, string> = {
   PASSED: "Passé",
   FLUID: "Fluide",
   CHOREO: "Choréo",
+};
+
+const statusClass: Record<LearningStatus, string> = {
+  NOT_STARTED: "border border-white/10 bg-white/5 text-slate-200",
+  IN_PROGRESS: "border border-amber-400/40 bg-amber-500/20 text-amber-100",
+  PASSED: "border border-cyan-400/40 bg-cyan-500/20 text-cyan-100",
+  MASTERED: "border border-emerald-400/40 bg-emerald-500/20 text-emerald-100",
 };
 
 const typeLabels = {
@@ -240,15 +247,7 @@ export default async function StudentProgressPage({
                       {position.name}
                     </h3>
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        status === "NOT_STARTED"
-                          ? "border border-white/10 bg-white/5 text-slate-200"
-                          : status === "IN_PROGRESS"
-                          ? "border border-amber-400/40 bg-amber-500/20 text-amber-100"
-                          : status === "PASSED"
-                          ? "border border-emerald-400/40 bg-emerald-500/20 text-emerald-100"
-                          : "border border-indigo-400/40 bg-indigo-500/20 text-indigo-50"
-                      }`}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass[status as LearningStatus]}`}
                     >
                       {statusLabels[status as LearningStatus]}
                     </span>
