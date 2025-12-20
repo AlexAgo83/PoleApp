@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { SponsoredLinksField } from "@/components/SponsoredLinksField";
 import { createPartnerAction, deletePartnerAction, updatePartnerAction } from "./actions";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -119,11 +120,17 @@ export default async function AdminPartnersPage({
               Description (optionnel)
               <textarea
                 name="description"
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 rows={2}
               />
             </label>
-            <input type="hidden" name="sponsored" value="[]" />
+            {supportsSponsored ? (
+              <div className="md:col-span-2">
+                <SponsoredLinksField name="sponsored" initialLinks={[]} />
+              </div>
+            ) : (
+              <input type="hidden" name="sponsored" value="[]" />
+            )}
             <div className="md:col-span-2 flex justify-end">
               <button
                 type="submit"
@@ -177,52 +184,12 @@ export default async function AdminPartnersPage({
                   placeholder="Description"
                   className="w-56 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
-                {(() => {
-                  const rawSponsored = supportsSponsored
-                    ? (Array.isArray((partner as any).sponsoredLinks)
-                        ? (partner as any).sponsoredLinks
-                        : [])
-                    : [];
-                  const serializedSponsored = JSON.stringify(
-                    rawSponsored.map((s: any) => ({
-                      category: s?.category,
-                      label: s?.label ?? "",
-                      url: s?.url,
-                    })),
-                    null,
-                    0
-                  );
-                  return (
-                    <input
-                      type="hidden"
-                      name="sponsored"
-                      value={serializedSponsored}
-                      readOnly
-                    />
-                  );
-                })()}
                 {supportsSponsored ? (
-                  <div className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
-                    <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-200">
-                      Liens sponsorisés (JSON)
-                    </p>
-                    <p className="text-slate-300">
-                      Catégorie, label optionnel, URL. Édite le JSON dans le champ caché si besoin.
-                    </p>
-                    <pre className="mt-2 max-h-32 overflow-auto rounded-lg bg-black/30 p-2 text-[11px] text-slate-100">
-                      {JSON.stringify(
-                        (Array.isArray((partner as any).sponsoredLinks)
-                          ? (partner as any).sponsoredLinks
-                          : []
-                        ).map((s: any) => ({
-                          category: s?.category,
-                          label: s?.label ?? "",
-                          url: s?.url,
-                        })),
-                        null,
-                        2
-                      )}
-                    </pre>
+                  <div className="w-full">
+                    <SponsoredLinksField
+                      name="sponsored"
+                      initialLinks={Array.isArray((partner as any).sponsoredLinks) ? (partner as any).sponsoredLinks : []}
+                    />
                   </div>
                 ) : (
                   <p className="text-xs text-amber-200">

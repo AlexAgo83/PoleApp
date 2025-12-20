@@ -183,7 +183,7 @@ export default async function StudentCoursesPage({
                 key={withNotes ? "with-notes" : "all-courses"}
                 className="h-4 w-4 rounded border-white/20 bg-white/5"
               />
-              Cours avec notes
+              Avec notes
             </label>
             <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
               <button
