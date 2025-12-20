@@ -7,6 +7,20 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
 
+const statusLabel: Record<LearningStatus, string> = {
+  NOT_STARTED: "Découverte",
+  IN_PROGRESS: "Tenté",
+  PASSED: "Passé",
+  MASTERED: "Fluide",
+};
+
+const statusClass: Record<LearningStatus, string> = {
+  NOT_STARTED: "border-white/15 bg-white/5 text-white",
+  IN_PROGRESS: "border-amber-400/40 bg-amber-500/15 text-amber-50",
+  PASSED: "border-cyan-400/40 bg-cyan-500/15 text-cyan-50",
+  MASTERED: "border-emerald-400/40 bg-emerald-500/15 text-emerald-50",
+};
+
 type Props = {
   params: { id: string } | Promise<{ id?: string }>;
   searchParams?: Promise<{ from?: string }>;
@@ -151,6 +165,24 @@ export default async function TeacherStudentDetailPage({
                   <p className="text-base font-semibold text-white">{position.name}</p>
                   <p className="text-xs text-slate-300">{position.type}</p>
                 </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {progress ? (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${statusClass[progress.learningStatus]}`}
+                    >
+                      {statusLabel[progress.learningStatus]}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold text-white/90">
+                      Non commencé
+                    </span>
+                  )}
+                  {progress?.masteryLevel && (
+                    <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white/90">
+                      {progress.masteryLevel}
+                    </span>
+                  )}
+                </div>
                 <form action={updateProgressAction} className="space-y-2 text-sm text-slate-200">
                   <input type="hidden" name="studentId" value={student.id} />
                   <input type="hidden" name="positionId" value={position.id} />
@@ -161,10 +193,10 @@ export default async function TeacherStudentDetailPage({
                       defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
                       className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                     >
-                      <option value="NOT_STARTED">Non commencé</option>
-                      <option value="IN_PROGRESS">En cours</option>
+                      <option value="NOT_STARTED">Découverte</option>
+                      <option value="IN_PROGRESS">Tenté</option>
                       <option value="PASSED">Passé</option>
-                      <option value="MASTERED">Maîtrisé</option>
+                      <option value="MASTERED">Fluide</option>
                     </select>
                   </label>
                   <label className="block">
