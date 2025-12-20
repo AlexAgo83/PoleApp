@@ -1,6 +1,6 @@
-# Step 9 — Discovery QA
+# Step 9 — Discovery QA (terminée) — v0.3.0
 
-Objectif : traiter le lot de retours QA pour stabiliser la V0.2.2 (navigation, cohérence UI/UX, fiabilité des données affichées).
+Objectif : traiter le lot de retours QA pour stabiliser la V0.3.0 (navigation, cohérence UI/UX, fiabilité des données affichées).
 
 ## Périmètre
 - Navigation et bandeaux : unifier le bandeau des espaces (session/rôle/boutons), activer le pliage par défaut de « Status build » (desktop : ouvert), conserver le retour contextuel (positions, élèves, mini-jeu, modules) et éviter les retours vers la mauvaise vue.
@@ -45,3 +45,4 @@ Objectif : traiter le lot de retours QA pour stabiliser la V0.2.2 (navigation, 
 - Élèves/blessures/progression : pagination, sauvegarde sans reset, retour vers liste élèves disponible.
 - Profil : salutation priorise prénom>nom>email, édition prénom/nom prise en compte, module Profil sur la home.
 - Aucun warning `searchParams`/`params` sync dans la console Next/Turbopack.
+- Bonus Step 9 livrés : durée de cours (min 30, pas 15), crédits élèves (premium = 1000), gating premium positions, agenda semaine (durées proportionnelles), studios avec liens Maps et autocomplete mock, seed réaliste (noms, studios, crédits).

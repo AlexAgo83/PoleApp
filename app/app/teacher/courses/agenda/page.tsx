@@ -95,6 +95,20 @@ export default async function CoursesAgendaPage({
   const monthLabel = start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
 
+  // Vue semaine (7 jours à partir du lundi de la semaine du start)
+  const startWeek = new Date(start);
+  const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
+  startWeek.setDate(startWeek.getDate() - dayOffset);
+  const weekDays = Array.from({ length: 7 }).map((_, idx) => {
+    const d = new Date(startWeek);
+    d.setDate(startWeek.getDate() + idx);
+    return d;
+  });
+  const coursesByDay = weekDays.map((d) => {
+    const dayStr = d.toDateString();
+    return courses.filter((c) => new Date(c.date).toDateString() === dayStr);
+  });
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
       <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
@@ -251,6 +265,42 @@ export default async function CoursesAgendaPage({
             Aucun cours prévu pour ce mois.
           </p>
         )}
+      </section>
+
+      <section className="panel p-6">
+        <h3 className="text-lg font-semibold text-white">Vue semaine (durée proportionnelle)</h3>
+        <div className="mt-3 grid gap-3 md:grid-cols-7">
+          {weekDays.map((day, idx) => {
+            const dayCourses = coursesByDay[idx];
+            return (
+              <div key={day.toISOString()} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200">
+                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
+                  <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
+                  <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
+                  {dayCourses.map((course) => {
+                    const width = Math.max(50, Math.min(160, course.durationMinutes * 2));
+                    return (
+                      <Link
+                        key={course.id}
+                        href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                        className="inline-flex flex-col rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-white transition hover:border-cyan-300/70 hover:bg-white/15"
+                        style={{ width }}
+                        title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
+                      >
+                        <span>{new Date(course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                        <span className="truncate">{course.title ?? "Cours"}</span>
+                        <span className="text-[10px] text-cyan-100">{formatDuration(course.durationMinutes ?? 60)}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
     </main>
   );

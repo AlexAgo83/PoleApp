@@ -76,11 +76,17 @@ export default async function AdminStudiosPage() {
             Adresse (optionnel)
             <input
               name="address"
+              list="studio-address-suggestions"
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
             <p className="mt-1 text-xs text-slate-400">
-              Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement.
+              Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement (autocomplete mock).
             </p>
+            <datalist id="studio-address-suggestions">
+              <option value="10 Rue de la Paix, Paris" />
+              <option value="25 Avenue des Arts, Lyon" />
+              <option value="3 Rue des Lilas, Marseille" />
+            </datalist>
           </label>
           <div className="md:col-span-2 flex justify-end">
             <button

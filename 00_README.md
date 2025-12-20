@@ -1,6 +1,6 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.2.2
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.3.0
 
-Date: 2025-12-19 (MAJ v0.2.2)
+Date: 2025-12-19 (MAJ v0.3.0)
 
 Ce dossier contient :
 - `01_BACKLOG.md` : backlog structuré (epics → features → user stories → critères d’acceptation).
@@ -26,8 +26,8 @@ Ce dossier contient :
 ## Progression des Steps
 - Step 0 → 8 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + homepage “Profile”).
 - v0.2.2 : filtres admin/positions/élèves, harmonisation UI des filtres, pagination (10 items), page profil utilisateur et navigation par rôle.
-- **Step 9 (en cours)** : Discovery QA — plan détaillé dans `01_BACKLOG_STEP_009.md`.
-- Suite à cadrer : journal d’audit minimal, contre-indications Position ↔ Blessure, améliorations UX/badges mini-jeu.
+- **Step 9 (terminée)** : Discovery QA — voir synthèse dans `01_BACKLOG_STEP_009.md`.
+- Suite à cadrer : journal d’audit minimal, contre-indications Position ↔ Blessure, améliorations UX/badges mini-jeu, billing/credits.
 
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
