@@ -8,7 +8,20 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminStudiosPage() {
+type PageProps =
+  | { searchParams?: { page?: string | string[] } }
+  | { searchParams?: Promise<{ page?: string | string[] }> };
+
+function paramValue(value?: string | string[]) {
+  if (Array.isArray(value)) return value[value.length - 1];
+  return value;
+}
+
+export default async function AdminStudiosPage({ searchParams }: PageProps) {
+  const resolvedParams = await Promise.resolve(searchParams);
+  const pageParam = paramValue(resolvedParams?.page);
+  const rawPage = Number(pageParam ?? "1");
+
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
@@ -24,11 +37,20 @@ export default async function AdminStudiosPage() {
     );
   }
 
+  let totalCount = 0;
+  let totalPages = 1;
+  let currentPage = 1;
   let studios: Awaited<ReturnType<typeof prisma.studio.findMany>> = [];
   try {
+    totalCount = await prisma.studio.count({ where: { schoolId: session.user.schoolId } });
+    totalPages = Math.max(1, Math.ceil(totalCount / 10));
+    currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+    const skip = (currentPage - 1) * 10;
     studios = await prisma.studio.findMany({
       where: { schoolId: session.user.schoolId },
       orderBy: { name: "asc" },
+      skip,
+      take: 10,
     });
   } catch (err) {
     return (
@@ -62,41 +84,46 @@ export default async function AdminStudiosPage() {
       </header>
 
       <section className="panel p-6">
-        <h2 className="text-lg font-semibold text-white">Ajouter un studio</h2>
-        <form action={createStudioAction} className="mt-3 grid gap-3 md:grid-cols-2">
-          <label className="text-sm text-slate-200">
-            Nom
-            <input
-              name="name"
-              required
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Adresse (optionnel)
-            <input
-              name="address"
-              list="studio-address-suggestions"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-            <p className="mt-1 text-xs text-slate-400">
-              Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement (autocomplete mock).
-            </p>
-            <datalist id="studio-address-suggestions">
-              <option value="10 Rue de la Paix, Paris" />
-              <option value="25 Avenue des Arts, Lyon" />
-              <option value="3 Rue des Lilas, Marseille" />
-            </datalist>
-          </label>
-          <div className="md:col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
-            >
-              Ajouter
-            </button>
-          </div>
-        </form>
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
+            <span>Ajouter un studio</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <form action={createStudioAction} className="mt-4 grid gap-3 md:grid-cols-2">
+            <label className="text-sm text-slate-200">
+              Nom
+              <input
+                name="name"
+                required
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Adresse (optionnel)
+              <input
+                name="address"
+                list="studio-address-suggestions"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+              <p className="mt-1 text-xs text-slate-400">
+                Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement (autocomplete mock).
+              </p>
+              <datalist id="studio-address-suggestions">
+                <option value="10 Rue de la Paix, Paris" />
+                <option value="25 Avenue des Arts, Lyon" />
+                <option value="3 Rue des Lilas, Marseille" />
+              </datalist>
+            </label>
+            <div className="md:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Ajouter
+              </button>
+            </div>
+          </form>
+        </details>
       </section>
 
       <section className="panel space-y-4 p-6">
@@ -156,6 +183,35 @@ export default async function AdminStudiosPage() {
             </div>
           ))}
         </div>
+        {totalCount > 0 && (
+          <div className="mt-4 flex items-center justify-between text-sm text-slate-200">
+            <Link
+              href={`/app/admin/studios?page=${Math.max(1, currentPage - 1)}`}
+              className={`rounded-full px-3 py-2 font-semibold ${
+                currentPage === 1
+                  ? "cursor-not-allowed border border-white/10 text-slate-500"
+                  : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5"
+              }`}
+              aria-disabled={currentPage === 1}
+            >
+              Précédent
+            </Link>
+            <span>
+              Page {currentPage} / {totalPages}
+            </span>
+            <Link
+              href={`/app/admin/studios?page=${Math.min(totalPages, currentPage + 1)}`}
+              className={`rounded-full px-3 py-2 font-semibold ${
+                currentPage === totalPages
+                  ? "cursor-not-allowed border border-white/10 text-slate-500"
+                  : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5"
+              }`}
+              aria-disabled={currentPage === totalPages}
+            >
+              Suivant
+            </Link>
+          </div>
+        )}
       </section>
     </main>
   );
