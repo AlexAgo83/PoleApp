@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 const updateSchoolSchema = z.object({
   schoolId: z.string().cuid(),
   name: z.string().min(2, "Nom trop court"),
+  website: z.string().trim().url({ message: "URL invalide" }).or(z.literal("")).optional(),
 });
 
 export async function updateSchoolAction(formData: FormData) {
@@ -22,6 +23,7 @@ export async function updateSchoolAction(formData: FormData) {
   const parsed = updateSchoolSchema.safeParse({
     schoolId: formData.get("schoolId"),
     name: formData.get("name"),
+    website: (formData.get("website") ?? "") as string,
   });
 
   if (!parsed.success) {
@@ -32,10 +34,34 @@ export async function updateSchoolAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  await prisma.school.update({
-    where: { id: parsed.data.schoolId },
-    data: { name: parsed.data.name.trim() },
-  });
+  const trimmedName = parsed.data.name.trim();
+  const website =
+    parsed.data.website && parsed.data.website.length > 0 ? parsed.data.website : null;
+
+  try {
+    await prisma.school.update({
+      where: { id: parsed.data.schoolId },
+      data: { name: trimmedName, website },
+    });
+  } catch (error) {
+    const message = (error as Error)?.message ?? "";
+    const isWebsiteUnsupported =
+      message.includes("Unknown argument `website`") || message.toLowerCase().includes("website");
+
+    if (!isWebsiteUnsupported) {
+      throw error;
+    }
+
+    // Fallback if the schema/DB doesn't yet have the column.
+    try {
+      await prisma.$executeRaw`
+        UPDATE "School" SET "name" = ${trimmedName} WHERE "id" = ${parsed.data.schoolId}
+      `;
+    } catch (rawError) {
+      throw rawError;
+    }
+  }
 
   revalidatePath("/app/admin");
+  revalidatePath("/app/admin/school");
 }

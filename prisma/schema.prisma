@@ -49,11 +49,12 @@ enum MasteryLevel {
 model School {
   id        String   @id @default(cuid())
   name      String
+  website   String?
   createdAt DateTime @default(now())
 
-  users   User[]
-  courses Course[]
-  studios Studio[]
+  users    User[]
+  courses  Course[]
+  studios  Studio[]
   partners Partner[]
 
   @@unique([name])
@@ -150,17 +151,17 @@ model StudentPositionProgress {
 }
 
 model Course {
-  id        String   @id @default(cuid())
-  schoolId  String
-  teacherId String
-  studioId  String?
-  title     String?
-  date      DateTime
-  durationMinutes Int @default(60)
-  createdAt DateTime @default(now())
-  school    School   @relation(fields: [schoolId], references: [id])
-  teacher   User     @relation("CourseTeacher", fields: [teacherId], references: [id])
-  studio    Studio?  @relation(fields: [studioId], references: [id])
+  id              String   @id @default(cuid())
+  schoolId        String
+  teacherId       String
+  studioId        String?
+  title           String?
+  date            DateTime
+  durationMinutes Int      @default(60)
+  createdAt       DateTime @default(now())
+  school          School   @relation(fields: [schoolId], references: [id])
+  teacher         User     @relation("CourseTeacher", fields: [teacherId], references: [id])
+  studio          Studio?  @relation(fields: [studioId], references: [id])
 
   attendances CourseAttendance[]
   positions   CoursePosition[]
@@ -216,15 +217,15 @@ model Studio {
 }
 
 model Partner {
-  id        String   @id @default(cuid())
-  name      String
-  kind      String   @default("SERVICE")
-  website   String?
-  description String?
-  schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  school    School   @relation(fields: [schoolId], references: [id])
+  id             String          @id @default(cuid())
+  name           String
+  kind           String          @default("SERVICE")
+  website        String?
+  description    String?
+  schoolId       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  school         School          @relation(fields: [schoolId], references: [id])
   sponsoredLinks SponsoredLink[]
 
   @@index([schoolId])
