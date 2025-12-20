@@ -176,10 +176,17 @@ export default async function AdminUsersPage({
                   <input type="hidden" name="userId" value={user.id} />
                   <input
                     type="text"
-                    name="name"
-                    defaultValue={user.name ?? ""}
+                    name="firstName"
+                    defaultValue={user.name?.split(" ")[0] ?? ""}
+                    placeholder="Prénom"
+                    className="min-w-[120px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                  />
+                  <input
+                    type="text"
+                    name="lastName"
+                    defaultValue={user.name?.split(" ").slice(1).join(" ") ?? ""}
                     placeholder="Nom"
-                    className="min-w-[140px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                    className="min-w-[120px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
                   />
                   <select
                     name="role"

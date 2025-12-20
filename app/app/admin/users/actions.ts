@@ -23,7 +23,8 @@ const createSchema = z.object({
 const updateSchema = z.object({
   userId: z.string().cuid(),
   role: z.enum(["STUDENT", "TEACHER", "SCHOOL_ADMIN"]),
-  name: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   isPremium: z.string().optional(),
 });
 
@@ -93,7 +94,8 @@ export async function updateUserAction(formData: FormData) {
   const parsed = updateSchema.safeParse({
     userId: formData.get("userId"),
     role: formData.get("role"),
-    name: formData.get("name") || undefined,
+    firstName: formData.get("firstName") || undefined,
+    lastName: formData.get("lastName") || undefined,
     isPremium: formData.get("isPremium") || undefined,
   });
   if (!parsed.success) {
@@ -109,11 +111,18 @@ export async function updateUserAction(formData: FormData) {
     redirect("/access-denied");
   }
 
+  const fullName =
+    [parsed.data.firstName, parsed.data.lastName]
+      .map((v) => v?.toString().trim())
+      .filter(Boolean)
+      .join(" ")
+      .trim() || null;
+
   await prisma.user.update({
     where: { id: data.userId },
     data: {
       role: data.role,
-      name: data.name?.toString().trim() || null,
+      name: fullName,
       isPremium: Boolean(data.isPremium),
     },
   });
