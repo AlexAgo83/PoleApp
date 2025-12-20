@@ -117,7 +117,16 @@ export default async function TeacherStudentsPage({
               ← Retour dashboard
             </Link>
           </div>
-        ) : null}
+        ) : (
+          <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
+            <Link
+              href="/app/teacher"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
+            </Link>
+          </div>
+        )}
       </header>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">
