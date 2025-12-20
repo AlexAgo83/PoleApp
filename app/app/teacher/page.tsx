@@ -55,6 +55,20 @@ export default async function TeacherDashboard() {
             Voir blessures et progression par position, filtré sur ton école.
           </p>
         </Link>
+        <Link
+            href="/app/teacher/planning"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              Planning prof
+            </p>
+            <p className="text-base font-semibold text-white">
+              Cours à venir / à préparer
+            </p>
+            <p className="text-sm text-slate-300">
+              Vue filtrable par date/discipline, limitée à tes cours.
+            </p>
+          </Link>
           <Link
             href="/app/teacher/courses"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
