@@ -258,12 +258,12 @@ export default async function StudentCoursesPage({
                       </p>
                       <div className="flex flex-col text-sm text-slate-300">
                         <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
-                        <span>{new Date(course.date).toLocaleString()}</span>
                         {course.studio?.name && (
                           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
                             Studio · {course.studio.name}
                           </span>
                         )}
+                        <span>{new Date(course.date).toLocaleString()}</span>
                       </div>
                     </div>
                     <p className="text-xs text-slate-400">

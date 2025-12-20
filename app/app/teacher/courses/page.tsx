@@ -224,7 +224,9 @@ export default async function TeacherCoursesPage({
                     {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
                   </p>
                   {course.studio && (
-                    <p className="text-sm text-slate-300">Studio : {course.studio.name}</p>
+                    <span className="mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                      Studio · {course.studio.name}
+                    </span>
                   )}
                   <p className="text-sm text-slate-300">
                     {new Date(course.date).toLocaleString()}
