@@ -25,11 +25,12 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 type SearchParams =
-  | { page?: string; type?: string; level?: string }
+  | { page?: string; type?: string; level?: string; q?: string }
   | Promise<{
       page?: string;
       type?: string;
       level?: string;
+      q?: string;
     }>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
@@ -44,10 +45,16 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     Object.values(PositionLevel).includes(resolvedParams.level as PositionLevel)
       ? (resolvedParams.level as PositionLevel)
       : undefined;
+  const q = resolvedParams.q?.toString().trim() || "";
 
   const where = {
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
+    ...(q
+      ? {
+          name: { contains: q, mode: "insensitive" },
+        }
+      : {}),
   };
 
   const totalCount = await prisma.position.count({ where });
@@ -59,6 +66,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const homeForRole = defaultHomeForRole(session?.user?.role);
   const isStudent = session?.user?.role === "STUDENT";
   const isPremium = Boolean(session?.user?.isPremium);
+  const queryParams = new URLSearchParams();
+  if (typeFilter) queryParams.set("type", typeFilter);
+  if (levelFilter) queryParams.set("level", levelFilter);
+  if (q) queryParams.set("q", q);
+  const qs = queryParams.toString();
   const positions = await prisma.position.findMany({
     where,
     orderBy: { updatedAt: "desc" },
@@ -131,10 +143,25 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               ▼
             </span>
           </summary>
+          {/* 
+            key force le rerender des inputs lorsque les filtres changent
+            pour que “Réinitialiser” remette bien les valeurs par défaut.
+          */}
           <form
+            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
             method="get"
           >
+            <label className="text-sm text-slate-200">
+              Recherche
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Nom de la position"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
             <label className="text-sm text-slate-200">
               Type
               <select
@@ -257,7 +284,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           </span>
           <div className="flex items-center gap-2">
             <Link
-              href={`/positions?page=${Math.max(1, currentPage - 1)}`}
+              href={`/positions?page=${Math.max(1, currentPage - 1)}${qs ? `&${qs}` : ""}`}
               aria-disabled={currentPage === 1}
               className={`rounded-full border border-white/10 px-3 py-2 ${
                 currentPage === 1
@@ -268,7 +295,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               Précédent
             </Link>
             <Link
-              href={`/positions?page=${Math.min(totalPages, currentPage + 1)}`}
+              href={`/positions?page=${Math.min(totalPages, currentPage + 1)}${qs ? `&${qs}` : ""}`}
               aria-disabled={currentPage === totalPages}
               className={`rounded-full border border-white/10 px-3 py-2 ${
                 currentPage === totalPages
