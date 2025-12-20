@@ -164,27 +164,49 @@ function LoginContent() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/signup"
-              className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
             >
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/80 text-[10px] font-bold text-slate-950">
+                E
+              </span>
               Créer un compte Élève
             </Link>
-            {["Professeur", "Admin école"].map((label) => (
+            {[
+              { label: "Professeur", code: "P" },
+              { label: "Admin école", code: "A" },
+            ].map(({ label, code }) => (
               <button
                 key={label}
                 type="button"
                 aria-disabled
-                className="cursor-not-allowed rounded-full border border-dashed border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200"
-                title="Création réservée à l’école"
+                className="inline-flex items-center gap-2 cursor-not-allowed rounded-full border border-dashed border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/25"
+                title="Création réservée à l’école (bientôt ouverte)"
               >
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/80">
+                  {code}
+                </span>
                 Créer un compte {label}
               </button>
             ))}
           </div>
-          <p className="text-xs text-slate-300">
-            Freemium : accès de base (positions vues, modules ouverts). Premium : base complète
-            des positions + explications et mini-jeu renforcé. Création self-serve activée pour les
-            élèves uniquement ; prof/admin restent gérés par l’école.
-          </p>
+          <details className="group rounded-lg border border-white/10 bg-white/5 text-xs text-slate-200">
+            <summary className="flex cursor-pointer items-center justify-between px-3 py-2 font-semibold text-white">
+              <span>Freemium vs Premium</span>
+              <span className="text-[11px] text-slate-300 transition-transform group-open:rotate-180">
+                ▼
+              </span>
+            </summary>
+            <div className="px-3 pb-3">
+              <p className="mt-1 text-slate-300">
+                Freemium : accès de base (positions vues, modules ouverts).
+                Premium : base complète des positions + explications et mini-jeu renforcé.
+              </p>
+              <p className="mt-2 text-slate-300">
+                Aujourd’hui, la création en self-serve est ouverte pour les élèves. Les comptes
+                Prof/Admin sont encore provisionnés par l’école.
+              </p>
+            </div>
+          </details>
         </div>
       </section>
     </main>
