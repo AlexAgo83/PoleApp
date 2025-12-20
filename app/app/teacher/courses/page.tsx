@@ -130,16 +130,16 @@ export default async function TeacherCoursesPage({
             />
             Cours avec notes uniquement
           </label>
-          <div className="flex items-center justify-end gap-2">
+          <div className="mt-2 flex flex-col items-end gap-2 md:mt-0">
             <button
               type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              className="w-full rounded-full bg-cyan-500 px-4 py-2 text-center text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 md:w-auto"
             >
               Filtrer
             </button>
             <Link
               href="/app/teacher/courses"
-              className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="w-full rounded-full border border-white/10 px-3 py-2 text-center text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 md:w-auto"
             >
               Réinitialiser
             </Link>
