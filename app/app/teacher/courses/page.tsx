@@ -81,33 +81,40 @@ export default async function TeacherCoursesPage({
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
-        <form
-          className="mb-4 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
-          method="get"
-        >
-          <label className="text-sm text-slate-200">
-            Date min
-            <input
-              type="date"
-              name="from"
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Filtres avancés</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <form
+            className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
+            method="get"
+          >
+            <label className="text-sm text-slate-200">
+              Date min
+              <input
+                type="date"
+                name="from"
               defaultValue={resolvedParams.from}
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
           </label>
-          <label className="text-sm text-slate-200">
-            Date max
-            <input
-              type="date"
-              name="to"
-              defaultValue={resolvedParams.to}
+            <label className="text-sm text-slate-200">
+              Date max
+              <input
+                type="date"
+                name="to"
+                defaultValue={resolvedParams.to}
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
           </label>
-          <label className="text-sm text-slate-200">
-            Professeur
-            <select
-              key={teacherFilter ?? "all-teachers"}
-              name="teacher"
+            <label className="text-sm text-slate-200">
+              Professeur
+              <select
+                key={teacherFilter ?? "all-teachers"}
+                name="teacher"
               defaultValue={teacherFilter ?? ""}
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             >
@@ -119,11 +126,11 @@ export default async function TeacherCoursesPage({
               ))}
             </select>
           </label>
-          <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
-            <input
-              type="checkbox"
-              name="withNotes"
-              value="true"
+            <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input
+                type="checkbox"
+                name="withNotes"
+                value="true"
               defaultChecked={withNotes}
               key={withNotes ? "with-notes" : "all-courses"}
               className="h-4 w-4 rounded border-white/20 bg-white/5"
@@ -144,7 +151,8 @@ export default async function TeacherCoursesPage({
               Réinitialiser
             </Link>
           </div>
-        </form>
+          </form>
+        </details>
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => (
             <a
