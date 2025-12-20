@@ -89,7 +89,7 @@ export default async function TeacherCoursesPage({
             </span>
           </summary>
           <form
-            className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
             <label className="text-sm text-slate-200">
