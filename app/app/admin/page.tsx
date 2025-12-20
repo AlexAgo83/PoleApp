@@ -33,18 +33,20 @@ export default async function AdminDashboard() {
     );
   }
 
-  const [school, users, positionsCount, coursesCount, activeInjuries] = await Promise.all([
-    prisma.school.findUnique({ where: { id: session.user.schoolId } }),
-    prisma.user.findMany({
-      where: { schoolId: session.user.schoolId },
-      select: { role: true, isPremium: true },
-    }),
-    prisma.position.count(),
-    prisma.course.count({ where: { schoolId: session.user.schoolId } }),
-    prisma.studentInjury.count({
-      where: { isActive: true, student: { schoolId: session.user.schoolId } },
-    }),
-  ]);
+  const [school, users, positionsCount, coursesCount, activeInjuries, studiosCount] =
+    await Promise.all([
+      prisma.school.findUnique({ where: { id: session.user.schoolId } }),
+      prisma.user.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { role: true, isPremium: true },
+      }),
+      prisma.position.count(),
+      prisma.course.count({ where: { schoolId: session.user.schoolId } }),
+      prisma.studentInjury.count({
+        where: { isActive: true, student: { schoolId: session.user.schoolId } },
+      }),
+      prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
+    ]);
 
   const counts = users.reduce(
     (acc, user) => {
@@ -115,6 +117,7 @@ export default async function AdminDashboard() {
             <Stat label="Professeurs" value={counts.TEACHER} />
             <Stat label="Admins" value={counts.SCHOOL_ADMIN} />
             <Stat label="Premium" value={counts.premium} />
+            <Stat label="Studios" value={studiosCount} />
           </div>
         </div>
 
