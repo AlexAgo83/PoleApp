@@ -10,7 +10,7 @@ import { deleteCourseAction, updateCourseAction } from "../actions";
 
 type Props = {
   params: { id: string } | Promise<{ id?: string }>;
-  searchParams?: { from?: string };
+  searchParams?: Promise<{ from?: string }>;
 };
 
 export default async function EditCoursePage({ params, searchParams }: Props) {
@@ -74,7 +74,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   const defaultDate = `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
     dateObj.getDate()
   )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
-  const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
+  const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
