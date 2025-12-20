@@ -26,35 +26,74 @@ type PositionSeed = {
 type SeedUser = {
   key: "admin" | "teacher" | "studentFree" | "studentPremium";
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   role: Role;
   isPremium?: boolean;
 };
+
+const firstNames = [
+  "Léna",
+  "Julien",
+  "Maya",
+  "Arthur",
+  "Noémie",
+  "Amine",
+  "Camille",
+  "Léo",
+  "Inès",
+  "Raphaël",
+  "Zoé",
+  "Nora",
+];
+
+const lastNames = [
+  "Martin",
+  "Bernard",
+  "Dubois",
+  "Lefèvre",
+  "Moreau",
+  "Simon",
+  "Laurent",
+  "Michel",
+  "Garcia",
+  "Petit",
+  "Roux",
+  "Fournier",
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomName() {
+  return { first: pickRandom(firstNames), last: pickRandom(lastNames) };
+}
 
 const users: SeedUser[] = [
   {
     key: "admin",
     email: "admin@poleapp.test",
-    name: "Ada Admin",
+    ...randomName(),
     role: Role.SCHOOL_ADMIN,
     isPremium: true,
   },
   {
     key: "teacher",
     email: "teacher@poleapp.test",
-    name: "Tessa Teacher",
+    ...randomName(),
     role: Role.TEACHER,
   },
   {
     key: "studentFree",
     email: "student1@poleapp.test",
-    name: "Sam Student",
+    ...randomName(),
     role: Role.STUDENT,
   },
   {
     key: "studentPremium",
     email: "student2@poleapp.test",
-    name: "Pat Premium",
+    ...randomName(),
     role: Role.STUDENT,
     isPremium: true,
   },
@@ -176,10 +215,11 @@ async function main() {
   for (const seedUser of users) {
     const isPremium = seedUser.isPremium ?? false;
     const credits = seedUser.role === Role.STUDENT ? (isPremium ? 1000 : 0) : 0;
+    const fullName = `${seedUser.firstName} ${seedUser.lastName}`.trim();
     const record = await prisma.user.upsert({
       where: { email: seedUser.email },
       update: {
-        name: seedUser.name,
+        name: fullName,
         passwordHash,
         role: seedUser.role,
         schoolId: primarySchoolId,
@@ -187,7 +227,7 @@ async function main() {
         credits,
       },
       create: {
-        name: seedUser.name,
+        name: fullName,
         email: seedUser.email,
         passwordHash,
         role: seedUser.role,
@@ -205,25 +245,50 @@ async function main() {
     const schoolId = schoolRecords[name];
     const slug = slugify(name);
 
-    const teacherData = Array.from({ length: 5 }).map((_, idx) => ({
-      email: `teacher${idx + 1}.${slug}@poleapp.test`,
-      name: `Teacher ${idx + 1} (${name})`,
-      passwordHash,
-      role: Role.TEACHER,
-      schoolId,
-      isPremium: false,
-      credits: 0,
-    }));
+    // Studios (minimum 2) avec adresses simples
+    const studioSeeds = [
+      { name: `${name} Studio A`, address: "10 Rue de la Paix, Paris" },
+      { name: `${name} Studio B`, address: "25 Avenue des Arts, Lyon" },
+      { name: `${name} Loft C`, address: "3 Rue des Lilas, Marseille" },
+    ];
+    await prisma.studio.createMany({
+      data: studioSeeds.map((s, idx) => ({
+        name: `${s.name} #${idx + 1}`,
+        address: s.address,
+        schoolId,
+      })),
+      skipDuplicates: true,
+    });
+    const schoolStudios = await prisma.studio.findMany({
+      where: { schoolId },
+      orderBy: { name: "asc" },
+    });
 
-    const studentData = Array.from({ length: 10 }).map((_, idx) => ({
-      email: `student${idx + 1}.${slug}@poleapp.test`,
-      name: `Student ${idx + 1}`,
-      passwordHash,
-      role: Role.STUDENT,
-      schoolId,
-      isPremium: idx % 2 === 0,
-      credits: idx % 2 === 0 ? 1000 : 0,
-    }));
+    const teacherData = Array.from({ length: 5 }).map((_, idx) => {
+      const { first, last } = randomName();
+      return {
+        email: `teacher${idx + 1}.${slug}@poleapp.test`,
+        name: `${first} ${last}`,
+        passwordHash,
+        role: Role.TEACHER,
+        schoolId,
+        isPremium: false,
+        credits: 0,
+      };
+    });
+
+    const studentData = Array.from({ length: 10 }).map((_, idx) => {
+      const { first, last } = randomName();
+      return {
+        email: `student${idx + 1}.${slug}@poleapp.test`,
+        name: `${first} ${last}`,
+        passwordHash,
+        role: Role.STUDENT,
+        schoolId,
+        isPremium: idx % 2 === 0,
+        credits: idx % 2 === 0 ? 1000 : 0,
+      };
+    });
 
     await prisma.user.createMany({
       data: teacherData,
@@ -252,6 +317,7 @@ async function main() {
           durationMinutes: 60,
           schoolId,
           teacherId: teacher.id,
+          studioId: schoolStudios[0]?.id,
         },
       });
 

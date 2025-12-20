@@ -145,6 +145,12 @@ export async function updateCourseAction(formData: FormData) {
     }
   });
 
+  console.info("[credits] Mise à jour du cours", {
+    courseId: data.id,
+    studentCount: data.studentIds.length,
+    durationMinutes: data.durationMinutes,
+  });
+
   revalidatePath("/app/teacher/courses");
   revalidatePath(`/app/teacher/courses/${data.id}`);
   redirect(`/app/teacher/courses/${data.id}`);
