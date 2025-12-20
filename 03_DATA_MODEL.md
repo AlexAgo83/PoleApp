@@ -16,6 +16,10 @@
 ### User
 - id (cuid)
 - email (unique)
+- name (affichage, optionnel)
+- age (int optionnel, affiché sur fiche profil/élève)
+- avatarUrl (photo optionnelle; placeholder appliqué sinon)
+- diplomas (texte libre pour professeurs)
 - passwordHash
 - role: STUDENT | TEACHER | SCHOOL_ADMIN
 - schoolId (nullable)
@@ -73,8 +77,13 @@
 - id (cuid)
 - schoolId
 - teacherId
+- studioId (optionnel)
 - title (optional)
 - date (datetime)
+- durationMinutes (int, multiple de 15, défaut 60)
+- maxSeats (int, défaut 30)
+- costCredits (int, défaut 100)
+- photoUrl (URL optionnelle, placeholder sinon)
 - createdAt
 
 ### CourseAttendance
@@ -95,6 +104,12 @@
 - masteryLevel (enum)
 - comment
 - createdAt
+
+### TeacherFavoritePosition (nouveau)
+- id (cuid)
+- teacherId (User.id, role TEACHER)
+- positionId (Position.id)
+- unique(teacherId, positionId)
 
 ---
 

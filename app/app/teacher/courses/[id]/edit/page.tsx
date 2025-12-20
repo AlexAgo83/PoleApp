@@ -126,6 +126,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultDurationMinutes={course.durationMinutes ?? 60}
           defaultMaxSeats={course.maxSeats ?? 30}
           defaultCostCredits={course.costCredits ?? 100}
+          defaultPhotoUrl={course.photoUrl ?? ""}
         />
       </section>
 

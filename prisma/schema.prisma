@@ -64,6 +64,9 @@ model User {
   id            String                    @id @default(cuid())
   email         String                    @unique
   name          String?
+  age           Int?
+  avatarUrl     String?
+  diplomas      String?
   passwordHash  String
   role          Role
   credits       Int                       @default(0)
@@ -77,6 +80,7 @@ model User {
   courseNotes   CourseNote[]
   attendances   CourseAttendance[]
   coursesTaught Course[]                  @relation("CourseTeacher")
+  favoritePositions TeacherFavoritePosition[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -100,6 +104,7 @@ model Position {
   progress      StudentPositionProgress[]
   courseEntries CoursePosition[]
   courseNotes   CourseNote[]
+  favoriteByTeachers TeacherFavoritePosition[]
 
   @@unique([name])
 }
@@ -156,6 +161,7 @@ model Course {
   teacherId       String
   studioId        String?
   title           String?
+  photoUrl        String?
   date            DateTime
   durationMinutes Int      @default(60)
   maxSeats        Int      @default(30)
@@ -243,4 +249,16 @@ model SponsoredLink {
   partner   Partner  @relation(fields: [partnerId], references: [id])
 
   @@index([partnerId])
+}
+
+model TeacherFavoritePosition {
+  id         String   @id @default(cuid())
+  teacherId  String
+  positionId String
+  teacher    User     @relation(fields: [teacherId], references: [id])
+  position   Position @relation(fields: [positionId], references: [id])
+
+  @@unique([teacherId, positionId])
+  @@index([teacherId])
+  @@index([positionId])
 }

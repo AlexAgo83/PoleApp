@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const COURSE_PHOTO_PLACEHOLDER = "https://placehold.co/960x400/111827/ffffff?text=Cours";
+
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -98,58 +100,78 @@ export default async function TeacherCourseDetailPage({
   const seatsUsed = course._count?.attendances ?? 0;
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
+  const coursePhoto = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
+  const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            Professeur / Admin
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-3xl font-semibold text-white">
-              {course.title ?? "Cours sans titre"}
-            </h1>
-            {course.notes.length > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs font-semibold text-white">
-                Notes : {course.notes.length}
-              </span>
-            )}
+      <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-3 md:w-2/3">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+                Professeur / Admin
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-3xl font-semibold text-white">
+                  {course.title ?? "Cours sans titre"}
+                </h1>
+                <Link
+                  href={`/app/teacher/courses/${course.id}/edit${
+                    safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
+                  }`}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/gear.svg" alt="" className="h-4 w-4" />
+                  Éditer
+                </Link>
+                {course.notes.length > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs font-semibold text-white">
+                    Notes : {course.notes.length}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coursePhoto}
+                alt={course.title ?? "Cours"}
+                className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
+              />
+              <div className="space-y-1 text-sm text-slate-200">
+                <p className="text-base text-white">{teacherName}</p>
+                <p>
+                  {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
+                </p>
+                <p>
+                  {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
+                </p>
+                {course.studio && (
+                  <p className="text-slate-300">
+                    Studio : {course.studio.name}
+                    {course.studio.address ? ` — ${course.studio.address}` : ""}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-          <p className="text-sm text-slate-200">{teacherName}</p>
-          <p className="text-sm text-slate-200">
-            {new Date(course.date).toLocaleString("fr-FR", { hour12: false })}
-          </p>
-          <p className="text-sm text-slate-200">
-            Durée : {formatDuration(course.durationMinutes ?? 60)}
-          </p>
-          <p className="text-sm text-slate-200">
-            {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
-          </p>
-          {course.studio && (
-            <p className="text-sm text-slate-300">
-              Studio : {course.studio.name}
-              {course.studio.address ? ` — ${course.studio.address}` : ""}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/app/teacher/courses/${course.id}/edit${
-              safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
-            }`}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/gear.svg" alt="" className="h-4 w-4" />
-            Éditer
-          </Link>
-          <Link
-            href={backHref}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-          >
-            Retour liste
-          </Link>
+          <div className="flex w-full justify-end md:w-auto md:self-end">
+            <Link
+              href={backHref}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour liste
+            </Link>
+          </div>
         </div>
       </header>
 

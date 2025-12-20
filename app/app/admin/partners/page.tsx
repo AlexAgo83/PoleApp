@@ -43,7 +43,7 @@ function buildPageRange(totalPages: number, currentPage: number): PageLink[] {
 export default async function AdminPartnersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; q?: string; kind?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
@@ -62,10 +62,27 @@ export default async function AdminPartnersPage({
 
   const resolved = (await searchParams) ?? {};
   const rawPage = Number(resolved.page ?? "1");
+  const q = resolved.q?.toString().trim() || "";
+  const kindFilter = resolved.kind?.toString().trim() || "";
   const currentPage = Math.max(1, Number.isFinite(rawPage) ? rawPage : 1);
 
+  const whereClause = {
+    schoolId: session.user.schoolId,
+    ...(kindFilter ? { kind: kindFilter } : {}),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" as const } },
+            { kind: { contains: q, mode: "insensitive" as const } },
+            { website: { contains: q, mode: "insensitive" as const } },
+            { description: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
   const totalCount = await prisma.partner.count({
-    where: { schoolId: session.user.schoolId },
+    where: whereClause,
   });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
@@ -76,7 +93,7 @@ export default async function AdminPartnersPage({
   let supportsSponsored = true;
   try {
     partners = await prisma.partner.findMany({
-      where: { schoolId: session.user.schoolId },
+      where: whereClause,
       orderBy: { name: "asc" },
       include: { sponsoredLinks: true },
       skip,
@@ -85,7 +102,7 @@ export default async function AdminPartnersPage({
   } catch {
     supportsSponsored = false;
     partners = await prisma.partner.findMany({
-      where: { schoolId: session.user.schoolId },
+      where: whereClause,
       orderBy: { name: "asc" },
       skip,
       take: PAGE_SIZE,
@@ -175,7 +192,54 @@ export default async function AdminPartnersPage({
       </section>
 
       <section className="panel space-y-4 p-6">
-        <h2 className="text-lg font-semibold text-white">Partenaires existants</h2>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-white">Partenaires existants</h2>
+          <details className="group w-full" open>
+            <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+              <span>Filtres</span>
+              <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
+            </summary>
+            <form
+              method="get"
+              className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:items-end"
+            >
+              <label className="text-sm text-slate-200 md:col-span-2">
+                Recherche (nom, type, site, description)
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={q}
+                  placeholder="Nom, type ou site"
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="text-sm text-slate-200">
+                Type
+                <input
+                  type="text"
+                  name="kind"
+                  defaultValue={kindFilter}
+                  placeholder="SERVICE ou REVENDEUR"
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <div className="md:col-span-2 flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="submit"
+                  className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                >
+                  Filtrer
+                </button>
+                <Link
+                  href="/app/admin/partners"
+                  className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Réinitialiser
+                </Link>
+              </div>
+            </form>
+          </details>
+        </div>
         {partners.length === 0 && (
           <p className="text-slate-200">Aucun partenaire pour le moment.</p>
         )}

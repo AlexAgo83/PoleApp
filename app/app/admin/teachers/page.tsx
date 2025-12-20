@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 10;
+const TEACHER_AVATAR_PLACEHOLDER = "https://placehold.co/80x80/111827/ffffff?text=Prof";
 
 type SearchParams =
   | {
@@ -66,7 +67,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
 
   const teachers = await prisma.user.findMany({
     where: whereClause,
-    select: { id: true, name: true, email: true, isPremium: true, createdAt: true },
+    select: { id: true, name: true, email: true, avatarUrl: true, isPremium: true, createdAt: true },
     orderBy: { createdAt: "desc" },
     skip,
     take: PAGE_SIZE,
@@ -96,8 +97,11 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
         </div>
       </header>
 
-      <section className="panel p-6">
-        <details className="group">
+      <section className="panel space-y-4 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold text-white">Professeurs de l&apos;école</h2>
+        </div>
+        <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             <span className="inline-flex items-center gap-2">
               <span>Filtres</span>
@@ -150,74 +154,80 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
             </div>
           </form>
         </details>
-      </section>
-
-      <section className="panel space-y-4 p-6">
-        <h2 className="text-lg font-semibold text-white">Résultats</h2>
         {teachers.length === 0 ? (
           <p className="text-slate-300">Aucun professeur trouvé.</p>
         ) : (
-          <div className="divide-y divide-white/10">
-            {teachers.map((teacher) => (
-              <div
-                key={teacher.id}
-                className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between"
-              >
-                <div>
-                  <p className="text-base font-semibold text-white">{teacher.name ?? "Professeur"}</p>
-                  <p className="text-sm text-slate-300">{teacher.email}</p>
-                  <p className="text-xs text-slate-400">
-                    Créé le {new Date(teacher.createdAt).toLocaleDateString()}
-                  </p>
+          <>
+            <div className="divide-y divide-white/10">
+              {teachers.map((teacher) => (
+                <div
+                  key={teacher.id}
+                  className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
+                      alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
+                      className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                    />
+                    <div>
+                      <p className="text-base font-semibold text-white">{teacher.name ?? "Professeur"}</p>
+                      <p className="text-sm text-slate-300">{teacher.email}</p>
+                      <p className="text-xs text-slate-400">
+                        Créé le {new Date(teacher.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                    {teacher.isPremium && (
+                      <span className="rounded-full border border-amber-300/50 bg-amber-400/15 px-3 py-1 text-[12px] font-semibold text-amber-100">
+                        Premium
+                      </span>
+                    )}
+                    <Link
+                      href={`/app/teachers/${teacher.id}?from=/app/admin/teachers`}
+                      className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-center text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 md:w-auto"
+                    >
+                      Voir la fiche
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {teacher.isPremium && (
-                    <span className="rounded-full border border-amber-300/50 bg-amber-400/15 px-3 py-1 text-[12px] font-semibold text-amber-100">
-                      Premium
-                    </span>
-                  )}
-                  <Link
-                    href={`/app/admin/users?role=TEACHER&q=${encodeURIComponent(teacher.email)}`}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                  >
-                    Voir fiche
-                  </Link>
-                </div>
-              </div>
             ))}
           </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 text-sm text-slate-200">
+              <span>
+                Page {safePage} / {totalPages} · {totalCount} profs
+              </span>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/app/admin/teachers?page=${Math.max(1, safePage - 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}${premiumFilter ? `&premium=true` : ""}`}
+                  aria-disabled={safePage === 1}
+                  className={`rounded-full border border-white/10 px-3 py-2 ${
+                    safePage === 1
+                      ? "cursor-not-allowed text-slate-500"
+                      : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  }`}
+                >
+                  Précédent
+                </Link>
+                <Link
+                  href={`/app/admin/teachers?page=${Math.min(totalPages, safePage + 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}${premiumFilter ? `&premium=true` : ""}`}
+                  aria-disabled={safePage === totalPages}
+                  className={`rounded-full border border-white/10 px-3 py-2 ${
+                    safePage === totalPages
+                      ? "cursor-not-allowed text-slate-500"
+                      : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  }`}
+                >
+                  Suivant
+                </Link>
+              </div>
+            </div>
+          </>
         )}
       </section>
-
-      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
-        <span>
-          Page {safePage} / {totalPages} · {totalCount} profs
-        </span>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/app/admin/teachers?page=${Math.max(1, safePage - 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}${premiumFilter ? `&premium=true` : ""}`}
-            aria-disabled={safePage === 1}
-            className={`rounded-full border border-white/10 px-3 py-2 ${
-              safePage === 1
-                ? "cursor-not-allowed text-slate-500"
-                : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            }`}
-          >
-            Précédent
-          </Link>
-          <Link
-            href={`/app/admin/teachers?page=${Math.min(totalPages, safePage + 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}${premiumFilter ? `&premium=true` : ""}`}
-            aria-disabled={safePage === totalPages}
-            className={`rounded-full border border-white/10 px-3 py-2 ${
-              safePage === totalPages
-                ? "cursor-not-allowed text-slate-500"
-                : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            }`}
-          >
-            Suivant
-          </Link>
-        </div>
-      </div>
     </main>
   );
 }

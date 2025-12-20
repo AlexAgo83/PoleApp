@@ -17,6 +17,7 @@ const updateSchema = z.object({
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
+  photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -52,6 +53,7 @@ export async function updateCourseAction(formData: FormData) {
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
+    photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
     costCredits: formData.get("costCredits") ?? 100,
@@ -112,16 +114,23 @@ export async function updateCourseAction(formData: FormData) {
 
   await prisma.$transaction(async (tx) => {
     try {
+      const teacherToConnect = teacherId ?? existing.teacherId;
+      if (!teacherToConnect) {
+        throw new Error("Aucun professeur fourni pour ce cours");
+      }
       await tx.course.update({
         where: { id: data.id },
         data: {
           title: data.title || null,
           date: data.date,
-          teacherId: teacherId ?? existing.teacherId ?? null,
-          studioId: data.studioId ?? null,
+          teacher: { connect: { id: teacherToConnect } },
+          studio: data.studioId
+            ? { connect: { id: data.studioId } }
+            : { disconnect: true },
           durationMinutes: data.durationMinutes,
           maxSeats: data.maxSeats ?? 30,
           costCredits: data.costCredits ?? 100,
+          photoUrl: data.photoUrl ?? null,
         },
       });
     } catch (error) {
@@ -129,14 +138,21 @@ export async function updateCourseAction(formData: FormData) {
       const missingColumns =
         message.includes("maxSeats") || message.includes("costCredits");
       if (!missingColumns) throw error;
+      const teacherToConnect = teacherId ?? existing.teacherId;
+      if (!teacherToConnect) {
+        throw new Error("Aucun professeur fourni pour ce cours");
+      }
       await tx.course.update({
         where: { id: data.id },
         data: {
           title: data.title || null,
           date: data.date,
-          teacherId: teacherId ?? existing.teacherId ?? null,
-          studioId: data.studioId ?? null,
+          teacher: { connect: { id: teacherToConnect } },
+          studio: data.studioId
+            ? { connect: { id: data.studioId } }
+            : { disconnect: true },
           durationMinutes: data.durationMinutes,
+          photoUrl: data.photoUrl ?? null,
         },
       });
     }

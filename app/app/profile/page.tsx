@@ -11,6 +11,9 @@ const roleLabels: Record<string, string> = {
   SCHOOL_ADMIN: "Admin d'école",
 };
 
+const STUDENT_AVATAR_PLACEHOLDER = "https://placehold.co/160x160/1f2937/ffffff?text=Eleve";
+const TEACHER_AVATAR_PLACEHOLDER = "https://placehold.co/160x160/111827/ffffff?text=Prof";
+
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
@@ -20,12 +23,26 @@ export default async function ProfilePage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: { school: true },
+    include: {
+      school: true,
+      favoritePositions: {
+        include: { position: true },
+      },
+    },
   });
 
   if (!user) {
     redirect("/login");
   }
+
+  const isTeacher = user.role === "TEACHER";
+  const positions = isTeacher
+    ? await prisma.position.findMany({
+        select: { id: true, name: true, type: true },
+        orderBy: { name: "asc" },
+      })
+    : [];
+  const favoritePositionIds = user.favoritePositions.map((fp) => fp.positionId);
 
   const roleLabel = roleLabels[user.role] ?? user.role;
   const [firstNameDefault, ...restName] =
@@ -36,6 +53,10 @@ export default async function ProfilePage() {
   const lastNameDefault = restName.join(" ");
   const displayName = user.name?.trim() || user.email;
   const currentDisplay = [firstNameDefault, lastNameDefault].filter(Boolean).join(" ") || displayName;
+  const ageLabel = user.age ? `${user.age} ans` : "Non renseigné";
+  const avatarUrl =
+    user.avatarUrl?.trim() ||
+    (isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER);
 
   return (
     <main className="mx-auto grid max-w-4xl gap-6">
@@ -50,9 +71,22 @@ export default async function ProfilePage() {
           Informations du compte
         </h1>
         <p className="text-slate-300">
-          Consulte ou mets à jour ton nom d&apos;affichage (prénom / nom). Les autres
-          champs sont informatifs et liés à ton compte existant.
+          Mets à jour ton profil (nom, âge, photo). Si tu es prof, renseigne tes
+          diplômes et tes positions préférées. Les autres champs restent informatifs
+          et liés à ton compte existant.
         </p>
+        <div className="mt-4 flex items-center gap-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={avatarUrl}
+            alt={`Avatar de ${displayName}`}
+            className="h-16 w-16 rounded-full border border-white/10 object-cover shadow-lg shadow-black/30"
+          />
+          <div className="text-sm text-slate-300">
+            <p>{user.avatarUrl ? "Photo personnalisée" : "Placeholder appliqué"}</p>
+            <p className="text-xs text-slate-400">Modifie ta photo plus bas.</p>
+          </div>
+        </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <InfoRow label="Email" value={user.email} />
           <InfoRow label="Rôle" value={roleLabel} />
@@ -61,25 +95,22 @@ export default async function ProfilePage() {
             label="Abonnement"
             value={user.isPremium ? "Premium" : "Gratuit"}
           />
+          <InfoRow label="Âge" value={ageLabel} />
         </div>
       </section>
 
       <section className="panel p-6">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gear.svg" alt="" className="h-4 w-4" />
-              <div>
-                <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
-                  Édition
-                </p>
-                <h2 className="text-xl font-semibold text-white">
-                  Mettre à jour ton profil
-                </h2>
-                <p className="text-xs text-slate-300">
-                  Nom affiché actuellement : <span className="font-semibold text-white">{currentDisplay}</span>
-                </p>
-              </div>
+            <div>
+              <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+                Édition
+              </p>
+              <h2 className="text-xl font-semibold text-white">
+                Mettre à jour ton profil
+              </h2>
+              <p className="text-xs text-slate-300">
+                Nom affiché actuellement : <span className="font-semibold text-white">{currentDisplay}</span>
+              </p>
             </div>
           </div>
 
@@ -106,9 +137,71 @@ export default async function ProfilePage() {
             />
           </label>
 
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-200">Âge (optionnel)</span>
+            <input
+              type="number"
+              name="age"
+              inputMode="numeric"
+              min={1}
+              max={120}
+              defaultValue={user.age ?? ""}
+              placeholder="Ex: 24"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+            />
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-200">Photo (URL)</span>
+            <input
+              type="url"
+              name="avatarUrl"
+              defaultValue={user.avatarUrl ?? ""}
+              placeholder="https://…"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+            />
+            <p className="text-xs text-slate-400">
+              Laisse vide pour utiliser l’avatar neutre ({isTeacher ? "prof" : "élève"}).
+            </p>
+          </label>
+
+          {isTeacher && (
+            <>
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">Diplômes (texte libre)</span>
+                <textarea
+                  name="diplomas"
+                  defaultValue={user.diplomas ?? ""}
+                  rows={3}
+                  placeholder="Ex: BPJEPS AAN, Formation X, Certification Y…"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">Positions préférées</span>
+                <select
+                  name="favoritePositions"
+                  multiple
+                  defaultValue={favoritePositionIds}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+                >
+                  {positions.map((position) => (
+                    <option key={position.id} value={position.id}>
+                      {position.name} ({position.type})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-400">
+                  Maintiens Ctrl/Cmd (ou Maj) pour sélectionner plusieurs positions.
+                </p>
+              </label>
+            </>
+          )}
+
           <p className="text-xs text-slate-400">
             Ce nom est affiché dans les listes, cours et messages. Les autres
-            champs (email, rôle, école) restent informatifs et non éditables ici.
+            champs (email, rôle, école) restent informatifs et non éditables ici. L’âge est optionnel.
           </p>
 
           <div className="flex items-center justify-end gap-3">
@@ -121,6 +214,44 @@ export default async function ProfilePage() {
           </div>
         </form>
       </section>
+
+      {isTeacher && (
+        <section className="panel p-6">
+          <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+            Profil professeur
+          </p>
+          <h2 className="text-xl font-semibold text-white">Aperçu</h2>
+          <div className="mt-3 space-y-3 text-sm text-slate-200">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                Diplômes
+              </p>
+              <p className="whitespace-pre-line rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white">
+                {user.diplomas?.trim() || "Non renseigné"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                Positions préférées
+              </p>
+              {favoritePositionIds.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {user.favoritePositions.map((fav) => (
+                    <span
+                      key={fav.positionId}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                    >
+                      {fav.position.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

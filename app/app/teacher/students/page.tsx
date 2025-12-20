@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
+const STUDENT_AVATAR_PLACEHOLDER = "https://placehold.co/80x80/1f2937/ffffff?text=Eleve";
 
 export default async function TeacherStudentsPage({
   searchParams,
@@ -81,6 +82,7 @@ export default async function TeacherStudentsPage({
       id: true,
       email: true,
       name: true,
+      avatarUrl: true,
       isPremium: true,
       injuries: {
         include: { injuryType: true },
@@ -212,21 +214,27 @@ export default async function TeacherStudentsPage({
           {students.map((student) => (
             <article
               key={student.id}
-              className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
             >
-              <div>
-                <p className="text-base font-semibold text-white">
-                  {student.name ?? student.email}
-                </p>
-                <p className="text-sm text-slate-300">
-                  {student.email} · {student.isPremium ? "Premium" : "Free"}
-                </p>
-                <p className="text-sm text-slate-200">
-                  Blessures actives :{" "}
-                  {
-                    student.injuries.filter((inj) => inj.isActive).length
-                  }
-                </p>
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={student.avatarUrl?.trim() || STUDENT_AVATAR_PLACEHOLDER}
+                  alt={`Avatar de ${student.name ?? student.email}`}
+                  className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                />
+                <div>
+                  <p className="text-base font-semibold text-white">
+                    {student.name ?? student.email}
+                  </p>
+                  <p className="text-sm text-slate-300">
+                    {student.email} · {student.isPremium ? "Premium" : "Free"}
+                  </p>
+                  <p className="text-sm text-slate-200">
+                    Blessures actives :{" "}
+                    {student.injuries.filter((inj) => inj.isActive).length}
+                  </p>
+                </div>
               </div>
               <Link
                 href={`/app/teacher/students/${student.id}?from=${encodeURIComponent(

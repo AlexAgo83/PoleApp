@@ -51,7 +51,7 @@ export default async function StudentCourseDetailPage({
         schoolId: user.schoolId,
       },
       include: {
-        teacher: { select: { name: true, email: true } },
+        teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { name: true, address: true } },
         positions: { include: { position: true } },
         notes: {
@@ -70,7 +70,7 @@ export default async function StudentCourseDetailPage({
         return prisma.course.findUnique({
           where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
-            teacher: { select: { name: true, email: true } },
+            teacher: { select: { id: true, name: true, email: true } },
             studio: { select: { name: true, address: true } },
             positions: { include: { position: true } },
             notes: {
@@ -89,8 +89,6 @@ export default async function StudentCourseDetailPage({
     return notFound();
   }
 
-  const teacherName =
-    course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom =
@@ -98,9 +96,16 @@ export default async function StudentCourseDetailPage({
       ? rawFrom
       : undefined;
   const backHref = safeFrom ?? "/app/student/courses";
+  const teacherName =
+    course.teacher?.name ?? course.teacher?.email ?? "Professeur";
+  const teacherProfileHref = course.teacher?.id
+    ? `/app/teachers/${course.teacher.id}?from=${encodeURIComponent(backHref)}`
+    : null;
   const seatsUsed = course._count?.attendances ?? 0;
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
+  const COURSE_PHOTO_PLACEHOLDER = "https://placehold.co/960x400/0f172a/ffffff?text=Cours";
+  const coursePhoto = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
   const isAttending = course.attendances.length > 0;
   const endTime =
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
@@ -109,72 +114,96 @@ export default async function StudentCourseDetailPage({
     endTime > Date.now() &&
     remainingSeats > 0 &&
     (user.credits ?? 0) >= cost;
+  const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            Élève
-          </p>
-          <h1 className="text-3xl font-semibold text-white">
-            {course.title ?? "Cours"}
-          </h1>
-          <p className="text-sm text-slate-200">
-            {teacherName}
-          </p>
-          <p className="text-sm text-slate-200">
-            {new Date(course.date).toLocaleString("fr-FR", { hour12: false })}
-          </p>
-          <p className="text-sm text-slate-200">
-            Durée : {formatDuration(course.durationMinutes ?? 60)}
-          </p>
-          <p className="text-sm text-slate-200">
-            {remainingSeats} place(s) restante(s) · {cost} crédits
-          </p>
-          {course.studio?.name && (
-            <p className="mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-cyan-100">
-              Studio · {course.studio.name}
-              {course.studio.address ? (
-                <span className="text-[11px] text-slate-200">({course.studio.address})</span>
-              ) : null}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {!isAttending && (
-            <form action={purchaseCourseAction}>
-              <input type="hidden" name="courseId" value={course.id} />
-              <button
-                type="submit"
-                disabled={!canBuy}
-                className={`rounded-full px-3 py-2 text-sm font-semibold transition ${
-                  canBuy
-                    ? "border border-cyan-400/70 bg-cyan-500/20 text-white hover:bg-cyan-400/30"
-                    : "border border-white/10 bg-white/5 text-slate-400 cursor-not-allowed"
-                }`}
-                title={
-                  canBuy
-                    ? "Acheter ce cours"
-                    : remainingSeats <= 0
-                    ? "Plus de places"
-                    : endTime <= Date.now()
-                    ? "Cours passé"
-                    : (session.user.credits ?? 0) < cost
-                    ? "Crédits insuffisants"
-                    : "Non disponible"
-                }
-              >
-                Acheter ({cost} crédits)
-              </button>
-            </form>
-          )}
-          <Link
-            href={backHref}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-          >
-            Retour à mes cours
-          </Link>
+      <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-3 md:w-2/3">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
+              <h1 className="text-3xl font-semibold text-white">
+                {course.title ?? "Cours"}
+              </h1>
+            </div>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coursePhoto}
+                alt={course.title ?? "Cours"}
+                className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
+              />
+              <div className="space-y-1 text-sm text-slate-200">
+                <p className="text-base text-white">
+                  {teacherProfileHref ? (
+                    <Link
+                      href={teacherProfileHref}
+                      className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[12px] font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-white/10"
+                    >
+                      {teacherName}
+                    </Link>
+                  ) : (
+                    teacherName
+                  )}
+                </p>
+                <p>
+                  {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
+                </p>
+                <p>
+                  {remainingSeats} place(s) restante(s) · {cost} crédits
+                </p>
+                {course.studio && (
+                  <p className="text-slate-300">
+                    Studio : {course.studio.name}
+                    {course.studio.address ? ` — ${course.studio.address}` : ""}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto md:self-start">
+            {!isAttending && (
+              <form action={purchaseCourseAction}>
+                <input type="hidden" name="courseId" value={course.id} />
+                <button
+                  type="submit"
+                  disabled={!canBuy}
+                  className={`rounded-full px-3 py-2 text-sm font-semibold transition ${
+                    canBuy
+                      ? "border border-cyan-400/70 bg-cyan-500/20 text-white hover:bg-cyan-400/30"
+                      : "border border-white/10 bg-white/5 text-slate-400 cursor-not-allowed"
+                  }`}
+                  title={
+                    canBuy
+                      ? "Acheter ce cours"
+                      : remainingSeats <= 0
+                      ? "Plus de places"
+                      : endTime <= Date.now()
+                      ? "Cours passé"
+                      : (session.user.credits ?? 0) < cost
+                      ? "Crédits insuffisants"
+                      : "Non disponible"
+                  }
+                >
+                  Acheter ({cost} crédits)
+                </button>
+              </form>
+            )}
+            <Link
+              href={backHref}
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+            >
+              Retour à mes cours
+            </Link>
+          </div>
         </div>
       </header>
 

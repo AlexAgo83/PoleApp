@@ -9,8 +9,8 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 type PageProps =
-  | { searchParams?: { page?: string | string[] } }
-  | { searchParams?: Promise<{ page?: string | string[] }> };
+  | { searchParams?: { page?: string | string[]; q?: string | string[] } }
+  | { searchParams?: Promise<{ page?: string | string[]; q?: string | string[] }> };
 
 function paramValue(value?: string | string[]) {
   if (Array.isArray(value)) return value[value.length - 1];
@@ -20,6 +20,7 @@ function paramValue(value?: string | string[]) {
 export default async function AdminStudiosPage({ searchParams }: PageProps) {
   const resolvedParams = await Promise.resolve(searchParams);
   const pageParam = paramValue(resolvedParams?.page);
+  const q = (paramValue(resolvedParams?.q) ?? "").toString().trim();
   const rawPage = Number(pageParam ?? "1");
 
   const session = await getServerSession(authOptions);
@@ -42,12 +43,24 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   let currentPage = 1;
   let studios: Awaited<ReturnType<typeof prisma.studio.findMany>> = [];
   try {
+    const whereClause = {
+      schoolId: session.user.schoolId,
+      ...(q
+        ? {
+            OR: [
+              { name: { contains: q, mode: "insensitive" as const } },
+              { address: { contains: q, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+    };
     totalCount = await prisma.studio.count({ where: { schoolId: session.user.schoolId } });
+    totalCount = await prisma.studio.count({ where: whereClause });
     totalPages = Math.max(1, Math.ceil(totalCount / 10));
     currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
     const skip = (currentPage - 1) * 10;
     studios = await prisma.studio.findMany({
-      where: { schoolId: session.user.schoolId },
+      where: whereClause,
       orderBy: { name: "asc" },
       skip,
       take: 10,
@@ -127,7 +140,44 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       </section>
 
       <section className="panel space-y-4 p-4 md:p-6">
-        <h2 className="text-lg font-semibold text-white">Studios existants</h2>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-white">Studios existants</h2>
+          <details className="group w-full" open>
+            <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+              <span>Filtres</span>
+              <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
+            </summary>
+            <form
+              method="get"
+              className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-2 md:items-end"
+            >
+              <label className="text-sm text-slate-200 md:col-span-2">
+                Recherche (nom ou adresse)
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={q}
+                  placeholder="Nom ou adresse"
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <div className="md:col-span-2 flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="submit"
+                  className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                >
+                  Filtrer
+                </button>
+                <Link
+                  href="/app/admin/studios"
+                  className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Réinitialiser
+                </Link>
+              </div>
+            </form>
+          </details>
+        </div>
         {studios.length === 0 && (
           <p className="text-slate-200">Aucun studio pour le moment.</p>
         )}

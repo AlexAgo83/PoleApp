@@ -27,6 +27,7 @@ type Props = {
   defaultDurationMinutes?: number;
   defaultMaxSeats?: number;
   defaultCostCredits?: number;
+  defaultPhotoUrl?: string | null;
 };
 
 type Note = {
@@ -55,6 +56,7 @@ export function CourseForm({
   defaultDurationMinutes = 60,
   defaultMaxSeats = 30,
   defaultCostCredits = 100,
+  defaultPhotoUrl = "",
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -182,6 +184,18 @@ export function CourseForm({
           <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits.</p>
         </label>
       </div>
+
+      <label className="block text-sm text-slate-200">
+        Photo (URL, optionnelle)
+        <input
+          type="url"
+          name="photoUrl"
+          placeholder="https://…"
+          defaultValue={defaultPhotoUrl ?? ""}
+          className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+        />
+        <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
+      </label>
 
       <label className="block text-sm text-slate-200">
         Élèves présents

@@ -1,6 +1,6 @@
 # 02 — Instructions pour CODEX (phase produit)
 
-Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.4 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
+Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.5 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions
 - Fiches cours / fiches élève
 - Blessures
@@ -35,7 +35,7 @@ Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.4 (Steps 
 - Si Turbopack panique : supprimer `.next`/`.turbo` puis forcer Webpack avec `NEXT_USE_TURBOPACK=0 npm run dev` (ou la variable dans Docker/Render).
 - DB : `npm run db:push` puis `npm run db:seed` (les scripts pointent sur `prisma/schema.prisma`)
 - Seed : 2 écoles (École 1/École 2) + 5 profs et 10 élèves par école (mot de passe `change-me-password`, premium 1/2) + comptes fixes admin/teacher/student1/2
-- Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma generate && npm run build`, start `npm run start`
+- Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma db push && npx prisma generate && npm run build`, start `npm run db:push && npm run db:seed && npm run start`
 
 Structure proposée :
 - `/app` routes
@@ -45,7 +45,7 @@ Structure proposée :
 
 ---
 
-Les Steps 0→9 ci-dessous constituent le socle livré (tag `v0.4.4`). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
+Les Steps 0→9 ci-dessous constituent le socle livré (tag `v0.4.5`). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
 
 ## Step 0 — Bootstrap projet (doit compiler)
 

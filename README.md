@@ -1,6 +1,6 @@
-# Pole App — Produit v0.4.4 (Steps 0 → 9)
+# Pole App — Produit v0.4.5 (Steps 0 → 9)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.4` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step.
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.5` figé comme baseline. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step.
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données.
@@ -37,7 +37,9 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ## Navigation / Profile (Step 8)
 - Bandeau session/rôle avec `Accueil`, `Mon espace`, `Se déconnecter` sur toutes les pages.
 - Salutation “Bonjour <prénom|nom|email>” + bouton “Éditer” → `/app/profile`.
-- Page profil `/app/profile` : consultation email/rôle/école, édition prénom/nom (affichage app).
+- Page profil `/app/profile` : consultation email/rôle/école, édition prénom/nom/âge/photo (placeholder si vide).
+- Prof : diplômes + positions préférées éditables (multi-sélection) et visibles sur la fiche publique.
+- Fiche prof publique `/app/teachers/[id]` (photo/diplômes/positions préférées), accessible aux élèves ayant eu cours avec ce prof (`/app/student/teachers`).
 - Homepage “Modules” inclut la carte Profile.
 
 ## Positions
@@ -50,8 +52,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste.
 
 ## Cours
-- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition.
-- Élève : `/app/student/courses` historique (pagination 10) + détail.
+- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”.
+- Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA.
 - Détail cours correct par id; updates progression lors de la création/édition.
 
 ## Mini-jeu
@@ -73,13 +75,13 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Généré : 2 écoles, 5 professeurs + 10 élèves/école, cours de démo, positions/médias, blessures types.
 
 ## Déploiement Render
-- Build : `npm install && npx prisma generate && npm run build`
-- Start : `npm run start`
-- Post-deploy : `npm run db:push && npm run db:seed`
+- Build : `npm install && npx prisma db push && npx prisma generate && npm run build` (la base Render n’a pas d’historique de migrations, `db push` aligne le schéma).
+- Start : `npm run db:push && npm run db:seed && npm run start` (seed idempotent).
 - Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
-- Prisma : config déplacée dans `prisma.config.ts` (seed `tsx prisma/seed.ts`).
+- Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`).
 - Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds.
 
 ## Changelog
+- v0.4.5 : Profils enrichis (photo, âge, diplômes, positions préférées prof) + fiches prof publiques accessibles aux élèves. Cours avec photos optionnelles, listes/détails alignés élèves/profs, filtres studios/partenaires/admin, avatars dans les listes (élèves/profs/users).
 - v0.4.4 : Steps 0→9 livrées (Discovery QA terminée), passage en phase produit et tag `v0.4.4` figé comme baseline.
 - v0.2.2 : filtres admin/positions/élèves, UI filtres harmonisée, pagination 10 items, page profil et navigation role-based. Voir `CHANGELOG.md`.

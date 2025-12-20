@@ -2,11 +2,12 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Prisma, Role } from "@prisma/client";
 
-import { createUserAction, deleteUserAction, updateUserAction } from "./actions";
+import { createUserAction, deleteUserAction } from "./actions";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+const USER_AVATAR_PLACEHOLDER = "https://placehold.co/64x64/1f2937/ffffff?text=User";
 
 export default async function AdminUsersPage({
   searchParams,
@@ -80,6 +81,7 @@ export default async function AdminUsersPage({
       id: true,
       email: true,
       name: true,
+      avatarUrl: true,
       role: true,
       isPremium: true,
       createdAt: true,
@@ -277,77 +279,57 @@ export default async function AdminUsersPage({
               key={user.id}
               className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
             >
-              <div>
-                <p className="text-base font-semibold text-white">
-                  {user.name ?? user.email}
-                </p>
-                <p className="text-sm text-slate-300">
-                  {user.email} · {user.role} · {user.isPremium ? "Premium" : "Free"}
-                </p>
-                <p className="text-xs text-slate-400">
-                  Créé le {new Date(user.createdAt).toLocaleDateString()}
-                </p>
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={user.avatarUrl?.trim() || USER_AVATAR_PLACEHOLDER}
+                  alt={`Avatar de ${user.name ?? user.email}`}
+                  className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                />
+                <div>
+                  <p className="text-base font-semibold text-white">
+                    {user.name ?? user.email}
+                    <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-200">
+                      {user.role}
+                    </span>
+                    <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] ${
+                      user.isPremium
+                        ? "border border-amber-300/60 bg-amber-400/10 text-amber-100"
+                        : "border border-white/10 bg-white/5 text-slate-200"
+                    }`}>
+                      {user.isPremium ? "Premium" : "Free"}
+                    </span>
+                  </p>
+                  <p className="text-sm text-slate-300">
+                    {user.email}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Créé le {new Date(user.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <div className="flex w-full flex-col gap-2 text-sm">
-                <form
-                  action={updateUserAction}
-                  className="flex flex-wrap items-center gap-2"
-                  id={`update-${user.id}`}
-                >
-                  <input type="hidden" name="userId" value={user.id} />
-                  <input
-                    type="text"
-                    name="firstName"
-                    defaultValue={user.name?.split(" ")[0] ?? ""}
-                    placeholder="Prénom"
-                    className="min-w-[120px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="lastName"
-                    defaultValue={user.name?.split(" ").slice(1).join(" ") ?? ""}
-                    placeholder="Nom"
-                    className="min-w-[120px] rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                    required
-                  />
-                  <select
-                    name="role"
-                    defaultValue={user.role}
-                    className="rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              <div className="flex w-full flex-wrap items-center justify-end gap-2 text-sm">
+                {user.role !== "SCHOOL_ADMIN" && (
+                  <Link
+                    href={
+                      user.role === "TEACHER"
+                        ? `/app/teachers/${user.id}?from=/app/admin/users`
+                        : `/app/teacher/students/${user.id}?from=/app/admin/users`
+                    }
+                    className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-center font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 md:w-auto"
                   >
-                    <option value="TEACHER">Teacher</option>
-                    <option value="STUDENT">Student</option>
-                    <option value="SCHOOL_ADMIN">School admin</option>
-                  </select>
-                  <label className="inline-flex items-center gap-1 text-slate-200">
-                    <input
-                      type="checkbox"
-                      name="isPremium"
-                      defaultChecked={user.isPremium}
-                      className="h-4 w-4"
-                    />
-                    Premium
-                  </label>
-                </form>
-                <div className="flex flex-wrap items-center justify-end gap-2">
+                    Voir la fiche
+                  </Link>
+                )}
+                <form action={deleteUserAction}>
+                  <input type="hidden" name="userId" value={user.id} />
                   <button
                     type="submit"
-                    form={`update-${user.id}`}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
                   >
-                    Mettre à jour
+                    Supprimer
                   </button>
-                  <form action={deleteUserAction}>
-                    <input type="hidden" name="userId" value={user.id} />
-                    <button
-                      type="submit"
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
-                    >
-                      Supprimer
-                    </button>
-                  </form>
-                </div>
+                </form>
               </div>
             </div>
           ))}

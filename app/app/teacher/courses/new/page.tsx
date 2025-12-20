@@ -80,6 +80,7 @@ export default async function NewCoursePage() {
           teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : []}
           defaultTeacherId={session.user.role === "TEACHER" ? teacherId : teachers[0]?.id}
           studios={studios}
+          defaultPhotoUrl=""
         />
       </section>
     </main>
