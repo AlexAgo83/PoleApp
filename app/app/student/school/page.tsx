@@ -27,7 +27,11 @@ export default async function StudentSchoolPage() {
     where: { id: session.user.schoolId },
     include: {
       studios: true,
-      partners: true,
+      partners: {
+        include: {
+          sponsoredLinks: true,
+        },
+      },
     },
   });
 
@@ -57,7 +61,16 @@ export default async function StudentSchoolPage() {
                 className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
               >
                 <p className="text-base font-semibold text-white">{studio.name}</p>
-                {studio.address && <p className="text-sm text-slate-300">{studio.address}</p>}
+                {studio.address && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm text-cyan-300 transition hover:text-cyan-200"
+                  >
+                    {studio.address}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -89,6 +102,31 @@ export default async function StudentSchoolPage() {
                 )}
                 {partner.description && (
                   <p className="text-sm text-slate-300">{partner.description}</p>
+                )}
+                {partner.sponsoredLinks && partner.sponsoredLinks.length > 0 && (
+                  <div className="mt-2 space-y-1 text-sm text-slate-200">
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-200">
+                      Liens sponsorisés
+                    </p>
+                    <ul className="space-y-1">
+                      {partner.sponsoredLinks.map((link) => (
+                        <li key={link.id} className="flex flex-col gap-0.5">
+                          <span className="text-xs text-slate-300">
+                            {link.category}
+                            {link.label ? ` · ${link.label}` : ""}
+                          </span>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
+                          >
+                            Consulter le lien
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </li>
             ))}

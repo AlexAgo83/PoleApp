@@ -8,6 +8,7 @@ declare module "next-auth" {
       role: Role;
       schoolId?: string | null;
       isPremium?: boolean;
+      credits?: number;
     };
   }
 
@@ -15,6 +16,7 @@ declare module "next-auth" {
     role: Role;
     schoolId?: string | null;
     isPremium?: boolean;
+    credits?: number;
   }
 }
 
@@ -23,5 +25,6 @@ declare module "next-auth/jwt" {
     role?: Role;
     schoolId?: string | null;
     isPremium?: boolean;
+    credits?: number;
   }
 }

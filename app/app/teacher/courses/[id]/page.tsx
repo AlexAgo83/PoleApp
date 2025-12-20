@@ -5,6 +5,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+function formatDuration(minutes: number) {
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hrs > 0) {
+    return `${hrs}h${mins.toString().padStart(2, "0")}`;
+  }
+  return `${mins} min`;
+}
+
 type PageProps = {
   params: { id: string } | Promise<{ id?: string }>;
   searchParams?: Promise<{ from?: string }>;
@@ -78,6 +87,9 @@ export default async function TeacherCourseDetailPage({
           </div>
           <p className="text-sm text-slate-200">{teacherName}</p>
           <p className="text-sm text-slate-200">{new Date(course.date).toLocaleString()}</p>
+          <p className="text-sm text-slate-200">
+            Durée : {formatDuration(course.durationMinutes ?? 60)}
+          </p>
           {course.studio && (
             <p className="text-sm text-slate-300">
               Studio : {course.studio.name}

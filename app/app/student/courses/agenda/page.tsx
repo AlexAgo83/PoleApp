@@ -15,6 +15,15 @@ function endOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
 }
 
+function formatDuration(minutes: number) {
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hrs > 0) {
+    return `${hrs}h${mins.toString().padStart(2, "0")}`;
+  }
+  return `${mins} min`;
+}
+
 export default async function StudentCoursesAgendaPage({
   searchParams,
 }: {
@@ -224,9 +233,12 @@ export default async function StudentCoursesAgendaPage({
                         {a.course.studio.name}
                       </span>
                     ) : null}
-                    <div className="mt-1 text-[10px] text-slate-200">
+                    <div className="mt-1 text-[10px] text-slate-200 leading-snug">
                       {new Date(a.course.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ·{" "}
                       {a.course.title ?? "Cours"}
+                      <div className="text-[10px] text-slate-300">
+                        Durée : {formatDuration(a.course.durationMinutes ?? 60)}
+                      </div>
                     </div>
                   </Link>
                 ))}

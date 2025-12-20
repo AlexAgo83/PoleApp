@@ -8,6 +8,15 @@ const PAGE_SIZE = 10;
 
 export const dynamic = "force-dynamic";
 
+function formatDuration(minutes: number) {
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hrs > 0) {
+    return `${hrs}h${mins.toString().padStart(2, "0")}`;
+  }
+  return `${mins} min`;
+}
+
 export default async function TeacherCoursesPage({
   searchParams,
 }: {
@@ -228,13 +237,11 @@ export default async function TeacherCoursesPage({
                       </span>
                     )}
                   </p>
-                  {course.studio && (
-                    <span className="mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
-                      Studio · {course.studio.name}
-                    </span>
-                  )}
                   <p className="text-sm text-slate-300">
                     {new Date(course.date).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-slate-300">
+                    Durée : {formatDuration(course.durationMinutes ?? 60)}
                   </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">

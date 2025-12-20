@@ -46,6 +46,8 @@ export async function signupStudentAction(formData: FormData) {
 
   const passwordHash = await bcrypt.hash(data.password, 10);
   const name = [data.firstName, data.lastName].filter(Boolean).join(" ").trim() || null;
+  const isPremium = Boolean(data.isPremium);
+  const credits = isPremium ? 1000 : 0;
 
   try {
     await prisma.user.create({
@@ -54,7 +56,8 @@ export async function signupStudentAction(formData: FormData) {
         passwordHash,
         role: "STUDENT",
         name,
-        isPremium: Boolean(data.isPremium),
+        isPremium,
+        credits,
         schoolId: school?.id,
       },
     });
