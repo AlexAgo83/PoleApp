@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -64,15 +65,11 @@ export default async function ProfilePage() {
         <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
           Profil
         </p>
-        <p className="mt-1 text-lg font-semibold text-white">
-          Bonjour {displayName},
-        </p>
         <h1 className="text-2xl font-semibold text-white">
           Informations du compte
         </h1>
         <p className="text-slate-300">
-          Mets à jour ton profil (nom, âge, photo). Si tu es prof, renseigne tes
-          diplômes et tes positions préférées. Les autres champs restent informatifs
+          Mets à jour ton profil (nom, âge, photo). Les autres champs restent informatifs
           et liés à ton compte existant.
         </p>
         <div className="mt-4 flex items-center gap-4">
@@ -96,6 +93,14 @@ export default async function ProfilePage() {
             value={user.isPremium ? "Premium" : "Gratuit"}
           />
           <InfoRow label="Âge" value={ageLabel} />
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Link
+            href="/app/student"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
+          >
+            ← Retour accueil
+          </Link>
         </div>
       </section>
 
