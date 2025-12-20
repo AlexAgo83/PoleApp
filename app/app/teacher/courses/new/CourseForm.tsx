@@ -24,6 +24,7 @@ type Props = {
   defaultTeacherId?: string | null;
   studios?: Studio[];
   defaultStudioId?: string | null;
+  defaultDurationMinutes?: number;
 };
 
 type Note = {
@@ -49,6 +50,7 @@ export function CourseForm({
   defaultTeacherId,
   studios = [],
   defaultStudioId,
+  defaultDurationMinutes = 60,
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -137,6 +139,19 @@ export function CourseForm({
           </select>
         </label>
       )}
+
+      <label className="block text-sm text-slate-200">
+        Durée (minutes)
+        <input
+          type="number"
+          name="durationMinutes"
+          min={30}
+          step={15}
+          defaultValue={defaultDurationMinutes}
+          className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+        />
+        <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
+      </label>
 
       <label className="block text-sm text-slate-200">
         Élèves présents

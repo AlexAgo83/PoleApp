@@ -123,6 +123,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultTeacherId={course.teacherId ?? teacherId}
           studios={studios}
           defaultStudioId={course.studioId ?? null}
+          defaultDurationMinutes={course.durationMinutes ?? 60}
         />
       </section>
 

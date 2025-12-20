@@ -174,6 +174,8 @@ async function main() {
   const primarySchoolId = schoolRecords[schoolNames[0]];
 
   for (const seedUser of users) {
+    const isPremium = seedUser.isPremium ?? false;
+    const credits = seedUser.role === Role.STUDENT ? (isPremium ? 1000 : 0) : 0;
     const record = await prisma.user.upsert({
       where: { email: seedUser.email },
       update: {
@@ -181,7 +183,8 @@ async function main() {
         passwordHash,
         role: seedUser.role,
         schoolId: primarySchoolId,
-        isPremium: seedUser.isPremium ?? false,
+        isPremium,
+        credits,
       },
       create: {
         name: seedUser.name,
@@ -189,7 +192,8 @@ async function main() {
         passwordHash,
         role: seedUser.role,
         schoolId: primarySchoolId,
-        isPremium: seedUser.isPremium ?? false,
+        isPremium,
+        credits,
       },
     });
 
@@ -208,6 +212,7 @@ async function main() {
       role: Role.TEACHER,
       schoolId,
       isPremium: false,
+      credits: 0,
     }));
 
     const studentData = Array.from({ length: 10 }).map((_, idx) => ({
@@ -217,6 +222,7 @@ async function main() {
       role: Role.STUDENT,
       schoolId,
       isPremium: idx % 2 === 0,
+      credits: idx % 2 === 0 ? 1000 : 0,
     }));
 
     await prisma.user.createMany({
@@ -243,6 +249,7 @@ async function main() {
         data: {
           title: `Cours de demo (${name})`,
           date: new Date(),
+          durationMinutes: 60,
           schoolId,
           teacherId: teacher.id,
         },

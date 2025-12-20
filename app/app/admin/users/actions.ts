@@ -81,6 +81,8 @@ export async function createUserAction(formData: FormData) {
   }
 
   const passwordHash = await bcrypt.hash(data.password, 10);
+  const isPremium = Boolean(data.isPremium);
+  const credits = data.role === "STUDENT" ? (isPremium ? 1000 : 0) : 0;
 
   await prisma.user.create({
     data: {
@@ -88,7 +90,8 @@ export async function createUserAction(formData: FormData) {
       name: `${firstName} ${lastName}`.trim(),
       passwordHash,
       role: data.role,
-      isPremium: Boolean(data.isPremium),
+      isPremium,
+      credits,
       schoolId: admin.schoolId,
     },
   });

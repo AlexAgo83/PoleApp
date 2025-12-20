@@ -16,6 +16,10 @@ const courseSchema = z.object({
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
+  durationMinutes: z
+    .coerce.number()
+    .min(30)
+    .refine((n) => n % 15 === 0, { message: "La durée doit être un multiple de 15 minutes" }),
   notes: z
     .array(
       z.object({
@@ -44,6 +48,7 @@ export async function createCourseAction(formData: FormData) {
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
+    durationMinutes: formData.get("durationMinutes") ?? 60,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
@@ -91,6 +96,7 @@ export async function createCourseAction(formData: FormData) {
         schoolId: session.user.schoolId!,
         teacherId: teacherId ?? session.user.id,
         studioId: parsed.data.studioId || null,
+        durationMinutes: parsed.data.durationMinutes,
       },
     });
 

@@ -78,6 +78,9 @@ export default async function AdminStudiosPage() {
               name="address"
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
+            <p className="mt-1 text-xs text-slate-400">
+              Astuce : saisissez l’adresse puis ouvrez Google Maps pour vérifier l’emplacement.
+            </p>
           </label>
           <div className="md:col-span-2 flex justify-end">
             <button
@@ -118,6 +121,16 @@ export default async function AdminStudiosPage() {
                   placeholder="Adresse"
                   className="w-64 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
+                {studio.address && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold text-cyan-300 transition hover:text-cyan-200"
+                  >
+                    Ouvrir dans Google Maps
+                  </a>
+                )}
                 <button
                   type="submit"
                   className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"

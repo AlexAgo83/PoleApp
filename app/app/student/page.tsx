@@ -14,6 +14,7 @@ export default async function StudentDashboard() {
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
   const displayName = firstName ?? lastName ?? session?.user?.email ?? "élève";
+  const credits = session?.user?.credits ?? 0;
 
   return (
     <main className="grid gap-6">
@@ -35,6 +36,7 @@ export default async function StudentDashboard() {
         <p className="text-slate-300">
           Accès réservé aux rôles étudiant. Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
+        <p className="text-sm text-cyan-100">Crédits : {credits}</p>
       </section>
 
       <section className="panel p-6">

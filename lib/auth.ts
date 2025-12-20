@@ -46,6 +46,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           schoolId: user.schoolId,
           isPremium: user.isPremium,
+          credits: user.credits,
         };
       },
     }),
@@ -56,6 +57,7 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role as Role;
         token.schoolId = user.schoolId;
         token.isPremium = user.isPremium;
+        token.credits = (user as any).credits ?? 0;
       }
       return token;
     },
@@ -65,6 +67,7 @@ export const authOptions: NextAuthOptions = {
         session.user.schoolId = token.schoolId as string | null | undefined;
         session.user.isPremium = Boolean(token.isPremium);
         session.user.id = token.sub ?? "";
+        session.user.credits = Number(token.credits ?? 0);
       }
       return session;
     },
