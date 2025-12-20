@@ -11,11 +11,16 @@ export default async function AdminUsersPage({
   searchParams,
 }: {
   searchParams?:
-    | { success?: string; error?: string; page?: string }
-    | Promise<{ success?: string; error?: string; page?: string }>;
+    | { success?: string; error?: string; page?: string; role?: string; premium?: string }
+    | Promise<{ success?: string; error?: string; page?: string; role?: string; premium?: string }>;
 }) {
   const params = (await Promise.resolve(searchParams)) ?? {};
   const rawPage = Number(params.page ?? "1");
+  const roleFilter =
+    params.role && ["STUDENT", "TEACHER", "SCHOOL_ADMIN"].includes(params.role)
+      ? params.role
+      : undefined;
+  const premiumFilter = params.premium === "true";
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     return null;
@@ -31,15 +36,21 @@ export default async function AdminUsersPage({
     );
   }
 
+  const whereClause = {
+    schoolId: session.user.schoolId,
+    ...(roleFilter ? { role: roleFilter as any } : {}),
+    ...(premiumFilter ? { isPremium: true } : {}),
+  };
+
   const totalCount = await prisma.user.count({
-    where: { schoolId: session.user.schoolId },
+    where: whereClause,
   });
   const totalPages = Math.max(1, Math.ceil(totalCount / 10));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * 10;
 
   const users = await prisma.user.findMany({
-    where: { schoolId: session.user.schoolId },
+    where: whereClause,
     select: {
       id: true,
       email: true,
@@ -142,7 +153,7 @@ export default async function AdminUsersPage({
             <input type="checkbox" name="isPremium" className="h-4 w-4" />
             Premium ?
           </label>
-          <div className="flex items-end">
+          <div className="flex items-end justify-end md:col-span-2">
             <button
               type="submit"
               className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
@@ -160,6 +171,56 @@ export default async function AdminUsersPage({
             Page {currentPage} / {totalPages} · {totalCount} comptes
           </p>
         </div>
+        <details className="group mb-4" open>
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span>Filtres</span>
+            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <form
+            method="get"
+            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+          >
+            <label className="text-sm text-slate-200">
+              Rôle
+              <select
+                key={roleFilter ?? "all-roles"}
+                name="role"
+                defaultValue={roleFilter ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les rôles</option>
+                <option value="STUDENT">Student</option>
+                <option value="TEACHER">Teacher</option>
+                <option value="SCHOOL_ADMIN">School admin</option>
+              </select>
+            </label>
+            <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input
+                type="checkbox"
+                name="premium"
+                value="true"
+                defaultChecked={premiumFilter}
+                key={premiumFilter ? "premium-only" : "all-users"}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Premium uniquement
+            </label>
+            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/app/admin/users"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </details>
         <div className="mt-4 divide-y divide-white/5">
           {users.map((user) => (
             <div
@@ -177,7 +238,7 @@ export default async function AdminUsersPage({
                   Créé le {new Date(user.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-sm">
+              <div className="flex w-full flex-col gap-2 text-sm">
                 <form
                   action={updateUserAction}
                   className="flex flex-wrap items-center gap-2"
@@ -218,22 +279,25 @@ export default async function AdminUsersPage({
                     />
                     Premium
                   </label>
+                </form>
+                <div className="flex flex-wrap items-center justify-end gap-2">
                   <button
                     type="submit"
+                    form={`update-${user.id}`}
                     className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                   >
                     Mettre à jour
                   </button>
-                </form>
-                <form action={deleteUserAction} className="mt-1">
-                  <input type="hidden" name="userId" value={user.id} />
-                  <button
-                    type="submit"
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
-                  >
-                    Supprimer
-                  </button>
-                </form>
+                  <form action={deleteUserAction}>
+                    <input type="hidden" name="userId" value={user.id} />
+                    <button
+                      type="submit"
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
+                    >
+                      Supprimer
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           ))}
@@ -241,7 +305,9 @@ export default async function AdminUsersPage({
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-200">
           <Link
-            href={`/app/admin/users?page=${Math.max(1, currentPage - 1)}`}
+            href={`/app/admin/users?page=${Math.max(1, currentPage - 1)}${
+              roleFilter ? `&role=${roleFilter}` : ""
+            }${premiumFilter ? "&premium=true" : ""}`}
             aria-disabled={currentPage === 1}
             className={`rounded-full border border-white/10 px-3 py-2 ${
               currentPage === 1
@@ -252,7 +318,9 @@ export default async function AdminUsersPage({
             Précédent
           </Link>
           <Link
-            href={`/app/admin/users?page=${Math.min(totalPages, currentPage + 1)}`}
+            href={`/app/admin/users?page=${Math.min(totalPages, currentPage + 1)}${
+              roleFilter ? `&role=${roleFilter}` : ""
+            }${premiumFilter ? "&premium=true" : ""}`}
             aria-disabled={currentPage === totalPages}
             className={`rounded-full border border-white/10 px-3 py-2 ${
               currentPage === totalPages
