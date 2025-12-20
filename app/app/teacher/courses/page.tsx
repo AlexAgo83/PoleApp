@@ -103,6 +103,7 @@ export default async function TeacherCoursesPage({
           <label className="text-sm text-slate-200">
             Professeur
             <select
+              key={teacherFilter ?? "all-teachers"}
               name="teacher"
               defaultValue={teacherFilter ?? ""}
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
