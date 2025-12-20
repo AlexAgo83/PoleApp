@@ -89,15 +89,17 @@ export default async function StudentCoursesPage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
-      <header className="panel border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-          Élève
-        </p>
-        <h1 className="text-3xl font-semibold text-white">Mes cours</h1>
-        <p className="text-sm text-slate-200">
-          Historique des cours suivis. Page {currentPage} / {totalPages} · {totalCount} entrées
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
+      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+            Élève
+          </p>
+          <h1 className="text-3xl font-semibold text-white">Mes cours</h1>
+          <p className="text-sm text-slate-200">
+            Historique des cours suivis. Page {currentPage} / {totalPages} · {totalCount} entrées
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 self-center">
           <Link
             href="/app/student/courses/agenda"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
