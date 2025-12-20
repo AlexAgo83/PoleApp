@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string };
+type Teacher = { id: string; name: string | null; email: string };
 
 type Props = {
   students: Student[];
@@ -18,6 +19,8 @@ type Props = {
   submitLabel?: string;
   cancelHref?: string;
   courseId?: string;
+  teachers?: Teacher[];
+  defaultTeacherId?: string | null;
 };
 
 type Note = {
@@ -39,6 +42,8 @@ export function CourseForm({
   submitLabel = "Créer le cours",
   cancelHref,
   courseId,
+  teachers = [],
+  defaultTeacherId,
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -90,6 +95,23 @@ export function CourseForm({
           />
         </label>
       </div>
+
+      {teachers.length > 0 && (
+        <label className="block text-sm text-slate-200">
+          Professeur (admin)
+          <select
+            name="teacherId"
+            defaultValue={defaultTeacherId ?? ""}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          >
+            {teachers.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name ?? t.email}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <label className="block text-sm text-slate-200">
         Élèves présents
@@ -169,6 +191,9 @@ export function CourseForm({
       />
       {courseId && <input type="hidden" name="courseId" value={courseId} />}
       <input type="hidden" name="notes" value={JSON.stringify(notesArray)} />
+      {teachers.length === 0 && (
+        <input type="hidden" name="teacherId" value={defaultTeacherId ?? ""} />
+      )}
 
       <div className="mt-4 flex flex-wrap justify-end gap-3">
         {cancelHref && (
