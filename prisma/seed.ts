@@ -67,7 +67,10 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 function randomName() {
-  return { first: pickRandom(firstNames), last: pickRandom(lastNames) };
+  return {
+    firstName: pickRandom(firstNames),
+    lastName: pickRandom(lastNames),
+  };
 }
 
 const users: SeedUser[] = [
@@ -265,10 +268,10 @@ async function main() {
     });
 
     const teacherData = Array.from({ length: 5 }).map((_, idx) => {
-      const { first, last } = randomName();
+      const { firstName, lastName } = randomName();
       return {
         email: `teacher${idx + 1}.${slug}@poleapp.test`,
-        name: `${first} ${last}`,
+        name: `${firstName} ${lastName}`,
         passwordHash,
         role: Role.TEACHER,
         schoolId,
@@ -278,10 +281,10 @@ async function main() {
     });
 
     const studentData = Array.from({ length: 10 }).map((_, idx) => {
-      const { first, last } = randomName();
+      const { firstName, lastName } = randomName();
       return {
         email: `student${idx + 1}.${slug}@poleapp.test`,
-        name: `${first} ${last}`,
+        name: `${firstName} ${lastName}`,
         passwordHash,
         role: Role.STUDENT,
         schoolId,
