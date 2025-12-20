@@ -218,7 +218,7 @@ export default async function AdminUsersPage({
           <form
             key={`filters-${roleFilter ?? "all"}-${premiumFilter ? "premium" : "all"}-${q || "all"}`}
             method="get"
-            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (nom ou email)

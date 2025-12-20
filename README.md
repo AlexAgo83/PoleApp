@@ -71,6 +71,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Start : `npm run start`
 - Post-deploy : `npm run db:push && npm run db:seed`
 - Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
+- Prisma : config déplacée dans `prisma.config.ts` (seed `tsx prisma/seed.ts`).
+- Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds.
 
 ## Changelog
 - v0.2.2 : filtres admin/positions/élèves, UI filtres harmonisée, pagination 10 items, page profil et navigation role-based. Voir `CHANGELOG.md`.

@@ -189,7 +189,7 @@ export async function deleteUserAction(formData: FormData) {
 
   if (linkedTotal > 0) {
     redirectWithMessage(
-      "Suppression impossible : cet utilisateur a des présences, notes, progression ou cours liés.",
+      "Suppression impossible : cet utilisateur est lié à des présences, des notes, une progression ou des cours. Supprime ces liens avant de continuer.",
       "error"
     );
   }
@@ -198,7 +198,10 @@ export async function deleteUserAction(formData: FormData) {
     await prisma.user.delete({ where: { id: data.userId } });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
-      redirectWithMessage("Suppression impossible (liens cours/progression)", "error");
+      redirectWithMessage(
+        "Suppression impossible : des données liées (cours ou progression) empêchent la suppression.",
+        "error"
+      );
     }
     throw err;
   }
