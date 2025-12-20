@@ -13,6 +13,7 @@ export default async function TeacherDashboard() {
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
   const displayName = firstName ?? lastName ?? session?.user?.email ?? "professeur";
+  const teacherProfileHref = session?.user?.id ? `/app/teachers/${session.user.id}` : "/app/profile";
 
   return (
     <main className="grid gap-6">
@@ -68,7 +69,21 @@ export default async function TeacherDashboard() {
           <p className="text-sm text-slate-300">
             Présences, positions, notes élève×position, impact progression.
           </p>
-        </Link>
+          </Link>
+          <Link
+            href={teacherProfileHref}
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              Fiche professeur
+            </p>
+            <p className="text-base font-semibold text-white">
+              Photo, diplômes, positions préférées
+            </p>
+            <p className="text-sm text-slate-300">
+              Vue partagée avec tes élèves. Édite depuis ton profil.
+            </p>
+          </Link>
           <Link
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"

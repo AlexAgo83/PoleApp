@@ -110,31 +110,33 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         </div>
       </section>
 
-      <header className="panel flex flex-wrap items-center justify-between gap-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            {session.user.role === "SCHOOL_ADMIN"
-              ? "Espace admin"
-              : session.user.role === "TEACHER"
-              ? "Espace prof"
-              : "Espace élève"}
-          </p>
-          <h1 className="text-3xl font-semibold text-white">Positions</h1>
-          <p className="text-sm text-slate-200">
-            Catalogue des positions avec filtres et détail. Visible selon tes droits.
-          </p>
+      <header className="panel space-y-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+              {session.user.role === "SCHOOL_ADMIN"
+                ? "Espace admin"
+                : session.user.role === "TEACHER"
+                ? "Espace prof"
+                : "Espace élève"}
+            </p>
+            <h1 className="text-3xl font-semibold text-white">Positions</h1>
+            <p className="text-sm text-slate-200">
+              Catalogue des positions avec filtres et détail. Visible selon tes droits.
+            </p>
+          </div>
+          <div className="flex w-full justify-end md:w-auto">
+            {canManage ? (
+              <Link
+                href="/teacher/positions/new"
+                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+              >
+                Nouvelle position
+              </Link>
+            ) : null}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {canManage ? (
-            <Link
-              href="/teacher/positions/new"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
-            >
-              Nouvelle position
-            </Link>
-          ) : null}
-        </div>
-        <div className="mt-2 flex w-full justify-end">
+        <div className="flex w-full justify-end">
           {session.user.role === "SCHOOL_ADMIN" ? (
             <Link
               href="/app/admin"

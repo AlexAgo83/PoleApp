@@ -1,6 +1,6 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.4.4 (baseline produit)
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.4.5 (baseline produit)
 
-Date: 2025-12-19 (MAJ v0.4.4)
+Date: 2025-12-24 (MAJ v0.4.5)
 
 Ce dossier contient :
 - `01_BACKLOG.md` : backlog structuré (epics → features → user stories → critères d’acceptation).
@@ -9,11 +9,11 @@ Ce dossier contient :
 - `04_ROUTES_AND_SCREENS.md` : écrans clés + routes + états.
 - `05_SEED_CONTENT.md` : contenu de seed (positions, types, niveaux) pour démarrer vite.
 
-## Fonctionnalités livrées (baseline produit v0.4.4)
+## Fonctionnalités livrées (baseline produit v0.4.5)
 - Base positions (médias + attributs), fiche élève (progression + blessures), fiche cours (présence + positions vues + commentaires).
 - Mini-jeu de révision photo→nom (score + gating premium).
 - Auth + rôles (Élève / Prof / École admin) + navigation unifiée par rôle.
-- Pagination/filtres harmonisés, profil utilisateur, seed idempotent.
+- Pagination/filtres harmonisés, profil utilisateur (âge/photo), fiches prof publiques, photos cours avec placeholders, seed idempotent.
 
 ## Phase produit — exigences transverses
 - Inclure fiabilité/observabilité/sécurité/perf dans chaque Step (tests au-delà du MVP, alerting/logging/metrics, migrations rétro-compatibles).
@@ -31,13 +31,13 @@ Ce dossier contient :
 - Step 0 → 8 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + homepage “Profile”).
 - v0.2.2 : filtres admin/positions/élèves, harmonisation UI des filtres, pagination (10 items), page profil utilisateur et navigation par rôle.
 - **Step 9 (terminée)** : Discovery QA — voir synthèse dans `01_BACKLOG_STEP_009.md`.
-- **Basculé en phase produit** : tag `v0.4.4` figé comme baseline; prochaines Steps à aborder sous l’angle produit (fiabilité, sécurité, observabilité, billing/credits).
+- **Basculé en phase produit** : tag `v0.4.5` figé comme baseline; prochaines Steps à aborder sous l’angle produit (fiabilité, sécurité, observabilité, billing/credits).
 
 ## Mise en route (implémentation actuelle)
 - Env local : `.env` avec `DATABASE_URL` Postgres, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
 - Scripts : `npm run db:push`, `npm run db:seed`, `npm run dev`.
 - Docker : `docker compose watch` (reco hot-reload sans bind mount, build target `dev` avec code + schéma Prisma embarqués) ou `docker-compose up --build` (rebuild nécessaire pour prendre le code). Si un lock watch existe : `docker compose down` puis relancer.
-- Déploiement Render : `render.yaml` (service web + base Postgres auto), build `npm install && npx prisma generate && npm run build`, start `npm run start`, seed via `npm run db:push && npm run db:seed`.
+- Déploiement Render : `render.yaml` (service web + base Postgres auto), build `npm install && npx prisma db push && npx prisma generate && npm run build`, start `npm run db:push && npm run db:seed && npm run start` (seed idempotent).
 - Turbopack : des panics peuvent survenir avec le cache. Si ça arrive, supprimer `.next`/`.turbo` puis lancer `NEXT_USE_TURBOPACK=0 npm run dev` (ou ajouter la variable dans Docker/Render).
 
 ## Seed (dev)
@@ -45,4 +45,4 @@ Ce dossier contient :
 - Généré : 2 écoles (École 1, École 2) + 5 profs et 10 élèves par école (mot de passe `poleapp123`, premium 1/2) + 1 cours de démo par école (prof 1 + 3 élèves + 2 positions).
 
 > Si vous voulez partir direct sur du mobile, remplacez Next.js par Expo/React Native,
-> mais la base “données + flows” est déjà validée côté web (v0.4.4).
+> mais la base “données + flows” est déjà validée côté web (v0.4.5).

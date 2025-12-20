@@ -1,6 +1,7 @@
 # Bonnes pratiques avant push Render
 
 - **Schéma Prisma à jour** : si le schéma change (ex. ajout de `School.website`), faire `DATABASE_URL=... npx prisma db push` sur un env local raccordé à la base Render avant de pousser. Sinon les colonnes manquantes provoquent des erreurs au runtime.
+- **Nouvelles colonnes** (v0.4.5+) : `User.age`, `User.avatarUrl`, `User.diplomas`, table `TeacherFavoritePosition`, `Course.maxSeats`, `Course.costCredits`, `Course.photoUrl`. Appliquer `DATABASE_URL="..." npx prisma db push` (ou `npm run db:migrate:deploy` si une baseline existe) avant déploiement Render.
 - **Génération Prisma** : après modification du schéma, lancer `npx prisma generate` pour que le client soit à jour (Render le refera, mais cela détecte les soucis tôt).
 - **Build de validation** : exécuter `npm run build` en local. En cas de panics Turbopack, nettoyer `.next/.turbo` et utiliser `NEXT_USE_TURBOPACK=0 npm run build`.
 - **Variables d’environnement** : vérifier que `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` sont définies dans Render. Sans `DATABASE_URL`, Prisma échouera dès le chargement.
@@ -11,7 +12,7 @@
 
 À renseigner dans Render (service web) :
 - **Build command** : `npm install && npx prisma db push && npx prisma generate && npm run build`
-  - Raison : la base Render existante n’a pas d’historique de migrations (P3005). `db push` synchronise le schéma (colonnes `maxSeats`/`costCredits`, etc.) sans exiger de baseline.
+  - Raison : la base Render existante n’a pas d’historique de migrations (P3005). `db push` synchronise le schéma (colonnes `maxSeats`/`costCredits`/`photoUrl`, etc.) sans exiger de baseline.
 - **Start command** : `npm run db:push && npm run db:seed && npm run start`
   - Attention : `db:seed` se lance à chaque start. Vérifier que le seed reste idempotent ou retirer le seed si inutile en prod.
 
@@ -28,7 +29,7 @@
    - Appliquer les migrations : `DATABASE_URL="<render-url>" npx prisma migrate deploy`.
    - Si vous n’avez pas de migrations et souhaitez juste synchroniser le schéma, utiliser `DATABASE_URL="..." npx prisma db push` (à éviter en production si cela supprime des colonnes).
    - Vérifier l’état : `DATABASE_URL="..." npx prisma migrate status`.
-   - Pour cette version (maxSeats / costCredits sur Course), lancer `npm run db:migrate:deploy` avec la `DATABASE_URL` Render avant le déploiement, puis `npx prisma generate`.
+   - Pour cette version (maxSeats / costCredits / photoUrl sur Course + age/avatar/diplomas/TeacherFavoritePosition), lancer `npm run db:migrate:deploy` avec la `DATABASE_URL` Render avant le déploiement, puis `npx prisma generate`. Si la base Render ne possède pas d’historique, rester sur `db push` (commande build dans `render.yaml`).
 
 3) **Commiter et pousser**
    - Commiter le schéma et le dossier `prisma/migrations/`.

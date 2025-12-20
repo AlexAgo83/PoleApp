@@ -77,6 +77,18 @@ const updateProfileSchema = z.object({
   studentId: z.string().cuid(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
+  age: z
+    .coerce.number()
+    .int()
+    .min(1, "Âge invalide")
+    .max(120, "Âge invalide")
+    .optional(),
+  avatarUrl: z
+    .string()
+    .trim()
+    .url("URL invalide")
+    .max(2048, "URL trop longue")
+    .optional(),
 });
 
 export async function updateStudentProfileAction(formData: FormData) {
@@ -92,6 +104,8 @@ export async function updateStudentProfileAction(formData: FormData) {
     studentId: formData.get("studentId"),
     firstName: (formData.get("firstName") as string | null)?.trim() || "",
     lastName: (formData.get("lastName") as string | null)?.trim() || "",
+    age: (formData.get("age") as string | null)?.trim() || undefined,
+    avatarUrl: (formData.get("avatarUrl") as string | null)?.trim() || undefined,
   });
 
   if (!parsed.success) {
@@ -110,7 +124,7 @@ export async function updateStudentProfileAction(formData: FormData) {
 
   await prisma.user.update({
     where: { id: parsed.data.studentId },
-    data: { name },
+    data: { name, age: parsed.data.age ?? null, avatarUrl: parsed.data.avatarUrl ?? null },
   });
 
   const targetPath = `/app/teacher/students/${parsed.data.studentId}`;

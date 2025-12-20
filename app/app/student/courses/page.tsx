@@ -19,7 +19,7 @@ type CourseRow = {
   durationMinutes: number | null;
   maxSeats: number;
   costCredits: number;
-  teacher: { name: string | null; email: string | null } | null;
+  teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { name: string } | null;
   positions: { position: { id: string; name: string } }[];
   notes: CourseNote[];
@@ -133,7 +133,7 @@ export default async function StudentCoursesPage({
           skip,
           take: 10,
           include: {
-            teacher: { select: { name: true, email: true } },
+            teacher: { select: { id: true, name: true, email: true } },
             positions: { include: { position: true } },
             studio: { select: { name: true } },
             notes: {
@@ -168,7 +168,7 @@ export default async function StudentCoursesPage({
           skip,
           take: 10,
           include: {
-            teacher: { select: { name: true, email: true } },
+            teacher: { select: { id: true, name: true, email: true } },
             positions: { include: { position: true } },
             studio: { select: { name: true } },
             notes: {
@@ -193,7 +193,7 @@ export default async function StudentCoursesPage({
               skip,
               take: 10,
               include: {
-                teacher: { select: { name: true, email: true } },
+            teacher: { select: { id: true, name: true, email: true } },
                 positions: { include: { position: true } },
                 studio: { select: { name: true } },
                 notes: {
@@ -400,38 +400,61 @@ export default async function StudentCoursesPage({
             const courseDate = new Date(course.date);
             const seatsUsed = course._count?.attendances ?? 0;
             const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+            const formattedDate = courseDate.toLocaleString("fr-FR", {
+              hour12: false,
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            const isPast = courseDate.getTime() < Date.now();
+            const faded = isPast ? "opacity-60" : "";
+            const detailHref = `/app/student/courses/${course.id}?from=${encodeURIComponent(
+              `/app/student/courses?page=${currentPage}`
+            )}`;
             return (
-              <a
-                key={key}
-                href={`/app/student/courses/${course.id}?from=${encodeURIComponent(
-                  `/app/student/courses?page=${currentPage}`
-                )}`}
-                className="group block rounded-xl transition hover:-translate-y-0.5 hover:bg-indigo-500/10"
-              >
+              <div key={key} className={`block rounded-xl ${faded}`}>
                 <article className="flex flex-col gap-2 py-3 px-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-base font-semibold text-white">
-                        {course.title ?? "Cours"}
-                      </p>
-                      <div className="flex flex-col text-sm text-slate-300 gap-1">
-                        <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <p className="text-lg font-semibold text-white">
+                      {course.title ?? "Cours"}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={course.photoUrl?.trim() || "https://placehold.co/320x180/111827/ffffff?text=Cours"}
+                      alt={course.title ?? "Cours"}
+                      className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
+                    />
+                    <div className="min-w-[220px] flex-1 space-y-1">
+                      <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">
+                        {course.teacher?.id ? (
+                          <Link
+                            href={`/app/teachers/${course.teacher.id}?from=/app/student/courses`}
+                            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[12px] font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-white/10"
+                          >
+                            {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                          </Link>
+                        ) : (
                           <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
-                          {course.studio?.name && (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
-                              Studio · {course.studio.name}
-                            </span>
-                          )}
-                        </div>
-                        <span>{new Date(course.date).toLocaleString("fr-FR", { hour12: false })}</span>
-                        <span>Durée : {formatDuration(course.durationMinutes ?? 60)}</span>
-                        <span>{remainingSeats} place(s) restante(s)</span>
+                        )}
+                        {course.studio?.name && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                            Studio · {course.studio.name}
+                          </span>
+                        )}
+                      </p>
+                      <div className="text-sm text-slate-300 space-y-1">
+                        <p>
+                          {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
+                        </p>
+                        <p>
+                          {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-400">
-                      {course.positions.length} positions
-                      {isAttending ? " · inscrit" : ""}
-                    </p>
                   </div>
                   {Array.isArray(course.notes) && course.notes.length > 0 && (
                     <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
@@ -448,8 +471,25 @@ export default async function StudentCoursesPage({
                       </ul>
                     </div>
                   )}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
+                      <span>
+                        {seatsUsed} élèves · {course.positions.length} positions
+                        {isAttending ? " · inscrit" : ""}
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
+                        Notes : {course.notes.length}
+                      </span>
+                    </div>
+                    <Link
+                      href={detailHref}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    >
+                      Voir le cours →
+                    </Link>
+                  </div>
                 </article>
-              </a>
+              </div>
             );
           })}
           {coursesList.length === 0 && (

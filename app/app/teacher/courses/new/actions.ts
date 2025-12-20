@@ -16,6 +16,7 @@ const courseSchema = z.object({
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
+  photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -50,6 +51,7 @@ export async function createCourseAction(formData: FormData) {
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
+    photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
     costCredits: formData.get("costCredits") ?? 100,
@@ -100,11 +102,14 @@ export async function createCourseAction(formData: FormData) {
           title: parsed.data.title || null,
           date: parsed.data.date,
           schoolId: session.user.schoolId!,
-          teacherId: teacherId ?? session.user.id,
-          studioId: parsed.data.studioId || null,
+          teacher: { connect: { id: teacherId ?? session.user.id } },
+          ...(parsed.data.studioId
+            ? { studio: { connect: { id: parsed.data.studioId } } }
+            : {}),
           durationMinutes: parsed.data.durationMinutes,
           maxSeats: parsed.data.maxSeats ?? 30,
           costCredits: parsed.data.costCredits ?? 100,
+          photoUrl: parsed.data.photoUrl ?? null,
         },
       });
     } catch (error) {
@@ -117,9 +122,12 @@ export async function createCourseAction(formData: FormData) {
           title: parsed.data.title || null,
           date: parsed.data.date,
           schoolId: session.user.schoolId!,
-          teacherId: teacherId ?? session.user.id,
-          studioId: parsed.data.studioId || null,
+          teacher: { connect: { id: teacherId ?? session.user.id } },
+          ...(parsed.data.studioId
+            ? { studio: { connect: { id: parsed.data.studioId } } }
+            : {}),
           durationMinutes: parsed.data.durationMinutes,
+          photoUrl: parsed.data.photoUrl ?? null,
         },
       });
     }

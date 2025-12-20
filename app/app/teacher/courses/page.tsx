@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
+const COURSE_PHOTO_PLACEHOLDER = "https://placehold.co/320x180/111827/ffffff?text=Cours";
 
 export const dynamic = "force-dynamic";
 
@@ -120,7 +121,7 @@ export default async function TeacherCoursesPage({
           <h1 className="text-3xl font-semibold text-white">Cours</h1>
           <p className="text-sm text-slate-200">Derniers cours créés.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2">
           <Link
             href="/app/teacher/courses/agenda"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -260,47 +261,71 @@ export default async function TeacherCoursesPage({
             const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
             const cost = course.costCredits ?? 100;
             const faded = isPast ? "opacity-60" : "";
+            const photoUrl = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
+            const detailHref = `/app/teacher/courses/${course.id}?from=${encodeURIComponent(
+              `/app/teacher/courses?page=${currentPage}`
+            )}`;
             return (
-              <a
+              <div
                 key={course.id}
-                href={`/app/teacher/courses/${course.id}?from=${encodeURIComponent(
-                  `/app/teacher/courses?page=${currentPage}`
-                )}`}
-                className={`group block rounded-xl transition hover:-translate-y-0.5 hover:bg-indigo-500/10 ${faded}`}
+                className={`block rounded-xl ${faded}`}
               >
-                <article className="flex flex-col gap-2 py-3 px-2 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="text-base font-semibold text-white">
-                      {course.title ?? "Cours sans titre"}
-                    </p>
-                  <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">
-                    <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
-                    {course.studio && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
-                        Studio · {course.studio.name}
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    {new Date(course.date).toLocaleString("fr-FR", { hour12: false })}
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    Durée : {formatDuration(course.durationMinutes ?? 60)}
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
-                  </p>
+                <article className="flex flex-col gap-2 py-3 px-2">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <p className="text-lg font-semibold text-white">{course.title ?? "Cours sans titre"}</p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
-                    <span>
-                      {course.attendances.length} élèves · {course.positions.length} positions
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
-                      Notes : {course._count.notes}
-                    </span>
+                  <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={photoUrl}
+                      alt={course.title ?? "Cours"}
+                      className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
+                    />
+                    <div className="min-w-[220px] flex-1 space-y-1">
+                      <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">
+                        <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
+                        {course.studio && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                            Studio · {course.studio.name}
+                          </span>
+                        )}
+                      </p>
+                      <div className="text-sm text-slate-300 space-y-1">
+                        <p>
+                          {new Date(course.date).toLocaleString("fr-FR", {
+                            hour12: false,
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}{" "}
+                          · Durée : {formatDuration(course.durationMinutes ?? 60)}
+                        </p>
+                        <p>
+                          {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
+                      <span>
+                        {course.attendances.length} élèves · {course.positions.length} positions
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
+                        Notes : {course._count.notes}
+                      </span>
+                    </div>
+                    <Link
+                      href={detailHref}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    >
+                      Voir le cours →
+                    </Link>
                   </div>
                 </article>
-              </a>
+              </div>
             );
           })}
           {courses.length === 0 && (

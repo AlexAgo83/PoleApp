@@ -1,6 +1,6 @@
-# Step 9 — Discovery QA (terminée) — v0.4.4
+# Step 9 — Discovery QA (terminée) — v0.4.4 baseline (release v0.4.5)
 
-Objectif : traiter le lot de retours QA pour stabiliser la V0.4.4 (navigation, cohérence UI/UX, fiabilité des données affichées).
+Objectif : traiter le lot de retours QA pour stabiliser la V0.4.4 (navigation, cohérence UI/UX, fiabilité des données affichées). Release globale en v0.4.5.
 
 ## Périmètre
 - Navigation et bandeaux : unifier le bandeau des espaces (session/rôle/boutons), activer le pliage par défaut de « Status build » (desktop : ouvert), conserver le retour contextuel (positions, élèves, mini-jeu, modules) et éviter les retours vers la mauvaise vue.
