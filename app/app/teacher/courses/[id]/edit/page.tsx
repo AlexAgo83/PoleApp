@@ -40,7 +40,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const [students, positions] = await Promise.all([
+  const [students, positions, teachers] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -50,6 +50,13 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       orderBy: { name: "asc" },
       select: { id: true, name: true, type: true },
     }),
+    role === "SCHOOL_ADMIN"
+      ? prisma.user.findMany({
+          where: { schoolId, role: "TEACHER" },
+          select: { id: true, name: true, email: true },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve([]),
   ]);
 
   const defaultSelectedStudents = course.attendances.map((a) => a.studentId);
@@ -107,6 +114,8 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           submitLabel="Mettre à jour"
           cancelHref={backHref}
           courseId={course.id}
+          teachers={role === "SCHOOL_ADMIN" ? teachers : []}
+          defaultTeacherId={course.teacherId ?? teacherId}
         />
       </section>
 

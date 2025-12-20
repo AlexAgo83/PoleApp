@@ -15,6 +15,7 @@ const updateSchema = z.object({
   date: z.coerce.date(),
   studentIds: z.array(z.string().cuid()).min(1),
   positionIds: z.array(z.string().cuid()).min(1),
+  teacherId: z.string().cuid().optional(),
   notes: z
     .array(
       z.object({
@@ -53,10 +54,29 @@ export async function updateCourseAction(formData: FormData) {
 
   const existing = await prisma.course.findFirst({
     where: { id: data.id, schoolId: session.user.schoolId },
-    select: { id: true },
+    select: { id: true, teacherId: true },
   });
   if (!existing) {
     redirect("/access-denied");
+  }
+
+  const teacherId =
+    session.user.role === "TEACHER"
+      ? session.user.id
+      : data.teacherId || existing.teacherId || session.user.id;
+
+  if (session.user.role === "SCHOOL_ADMIN") {
+    const teacherValid = await prisma.user.findFirst({
+      where: {
+        id: teacherId,
+        schoolId: session.user.schoolId,
+        role: "TEACHER",
+      },
+      select: { id: true },
+    });
+    if (!teacherValid) {
+      redirect("/access-denied");
+    }
   }
 
   await prisma.$transaction(async (tx) => {
@@ -65,6 +85,7 @@ export async function updateCourseAction(formData: FormData) {
       data: {
         title: data.title || null,
         date: data.date,
+        teacherId,
       },
     });
 
