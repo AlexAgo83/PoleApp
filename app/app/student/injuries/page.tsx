@@ -15,7 +15,7 @@ const PAGE_SIZE = 10;
 export default async function StudentInjuriesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; success?: string; error?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -42,6 +42,8 @@ export default async function StudentInjuriesPage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(injuryCount / PAGE_SIZE));
+  const success = resolvedParams.success?.toString();
+  const error = resolvedParams.error?.toString();
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-6 py-10">
@@ -92,6 +94,17 @@ export default async function StudentInjuriesPage({
       </section>
 
       <section className="panel border-indigo-400/15 p-6">
+        {(success || error) && (
+          <div
+            className={`mb-4 rounded-xl border px-4 py-3 text-sm ${
+              error
+                ? "border-amber-300/40 bg-amber-500/10 text-amber-100"
+                : "border-emerald-300/40 bg-emerald-500/10 text-emerald-100"
+            }`}
+          >
+            {error ?? success}
+          </div>
+        )}
         <h2 className="text-lg font-semibold text-white">Mes blessures</h2>
         <div className="mt-4 flex flex-col divide-y divide-white/5">
           {injuries.map((injury) => (

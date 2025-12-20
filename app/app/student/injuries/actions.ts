@@ -61,6 +61,7 @@ export async function createInjuryAction(formData: FormData) {
   });
 
   revalidatePath("/app/student/injuries");
+  redirect("/app/student/injuries?success=Blessure ajoutée");
 }
 
 export async function updateInjuryAction(formData: FormData) {
@@ -91,6 +92,11 @@ export async function updateInjuryAction(formData: FormData) {
   });
 
   revalidatePath("/app/student/injuries");
+  redirect(
+    `/app/student/injuries?success=${encodeURIComponent(
+      parsed.data.isActive ? "Blessure marquée active" : "Blessure marquée résolue"
+    )}`
+  );
 }
 
 export async function deleteInjuryAction(formData: FormData) {
@@ -115,4 +121,5 @@ export async function deleteInjuryAction(formData: FormData) {
   });
 
   revalidatePath("/app/student/injuries");
+  redirect("/app/student/injuries?success=Blessure supprimée");
 }
