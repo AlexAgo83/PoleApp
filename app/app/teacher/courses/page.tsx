@@ -79,12 +79,20 @@ export default async function TeacherCoursesPage({
             Derniers cours créés. Tri par date desc, pagination x10.
           </p>
         </div>
-        <Link
-          href="/app/teacher/courses/new"
-          className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
-        >
-          Nouveau cours
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/app/teacher/courses/agenda"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Agenda
+          </Link>
+          <Link
+            href="/app/teacher/courses/new"
+            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+          >
+            Nouveau cours
+          </Link>
+        </div>
       </header>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">
