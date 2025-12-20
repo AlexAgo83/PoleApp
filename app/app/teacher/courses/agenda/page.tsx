@@ -109,6 +109,7 @@ export default async function CoursesAgendaPage({
             </span>
           </summary>
           <form
+            key={`agenda-${monthParam ?? "current"}`}
             method="get"
             className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
           >
