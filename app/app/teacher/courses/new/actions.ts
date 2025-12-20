@@ -131,6 +131,13 @@ export async function createCourseAction(formData: FormData) {
     return course.id;
   });
 
+  // Placeholder logging for future débit de crédits
+  console.info("[credits] Inscription au cours", {
+    courseId,
+    studentCount: parsed.data.studentIds.length,
+    durationMinutes: parsed.data.durationMinutes,
+  });
+
   revalidatePath("/app/teacher/courses");
   redirect(`/app/teacher/courses`);
 }

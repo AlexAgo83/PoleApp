@@ -36,7 +36,15 @@ export default async function StudentDashboard() {
         <p className="text-slate-300">
           Accès réservé aux rôles étudiant. Suis ta progression, tes blessures et révise via le mini-jeu.
         </p>
-        <p className="text-sm text-cyan-100">Crédits : {credits}</p>
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <p className="text-sm text-cyan-100">Crédits : {credits}</p>
+          <button
+            type="button"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Acheter des crédits
+          </button>
+        </div>
       </section>
 
       <section className="panel p-6">
