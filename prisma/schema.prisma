@@ -54,6 +54,7 @@ model School {
   users   User[]
   courses Course[]
   studios Studio[]
+  partners Partner[]
 
   @@unique([name])
 }
@@ -208,6 +209,20 @@ model Studio {
   updatedAt DateTime @updatedAt
   school    School   @relation(fields: [schoolId], references: [id])
   courses   Course[]
+
+  @@index([schoolId])
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  kind      String   @default("SERVICE")
+  website   String?
+  description String?
+  schoolId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  school    School   @relation(fields: [schoolId], references: [id])
 
   @@index([schoolId])
 }
