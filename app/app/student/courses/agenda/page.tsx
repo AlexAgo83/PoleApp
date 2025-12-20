@@ -168,11 +168,9 @@ export default async function StudentCoursesAgendaPage({
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
 
-  // Vue semaine (7 jours à partir du lundi de la semaine courante si dans le mois, sinon début de mois)
+  // Vue semaine : toujours la semaine en cours (lundi → dimanche)
   const today = new Date();
-  const inSelectedMonth = today >= start && today <= end;
-  const baseWeekDate = inSelectedMonth ? today : start;
-  const startWeek = new Date(baseWeekDate);
+  const startWeek = new Date(today);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
   const weekDays = Array.from({ length: 7 }).map((_, idx) => {
@@ -295,17 +293,23 @@ export default async function StudentCoursesAgendaPage({
           {cells.map((cell, idx) => {
             const weekDayIndex = (idx % 7) + 1; // 1-based
             const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
+            const cellDate = cell.day
+              ? new Date(start.getFullYear(), start.getMonth(), cell.day)
+              : null;
+            const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
             return (
               <div
                 key={idx}
-                className="min-h-[80px] rounded-xl border border-white/10 bg-white/5 p-2 text-left"
+                className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${
+                  !cell.attendances || cell.attendances.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
+                }`}
               >
                 <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
                   <span className="flex items-center gap-1">
-                    <span className="text-[10px] uppercase tracking-wide text-cyan-100 md:text-xs">
+                    <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
                       {label}
                     </span>
-                    <span>{cell.day ?? "—"}</span>
+                    <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
                   </span>
                   {cell.attendances && cell.attendances.length > 0 && (
                     <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
