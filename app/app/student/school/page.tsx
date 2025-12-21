@@ -7,7 +7,11 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function StudentSchoolPage() {
+export default async function StudentSchoolPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ tab?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     redirect("/access-denied");
@@ -37,6 +41,9 @@ export default async function StudentSchoolPage() {
       sponsoredLinks: { id: string; category: string | null; label: string | null; url: string }[];
     }[];
   };
+
+  const params = (await Promise.resolve(searchParams)) ?? {};
+  const currentTab = params.tab === "partners" ? "partners" : "studios";
 
   let school: SchoolView | null = null;
   try {
@@ -134,6 +141,30 @@ export default async function StudentSchoolPage() {
         </div>
       </header>
 
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          href="/app/student/school?tab=studios"
+          className={`rounded-full px-3 py-1.5 text-sm font-semibold transition ${
+            currentTab === "studios"
+              ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
+              : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
+          }`}
+        >
+          Studios
+        </Link>
+        <Link
+          href="/app/student/school?tab=partners"
+          className={`rounded-full px-3 py-1.5 text-sm font-semibold transition ${
+            currentTab === "partners"
+              ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
+              : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
+          }`}
+        >
+          Partenaires
+        </Link>
+      </div>
+
+      {currentTab === "studios" && (
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Studios</h2>
         {school.studios.length === 0 ? (
@@ -165,6 +196,9 @@ export default async function StudentSchoolPage() {
         )}
       </section>
 
+      )}
+
+      {currentTab === "partners" && (
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Partenaires</h2>
         {school.partners.length === 0 ? (
@@ -221,6 +255,7 @@ export default async function StudentSchoolPage() {
           </ul>
         )}
       </section>
+      )}
     </main>
   );
 }
