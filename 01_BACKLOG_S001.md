@@ -1,4 +1,5 @@
 # Step 9 — Discovery QA (terminée) — v0.4.4 baseline (release v0.4.6)
+[Compréhension: 100% / Avancement: 100%]
 
 Objectif : traiter le lot de retours QA pour stabiliser la V0.4.4 (navigation, cohérence UI/UX, fiabilité des données affichées). Release globale en v0.4.6.
 

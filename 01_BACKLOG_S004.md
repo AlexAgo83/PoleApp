@@ -2,6 +2,8 @@
 [Compréhension: 40% / Avancement: 0%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 ## Objectif
 Automatiser la construction d’un cours en tenant compte du niveau réel des élèves, des blessures, et des envies (positions “cœur”), pour proposer des combos équilibrés et variés.
