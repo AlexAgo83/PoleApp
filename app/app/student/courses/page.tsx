@@ -412,10 +412,27 @@ export default async function StudentCoursesPage({
             const detailHref = `/app/student/courses/${course.id}?from=${encodeURIComponent(
               `/app/student/courses?page=${currentPage}`
             )}`;
+            const badgeClass = isAttending
+              ? isPast
+                ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
+                : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+              : "border border-white/20 bg-white/10 text-slate-300";
             return (
               <div key={key} className={`block rounded-xl ${faded}`}>
                 <article className="flex flex-col gap-2 py-3 px-2">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
+                      title={
+                        isAttending
+                          ? isPast
+                            ? "Cours déjà suivi"
+                            : "Inscrit"
+                          : "Non inscrit"
+                      }
+                    >
+                      ●
+                    </span>
                     <p className="text-lg font-semibold text-white">
                       {course.title ?? "Cours"}
                     </p>
@@ -476,7 +493,6 @@ export default async function StudentCoursesPage({
                     <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
                       <span>
                         {seatsUsed} élèves · {course.positions.length} positions
-                        {isAttending ? " · inscrit" : ""}
                       </span>
                       <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
                         Notes : {course.notes.length}
