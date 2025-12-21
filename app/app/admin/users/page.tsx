@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Prisma, Role } from "@prisma/client";
+import Image from "next/image";
 
 import { createUserAction, deleteUserAction } from "./actions";
 import { authOptions } from "@/lib/auth";
@@ -277,10 +278,11 @@ export default async function AdminUsersPage({
               className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
             >
               <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={user.avatarUrl?.trim() || USER_AVATAR_PLACEHOLDER}
                   alt={`Avatar de ${user.name ?? user.email}`}
+                  width={48}
+                  height={48}
                   className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
                 />
                 <div className="space-y-1">

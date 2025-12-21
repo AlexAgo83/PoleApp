@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
+import Image from "next/image";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
@@ -158,15 +159,16 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
               {teachers.map((teacher) => (
                 <div
                   key={teacher.id}
-                  className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
-                      alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
-                      className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
-                    />
+              className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <Image
+                  src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
+                  alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                />
                     <div>
                       <p className="text-base font-semibold text-white">{teacher.name ?? "Professeur"}</p>
                       <p className="text-sm text-slate-300">{teacher.email}</p>

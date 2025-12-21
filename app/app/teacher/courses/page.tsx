@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -269,10 +270,11 @@ export default async function TeacherCoursesPage({
                     <p className="text-lg font-semibold text-white">{course.title ?? "Cours sans titre"}</p>
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={photoUrl}
                       alt={course.title ?? "Cours"}
+                      width={96}
+                      height={64}
                       className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
                     />
                     <div className="min-w-[220px] flex-1 space-y-1">

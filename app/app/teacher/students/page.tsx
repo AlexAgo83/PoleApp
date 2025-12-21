@@ -212,10 +212,11 @@ export default async function TeacherStudentsPage({
               className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
             >
               <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={student.avatarUrl?.trim() || STUDENT_AVATAR_PLACEHOLDER}
                   alt={`Avatar de ${student.name ?? student.email}`}
+                  width={48}
+                  height={48}
                   className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
                 />
                 <div>
