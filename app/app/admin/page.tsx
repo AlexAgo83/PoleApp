@@ -228,14 +228,12 @@ export default async function AdminDashboard() {
       </section>
 
       <section className="panel p-6">
-        <details className="group" open={false}>
-          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
-            <span className="inline-flex items-center gap-2">
-              <span>Vue semaine</span>
-              <span className="text-xs font-normal text-slate-300">(cette semaine)</span>
-            </span>
-            <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
-          </summary>
+        <div className="flex items-center justify-between text-lg font-semibold text-white">
+          <span className="inline-flex items-center gap-2">
+            <span>Vue semaine</span>
+            <span className="text-xs font-normal text-slate-300">(cette semaine)</span>
+          </span>
+        </div>
         <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
           {weekDays.map((day, idx) => {
             const dayCourses = coursesByDay[idx];
@@ -247,12 +245,11 @@ export default async function AdminDashboard() {
               >
                 <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                   <span className="flex items-center gap-1">
-                    <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
+                    <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" }).replace(".", "")}</span>
                   </span>
                   <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
                 </div>
                 <div className="flex flex-col gap-1.5 md:gap-2">
-                  {dayCourses.length === 0 && <span className="text-slate-400">—</span>}
                   {dayCourses.map((course) => {
                     const past = isPastCourse(course.date, course.durationMinutes);
                     return (
@@ -286,7 +283,6 @@ export default async function AdminDashboard() {
             );
           })}
         </div>
-        </details>
       </section>
 
       <section className="panel p-6">
