@@ -1,13 +1,14 @@
 # Backlog — Retours QA S002 (session 2025-12-21 01:00)
+[Compréhension: 80% / Avancement: 25%]
 
 ## 0) UI Quick win
-- Home : bouton “Connexion” trop sombre → augmenter contraste/hover/état actif.
+- Home : bouton “Connexion” trop sombre → augmenter contraste/hover/état actif. **(DONE)**
 
 ## 1) Espace Élève
 - Catalogue positions :
   - Retirer le “grading élevé”.
   - Afficher le niveau atteint par l’élève.
-  - Rendre les cartes cliquables (accès détail) plutôt qu’un simple bouton “Voir”.
+  - Rendre les cartes cliquables (accès détail) plutôt qu’un simple bouton “Voir”. **(DONE)**
 - Cours :
   - Sortir le nom de l’école du titre, l’afficher comme donnée structurée.
 - Agenda :
@@ -16,7 +17,7 @@
 - Onglet École :
   - Partenaires à mettre dans un onglet séparé (pas dans École).
 - Progression positions (élève) :
-  - Ajouter un code couleur + compteur de fois où la position a été vue/enseignée.
+  - Ajouter un code couleur + compteur de fois où la position a été vue/enseignée. **(partiel : compteur “Vu : X” affiché)**
 - Mini-jeux (à créer) :
   - 6 mini-jeux (photo→nom, nom→type, nom→niveau, nom→grips, nom→intro, nom→tip).
 - Bonus (à créer) :
@@ -51,7 +52,7 @@
 7. Le reste.
 
 # UPDATE 2025-12-21 02:20
-1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->".
-2. Dans les Agendas > En mode mobile > les jours de semaines sans cours peuvent être cachés
-3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours. (s'applique aussi dans la vue Admin pas que Agendas)
-4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position
+1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->". **(DONE)**
+2. Dans les Agendas > En mode mobile > les jours de semaines sans cours peuvent être cachés **(DONE)**
+3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours. (s'applique aussi dans la vue Admin pas que Agendas) **(DONE)**
+4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position **(DONE)**
