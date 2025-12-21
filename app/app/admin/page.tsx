@@ -245,36 +245,53 @@ export default async function AdminDashboard() {
               >
                 <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                   <span className="flex items-center gap-1">
-                    <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" }).replace(".", "")}</span>
+                    <span className="text-[10px] uppercase tracking-wide md:text-xs text-cyan-100">
+                      {day.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
+                    </span>
+                    <span>{day.getDate()}</span>
                   </span>
                   <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
                 </div>
                 <div className="flex flex-col gap-1.5 md:gap-2">
                   {dayCourses.map((course) => {
                     const past = isPastCourse(course.date, course.durationMinutes);
+                    const badgeClass = past
+                      ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
+                      : "border border-amber-300/70 bg-amber-500/25 text-amber-50";
                     return (
                       <Link
                         key={course.id}
                         href={`/app/teacher/courses/${course.id}?from=/app/admin`}
-                        className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                        className={`inline-flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
                           past
                             ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                             : "border-white/10 bg-white/10 text-white"
                         }`}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
                       >
-                        <span>
-                          {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}
-                        </span>
-                        <span className="truncate">{course.title ?? "Cours"}</span>
-                        <span className="text-[10px] text-cyan-100 hidden md:inline">
-                          {formatDuration(course.durationMinutes ?? 60)}
-                        </span>
-                        {course.studio?.name ? (
-                          <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                            {course.studio.name}
-                          </span>
-                        ) : null}
+                        <div className="flex-1 space-y-0.5 overflow-hidden">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
+                              title={past ? "Cours passé" : "Cours à venir"}
+                            >
+                              ●
+                            </span>
+                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                              {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
+                              - {formatDuration(course.durationMinutes ?? 60)}
+                            </p>
+                          </div>
+                          <p className="truncate text-[11px] font-semibold text-white">
+                            {course.title ?? "Cours"}
+                          </p>
+                          <p className="truncate text-[10px] text-cyan-100">
+                            {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                          </p>
+                          <p className="truncate text-[10px] text-slate-200">
+                            {course.studio?.name ?? "Studio non renseigné"}
+                          </p>
+                        </div>
                       </Link>
                     );
                   })}
