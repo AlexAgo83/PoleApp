@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const COURSE_PHOTO_PLACEHOLDER =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA5NjAgNDAwJz48cmVjdCB3aWR0aD0nOTYwJyBoZWlnaHQ9JzQwMCcgZmlsbD0nIzExMTgyNycvPjx0ZXh0IHg9JzUwJScgeT0nNTAlJyBmaWxsPScjZjZmN2ZmJyBmb250LXNpemU9JzEyMCcgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSdib2xkJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5Db3VyczwvdGV4dD48L3N2Zz4=";
+const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);

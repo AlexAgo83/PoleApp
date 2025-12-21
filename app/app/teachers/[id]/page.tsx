@@ -6,7 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateTeacherProfileAction } from "./actions";
 
-const TEACHER_AVATAR_PLACEHOLDER = "https://placehold.co/200x200/111827/ffffff?text=Prof";
+const TEACHER_AVATAR_PLACEHOLDER =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
 
 type Params = { id?: string } | Promise<{ id?: string }>;
 type SearchParams = { from?: string } | Promise<{ from?: string }>;

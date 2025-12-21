@@ -8,10 +8,10 @@ import { createUserAction, deleteUserAction } from "./actions";
 import { prisma } from "@/lib/prisma";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
+import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
-const USER_AVATAR_PLACEHOLDER =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCA4MCc+PHJlY3Qgd2lkdGg9JzgwJyBoZWlnaHQ9JzgwJyByeD0nNDAnIGZpbGw9JyMxZjI5MzcnLz48Y2lyY2xlIGN4PSc0MCcgY3k9JzMwJyByPScxNicgZmlsbD0nIzMzNDE1NScvPjxwYXRoIGQ9J00xNSA3MGM1LTE0IDQ1LTE0IDUwIDAnIGZpbGw9JyMzMzQxNTUnLz48L3N2Zz4=";
+const USER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
 export default async function AdminUsersPage({
   searchParams,
