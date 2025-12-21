@@ -10,47 +10,56 @@ const prisma = new PrismaClient();
 
 const PASSWORD = "change-me-password";
 const POSITION_IMAGES = [
-  "https://lh3.googleusercontent.com/gg/AIJ2gl9g9AbO5ydEY-7YkF-aEcwDenGx1FoBEtg0GhathupNmfOukxUNp5oo74oy3x_Xf6Dpb2OjxlaOPz5cqGc6alVkvDg9-dG2emfTYPfvh4woeB7WhB-Rwn7VkWsE-m5MMuPYEBYQitOuRx1IZ9vkYGFN72cuzvB0jHipYuV0WKCmepbnfdFk=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8MELZ5jCdKlvKseZ8dtaHmJSeYsvPJ1Q3zIs1q2wLEUPsluvMBmBBE0raC9qgg0BaItEyFCVigJxtfI-0xj4w6CGH_6T5H46qmdjIj1Re4NMhZ5m-u8KEZn60S8uUkwyM2NDrlGfn_AMRsgEA3PHbNde5rNw1jINEif-ax49TMdhTG1lg=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_ebQkumW_TmKEaxrMz6v2ckcIK_o0PWh3rHBWeFtPQYymkbS6ROnIqg22PTyGO3N8xRsKzKskFbU_jlHZLSHFXTK589Jz2dgxN_BYSJG3wpaxrwrb_T5cNczjVUlSXY6VWNlY_EizK-rjigcGGhsDUXFtZm0INSbYwChjxM2U_V88kZZg=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl92EVSGYQj2zFUNnvr7P6hlKGgLqE7ea0I79SMSyRLTPfWfLccKTJgUUxPG_g6_lRqM_lzdj6qiHmKnQ4kkZ4vC_SuVOmB6aixhMkr2pXNqIP3Z6BgndsilmWRj5Crsg85eGn8lBbu9TCELfYbaarHhVNKutszI2SetoYDzs1fVLRSb22M=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl9lhQ_EZPi9q2RqFiYKyedKGk3e7cqLyzIcioUINi0tLYRf15sIQnCx_gRY0m1HWWzN8XAlTQVWPkUAEUjSuu4XFNG0Y0Docq763RvDMWRdXbjp6D2NHHKx8oblXcAGmJuulYYuhVTQE3ISXzP4vdbv41m4G0PC7M6piZ101RFFb0Rf1B5E=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl-LRqAucFuV5pWvkLHbzmGF18_gFekpoqBKN5llfIZnVJ6mAWqlQioYIKA5xx_ucyg9i7XPYl7JY5T9IB0GJs2DFMJFrVl80U37FkiqHH5gwllCZgLLCA0lXS3jyyibOIGao6rJgz0YNfGmR860mnGT9iNQ-B-yAs9cwAG1Ps-8s4AZIFI=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl9E2eNFrHG9Kejz1Y_8tTEBRBgT44mCwZ0LO4RFOibn7KNrkC2DkxSoc4oOfez9H57kBwICFveZrqgTfASr-NP_j0V1Zi2jgpzOYbd1e1I4CbWUjDC8pQoG9HzfL0KkyTkzNgXS9pWZgQ0_z_ympPvhP5MyzT13IAirZTUpLEWdbNzpfD_0=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl-FwxF2zF00wAQhLj3xsw9NQ30Y7aG_Rnz7YiuS-4Iy7fxgzUudLKhbrJ0WVvlaNXBfEdUkn6wEOxnr-CFWoi1wkkQVOsdcqvUb9_40usJy4lQHk-5f397UZ7sydmEPgsgtYpb6-E4h14fM-EsPxnneCunP7g5dLqueubwxCIBbRwk7xqqP=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8dzakEV4ZtH6f1-997n_g9lOOE1sVFcNtMYjLWmaE1jsIGlPijZ2LiMJTiABk4li38IE8zHM7KqiycLe4Tjdqygj16QGl7HorQT8Q4B7VzUF99BXCeReCzv0EUrHZ7zfH_ZeRjSXJJ5Qw7-zB7X1NwZdhYwm1s_cyJjxdjqntVRyu57OY=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl93uHHB8nuf9tkB-IUHtFdDMp8cHUVEqodV0p7Mu37ofIwsSXIveFbe-ef5mTFDiUVC0XqkCCIz6-1FCehMCI1Gur7VJZLCY6VRohBwnlqCxyuC51kwDcb8Kn0kBceXoMY2KUi1otiHPmmYg1Q4U001eooNC-EJ9T8Os1Y9g0XFH7uYDOGA=s1024-rj-mp2",
+  "https://i.postimg.cc/W4Mwp4Zr/Gemini-Generated-Image-6bpiby6bpiby6bpi.png",
+  "https://i.postimg.cc/zfnFDfh0/Gemini-Generated-Image-70zf9e70zf9e70zf.png",
+  "https://i.postimg.cc/tghNRg6r/Gemini-Generated-Image-9laspe9laspe9las.png",
+  "https://i.postimg.cc/7LvNyz5X/Gemini-Generated-Image-9nbncc9nbncc9nbn.png",
+  "https://i.postimg.cc/BvWCGFjM/Gemini-Generated-Image-ak3205ak3205ak32.png",
+  "https://i.postimg.cc/k5xvM5SS/Gemini-Generated-Image-dq72fedq72fedq72.png",
+  "https://i.postimg.cc/s2p4f2Wm/Gemini-Generated-Image-nafbbenafbbenafb.png",
+  "https://i.postimg.cc/d08jQ0C9/Gemini-Generated-Image-r3jjhnr3jjhnr3jj.png",
+  "https://i.postimg.cc/2547j5Wd/Gemini-Generated-Image-q7a2l7q7a2l7q7a2.png",
+  "https://i.postimg.cc/SKWfQK9f/Gemini-Generated-Image-ob9xeuob9xeuob9x.png",
+  "https://i.postimg.cc/fbxfWbdj/Gemini-Generated-Image-nr8lxdnr8lxdnr8l.png",
+  "https://i.postimg.cc/xdK3jdmv/Gemini-Generated-Image-w69zmgw69zmgw69z.png",
 ];
 
 const COURSE_IMAGES = [
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8TbWwuodIYBUbv4aB0gvLaW_lUPBzowG-lx8yoKvvGAApChdCWvZ54_V85orFHq2VwBseL6Jk0R7obLqygvDhjbvg7YyjYzUg_-qllFtUTsYtZaTsdhfuwSDldaAPwyQArWQkigOySiu1jU9wXhZptQGTHncj1xKgAcsNPcDZgNZI1fgf1=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl-O0kyIS4iTyAAIhgvQ88vPU57YveEMUtL4Zy8VDVzsOdMaFVlMCnXdm-ZYe8H4aX0V1RdRQerGFiZh5e4yahgY6wiqm4nBx9BnnbzSqPpLrO9J-tTdGHL1RzQm-ABUPYd_Zz46QUHceDikdEx6G7OF-EAhzO3t892DRlcCNlrPwSk7GXrr=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_T4q4yKSczJN1sKaYaYWADCd7oMIPi1w9B8GSWM9fGByTl08E7nOyz4ac4U1w4CTv2strw4WPwXwixt1VUTgJVIA-aLxGbQAmSTS2f6TN8PN1kOVQFVI3x4RYVA-G656dVZFPv5xK0UMPm708lNwR4I4pwq4UHJntiz25nNH82Jf_JLPfy=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_7iQJhilL9TIPSwcL19L-_Etfi1v5enAfdLpGgWTAH5KRBL_o5BVt-dfPKcuWrTq8-fF6Eh1bAr_6zKBv--JNGZ-tdTE74bOLBgOXDSxABIVacgVWeeWzzLU9M-GpoqlWqJ3OFcOZ0Milybo_YKb_L1o2LpGul2N4Kyfku_-lf6jZ6P20=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_qqPNhkjJA4TDUzpb7YFL5zdbwHoneTjaeWdKNnuGHhMaGWqb7fV9Cp6-nf2pD_N0C7AnX0PTn38yb9PaJxfo9wERhdb02viRZ4I4cFHk2ZN_f5y3ONh5iTN2sglGuwiQVmpMzVUh2CTKu8_3i0dKSkMUz999ny8YEv3-QNJTR6acsbMhy=s1024-rj-mp2",
+  "https://i.postimg.cc/nL81tmX2/Gemini-Generated-Image-gwcxudgwcxudgwcx.png",
+  "https://i.postimg.cc/43C1TcYz/Gemini-Generated-Image-jqc1bsjqc1bsjqc1.png",
+  "https://i.postimg.cc/FKtxQSY3/Gemini-Generated-Image-qzcezwqzcezwqzce.png",
+  "https://i.postimg.cc/9f3Bj9Dd/Gemini-Generated-Image-w7xzpow7xzpow7xz.png",
 ];
 
 const FEMALE_STUDENT_AVATARS = [
-  "https://lh3.googleusercontent.com/gg/AIJ2gl9OatjXArFO9VZUH9L4-ZiuW3YNQ1PVDkF0kVmVNFR8YhfYN7rPXrJnq5MB9mcHZ5DsZvVrJmkm115sA-MrDI-dCO4Ax3YfJXe8iolzTt0T-BnBnScKO1jLVHxIU6yXa-Zm6i6MpPsTC2a0fOqVjnc9C7MRAucv0GUlOLmB2yuTAjW__xLb=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8s9-6udyKGuznwJoy32Pdx8s5zWHN9GGPnj7oM46m870P-Z1t8klX36MVzoiSmlRFXtlRvWC4azmkXKQ4KSPwWzq6nsC57SICSkOcYtUgt3-XrhYG0WjwjDOLBISzl2-WO4PO5veoL2sR7GuPOQXywzsIGZB9RcB2Y7vuzF5z6U7JYWDA=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl939d1xytOOTnNkTfBwuTCpmZD83dDELf5CxBvEHfps_flkoi50EjioZkiKrHHQYE0sjB0sIEcmNGvzKZsfoAtMJgUi2RiNzGpmz-_K0oUs6zg_9J6pU_4N6S134NuUpxw0jUoTjODsxL-peV1Yt63Be59F_beyUqzJXGgoWcX5EgBpPIxE=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_E4VE1iNVrb0XhoGQlLf5gzDXs9CFyRH2PFTmUWu4_YWr6j_BEELSH-nzM91V1zt3HER5aNv0XcRZp8NeniiuYe1HtDYDN0mjDIKSZpnaN5W-VRzyizCQUJgQTNfSU_0R7Kf2xVItyM8Kua5jQVj0gltifJ9fiJVl7IUpnbs9k6z9PIowx=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl-jbNxp_3kuz2MF2_LuLdA3m4aR_l8LoyU-W-MYQN_wuGId9usRGRl7AXai40mAKeL_rEcBaqcIBgza47zXuPfX42GAqSF-GGOyuqjyfVty1jHebFbfQHdxCR3B9kZhRvM818ZHiuYZ-LhF14Qwnhoin7ThzjMQP2QbQqKqAf5H6kiRrJI=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_dK7xQiBw3wA5a8o4esOIOX1Fd6CYpPI6R170rRHPEZegYiap9P7Z9Bnsv0TqN1auA4vOky2kcOwG8qOlmcqfuMMbpanNv-O6_blnvK7rPEFYHBNMhhTH3rRtDssmh99hwPXhd9ork1HxqE_HceaQo7fmLumdTT59xkbZYG-dBgmHpBMNm=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl-jLSTgz6L2eUiVUBsZ5M3hmKSohtXnsA0gWPIsnNAda9VGeTxCKur5rHA0FUj-1tb1RPojFsHanu4wx8mOJnTg2n1KKhYXWcwdYo_Bz5qya7vZ8ULIAt_N3crhxHkuybuvM0g8GqljPM-ja6s6gx0xlpLRLMWv4zqz5aXVvWsCLj058sdv=s1024-rj-mp2",
+  "https://i.postimg.cc/9fGYXf9g/Gemini-Generated-Image-ga85o3ga85o3ga85.png",
+  "https://i.postimg.cc/wBhQxBNG/Gemini-Generated-Image-8a2y748a2y748a2y.png",
+  "https://i.postimg.cc/Gpkx3pDf/Gemini-Generated-Image-lymsnclymsnclyms.png",
+  "https://i.postimg.cc/MHGLjBbV/Gemini-Generated-Image-kk2x4wkk2x4wkk2x.png",
+  "https://i.postimg.cc/gjBTy0N6/Gemini-Generated-Image-it8ll5it8ll5it8l.png",
+  "https://i.postimg.cc/wMBrsNct/Gemini-Generated-Image-1s02y51s02y51s02.png",
+  "https://i.postimg.cc/ZnDMPqVR/Gemini-Generated-Image-f3pd1gf3pd1gf3pd.png",
 ];
 
 const MALE_STUDENT_AVATARS = [
-  "https://lh3.googleusercontent.com/gg/AIJ2gl9-QMyG3ZTbjzl_LNyVFHP_c88-kAnLxLdFGl84RBafV7bPzb_SAkM7nLYWnJoksuQCuwfFLWq7f5Ix_R3gO0yNIpPvDQmaPGRVYW9qpo8zIXxmgO0y0Hl-qfieLtM7bxoruJHstL_aj4gCCupE0do7SpU9BkzuYU4A8f6qpK8zDZN-cHym=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_1ByxtCV0xeaZuSG4RFA0YTKGc_Q9_t2i4KbylznUlNuqK2F_Gexhs8Xqb6qC0mr0LY4FjUzVOI8lpkRo-O7MjPo8q_Uhg5D8G7VAbjbUUbiYpFWqtr5fhUQpnk5O8TJtvjjIQpy1F48NFloiMPz6abzDgIAjLeN1samqI6uTjAioi8yhk=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8-rlnYXLrvQyIiE93WWhoQd0EdjUgDYT9PNlu1RG2K_Ubve4ACJFpKzyXszSbQZiWCVUw7HXWpyUjQJ6FQakE1z8Fj3-gfFOveg9-YQeU3OuFXw40Nw1wLWog_FsRnn9vtDl6dVOVzLyBHqTbCpaG2nzuGlBSsLhj5-8bD0XF6uweJnXc=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8dtRjZOPnC1dl-Xvj02p55WSoxt6DIyrO1mRBnU5Rxy2p-biF4g5ClJ1MSHLqlLVLkyt0KwDZJqXYK5AGsZ3BlTFQQugP1aKz6sOktmNDArp9L53Pn_FIARdxs3AptAZ_VfNHzWvs2DxrLejqQhIrRL5hY_M29t0uM2K9nZ-fOaKnh4Y4=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl8krWlQv83Zsj8JC6e23v0DR3o-q-_0s7882aKGroQV-ZiBTkA8WbTGPU336pYjShm2g1lic-paGpxZkF549HrAHPyuidTQhnM8aNLet4KGa5h7dYtxCj5jo0fJIn8o2rULvMzP7-1OHUUrJxL1TF4wQSbAl-7W_XHQsMse_lYGbQrQgCnA=s1024-rj-mp2",
+  "https://i.postimg.cc/KYnDcYTw/Gemini-Generated-Image-h13y3wh13y3wh13y.png",
+  "https://i.postimg.cc/VNjWsNtT/Gemini-Generated-Image-q1xtvnq1xtvnq1xt.png",
+  "https://i.postimg.cc/k5xvM58r/Gemini-Generated-Image-hagw0mhagw0mhagw.png",
+  "https://i.postimg.cc/C5K2f8Hf/Gemini-Generated-Image-krr7xokrr7xokrr7.png",
+  "https://i.postimg.cc/6qQPGZL8/Gemini-Generated-Image-9ifeph9ifeph9ife.png",
+  "https://i.postimg.cc/pr16QdqF/Gemini-Generated-Image-f6cfrf6cfrf6cfrf.png",
 ];
 
 const TEACHER_AVATARS = [
-  "https://lh3.googleusercontent.com/gg/AIJ2gl9JktuvBdx-_mj_ZKZRzJZOVCSdT7T2ZNT4MF-HyjBuYS6MLAUBNrmHvPGcwKMAF22wIfYYimAWETPS1YrAIMyiru20CFcmhPCYe3ndUvG2dJzCyn20wRQAEC--Go2xpM_-4_Q2LI9QHptVbAeTAR4LgDezfiRIRgogNFii5Sid7ig-HhQM=s1024-rj-mp2",
-  "https://lh3.googleusercontent.com/gg/AIJ2gl_JGOH9kOa4P2H1dImuOkaDZJP8HUosYiG6Nju6UH19YX7U77NQvFj9lSMOXg0QN7PbDPzE2gNtrY0tjQfb_rD_DF_yEJ_b-ZBfq0T4qphLRvLJ9iMLSTVaIZL2iUziAyOGQ15T259quTeqWmJEIDecbCHJvxKu6ZtdtsHhiR5WvGKyMDCu=s1024-rj-mp2",
+  "https://i.postimg.cc/ZqkLhNWN/Gemini-Generated-Image-ir90ejir90ejir90.png",
+  "https://i.postimg.cc/wBKkdN1s/Gemini-Generated-Image-yf123byf123byf12.png",
+  "https://i.postimg.cc/JhwQWXsH/Gemini-Generated-Image-xdf05vxdf05vxdf0.png",
+  "https://i.postimg.cc/8C8bVv7L/Gemini-Generated-Image-hrrbcvhrrbcvhrrb.png",
+  "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png",
+  "https://i.postimg.cc/R0cLC0t2/Gemini-Generated-Image-7xe2nm7xe2nm7xe2.png",
+  "https://i.postimg.cc/prdSnjYK/Gemini-Generated-Image-gu94adgu94adgu94.png",
+  "https://i.postimg.cc/wMBrsNcR/Gemini-Generated-Image-yhp3byhp3byhp3by.png",
+  "https://i.postimg.cc/1XYj0zJX/Gemini-Generated-Image-b3b57vb3b57vb3b5.png",
 ];
 
 const injuryTypes = ["Épaule", "Poignet", "Coude", "Bas du dos", "Genou"];
