@@ -12,6 +12,9 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 10;
 type PageLink = number | "...";
+type SponsoredLinkRaw = { category?: unknown; label?: unknown; url?: unknown };
+const toSponsoredLinksArray = (value: unknown): SponsoredLinkRaw[] =>
+  Array.isArray(value) ? (value as SponsoredLinkRaw[]) : [];
 
 function buildPageRange(totalPages: number, currentPage: number): PageLink[] {
   if (totalPages <= 7) {
@@ -330,7 +333,7 @@ export default async function AdminPartnersPage({
                   <div className="md:col-span-2">
                     <SponsoredLinksField
                       name="sponsored"
-                      initialLinks={Array.isArray((partner as any).sponsoredLinks) ? (partner as any).sponsoredLinks : []}
+                      initialLinks={toSponsoredLinksArray(partner.sponsoredLinks)}
                     />
                   </div>
                 ) : (

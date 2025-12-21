@@ -34,6 +34,7 @@ export function PersistedPanel({
     try {
       const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setOpen(saved === "true");
         return;
       }

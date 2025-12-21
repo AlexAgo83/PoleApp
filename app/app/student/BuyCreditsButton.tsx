@@ -34,6 +34,7 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
   const projectedTotal = currentCredits + selectedPack.credits;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

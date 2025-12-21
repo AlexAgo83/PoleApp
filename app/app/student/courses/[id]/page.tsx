@@ -8,6 +8,8 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "../actions";
 import { SafeImage } from "@/components/SafeImage";
 
+const NOW_MS = Date.now();
+
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -113,7 +115,7 @@ export default async function StudentCourseDetailPage({
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
   const canBuy =
     !isAttending &&
-    endTime > Date.now() &&
+    endTime > NOW_MS &&
     remainingSeats > 0 &&
     (user.credits ?? 0) >= cost;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
@@ -195,7 +197,7 @@ export default async function StudentCourseDetailPage({
                       ? "Acheter ce cours"
                       : remainingSeats <= 0
                       ? "Plus de places"
-                      : endTime <= Date.now()
+                      : endTime <= NOW_MS
                       ? "Cours passé"
                       : (session.user.credits ?? 0) < cost
                       ? "Crédits insuffisants"

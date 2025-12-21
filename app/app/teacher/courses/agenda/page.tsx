@@ -7,6 +7,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+const NOW_MS = Date.now();
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -106,10 +107,9 @@ export default async function CoursesAgendaPage({
 
   const monthLabel = start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
-  const now = Date.now();
   const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
     const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
-    return end < now;
+    return end < NOW_MS;
   };
   const teacherParamForNav = teacherFilter ?? (isTeacher ? session.user.id : undefined);
   const baseParams = new URLSearchParams();
