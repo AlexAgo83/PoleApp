@@ -54,3 +54,4 @@
 
 # UPDATE 2025-12-21 02:20
 1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->"
+2. Positions > Detail d'une position, le panel POSITION devrait avoir un fond comme les autres panels

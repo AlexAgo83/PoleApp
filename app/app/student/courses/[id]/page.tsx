@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "../actions";
 
 function formatDuration(minutes: number) {
@@ -104,7 +105,7 @@ export default async function StudentCourseDetailPage({
   const seatsUsed = course._count?.attendances ?? 0;
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
-  const COURSE_PHOTO_PLACEHOLDER = "https://placehold.co/960x400/0f172a/ffffff?text=Cours";
+  const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
   const coursePhoto = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
   const isAttending = course.attendances.length > 0;
   const endTime =

@@ -4,11 +4,11 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
-const COURSE_PHOTO_PLACEHOLDER =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNjAgMTAwJz48cmVjdCB3aWR0aD0nMTYwJyBoZWlnaHQ9JzEwMCcgcng9JzEyJyBmaWxsPScjMTExODI3Jy8+PHRleHQgeD0nNTAlJyB5PSc1MCUnIGZpbGw9JyNlNWU3ZWInIGZvbnQtc2l6ZT0nMzInIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nYm9sZCcgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgdGV4dC1hbmNob3I9J21pZGRsZSc+Q291cnM8L3RleHQ+PC9zdmc+";
+const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
 export const dynamic = "force-dynamic";
 

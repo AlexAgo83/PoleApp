@@ -5,11 +5,11 @@ import { Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
+import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
-const STUDENT_AVATAR_PLACEHOLDER =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCA4MCc+PHJlY3Qgd2lkdGg9JzgwJyBoZWlnaHQ9JzgwJyByeD0nNDAnIGZpbGw9JyMxZjI5MzcnLz48Y2lyY2xlIGN4PSc0MCcgY3k9JzMwJyByPScxNicgZmlsbD0nIzMzNDE1NScvPjxwYXRoIGQ9J00xNSA3MGM1LTE0IDQ1LTE0IDUwIDAnIGZpbGw9JyMzMzQxNTUnLz48L3N2Zz4=";
+const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
 export default async function TeacherStudentsPage({
   searchParams,
