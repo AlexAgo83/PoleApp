@@ -239,8 +239,12 @@ export default async function AdminDashboard() {
         <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
           {weekDays.map((day, idx) => {
             const dayCourses = coursesByDay[idx];
+            const hideOnMobile = dayCourses.length === 0 ? "hidden md:block" : "";
             return (
-              <div key={day.toISOString()} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200">
+              <div
+                key={day.toISOString()}
+                className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
+              >
                 <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                   <span className="flex items-center gap-1">
                     <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
