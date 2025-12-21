@@ -1,6 +1,7 @@
 import { PositionLevel, PositionType, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import Image from "next/image";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { FilterPanel } from "@/components/FilterPanel";
@@ -23,6 +24,16 @@ const levelLabels: Record<PositionLevel, string> = {
   BEGINNER: "Beginner",
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
+};
+
+const progressLabels: Record<string, string> = {
+  NOT_STARTED: "Découverte",
+  IN_PROGRESS: "Tenté",
+  PASSED: "Passé",
+  MASTERED: "Fluide",
+  INITIATED: "Initiation",
+  FLUID: "Fluide",
+  CHOREO: "Choréo",
 };
 
 type SearchParams =
@@ -86,6 +97,13 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       media: true,
     },
   });
+  const studentProgress = isStudent
+    ? await prisma.studentPositionProgress.findMany({
+        where: { studentId: session.user.id },
+        select: { positionId: true, learningStatus: true, masteryLevel: true },
+      })
+    : [];
+  const progressMap = new Map(studentProgress.map((p) => [p.positionId, p]));
   const canManage = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
 
   return (
@@ -245,16 +263,26 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
             const hasVideo = p.media?.some((m) => m.kind === "VIDEO");
             const showPremiumBadge = premiumContent && isStudent && !isPremium;
             const canViewPremium = !isStudent || isPremium;
+            const progress = progressMap.get(p.id);
+            const progressText =
+              progress?.masteryLevel && progressLabels[progress.masteryLevel]
+                ? progressLabels[progress.masteryLevel]
+                : progress?.learningStatus
+                ? progressLabels[progress.learningStatus] ?? progress.learningStatus
+                : null;
+            const detailHref = `/positions/${p.id}?from=/positions?page=${currentPage}`;
             return (
-              <article
+              <Link
                 key={p.id}
+                href={detailHref}
                 className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/60 hover:bg-white/10"
               >
                 {cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={cover.url}
                     alt={p.name}
+                    width={480}
+                    height={240}
                     className="h-40 w-full object-cover"
                   />
                 ) : (
@@ -280,6 +308,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         🎥 Vidéo
                       </span>
                     )}
+                    {progressText && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/50 bg-emerald-400/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-50">
+                        Niveau élève : {progressText}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                   <p className="text-sm text-slate-300 line-clamp-2">
@@ -293,27 +326,21 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       <p className="text-amber-100/80">
                         Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
                       </p>
-                      <Link
-                        href="/app/student#upgrade"
-                        className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-300/30"
-                      >
+                      <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
                         Upgrade (placeholder)
-                      </Link>
+                      </span>
                     </div>
                   )}
                   <div className="mt-auto flex items-center justify-between gap-2">
                     <p className="text-xs text-slate-400">
                       {p.grips ?? "Grip ?"}
                     </p>
-                    <Link
-                      href={`/positions/${p.id}?from=/positions?page=${currentPage}`}
-                      className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                    >
-                      Voir
-                    </Link>
+                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10">
+                      Détail →
+                    </span>
                   </div>
                 </div>
-              </article>
+              </Link>
             );
           })}
           {positions.length === 0 && (
