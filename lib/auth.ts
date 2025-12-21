@@ -57,7 +57,8 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role as Role;
         token.schoolId = user.schoolId;
         token.isPremium = user.isPremium;
-        token.credits = (user as any).credits ?? 0;
+        const userWithCredits = user as { credits?: number };
+        token.credits = userWithCredits.credits ?? 0;
       }
       return token;
     },

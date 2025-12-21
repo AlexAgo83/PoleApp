@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+type RawSponsoredLink = { category?: unknown; label?: unknown; url?: unknown };
 type SponsoredLink = { category: string; label?: string; url: string };
 
-function normalizeLinks(raw: any[] | undefined): SponsoredLink[] {
+function normalizeLinks(raw: RawSponsoredLink[] | undefined): SponsoredLink[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .map((s) => ({
@@ -20,7 +21,7 @@ export function SponsoredLinksField({
   initialLinks,
 }: {
   name?: string;
-  initialLinks?: any[];
+  initialLinks?: RawSponsoredLink[];
 }) {
   const [links, setLinks] = useState<SponsoredLink[]>(
     normalizeLinks(initialLinks?.length ? initialLinks : [{ category: "", label: "", url: "" }])
@@ -29,6 +30,7 @@ export function SponsoredLinksField({
   // Always ensure at least one row for UX
   useEffect(() => {
     if (links.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLinks([{ category: "", label: "", url: "" }]);
     }
   }, [links]);

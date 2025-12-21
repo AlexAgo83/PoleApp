@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
+const NOW_MS = Date.now();
 
 export const dynamic = "force-dynamic";
 
@@ -252,7 +253,7 @@ export default async function TeacherCoursesPage({
         </FilterPanel>
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => {
-            const isPast = new Date(course.date).getTime() < Date.now();
+            const isPast = new Date(course.date).getTime() < NOW_MS;
             const seatsUsed = course._count?.attendances ?? course.attendances.length ?? 0;
             const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
             const cost = course.costCredits ?? 100;

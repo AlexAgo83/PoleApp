@@ -7,6 +7,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+const NOW_MS = Date.now();
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -74,10 +75,9 @@ export default async function StudentCoursesAgendaPage({
     allowedSchoolIds = Array.from(ids);
   }
 
-  const now = Date.now();
   const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
     const endMs = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
-    return endMs < now;
+    return endMs < NOW_MS;
   };
 
   // Vue semaine : basée sur param `week` ou semaine courante (lundi → dimanche)

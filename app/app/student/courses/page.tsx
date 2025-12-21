@@ -8,6 +8,8 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 
+const NOW_MS = Date.now();
+
 type CourseNote = {
   id: string;
   position: { name: string };
@@ -407,7 +409,7 @@ export default async function StudentCoursesPage({
               hour: "2-digit",
               minute: "2-digit",
             });
-            const isPast = courseDate.getTime() < Date.now();
+            const isPast = courseDate.getTime() < NOW_MS;
             const faded = isPast ? "opacity-60" : "";
             const detailHref = `/app/student/courses/${course.id}?from=${encodeURIComponent(
               `/app/student/courses?page=${currentPage}`
