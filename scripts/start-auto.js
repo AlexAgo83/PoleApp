@@ -39,9 +39,9 @@ async function ensureSchemaAndSeed() {
   console.log(`DB state after schema sync: ${state}`);
   if (state === "missing") {
     run("npm run db:push");
-    run("npm run db:seed");
+    run("npx tsx prisma/seed.ts");
   } else if (state === "empty") {
-    run("npm run db:seed");
+    run("npx tsx prisma/seed.ts");
   } else {
     console.log("Database already seeded, skipping seed.");
   }
