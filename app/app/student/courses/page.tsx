@@ -30,6 +30,9 @@ type CourseRow = {
   attendances?: { id: string }[];
 };
 
+const COURSE_PHOTO_PLACEHOLDER =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNjAgMTAwJz48cmVjdCB3aWR0aD0nMTYwJyBoZWlnaHQ9JzEwMCcgcng9JzEyJyBmaWxsPScjMTExODI3Jy8+PHRleHQgeD0nNTAlJyB5PSc1MCUnIGZpbGw9JyNlNWU3ZWInIGZvbnQtc2l6ZT0nMzInIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nYm9sZCcgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgdGV4dC1hbmNob3I9J21pZGRsZSc+Q291cnM8L3RleHQ+PC9zdmc+";
+
 function paramValue(value?: string | string[]) {
   if (Array.isArray(value)) {
     return value[value.length - 1];
@@ -419,10 +422,7 @@ export default async function StudentCoursesPage({
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
                     <Image
-                      src={
-                        course.photoUrl?.trim() ||
-                        "https://placehold.co/320x180/111827/ffffff?text=Cours"
-                      }
+                      src={course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER}
                       alt={course.title ?? "Cours"}
                       width={96}
                       height={64}
