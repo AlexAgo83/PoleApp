@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
@@ -14,6 +15,15 @@ export default async function TeacherDashboard() {
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
   const displayName = firstName ?? lastName ?? session?.user?.email ?? "professeur";
   const teacherProfileHref = session?.user?.id ? `/app/teachers/${session.user.id}` : "/app/profile";
+  const partners =
+    session?.user?.schoolId
+      ? await prisma.partner.findMany({
+          where: { schoolId: session.user.schoolId },
+          select: { id: true, name: true, kind: true, website: true, description: true },
+          orderBy: { name: "asc" },
+          take: 4,
+        })
+      : [];
 
   return (
     <main className="grid gap-6">
@@ -128,6 +138,42 @@ export default async function TeacherDashboard() {
           </Link>
         </div>
       </section>
+
+      {partners.length > 0 && (
+        <section className="panel p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-lg font-semibold text-white">Partenaires de l’école</h3>
+            <Link
+              href="/app/teacher/school"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Voir la fiche école
+            </Link>
+          </div>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {partners.map((partner) => (
+              <div
+                key={partner.id}
+                className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200"
+              >
+                <p className="text-base font-semibold text-white">{partner.name}</p>
+                {partner.kind && <p className="text-xs uppercase tracking-[0.12em] text-cyan-200">{partner.kind}</p>}
+                {partner.description && <p className="text-sm text-slate-300">{partner.description}</p>}
+                {partner.website && (
+                  <a
+                    href={partner.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100"
+                  >
+                    Site web ↗
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

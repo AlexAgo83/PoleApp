@@ -43,7 +43,7 @@ export default async function StudentSchoolPage({
   };
 
   const params = (await Promise.resolve(searchParams)) ?? {};
-  const currentTab = params.tab === "partners" ? "partners" : "studios";
+  const currentTab = "studios";
 
   let school: SchoolView | null = null;
   try {
@@ -141,30 +141,6 @@ export default async function StudentSchoolPage({
         </div>
       </header>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Link
-          href="/app/student/school?tab=studios"
-          className={`rounded-full px-3 py-1.5 text-sm font-semibold transition ${
-            currentTab === "studios"
-              ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-              : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-          }`}
-        >
-          Studios
-        </Link>
-        <Link
-          href="/app/student/school?tab=partners"
-          className={`rounded-full px-3 py-1.5 text-sm font-semibold transition ${
-            currentTab === "partners"
-              ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-              : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-          }`}
-        >
-          Partenaires
-        </Link>
-      </div>
-
-      {currentTab === "studios" && (
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Studios</h2>
         {school.studios.length === 0 ? (
@@ -195,67 +171,6 @@ export default async function StudentSchoolPage({
           </ul>
         )}
       </section>
-
-      )}
-
-      {currentTab === "partners" && (
-      <section className="panel p-6">
-        <h2 className="text-lg font-semibold text-white">Partenaires</h2>
-        {school.partners.length === 0 ? (
-          <p className="text-slate-300">Aucun partenaire renseigné.</p>
-        ) : (
-          <ul className="mt-3 grid gap-3 md:grid-cols-2">
-            {school.partners.map((partner) => (
-              <li
-                key={partner.id}
-                className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
-              >
-                <p className="text-base font-semibold text-white">{partner.name}</p>
-                <p className="text-sm text-slate-300">{partner.kind}</p>
-                {partner.website && (
-                  <a
-                    href={partner.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
-                  >
-                    Site web ↗
-                  </a>
-                )}
-                {partner.description && (
-                  <p className="text-sm text-slate-300">{partner.description}</p>
-                )}
-                {partner.sponsoredLinks && partner.sponsoredLinks.length > 0 && (
-                  <div className="mt-2 space-y-1 text-sm text-slate-200">
-                    <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-200">
-                      Liens sponsorisés
-                    </p>
-                    <ul className="space-y-1">
-                      {partner.sponsoredLinks.map((link) => (
-                        <li key={link.id} className="flex flex-col gap-0.5">
-                          <span className="text-xs text-slate-300">
-                            {link.category}
-                            {link.label ? ` · ${link.label}` : ""}
-                          </span>
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
-                          >
-                            Consulter le lien
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-      )}
     </main>
   );
 }
