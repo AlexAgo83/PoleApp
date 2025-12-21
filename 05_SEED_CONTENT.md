@@ -106,6 +106,12 @@ Exemple (format libre):
 - https://i.postimg.cc/fLsyZz70/Gemini-Generated-Image-o5cowyo5cowyo5co.png
 - https://i.postimg.cc/bJPr8y0x/Gemini-Generated-Image-o77i1wo77i1wo77i.png
 
+## (à utiliser pour le seed) Liens images à utiliser pour les "Studios" (éviter d'utiliser plusieurs fois)
+- https://i.postimg.cc/43ttzvzM/Gemini-Generated-Image-ed0cxzed0cxzed0c.png
+- https://i.postimg.cc/cLPwgknd/Gemini-Generated-Image-l8ods0l8ods0l8od.png
+- https://i.postimg.cc/Zq33rPr2/Gemini-Generated-Image-pkf3n7pkf3n7pkf3.png
+- https://i.postimg.cc/jjNNz6zB/Gemini-Generated-Image-vbzhjgvbzhjgvbzh.png
+ 
 ## (à utiliser pour le seed) Liens images à utiliser pour les "Élèves" (ne peut être utiliser qu'une fois)
 - Femme : https://i.postimg.cc/9fGYXf9g/Gemini-Generated-Image-ga85o3ga85o3ga85.png
 - Femme : https://i.postimg.cc/wBhQxBNG/Gemini-Generated-Image-8a2y748a2y748a2y.png
