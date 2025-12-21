@@ -1,7 +1,7 @@
-# Backlog — Retours QA S005 (session 2025-12-21 01:15)
+# Backlog — Retours QA S005 (session 2025-12-21 23:55)
 [Compréhension: 60% / Avancement: 0%]
 
-Source: 06_QA_S005.md (tests faits sur v0.4.5)
+Source: 06_QA_S005.md (tests faits sur v0.5.0)
 
 ## Tâches
 - [ ] Teacher > École : ajouter vue agenda pour les cours à venir (planning par studio) + filtres (niveau, prof, date, discipline, studio).

@@ -1,7 +1,7 @@
-# Backlog — Retours QA S006 (session 2025-12-21 01:15)
+# Backlog — Retours QA S006 (session 2025-12-21 23:55)
 [Compréhension: 55% / Avancement: 0%]
 
-Source : 06_QA_S006.md (tests sur v0.4.5)
+Source : 06_QA_S006.md (tests sur v0.5.0)
 
 ## Tâches
 - [ ] Admin > Studios/Partenaires : ajouter une vue consultation + bouton ✏️ pour passer en mode édition (au lieu d’édition directe).
