@@ -1,5 +1,5 @@
 # Backlog — Retours QA S002 (session 2025-12-21 01:00)
-[Compréhension: 90% / Avancement: 60%]
+[Compréhension: 90% / Avancement: 65%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 
@@ -14,7 +14,7 @@
 - Cours :
   - Sortir le nom de l’école du titre, l’afficher comme donnée structurée. **(DONE)**
 - Agenda :
-  - Boutons vue Hebdo/Mensuelle/Annuelle. **(DONE)**
+  - Boutons vue Hebdo/Mensuelle. **(DONE)**
   - Option pour afficher les cours disponibles dans les écoles fréquentées. **(DONE)**
 - Onglet École :
   - Partenaires à mettre dans un onglet séparé (pas dans École). **(DONE)**
@@ -63,3 +63,6 @@
 7. Fiche Mon école > Partenaires doit être déplacer en tant que module dans l'accueil de l'élève et du professeur **(DONE)**
 8. Fiche Mon école > Plus besoin du switch entre studios et partenaires (Si 7. est fait) **(DONE)**
 9. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés **(DONE)**
+10. Pour tour les boutons > Si couleur de texte noir > changer en blanc.
+11. Admin > Cours > Agenda > Mode mobile > Je vois toujours les jours sans Cours dans l'agenda.
+12. Dans la fiche de l'école > Remplacer le "Mon école" par le titre de l'école (et du coup retirer le titre qui était en petit, en dessous).

@@ -51,8 +51,7 @@ export default async function CoursesAgendaPage({
       ? resolved.studio
       : undefined;
   const viewParam = resolved.view;
-  const view: "month" | "week" | "year" =
-    viewParam === "week" ? "week" : viewParam === "year" ? "year" : "month";
+  const view: "month" | "week" = viewParam === "week" ? "week" : "month";
   const hasMonthFilter = Boolean(monthParam);
   const baseDate = monthParam
     ? new Date(`${monthParam}-01T00:00:00`)
@@ -61,7 +60,7 @@ export default async function CoursesAgendaPage({
   const end = endOfMonth(baseDate);
 
   const effectiveTeacherFilter = isTeacher ? teacherFilter ?? session.user.id : teacherFilter;
-  const buildViewHref = (mode: "month" | "week" | "year") => {
+  const buildViewHref = (mode: "month" | "week") => {
     const params = new URLSearchParams();
     if (mode !== "month") params.set("view", mode);
     if (monthParam) params.set("month", monthParam);
@@ -275,18 +274,8 @@ export default async function CoursesAgendaPage({
           >
             Mensuelle
           </Link>
-          <Link
-            href={buildViewHref("year")}
-            className={`rounded-full px-3 py-1.5 font-semibold transition ${
-              view === "year"
-                ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-                : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-            }`}
-          >
-            Annuelle
-          </Link>
         </div>
-        {view !== "week" && (
+        {view === "month" && (
           <>
             <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
               {calendarCells.map((cell, idx) => {
@@ -382,16 +371,13 @@ export default async function CoursesAgendaPage({
                 Aucun cours prévu pour ce mois.
               </p>
             )}
-            {view === "year" && (
-              <p className="mt-2 text-xs text-slate-300">Vue annuelle : affichage du mois courant (aperçu rapide).</p>
-            )}
           </>
         )}
       </section>
 
-      {view !== "year" && (
+      {view === "week" && (
         <section className="panel p-6">
-          <details className="group" open={view === "week"}>
+          <details className="group" open>
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white">
             <span>Vue semaine</span>
             <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
