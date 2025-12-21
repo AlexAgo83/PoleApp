@@ -80,6 +80,7 @@
 
 ## Mises à jour récentes
 - Page infos studio accessible à tous via `/app/school/[id]` (retour contextualisé) + liens depuis les listes de studios élèves/profs/admin. **(DONE)**
+- Mini-jeux accessibles aux profs/admin (accès direct) et CTA “Jeux” ajouté dans le dashboard admin. Gating premium/feedback final reste à faire. **(PARTIEL)**
 
 ## Clarifications nécessaires
 - Progression : valider palette/code couleur exacts et où l’afficher (liste élève, tableau prof, détail position, etc.).

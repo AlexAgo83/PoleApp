@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-12-21 — Hotfix v0.4.7 (mini-jeux accès admin/prof)
+- Version bump 0.4.7.
+- Mini-jeux : ouverts aux rôles prof/admin (accès direct), CTA “Jeux” ajouté au dashboard admin.
+- Script baseline Prisma pour Render ajouté (`db:baseline:render`) afin de débloquer `migrate deploy` sur DB existante.
+
 # Changelog
 
 ## 2025-12-20 — UI cours & médias (v0.4.6+)
