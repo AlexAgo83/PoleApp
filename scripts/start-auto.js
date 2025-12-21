@@ -43,6 +43,12 @@ async function ensureSchemaAndSeed() {
   } else {
     console.log("Database already seeded, skipping seed.");
   }
+
+  // Post-check: fail fast if toujours vide
+  const finalState = await checkDbState();
+  if (finalState !== "ready") {
+    throw new Error("Database is still empty after seed; aborting start.");
+  }
 }
 
 async function main() {
