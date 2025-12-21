@@ -369,10 +369,12 @@ export default async function StudentCoursesAgendaPage({
                   ? new Date(start.getFullYear(), start.getMonth(), cell.day)
                   : null;
                 const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
+                const hideOnMobileMonth =
+                  !cell.attendances || cell.attendances.length === 0 ? "hidden sm:block" : "";
                 return (
                   <div
                     key={idx}
-                    className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${
+                    className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
                       !cell.attendances || cell.attendances.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
                     }`}
                   >
