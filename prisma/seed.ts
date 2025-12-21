@@ -139,6 +139,16 @@ const people: { name: string; age: number; gender: Gender }[] = [
   { name: "Victor Marin", age: 40, gender: "M" },
 ];
 
+function makePersonFallback(counter: number): { name: string; age: number; gender: Gender } {
+  const genders: Gender[] = ["F", "M"];
+  const gender = genders[counter % 2];
+  return {
+    name: `User ${counter}`,
+    age: 20 + (counter % 21),
+    gender,
+  };
+}
+
 function slugify(input: string) {
   return input
     .toLowerCase()
@@ -270,6 +280,8 @@ async function seedSchoolsAndUsers() {
   const teacherAvatars = [...TEACHER_AVATARS];
   const femaleAvatars = [...FEMALE_STUDENT_AVATARS];
   const maleAvatars = [...MALE_STUDENT_AVATARS];
+  const peoplePool = [...people];
+  let fallbackCounter = 1;
 
   const pickStudentAvatar = (gender: Gender) => {
     if (gender === "F" && femaleAvatars.length) return femaleAvatars.shift()!;
@@ -277,11 +289,13 @@ async function seedSchoolsAndUsers() {
     return null;
   };
 
+  const pickPerson = (): { name: string; age: number; gender: Gender } =>
+    peoplePool.length ? peoplePool.shift()! : makePersonFallback(fallbackCounter++);
+
   for (const school of schools) {
     // 2 profs
     for (let i = 0; i < 2; i += 1) {
-      const person = people[nameIdx % people.length];
-      nameIdx += 1;
+      const person = pickPerson();
       const created = await prisma.user.create({
         data: {
           email: `teacher${i + 1}.${slugify(school.name)}@poleapp.test`,
@@ -298,8 +312,7 @@ async function seedSchoolsAndUsers() {
     }
     // 10 élèves (1 sur 2 premium)
     for (let i = 0; i < 10; i += 1) {
-      const person = people[nameIdx % people.length];
-      nameIdx += 1;
+      const person = pickPerson();
       const created = await prisma.user.create({
         data: {
           email: `student${i + 1}.${slugify(school.name)}@poleapp.test`,
