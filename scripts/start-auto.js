@@ -17,6 +17,7 @@ async function checkDbState() {
     return count === 0 ? "empty" : "ready";
   } catch (err) {
     // Likely missing tables/schema
+    console.warn("checkDbState: missing tables or query failed:", err.message || err);
     return "missing";
   } finally {
     await prisma.$disconnect();
@@ -35,6 +36,7 @@ async function ensureSchemaAndSeed() {
   }
 
   const state = await checkDbState();
+  console.log(`DB state after schema sync: ${state}`);
   if (state === "missing") {
     run("npm run db:push");
     run("npm run db:seed");
@@ -46,6 +48,7 @@ async function ensureSchemaAndSeed() {
 
   // Post-check: fail fast if toujours vide
   const finalState = await checkDbState();
+  console.log(`DB state after seed: ${finalState}`);
   if (finalState !== "ready") {
     throw new Error("Database is still empty after seed; aborting start.");
   }
