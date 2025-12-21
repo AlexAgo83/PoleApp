@@ -242,26 +242,34 @@ async function seedSchoolsAndUsers() {
 
   // Fixed accounts on school1
   const fixedAccounts = [
-    { email: "admin@poleapp.test", role: Role.SCHOOL_ADMIN, premium: true, name: "Admin PoleApp", schoolIdx: 0 },
-    { email: "teacher@poleapp.test", role: Role.TEACHER, premium: true, name: "Teacher PoleApp", schoolIdx: 0, avatar: TEACHER_AVATARS[0] },
+    { email: "admin@poleapp.test", role: Role.SCHOOL_ADMIN, premium: true, name: "Admin Admin", schoolIdx: 0, age: 40 },
+    {
+      email: "teacher@poleapp.test",
+      role: Role.TEACHER,
+      premium: true,
+      name: "Elza Martinez",
+      schoolIdx: 0,
+      avatar: TEACHER_AVATARS[0],
+      age: 32,
+    },
     {
       email: "student1@poleapp.test",
       role: Role.STUDENT,
       premium: false,
-      name: "Student One",
+      name: "Anna Douchez",
       schoolIdx: 0,
       avatar: FEMALE_STUDENT_AVATARS[0],
-      age: 22,
+      age: 31,
       gender: "F" as Gender,
     },
     {
       email: "student2@poleapp.test",
       role: Role.STUDENT,
       premium: true,
-      name: "Student Two",
+      name: "Carlo Mendes",
       schoolIdx: 0,
       avatar: MALE_STUDENT_AVATARS[0],
-      age: 24,
+      age: 35,
       gender: "M" as Gender,
     },
   ];

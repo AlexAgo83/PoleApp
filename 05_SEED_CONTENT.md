@@ -53,10 +53,10 @@ Exemple (format libre):
 - 20 cours de démo créé par école (alterner le professeur, alterner les élèves + entre 2 et 5 par cours, alterner les positions + entre 2 et 5) + il doit y'avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, ne peut pas se chevaucher si même studio et/ou même professeur.
 
 ## Comptes seed (mot de passe `change-me-password`) (à affecter à la première école)
-- admin@poleapp.test — SCHOOL_ADMIN (premium)
-- teacher@poleapp.test — TEACHER (Professeur)
-- student1@poleapp.test — STUDENT (free)
-- student2@poleapp.test — STUDENT (premium)
+- admin@poleapp.test — SCHOOL_ADMIN (premium) - admin admin 40ans Homme
+- teacher@poleapp.test — TEACHER (Professeur) - Elza Martinez 32ans Femme
+- student1@poleapp.test — STUDENT (free) - Anna Douchez 31ans Femme
+- student2@poleapp.test — STUDENT (premium) - Carlo Mendes 35ans Homme
 
 ## (à utiliser pour le seed) Liens images à utiliser pour les "Position" (ne peut être utiliser qu'une fois)
 - https://i.postimg.cc/W4Mwp4Zr/Gemini-Generated-Image-6bpiby6bpiby6bpi.png

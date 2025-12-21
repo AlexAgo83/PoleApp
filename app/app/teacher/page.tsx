@@ -29,8 +29,8 @@ export default async function TeacherDashboard() {
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-semibold text-white">
-            Bonjour {displayName},
+          <h2 className="text-xl text-white">
+            Bonjour <span className="font-semibold">{displayName}</span>,
           </h2>
           {teacherProfileHref && (
             <Link
