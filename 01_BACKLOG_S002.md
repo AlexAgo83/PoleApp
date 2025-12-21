@@ -1,23 +1,23 @@
 # Backlog — Retours QA S002 (session 2025-12-21 01:00)
-[Compréhension: 80% / Avancement: 25%]
+[Compréhension: 85% / Avancement: 45%]
 
 ## 0) UI Quick win
 - Home : bouton “Connexion” trop sombre → augmenter contraste/hover/état actif. **(DONE)**
 
 ## 1) Espace Élève
 - Catalogue positions :
-  - Retirer le “grading élevé”.
-  - Afficher le niveau atteint par l’élève.
+  - Retirer le “grading élevé”. **(DONE)**
+  - Afficher le niveau atteint par l’élève. **(DONE)**
   - Rendre les cartes cliquables (accès détail) plutôt qu’un simple bouton “Voir”. **(DONE)**
 - Cours :
-  - Sortir le nom de l’école du titre, l’afficher comme donnée structurée.
+  - Sortir le nom de l’école du titre, l’afficher comme donnée structurée. **(DONE)**
 - Agenda :
   - Boutons vue Hebdo/Mensuelle/Annuelle. **(DONE)**
-  - Option pour afficher les cours disponibles dans les écoles fréquentées.
+  - Option pour afficher les cours disponibles dans les écoles fréquentées. **(DONE)**
 - Onglet École :
   - Partenaires à mettre dans un onglet séparé (pas dans École). **(DONE)**
 - Progression positions (élève) :
-  - Ajouter un code couleur + compteur de fois où la position a été vue/enseignée. **(partiel : compteur “Vu : X” affiché)**
+  - Ajouter un code couleur + compteur de fois où la position a été vue/enseignée. **(partiel : badge couleur + compteur “Vu : X”)**
 - Mini-jeux (à créer) :
   - 6 mini-jeux (photo→nom, nom→type, nom→niveau, nom→grips, nom→intro, nom→tip).
 - Bonus (à créer) :
@@ -58,3 +58,6 @@
 4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position **(DONE)**
 5. Mes blessures > Ajouteer une blessure, le titre du panel n'est pas à la bonne taille.
 6. Mes blessures > Proposer une nouvelle mise en page pour la liste des blessures.
+7. Fiche Mon école > Partenaires doit être déplacer en tant que module dans l'accueil de l'élève et du professeur
+8. Fiche Mon école > Plus besoin du switch entre studios et partenaires (Si 7. est fait)
+2. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés
