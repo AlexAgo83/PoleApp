@@ -17,7 +17,7 @@ export default function AccessDeniedPage() {
           </Link>
           <Link
             href="/login"
-            className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
           >
             Revenir au login
           </Link>

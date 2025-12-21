@@ -1,5 +1,5 @@
 # Backlog — Retours QA S002 (session 2025-12-21 01:00)
-[Compréhension: 90% / Avancement: 65%]
+[Compréhension: 90% / Avancement: 72%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
@@ -65,6 +65,6 @@
 7. Fiche Mon école > Partenaires doit être déplacer en tant que module dans l'accueil de l'élève et du professeur **(DONE)**
 8. Fiche Mon école > Plus besoin du switch entre studios et partenaires (Si 7. est fait) **(DONE)**
 9. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés **(DONE)**
-10. Pour tour les boutons > Si couleur de texte noir > changer en blanc.
-11. Admin > Cours > Agenda > Mode mobile > Je vois toujours les jours sans Cours dans l'agenda.
-12. Dans la fiche de l'école > Remplacer le "Mon école" par le titre de l'école (et du coup retirer le titre qui était en petit, en dessous).
+10. Pour tour les boutons > Si couleur de texte noir > changer en blanc. **(DONE)**
+11. Admin > Cours > Agenda > Mode mobile > Je vois toujours les jours sans Cours dans l'agenda. **(DONE)**
+12. Dans la fiche de l'école > Remplacer le "Mon école" par le titre de l'école (et du coup retirer le titre qui était en petit, en dessous). **(DONE)**

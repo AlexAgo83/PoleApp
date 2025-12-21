@@ -77,7 +77,7 @@ export function NewPositionForm() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
+          className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loading ? "Enregistrement..." : "Créer la position"}
         </button>
