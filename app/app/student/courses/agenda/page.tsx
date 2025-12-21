@@ -28,7 +28,7 @@ function formatDuration(minutes: number) {
 export default async function StudentCoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string; studio?: string; teacher?: string; mine?: string; view?: string }>;
+  searchParams?: Promise<{ month?: string; studio?: string; teacher?: string; mine?: string; view?: string; schools?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
@@ -49,6 +49,7 @@ export default async function StudentCoursesAgendaPage({
   const viewParam = resolved.view;
   const view: "month" | "week" | "year" =
     viewParam === "week" ? "week" : viewParam === "year" ? "year" : "month";
+  const schoolsParam = resolved.schools === "all";
   const mineFilter =
     resolved.mine === "true" ||
     resolved.mine === "1" ||
@@ -58,6 +59,19 @@ export default async function StudentCoursesAgendaPage({
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const start = startOfMonth(baseDate);
   const end = endOfMonth(baseDate);
+  let allowedSchoolIds: string[] | undefined;
+  if (schoolsParam && session.user.schoolId) {
+    const attended = await prisma.courseAttendance.findMany({
+      where: { studentId: session.user.id },
+      select: { course: { select: { schoolId: true } } },
+    });
+    const ids = new Set<string>();
+    ids.add(session.user.schoolId);
+    attended.forEach((a) => {
+      if (a.course.schoolId) ids.add(a.course.schoolId);
+    });
+    allowedSchoolIds = Array.from(ids);
+  }
   const buildViewHref = (mode: "month" | "week" | "year") => {
     const params = new URLSearchParams();
     if (mode !== "month") params.set("view", mode);
@@ -65,6 +79,7 @@ export default async function StudentCoursesAgendaPage({
     if (studioFilter) params.set("studio", studioFilter);
     if (teacherFilter) params.set("teacher", teacherFilter);
     if (onlyMine) params.set("mine", "true");
+    if (schoolsParam) params.set("schools", "all");
     return `/app/student/courses/agenda${params.toString() ? `?${params}` : ""}`;
   };
 
@@ -76,6 +91,11 @@ export default async function StudentCoursesAgendaPage({
             date: { gte: start, lte: end },
             ...(teacherFilter ? { teacherId: teacherFilter } : {}),
             ...(studioFilter ? { studioId: studioFilter } : {}),
+            ...(allowedSchoolIds && allowedSchoolIds.length > 0
+              ? { schoolId: { in: allowedSchoolIds } }
+              : session.user.schoolId
+              ? { schoolId: session.user.schoolId }
+              : {}),
           },
         },
         include: {
@@ -94,7 +114,9 @@ export default async function StudentCoursesAgendaPage({
     !onlyMine && session.user.schoolId
       ? await prisma.course.findMany({
           where: {
-            schoolId: session.user.schoolId,
+            ...(allowedSchoolIds && allowedSchoolIds.length > 0
+              ? { schoolId: { in: allowedSchoolIds } }
+              : { schoolId: session.user.schoolId }),
             date: { gte: start, lte: end },
             ...(teacherFilter ? { teacherId: teacherFilter } : {}),
             ...(studioFilter ? { studioId: studioFilter } : {}),
@@ -175,6 +197,7 @@ export default async function StudentCoursesAgendaPage({
   if (studioFilter) monthParams.set("studio", studioFilter);
   if (teacherFilter) monthParams.set("teacher", teacherFilter);
   if (onlyMine) monthParams.set("mine", "true");
+  if (schoolsParam) monthParams.set("schools", "all");
   const prevMonth = new Date(start);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
   const nextMonth = new Date(start);
@@ -287,6 +310,16 @@ export default async function StudentCoursesAgendaPage({
                 className="h-4 w-4 rounded border-white/20 bg-white/5"
               />
               Mes cours
+            </label>
+            <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input
+                type="checkbox"
+                name="schools"
+                value="all"
+                defaultChecked={schoolsParam}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Cours des écoles fréquentées
             </label>
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
