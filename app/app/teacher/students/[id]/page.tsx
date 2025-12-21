@@ -116,6 +116,8 @@ export default async function TeacherStudentDetailPage({
             <SafeImage
               src={avatarUrl}
               alt={`Avatar de ${student.name ?? student.email}`}
+              width={64}
+              height={64}
               className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
               fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
             />
