@@ -270,6 +270,12 @@ export default async function StudentCoursesAgendaPage({
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
+  const legendItems = [
+    { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
+    { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
+    { label: "Liste d’attente (rang, quota 14) — à brancher", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+    { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
+  ];
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -300,6 +306,22 @@ export default async function StudentCoursesAgendaPage({
           </Link>
         </div>
       </header>
+      <section className="panel border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+        <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {legendItems.map((item) => (
+            <span
+              key={item.label}
+              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
+            >
+              ● {item.label}
+            </span>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-slate-300">
+          Les rangs de liste d’attente doivent être reliés aux données (quota 14 élèves).
+        </p>
+      </section>
 
       <section className="panel p-4 md:p-6">
         <FilterPanel
