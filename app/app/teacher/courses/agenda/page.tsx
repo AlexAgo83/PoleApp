@@ -29,7 +29,7 @@ function formatDuration(minutes: number) {
 export default async function CoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string; teacher?: string; studio?: string; view?: string }>;
+  searchParams?: Promise<{ month?: string; teacher?: string; studio?: string; view?: string; week?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId || !session.user.role) {
@@ -53,6 +53,7 @@ export default async function CoursesAgendaPage({
       : undefined;
   const viewParam = resolved.view;
   const view: "month" | "week" = viewParam === "week" ? "week" : "month";
+  const weekParam = typeof resolved.week === "string" && resolved.week ? resolved.week : undefined;
   const hasMonthFilter = Boolean(monthParam);
   const baseDate = monthParam
     ? new Date(`${monthParam}-01T00:00:00`)
@@ -61,9 +62,10 @@ export default async function CoursesAgendaPage({
   const end = endOfMonth(baseDate);
 
   const effectiveTeacherFilter = isTeacher ? teacherFilter ?? session.user.id : teacherFilter;
-  const buildViewHref = (mode: "month" | "week") => {
+  const buildViewHref = (mode: "month" | "week", weekValue?: string) => {
     const params = new URLSearchParams();
     if (mode !== "month") params.set("view", mode);
+    if (mode === "week" && weekValue) params.set("week", weekValue);
     if (monthParam) params.set("month", monthParam);
     if (studioFilter) params.set("studio", studioFilter);
     if (teacherFilter) params.set("teacher", teacherFilter);
@@ -122,9 +124,10 @@ export default async function CoursesAgendaPage({
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
 
-  // Vue semaine : toujours la semaine en cours (lundi → dimanche)
+  // Vue semaine avec navigation
   const today = new Date();
-  const startWeek = new Date(today);
+  const weekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : today;
+  const startWeek = new Date(weekBase);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
   const weekDays = Array.from({ length: 7 }).map((_, idx) => {
@@ -132,6 +135,16 @@ export default async function CoursesAgendaPage({
     d.setDate(startWeek.getDate() + idx);
     return d;
   });
+  const formatWeekKey = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const weekValue = formatWeekKey(startWeek);
+  const prevWeek = new Date(startWeek);
+  prevWeek.setDate(startWeek.getDate() - 7);
+  const nextWeek = new Date(startWeek);
+  nextWeek.setDate(startWeek.getDate() + 7);
+  const prevWeekValue = formatWeekKey(prevWeek);
+  const nextWeekValue = formatWeekKey(nextWeek);
+
   const coursesByDay = weekDays.map((d) => {
     const dayStr = d.toDateString();
     return courses.filter((c) => new Date(c.date).toDateString() === dayStr);
@@ -255,7 +268,7 @@ export default async function CoursesAgendaPage({
         </FilterPanel>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
           <Link
-            href={buildViewHref("week")}
+            href={buildViewHref("week", weekValue)}
             className={`rounded-full px-3 py-1.5 font-semibold transition ${
               view === "week"
                 ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
@@ -311,32 +324,21 @@ export default async function CoursesAgendaPage({
                   {cell.courses &&
                     cell.courses.slice(0, 3).map((course) => {
                       const past = isPastCourse(course.date, course.durationMinutes);
-                      const badgeClass = past
-                        ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                        : "border border-amber-300/70 bg-amber-500/25 text-amber-50";
                       return (
                         <Link
                           key={course.id}
                           href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                          className={`mt-1 flex items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                          className={`mt-1 block w-full rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
                             past
                               ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                               : "border-white/10 bg-white/10 text-white"
                           }`}
                         >
-                          <div className="flex-1 space-y-0.5 overflow-hidden">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
-                                title={past ? "Cours passé" : "Cours à venir"}
-                              >
-                                ●
-                              </span>
-                              <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
-                                - {formatDuration(course.durationMinutes ?? 60)}
-                              </p>
-                            </div>
+                          <div className="space-y-0.5 overflow-hidden">
+                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                              {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
+                              - {formatDuration(course.durationMinutes ?? 60)}
+                            </p>
                             <p className="truncate text-[11px] font-semibold text-white">
                               {course.title ?? "Cours"}
                             </p>
@@ -347,12 +349,6 @@ export default async function CoursesAgendaPage({
                               {course.studio?.name ?? "Studio non renseigné"}
                             </p>
                           </div>
-                          <span
-                            className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
-                            aria-hidden
-                          >
-                            ●
-                          </span>
                         </Link>
                       );
                     })}
@@ -402,12 +398,12 @@ export default async function CoursesAgendaPage({
         <div className="flex items-center justify-between text-lg font-semibold text-white">
           <span>Vue semaine</span>
         </div>
-          <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
-            {weekDays.map((day, idx) => {
-              const dayCourses = coursesByDay[idx];
-              const hideOnMobile = dayCourses.length === 0 ? "hidden md:block" : "";
-              return (
-                <div
+        <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
+          {weekDays.map((day, idx) => {
+            const dayCourses = coursesByDay[idx];
+            const hideOnMobile = dayCourses.length === 0 ? "hidden md:block" : "";
+            return (
+              <div
                   key={day.toISOString()}
                   className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
                 >
@@ -418,56 +414,71 @@ export default async function CoursesAgendaPage({
                       </span>
                       <span className={day < new Date(new Date().setHours(0,0,0,0)) ? "text-slate-400" : undefined}>{day.getDate()}</span>
                     </span>
-                    <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5 md:gap-2">
-                    {dayCourses.map((course) => {
-                      const past = isPastCourse(course.date, course.durationMinutes);
-                      const badgeClass = past
-                        ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                        : "border border-amber-300/70 bg-amber-500/25 text-amber-50";
-                      return (
-                        <Link
-                          key={course.id}
-                          href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                          className={`inline-flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                            past
-                              ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                              : "border-white/10 bg-white/10 text-white"
-                          }`}
-                          title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
-                        >
-                          <div className="flex-1 space-y-0.5 overflow-hidden">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
-                                title={past ? "Cours passé" : "Cours à venir"}
-                              >
-                                ●
-                              </span>
-                              <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
-                                - {formatDuration(course.durationMinutes ?? 60)}
-                              </p>
-                            </div>
-                            <p className="truncate text-[11px] font-semibold text-white">
-                              {course.title ?? "Cours"}
-                            </p>
-                            <p className="truncate text-[10px] text-cyan-100">
-                              {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                            </p>
-                            <p className="truncate text-[10px] text-slate-200">
-                              {course.studio?.name ?? "Studio non renseigné"}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                  <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex flex-col gap-1.5 md:gap-2">
+                  {dayCourses.map((course) => {
+                    const past = isPastCourse(course.date, course.durationMinutes);
+                    return (
+                      <Link
+                        key={course.id}
+                        href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                        className={`block rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                          past
+                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                            : "border-white/10 bg-white/10 text-white"
+                        }`}
+                        title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
+                      >
+                        <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                          {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
+                          - {formatDuration(course.durationMinutes ?? 60)}
+                        </p>
+                        <p className="truncate text-[11px] font-semibold text-white">
+                          {course.title ?? "Cours"}
+                        </p>
+                        <p className="truncate text-[10px] text-cyan-100">
+                          {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                        </p>
+                        <p className="truncate text-[10px] text-slate-200">
+                          {course.studio?.name ?? "Studio non renseigné"}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+          <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
+            <input type="hidden" name="view" value="week" />
+            <input type="hidden" name="week" value={prevWeekValue} />
+            {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
+            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+            {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Semaine précédente
+            </button>
+          </form>
+          <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
+            <input type="hidden" name="view" value="week" />
+            <input type="hidden" name="week" value={nextWeekValue} />
+            {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
+            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+            {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Semaine suivante →
+            </button>
+          </form>
+        </div>
       </section>
       )}
     </main>

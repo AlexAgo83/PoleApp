@@ -276,7 +276,7 @@ export default async function AdminUsersPage({
           {users.map((user) => (
             <div
               key={user.id}
-              className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 py-4"
             >
               <div className="flex items-center gap-3">
                 <SafeImage
@@ -311,7 +311,16 @@ export default async function AdminUsersPage({
                   </p>
                 </div>
               </div>
-              <div className="flex w-full flex-wrap items-center justify-end gap-2 text-sm">
+              <div className="mt-2 flex w-full flex-col items-start gap-2 text-sm">
+                <form action={deleteUserAction} className="w-full">
+                  <input type="hidden" name="userId" value={user.id} />
+                  <button
+                    type="submit"
+                    className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
+                  >
+                    Supprimer
+                  </button>
+                </form>
                 {user.role !== "SCHOOL_ADMIN" && (
                   <Link
                     href={
@@ -319,20 +328,11 @@ export default async function AdminUsersPage({
                         ? `/app/teachers/${user.id}?from=/app/admin/users`
                         : `/app/teacher/students/${user.id}?from=/app/admin/users`
                     }
-                    className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-center font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 md:w-auto"
+                    className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-center font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                   >
                     Voir la fiche
                   </Link>
                 )}
-                <form action={deleteUserAction}>
-                  <input type="hidden" name="userId" value={user.id} />
-                  <button
-                    type="submit"
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
-                  >
-                    Supprimer
-                  </button>
-                </form>
               </div>
             </div>
           ))}

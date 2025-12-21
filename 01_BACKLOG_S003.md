@@ -1,4 +1,7 @@
 # Backlog — Programme “Remise en forme / Débutant·e pole” (notes S003)
+[Compréhension: 35% / Avancement: 0%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
 
 ## Objectif
 Proposer un programme premium clé-en-main (sport + nutrition) pour débutants/retours à la pole, avec coordination coach/nutritionniste/école via l’app.

@@ -24,7 +24,11 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
-export default async function AdminDashboard() {
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams?: Promise<{ week?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
@@ -90,12 +94,22 @@ export default async function AdminDashboard() {
     { total: 0, STUDENT: 0, TEACHER: 0, SCHOOL_ADMIN: 0, premium: 0 } as RoleCounts
   ) satisfies RoleCounts;
 
-  const today = new Date();
-  const startWeek = new Date(today);
+  const resolved = (await searchParams) ?? {};
+  const weekParam = resolved.week;
+  const weekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : new Date();
+  const startWeek = new Date(weekBase);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
   const endWeek = new Date(startWeek);
   endWeek.setDate(endWeek.getDate() + 6);
+  const formatWeekKey = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const prevWeek = new Date(startWeek);
+  prevWeek.setDate(startWeek.getDate() - 7);
+  const nextWeek = new Date(startWeek);
+  nextWeek.setDate(startWeek.getDate() + 7);
+  const prevWeekValue = formatWeekKey(prevWeek);
+  const nextWeekValue = formatWeekKey(nextWeek);
   const now = Date.now();
   const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
     const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
@@ -255,33 +269,22 @@ export default async function AdminDashboard() {
                 <div className="flex flex-col gap-1.5 md:gap-2">
                   {dayCourses.map((course) => {
                     const past = isPastCourse(course.date, course.durationMinutes);
-                    const badgeClass = past
-                      ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                      : "border border-amber-300/70 bg-amber-500/25 text-amber-50";
                     return (
                       <Link
                         key={course.id}
                         href={`/app/teacher/courses/${course.id}?from=/app/admin`}
-                        className={`inline-flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                        className={`inline-flex w-full rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
                           past
                             ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                             : "border-white/10 bg-white/10 text-white"
                         }`}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
                       >
-                        <div className="flex-1 space-y-0.5 overflow-hidden">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
-                              title={past ? "Cours passé" : "Cours à venir"}
-                            >
-                              ●
-                            </span>
-                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                              {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
-                              - {formatDuration(course.durationMinutes ?? 60)}
-                            </p>
-                          </div>
+                        <div className="space-y-0.5 overflow-hidden">
+                          <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                            {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
+                            - {formatDuration(course.durationMinutes ?? 60)}
+                          </p>
                           <p className="truncate text-[11px] font-semibold text-white">
                             {course.title ?? "Cours"}
                           </p>
@@ -299,6 +302,26 @@ export default async function AdminDashboard() {
               </div>
             );
           })}
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+          <form action="/app/admin" method="get" className="inline-flex">
+            <input type="hidden" name="week" value={prevWeekValue} />
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Semaine précédente
+            </button>
+          </form>
+          <form action="/app/admin" method="get" className="inline-flex">
+            <input type="hidden" name="week" value={nextWeekValue} />
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Semaine suivante →
+            </button>
+          </form>
         </div>
       </section>
 
