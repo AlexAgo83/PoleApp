@@ -1,25 +1,25 @@
 # Backlog — Mini-jeux (session 2025-12-21)
-[Compréhension: 100% / Avancement: 20%]
+[Compréhension: 100% / Avancement: 80%]
 
 ## Rappel existant
 - Mode Photo → Nom déjà implémenté dans `/app/student/game` (à vérifier pour éviter les doublons).
 
 ## Tâches
-- [ ] Cartographie de l’existant : répertorier le mode actuel (Photo→Nom) et la structure du quiz pour éviter toute duplication.
-- [ ] Schéma DB `GameSession` (id, userId, schoolId, mode, totalQuestions, correctAnswers, durationMs, createdAt) + migration + client Prisma généré.
-- [ ] Pool positions : récupérer positions débloquées (ou toutes si premium) et bloquer si < 4.
-- [ ] Générateur de questions par mode (10 questions par défaut, 5 pour Blitz, nombre figé) :
-  - [ ] Mode 1 Photo→Nom (réutiliser l’existant).
-  - [ ] Mode 2 Nom→Type.
-  - [ ] Mode 3 Nom→Niveau.
-  - [ ] Mode 4 Nom→Grips (distracteurs autorisés).
-  - [ ] Mode 5 Description/Intro→Nom (nouveau champ si nécessaire, même style que le mode existant).
-  - [ ] Mode 6 Blitz mix (type/niveau/grips, 5 questions).
-- [ ] UI sélection de mode dans `/app/student/game` : cartes par mode avec CTA “Jouer” + stats/record du joueur.
-- [ ] UI quiz générique (question, 4 choix, feedback immédiat, auto-advance).
-- [ ] Résumé fin de session (bonnes/mauvaises, % réussite).
-- [ ] Leaderboard par mode : meilleure précision + sessions jouées (top 10), visible pour l’élève sur /game et dans la fiche élève (vue prof/admin) avec historique des 5 dernières sessions (pas de filtrage école).
-- [ ] Seed de quelques sessions de démo sur des élèves existants (pas de nouveaux comptes).
+- [x] Cartographie de l’existant : répertorier le mode actuel (Photo→Nom) et la structure du quiz pour éviter toute duplication.
+- [x] Schéma DB `GameSession` (id, userId, schoolId, mode, totalQuestions, correctAnswers, durationMs, createdAt) + migration + client Prisma généré.
+- [x] Pool positions : récupérer positions débloquées (ou toutes si premium) et bloquer si < 4.
+- [x] Générateur de questions par mode (10 questions par défaut, 5 pour Blitz, nombre figé) :
+  - [x] Mode 1 Photo→Nom (réutiliser l’existant).
+  - [x] Mode 2 Nom→Type.
+  - [x] Mode 3 Nom→Niveau.
+  - [x] Mode 4 Nom→Grips (distracteurs autorisés).
+  - [x] Mode 5 Description/Intro→Nom (nouveau champ si nécessaire, même style que le mode existant).
+  - [x] Mode 6 Blitz mix (type/niveau/grips, 5 questions).
+- [x] UI sélection de mode dans `/app/student/game` : cartes par mode avec CTA “Jouer” + stats/record du joueur.
+- [x] UI quiz générique (question, 4 choix, feedback immédiat, auto-advance).
+- [x] Résumé fin de session (bonnes/mauvaises, % réussite).
+- [x] Leaderboard par mode : meilleure précision + sessions jouées (top 10), visible pour l’élève sur /game et dans la fiche élève (vue prof/admin) avec historique des 5 dernières sessions (pas de filtrage école).
+- [x] Seed de quelques sessions de démo sur des élèves existants (pas de nouveaux comptes).
 
 ## Definition of Done (DoD)
 - Tests manuels : chaque mode se lance depuis `/app/student/game`, bloque si pool < 4, et enregistre une ligne `GameSession` avec durée front.

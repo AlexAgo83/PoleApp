@@ -36,9 +36,9 @@ const moduleSections = [
   {
     title: "Mini-jeu",
     href: "/app/student/game",
-    description: "Photo → nom, pool positions débloquées, score final.",
-    status: "Étape 6",
-    role: "Student",
+    description: "6 modes (photo/type/niveau/grips/description + blitz), historique et leaderboard.",
+    status: "Étape 6-9",
+    role: "Élève / Prof / Admin",
     icon: "🎯",
   },
   {
@@ -171,7 +171,7 @@ export default async function Home() {
           <summary className="flex w-full cursor-pointer items-center justify-between gap-3 text-left text-white">
             <div className="space-y-1">
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — v0.4.8
+                Pole App — v0.5.0
               </p>
             </div>
             <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>

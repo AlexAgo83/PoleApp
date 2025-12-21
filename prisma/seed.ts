@@ -1,4 +1,5 @@
 import {
+  GameMode,
   PositionLevel,
   PositionType,
   PrismaClient,
@@ -212,6 +213,7 @@ async function seedTaxonomies() {
         type: pos.type,
         levelRequired: pos.level,
         grips: pos.grips,
+        description: `${pos.name} (${pos.type.toLowerCase()} · niveau ${pos.level.toLowerCase()})`,
         media: {
           create: {
             url: image,
@@ -459,11 +461,46 @@ async function seedCourses(schoolsData: {
   }
 }
 
+async function seedGameSessions(students: { id: string; schoolId: string }[]) {
+  const sampleStudents = students.slice(0, 3);
+  const modes: GameMode[] = [
+    "PHOTO_NAME",
+    "NAME_TYPE",
+    "NAME_LEVEL",
+    "NAME_GRIPS",
+    "DESCRIPTION_NAME",
+    "BLITZ_MIX",
+  ];
+  const now = Date.now();
+  const data = [];
+
+  sampleStudents.forEach((student, idx) => {
+    modes.forEach((mode, mIdx) => {
+      const total = mode === "BLITZ_MIX" ? 5 : 10;
+      const correct = Math.max(0, Math.min(total, total - 2 + ((idx + mIdx) % 3)));
+      data.push({
+        userId: student.id,
+        schoolId: student.schoolId,
+        mode,
+        totalQuestions: total,
+        correctAnswers: correct,
+        durationMs: 25000 + (idx + mIdx) * 3000,
+        createdAt: new Date(now - (idx + mIdx) * 60 * 60 * 1000),
+      });
+    });
+  });
+
+  if (data.length) {
+    await prisma.gameSession.createMany({ data });
+  }
+}
+
 async function main() {
   await resetAll();
   const positions = await seedTaxonomies();
   const { schools, teachers, students } = await seedSchoolsAndUsers();
   await seedCourses({ schools, teachers, students, positions });
+  await seedGameSessions(students);
 }
 
 main()
