@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { Prisma } from "@prisma/client";
 import { FilterPanel } from "@/components/FilterPanel";
 import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
@@ -34,7 +35,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
     studioId,
     ...(q
       ? {
-          title: { contains: q, mode: "insensitive" },
+          title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
         }
       : {}),
   };
