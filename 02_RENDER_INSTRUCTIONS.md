@@ -11,10 +11,10 @@
 ## Commandes Render actuelles (prod)
 
 À renseigner dans Render (service web) :
-- **Build command** : `npm install && npx prisma db push && npx prisma generate && npm run build`
-  - Raison : la base Render existante n’a pas d’historique de migrations (P3005). `db push` synchronise le schéma (colonnes `maxSeats`/`costCredits`/`photoUrl`, etc.) sans exiger de baseline.
-- **Start command** : `npm run db:push && npm run db:seed && npm run start`
-  - Attention : `db:seed` se lance à chaque start. Vérifier que le seed reste idempotent ou retirer le seed si inutile en prod.
+- **Build command** : `npm install && npm run db:baseline:render && npm run db:migrate:deploy && npm run build`
+  - But : baseliner la DB existante (P3005) puis appliquer les migrations. Une fois le baseline passé, tu pourras revenir à `npm install && npm run db:migrate:deploy && npm run build`.
+- **Start command** : `npm run db:migrate:deploy && npm run start`
+  - Si le baseline n’est pas encore appliqué, utiliser temporairement `npm run db:baseline:render && npm run db:migrate:deploy && npm run start`. `db:seed` n’est plus lancé automatiquement pour éviter de reseeder en prod.
 
 ## Procédure Render lorsqu’on change le schéma Prisma
 
