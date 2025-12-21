@@ -167,11 +167,11 @@ export default async function Home() {
 
       <header className="panel relative overflow-hidden p-6">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
-        <details className="relative flex flex-col gap-4 group">
+        <details className="relative flex flex-col gap-4 group" open>
           <summary className="flex w-full cursor-pointer items-center justify-between gap-3 text-left text-white">
             <div className="space-y-1">
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — v0.4.6
+                Pole App — v0.4.8
               </p>
             </div>
             <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>

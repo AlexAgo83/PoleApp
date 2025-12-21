@@ -1,5 +1,12 @@
 # Changelog
 
+## 2025-12-21 — Release v0.4.8 (squash + seed + Render FR)
+- Version bump 0.4.8.
+- Migrations squashées en une `init` pour repartir proprement (Render FR, DB vide).
+- Seed : nouvelles images (postimg) pour positions/cours/avatars, pools noms/avatars uniques, seed via start-auto si base vide.
+- Start-auto : migrate deploy → fallback push → seed si DB vide, vérif d’état avant start (Render inclus).
+- Blueprint Render : région Frankfurt, build `db:migrate:deploy`, start `start:render`.
+
 ## 2025-12-21 — Hotfix v0.4.7 (mini-jeux accès admin/prof)
 - Version bump 0.4.7.
 - Mini-jeux : ouverts aux rôles prof/admin (accès direct), CTA “Jeux” ajouté au dashboard admin.

@@ -1,6 +1,6 @@
-# Pole App — Produit v0.4.7 (Steps 0 → 9)
+# Pole App — Produit v0.4.8 (Steps 0 → 9)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.7` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeu, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.4.8` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données. Seed idempotent.
@@ -80,8 +80,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Généré : 2 écoles, 5 professeurs + 10 élèves/école, cours de démo, positions/médias, blessures types.
 
 ## Déploiement Render
-- Build : `npm install && npx prisma db push && npx prisma generate && npm run build` (la base Render n’a pas d’historique de migrations, `db push` aligne le schéma).
-- Start : `npm run db:push && npm run db:seed && npm run start` (seed idempotent).
+- Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).
+- Start : `npm run start:render` (start-auto : migrate deploy → fallback db push → seed si base vide → start). Identifiants seed : `admin@poleapp.test / change-me-password`.
 - Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
 - Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`).
 - Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds. Si warning “middleware” : migrer vers `proxy` à terme.
