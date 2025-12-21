@@ -151,7 +151,15 @@ export default async function StudentSchoolPage({
                 key={studio.id}
                 className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
               >
-                <p className="text-base font-semibold text-white">{studio.name}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-base font-semibold text-white">{studio.name}</p>
+                  <Link
+                    href={`/app/school/${studio.id}`}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  >
+                    Voir le studio
+                  </Link>
+                </div>
                 {studio.address && (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
