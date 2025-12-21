@@ -60,4 +60,4 @@
 6. Mes blessures > Proposer une nouvelle mise en page pour la liste des blessures.
 7. Fiche Mon école > Partenaires doit être déplacer en tant que module dans l'accueil de l'élève et du professeur
 8. Fiche Mon école > Plus besoin du switch entre studios et partenaires (Si 7. est fait)
-2. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés
+9. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés
