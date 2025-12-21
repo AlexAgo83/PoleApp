@@ -68,3 +68,20 @@
 10. Pour tour les boutons > Si couleur de texte noir > changer en blanc. **(DONE)**
 11. Admin > Cours > Agenda > Mode mobile > Je vois toujours les jours sans Cours dans l'agenda. **(DONE)**
 12. Dans la fiche de l'école > Remplacer le "Mon école" par le titre de l'école (et du coup retirer le titre qui était en petit, en dessous). **(DONE)**
+
+## Tâches restantes à prioriser (P0/P1/P2/P3 à définir)
+- Mini-jeux (6) accessibles en illimité pour prof + élève, gating premium (oui). Bouton d’accès sur dashboards admin/prof/élève. (P1)
+- Progression positions : finaliser code couleur homogène (élève + tableau prof + détail position), définir nuances/étiquettes et surfaces exactes. (P2)
+- Prof > Élèves : tri/filtre par cours suivis/école/niveau ; affichage âge sur fiche. (P1)
+- Admin > Studios : page studio avec infos (pas de vue semaine pour l’instant). (P1)
+- Prof/Admin > Cours : suivi pédagogique (tableau élève×positions), notes internes cours, suivi de facturation (facture envoyée/paiement reçu). (P1)
+- Élève Premium UX : feedback immédiat mini-jeux + récap final conservé. (P2)
+- Admin : planning/réservation, achats/abonnements, VOD (encore manquants). (P2)
+
+## Mises à jour récentes
+- Page infos studio accessible à tous via `/app/school/[id]` (retour contextualisé) + liens depuis les listes de studios élèves/profs/admin. **(DONE)**
+
+## Clarifications nécessaires
+- Progression : valider palette/code couleur exacts et où l’afficher (liste élève, tableau prof, détail position, etc.).
+- Mini-jeux : gating premium confirmé oui ; navigation cible : dashboards admin/prof/élève.
+- Studios : besoin actuel limité à la page infos studio (pas de vue semaine pour l’instant).

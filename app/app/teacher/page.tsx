@@ -111,6 +111,20 @@ export default async function TeacherDashboard() {
             </p>
           </Link>
           <Link
+            href="/app/student/game"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              Jeux
+            </p>
+            <p className="text-base font-semibold text-white">
+              6 mini-jeux de révision
+            </p>
+            <p className="text-sm text-slate-300">
+              Photo→nom, nom→type/niveau/grips/intro/tip pour animer tes sessions.
+            </p>
+          </Link>
+          <Link
             href="/app/teacher/school"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
