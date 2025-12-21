@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 
@@ -224,7 +225,8 @@ export default async function TeacherStudentsPage({
                     {student.name ?? student.email}
                   </p>
                   <p className="text-sm text-slate-300">
-                    {student.email} · {student.isPremium ? "Premium" : "Free"}
+                    {student.email} · {student.isPremium ? "Premium" : "Free"} · Âge :{" "}
+                    {student.age ? `${student.age} ans` : "Non renseigné"}
                   </p>
                   <p className="text-sm text-slate-200">
                     Blessures actives :{" "}
