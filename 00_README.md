@@ -8,6 +8,8 @@ Ce dossier contient :
 - `02_CODEX_INSTRUCTIONS.md` : consignes “pas à pas” pour que CODEX prototype le projet.
 - `03_DATA_MODEL.md` : modèle de données (MVP + évolutions).
 - `04_ROUTES_AND_SCREENS.md` : écrans clés + routes + états.
+- `02_RENDER_INSTRUCTIONS.md` : commandes Render (baseline Prisma/Render).
+- `scripts/dump-db.js` : helper local/CI pour dumper la base (voir README).
 - `05_SEED_CONTENT.md` : contenu de seed (positions, types, niveaux) pour démarrer vite.
 - `06_QA_S001.md` : plan de test QA.
 - `06_QA_S002.md` : retours QA (session 2025-12-21 01:00).

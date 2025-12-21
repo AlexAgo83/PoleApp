@@ -30,6 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# dumps (ne pas versionner)
+*.sql
+*.dump
+*.backup
+
 # env files (can opt-in for committing if needed)
 .env*
 
