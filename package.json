@@ -12,7 +12,7 @@
     "db:push": "prisma db push --schema prisma/schema.prisma",
     "db:seed": "prisma db seed --schema prisma/schema.prisma",
     "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
-    "db:baseline:render": "prisma migrate resolve --schema prisma/schema.prisma --applied 20250130_add_course_seats_credits && prisma migrate resolve --schema prisma/schema.prisma --applied 20250201_add_student_age && prisma migrate resolve --schema prisma/schema.prisma --applied 20250202_profile_media_teacher_meta && prisma migrate resolve --schema prisma/schema.prisma --applied 20250203_add_course_photo",
+    "db:baseline:render": "echo \"baseline not required (init migration)\"",
     "start:render": "node scripts/start-auto.js render",
     "start:dev": "node scripts/start-auto.js dev"
   },
