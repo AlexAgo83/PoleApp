@@ -201,7 +201,6 @@ async function seedSchoolsAndUsers() {
       prisma.school.create({
         data: {
           name,
-          address: `Adresse ${name}`,
         },
       })
     )
