@@ -1,5 +1,17 @@
 # Changelog
 
+## 2025-12-21 — Release v0.5.1 (mini-jeux + studios)
+- Version bump 0.5.1.
+- Affichage de l’énoncé des questions pour les mini-jeux (fix prod).
+- Seed aligné avec nouveau contenu (avatars, écoles, studios avec photos) et backlog optimisations documenté.
+- Studio : champ photo (CRUD admin) et affichage sur la fiche studio.
+
+## 2025-12-21 — Release v0.5.1 (mini-jeux + studios)
+- Version bump 0.5.1.
+- Affichage de l’énoncé des questions pour les mini-jeux (fix prod).
+- Seed aligné avec nouveau contenu (avatars, écoles, studios avec photos) et backlog optimisations documenté.
+- Studio : champ photo (CRUD admin) et affichage sur la fiche studio.
+
 ## 2025-12-21 — Release v0.5.0 (mini-jeux étendus)
 - Version bump 0.5.0.
 - Modèle `GameSession` + API d’enregistrement, seed de sessions démo.
