@@ -275,107 +275,111 @@ export default async function CoursesAgendaPage({
             Mensuelle
           </Link>
         </div>
-        {view === "month" && (
-          <>
-            <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
-              {calendarCells.map((cell, idx) => {
-                const weekDayIndex = (idx % 7) + 1;
-                const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
-                const cellDate = cell.day
-                  ? new Date(start.getFullYear(), start.getMonth(), cell.day)
-                  : null;
-                const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
-                const hideOnMobileMonth =
-                  !cell.courses || cell.courses.length === 0 ? "hidden sm:block" : "";
-                return (
-                  <div
-                    key={idx}
-                    className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
-                      !cell.courses || cell.courses.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
-                    }`}
-                  >
-                    <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                      <span className="flex items-center gap-1">
-                        <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
-                          {label}
-                        </span>
-                        <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
+      </section>
+
+      {view === "month" && (
+        <section className="panel p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
+            {calendarCells.map((cell, idx) => {
+              const weekDayIndex = (idx % 7) + 1;
+              const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
+              const cellDate = cell.day
+                ? new Date(start.getFullYear(), start.getMonth(), cell.day)
+                : null;
+              const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
+              const hideOnMobileMonth =
+                !cell.courses || cell.courses.length === 0 ? "hidden sm:block" : "";
+              return (
+                <div
+                  key={idx}
+                  className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
+                    !cell.courses || cell.courses.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
+                  }`}
+                >
+                  <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+                    <span className="flex items-center gap-1">
+                      <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
+                        {label}
                       </span>
-                      {cell.courses && cell.courses.length > 0 && (
-                        <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                          {cell.courses.length}
-                        </span>
-                      )}
-                    </div>
-                    {cell.courses &&
-                      cell.courses.slice(0, 3).map((course) => {
-                        const past = isPastCourse(course.date, course.durationMinutes);
-                        return (
-                          <Link
-                            key={course.id}
-                            href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                            className={`mt-1 block rounded-md px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                              past
-                                ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                                : "bg-white/10 text-white"
-                            }`}
-                          >
-                            <div className="text-[10px] leading-snug">
-                              {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
-                              {course.title ?? "Cours"}
-                              <div className="text-[10px] text-slate-300 hidden md:block">
-                                Durée : {formatDuration(course.durationMinutes ?? 60)}
-                              </div>
-                            </div>
-                            {course.studio?.name ? (
-                              <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                                {course.studio.name}
-                              </span>
-                            ) : null}
-                          </Link>
-                        );
-                      })}
-                    {cell.courses && cell.courses.length > 3 && (
-                      <div className="mt-1 text-[11px] text-slate-300">
-                        +{cell.courses.length - 3} autres
-                      </div>
+                      <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
+                    </span>
+                    {cell.courses && cell.courses.length > 0 && (
+                      <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                        {cell.courses.length}
+                      </span>
                     )}
                   </div>
-                );
-              })}
-            </div>
-            <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-              <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
-                <input type="hidden" name="month" value={prevMonthValue} />
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-                {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  ← Mois précédent
-                </button>
-              </form>
-              <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
-                <input type="hidden" name="month" value={nextMonthValue} />
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-                {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Mois suivant →
-                </button>
-              </form>
-            </div>
-            {courses.length === 0 && (
-              <p className="mt-4 text-sm text-slate-200">
-                Aucun cours prévu pour ce mois.
-              </p>
-            )}
-          </>
-        )}
-      </section>
+                  {cell.courses &&
+                    cell.courses.slice(0, 3).map((course) => {
+                      const past = isPastCourse(course.date, course.durationMinutes);
+                      return (
+                        <Link
+                          key={course.id}
+                          href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
+                          className={`mt-1 block rounded-md px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                            past
+                              ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                              : "bg-white/10 text-white"
+                          }`}
+                        >
+                          <div className="text-[10px] leading-snug">
+                            {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
+                            {course.title ?? "Cours"}
+                            <div className="text-[10px] text-slate-300 hidden md:block">
+                              Durée : {formatDuration(course.durationMinutes ?? 60)}
+                            </div>
+                          </div>
+                          {course.studio?.name ? (
+                            <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                              {course.studio.name}
+                            </span>
+                          ) : null}
+                        </Link>
+                      );
+                    })}
+                  {cell.courses && cell.courses.length > 3 && (
+                    <div className="mt-1 text-[11px] text-slate-300">
+                      +{cell.courses.length - 3} autres
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+            <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
+              <input type="hidden" name="month" value={prevMonthValue} />
+              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+              {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                ← Mois précédent
+              </button>
+            </form>
+            <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
+              <input type="hidden" name="month" value={nextMonthValue} />
+              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+              {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Mois suivant →
+              </button>
+            </form>
+          </div>
+          {courses.length === 0 && (
+            <p className="mt-4 text-sm text-slate-200">
+              Aucun cours prévu pour ce mois.
+            </p>
+          )}
+        </section>
+      )}
 
       {view === "week" && (
         <section className="panel p-6">
