@@ -234,6 +234,7 @@ model Studio {
   id        String   @id @default(cuid())
   name      String
   address   String?
+  photoUrl  String?
   schoolId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
