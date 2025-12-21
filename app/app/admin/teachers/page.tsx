@@ -2,8 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
-import Image from "next/image";
-
+import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
@@ -163,12 +162,13 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
               className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between"
             >
               <div className="flex items-center gap-3">
-                <Image
+                <SafeImage
                   src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
                   alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
                   width={48}
                   height={48}
                   className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                  fallbackSrc={TEACHER_AVATAR_PLACEHOLDER}
                 />
                     <div>
                       <p className="text-base font-semibold text-white">{teacher.name ?? "Professeur"}</p>

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -7,6 +6,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "./actions";
+import { SafeImage } from "@/components/SafeImage";
 
 type CourseNote = {
   id: string;
@@ -421,12 +421,13 @@ export default async function StudentCoursesPage({
                     </p>
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
-                    <Image
+                    <SafeImage
                       src={course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER}
                       alt={course.title ?? "Cours"}
                       width={96}
                       height={64}
                       className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
+                      fallbackSrc={COURSE_PHOTO_PLACEHOLDER}
                     />
                     <div className="min-w-[220px] flex-1 space-y-1">
                       <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">

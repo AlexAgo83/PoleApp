@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -7,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "../actions";
+import { SafeImage } from "@/components/SafeImage";
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
@@ -136,12 +136,13 @@ export default async function StudentCourseDetailPage({
               </h1>
             </div>
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
-              <Image
+              <SafeImage
                 src={coursePhoto}
                 alt={course.title ?? "Cours"}
                 width={128}
                 height={80}
                 className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
+                fallbackSrc={COURSE_PLACEHOLDER}
               />
               <div className="space-y-1 text-sm text-slate-200">
                 <p className="text-base text-white">

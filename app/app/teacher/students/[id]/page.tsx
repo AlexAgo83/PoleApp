@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
 
@@ -112,11 +113,11 @@ export default async function TeacherStudentDetailPage({
             {student.age ? `${student.age} ans` : "non renseigné"}
           </p>
           <div className="mt-2 flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <SafeImage
               src={avatarUrl}
               alt={`Avatar de ${student.name ?? student.email}`}
               className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
+              fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
             />
             <p className="text-xs text-slate-300">
               Photo définie par l&apos;élève (ou placeholder).

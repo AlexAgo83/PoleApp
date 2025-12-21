@@ -1,11 +1,12 @@
 import { PositionLevel, PositionType, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import Image from "next/image";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { FilterPanel } from "@/components/FilterPanel";
+import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 
@@ -278,17 +279,23 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/60 hover:bg-white/10"
               >
                 {cover ? (
-                  <Image
+                  <SafeImage
                     src={cover.url}
                     alt={p.name}
                     width={480}
                     height={240}
                     className="h-40 w-full object-cover"
+                    fallbackSrc={COURSE_PLACEHOLDER}
                   />
                 ) : (
-                  <div className="flex h-40 w-full items-center justify-center bg-white/5 text-sm text-slate-300">
-                    Pas d’image
-                  </div>
+                  <SafeImage
+                    src={COURSE_PLACEHOLDER}
+                    alt={p.name}
+                    width={480}
+                    height={240}
+                    className="h-40 w-full object-cover"
+                    fallbackSrc={COURSE_PLACEHOLDER}
+                  />
                 )}
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <div className="flex items-center justify-between gap-2">
