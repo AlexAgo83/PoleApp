@@ -1,22 +1,22 @@
 # Backlog — Retours QA S005 (session 2025-12-21 23:55)
-[Compréhension: 60% / Avancement: 0%]
+[Compréhension: 90% / Avancement: 0%]
 
 Source: 06_QA_S005.md (tests faits sur v0.5.0)
 
 ## Tâches
-- [ ] Teacher > École : ajouter vue agenda pour les cours à venir (planning par studio) + filtres (niveau, prof, date, discipline, studio).
-- [ ] Teacher > Cours : ajouter générateur de cours (outil de création rapide ? à préciser) ; afficher le niveau atteint par chaque élève pour chaque position dans la fiche cours ; rendre les élèves cliquables.
-- [ ] Teacher > Positions : retirer l’encadré “gating”.
-- [ ] Teacher > Facturation : créer l’onglet/fonctionnalités (inexistant actuellement) — clarification requise.
+- [ ] Teacher > École : vue agenda (semaine + mensuel) par studio, états mobile/desktop, incluant cours passés et à venir. Filtres multiples : niveau, prof, date, discipline (types de cours ex. souplesse/pole exotic/pole gym), studio. Pagination ou scroll infini.
+- [ ] Teacher > Cours : générateur de cours qui suggère positions selon élèves présents et leurs niveaux ; fiche cours affiche niveau atteint par élève/position (format badges/tableau), édition inline autorisée ; élèves cliquables vers leur fiche (prof et admin).
+- [ ] Teacher > Positions : supprimer l’encadré “gating”.
+- [ ] Teacher > Facturation : onglet listant les cours donnés, tarif à facturer à l’école, état de facture (générée, envoyée, payée).
 
 ## Definition of Done (DoD)
-- Vue agenda des cours à venir accessible dans l’onglet École (planning par studio) avec filtres niveau/prof/date/discipline/studio fonctionnels.
-- Fiche cours enrichie : niveau atteint par élève/position visible, élèves cliquables (vers fiche élève), générateur de cours disponible (scope à clarifier).
-- Section Positions sans encadré “gating”.
-- Onglet Facturation présent avec au moins le squelette initial (ou backlog/placeholder si specs manquantes) et navigation accessible.
+- Onglet École : agenda semaine+mois par studio, filtres multi (niveau/prof/date/discipline/studio), inclut passé/à venir, pagination/scroll OK sur mobile/desktop.
+- Fiche cours : niveaux élève/position visibles et éditables, élèves cliquables vers fiche ; générateur actif et propose des positions adaptées aux élèves inscrits.
+- Positions Teacher : encadré “gating” supprimé.
+- Facturation : onglet accessible listant cours donnés avec montant à facturer et statut (générée/envoyée/payée).
 
 ## Tests / Vérifications
-- QA manuel Teacher : navigation École → vue agenda des studios, filtres agissent sur les cours listés.
-- QA manuel Teacher : fiche cours affiche niveaux par élève/position, liens vers fiches élèves, générateur utilisable.
-- UI Positions Teacher : plus d’encart gating.
-- Facturation : onglet accessible sans erreur ; contenu minimal validé ou backlog visible si en attente de specs.
+- QA manuel Teacher : onglet École → agenda semaine/mois par studio, filtres agissent (niveau/prof/date/discipline/studio), passé/à venir visibles, pagination/scroll OK sur desktop/mobile.
+- QA manuel Teacher : fiche cours affiche/édite niveaux élève/position (badges/tableau), élèves cliquables, générateur propose positions selon inscrits.
+- UI Positions Teacher : encadré gating absent.
+- Facturation : onglet affiche la liste des cours donnés, tarif à facturer et statut (générée/envoyée/payée) sans erreur runtime.
