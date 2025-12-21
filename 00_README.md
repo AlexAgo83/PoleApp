@@ -10,6 +10,9 @@ Ce dossier contient :
 - `04_ROUTES_AND_SCREENS.md` : écrans clés + routes + états.
 - `05_SEED_CONTENT.md` : contenu de seed (positions, types, niveaux) pour démarrer vite.
 - `06_QA_S001.md` : plan de test QA.
+- `06_QA_S002.md` : retours QA (session 2025-12-21 01:00).
+- `06_QA_S003.md` : retours QA (session 2025-12-21 01:10).
+- `06_QA_S004.md` : retours QA (session 2025-12-21 01:15).
 - `CHANGELOG.md` : journal des changements.
 - `README.md` : vue produit synthétique.
 

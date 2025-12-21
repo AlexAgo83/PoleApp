@@ -86,6 +86,11 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`).
 - Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds. Si warning “middleware” : migrer vers `proxy` à terme.
 
+## Quick wins (perf/UX)
+1) Move list images (courses/users/teachers) to `next/image` with `loading="lazy"`, explicit sizes, and placeholders to reduce CLS and transfer size.
+2) Add Prisma indexes on filtered columns: `user(role, isPremium)`, `user(email, name)`, `course(schoolId, date, teacherId, studioId)` to speed up lists/agenda.
+3) Limit Prisma `select` to fields actually rendered in lists (users/courses/studios) to reduce payload and speed up rendering.
+
 ## Changelog
 - v0.4.6 : Panel filtres persistés par utilisateur, panels création admin repliables, harmonisation UI studios/partenaires/utilisateurs, versioning bump et préparations Cloudinary.
 - v0.4.5 : Profils enrichis (photo, âge, diplômes, positions préférées prof) + fiches prof publiques accessibles aux élèves. Cours avec photos optionnelles, listes/détails alignés élèves/profs, filtres studios/partenaires/admin, avatars dans les listes (élèves/profs/users).
