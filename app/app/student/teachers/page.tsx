@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -156,10 +157,11 @@ export default async function StudentTeachersPage({
                   className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
                 >
                   <div className="flex gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={avatar}
                       alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
+                      width={64}
+                      height={64}
                       className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
                     />
                     <div className="flex-1 space-y-1">
