@@ -1,24 +1,25 @@
 # Backlog — Retours QA S007 (session 2025-12-21 23:55)
-[Compréhension: 60% / Avancement: 0%]
+[Compréhension: 70% / Avancement: 0%]
 
 Source : 06_QA_S007.md (tests sur v0.5.0)
 
 ## Tâches
-- [ ] Student > École : ajouter la vue planning/agenda pour les cours à venir (pas seulement la liste).
-- [ ] Student > Jeux : parité avec l’espace Teacher (mêmes modes/affichages/fonctionnalités).
-- [ ] Student > Cours : proposer liste + vue planning avec code couleur explicite pour différencier :
+- [ ] Student > École/Cours : vue planning/agenda (liste + agenda) avec modes semaine/mensuel visibles en mobile/desktop (et par studio si pertinent).
+- [ ] Student > Jeux : parité complète avec l’espace Teacher (6 modes, affichages, historique/leaderboard s’il existe), aucune restriction élève.
+- [ ] Student > Cours : liste + agenda avec légende affichée en haut et code couleur clair pour différencier :
   - cours déjà suivis (passés),
   - cours inscrits (validation OK),
-  - cours inscrits en liste d’attente,
+  - cours inscrits en liste d’attente (rang affiché, cours contingentés à 14 élèves),
   - cours disponibles et encore ouverts à l’inscription.
   Objectif : lecture immédiate, intuitive, sans effort cognitif.
+- [ ] Ouvert : spécifier les filtres du planning élève (date/plage, prof, studio, type ?) et priorités P0/P1 + exigences responsives.
 
 ## Definition of Done (DoD)
-- Vue agenda/planning accessible dans École et Cours (élève), avec données cohérentes (filtres/états). 
-- Mini-jeux : UX identique à l’espace Teacher (modes, affichage, historique/leaderboard si déjà en place côté Teacher).
-- Liste/agenda des cours élève avec code couleur clair pour chaque état (passé / inscrit / attente / disponible) et légende visible.
+- Vue agenda/planning accessible dans École et Cours (élève), modes semaine/mensuel, états cohérents sur mobile/desktop.
+- Mini-jeux : UX identique à l’espace Teacher (6 modes, affichages, historique/leaderboard si présent côté Teacher).
+- Liste/agenda des cours élève avec légende en haut, code couleur clair pour passé / inscrit / attente (rang affiché, quota 14) / disponible.
 
 ## Tests / Vérifications
-- QA manuel élève : onglet École → planning visible des cours à venir ; navigation/filtre OK.
-- QA manuel élève : onglet Jeux = même fonctionnalité que Teacher (modes et affichage des questions).
-- QA manuel élève : onglet Cours liste + agenda ; légende couleurs ; chaque cours marqué par son état (passé, inscrit, attente, disponible) sans ambiguïté.
+- QA manuel élève : onglet École/Cours → agenda semaines/mois visible sur mobile/desktop ; navigation OK.
+- QA manuel élève : onglet Jeux = même fonctionnalité que Teacher (6 modes, historique/leaderboard si présent).
+- QA manuel élève : onglet Cours liste + agenda ; légende en haut ; code couleur par état ; liste d’attente affiche le rang (quota 14) sans ambiguïté.
