@@ -10,6 +10,7 @@ Ce dossier contient :
 - `04_ROUTES_AND_SCREENS.md` : écrans clés + routes + états.
 - `02_RENDER_INSTRUCTIONS.md` : commandes Render (baseline Prisma/Render).
 - `scripts/dump-db.js` : helper local/CI pour dumper la base (voir README).
+- `scripts/render-start.js` : start Render tolérant P3005 (migrate deploy ou push), plus de seed auto pour le moment.
 - `05_SEED_CONTENT.md` : contenu de seed (positions, types, niveaux) pour démarrer vite.
 - `06_QA_S001.md` : plan de test QA.
 - `06_QA_S002.md` : retours QA (session 2025-12-21 01:00).
