@@ -183,7 +183,7 @@ async function seedTaxonomies() {
         media: {
           create: {
             url: image,
-            kind: "IMAGE",
+            kind: "PHOTO",
           },
         },
       },
