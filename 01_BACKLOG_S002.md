@@ -12,10 +12,10 @@
 - Cours :
   - Sortir le nom de l’école du titre, l’afficher comme donnée structurée.
 - Agenda :
-  - Boutons vue Hebdo/Mensuelle/Annuelle.
+  - Boutons vue Hebdo/Mensuelle/Annuelle. **(DONE)**
   - Option pour afficher les cours disponibles dans les écoles fréquentées.
 - Onglet École :
-  - Partenaires à mettre dans un onglet séparé (pas dans École).
+  - Partenaires à mettre dans un onglet séparé (pas dans École). **(DONE)**
 - Progression positions (élève) :
   - Ajouter un code couleur + compteur de fois où la position a été vue/enseignée. **(partiel : compteur “Vu : X” affiché)**
 - Mini-jeux (à créer) :
@@ -56,3 +56,5 @@
 2. Dans les Agendas > En mode mobile > les jours de semaines sans cours peuvent être cachés **(DONE)**
 3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours. (s'applique aussi dans la vue Admin pas que Agendas) **(DONE)**
 4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position **(DONE)**
+5. Mes blessures > Ajouteer une blessure, le titre du panel n'est pas à la bonne taille.
+6. Mes blessures > Proposer une nouvelle mise en page pour la liste des blessures.
