@@ -53,6 +53,7 @@ export default async function StudentCourseDetailPage({
         schoolId: user.schoolId,
       },
       include: {
+        school: { select: { name: true } },
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { name: true, address: true } },
         positions: { include: { position: true } },
@@ -144,11 +145,11 @@ export default async function StudentCourseDetailPage({
                 className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
                 fallbackSrc={COURSE_PLACEHOLDER}
               />
-              <div className="space-y-1 text-sm text-slate-200">
-                <p className="text-base text-white">
-                  {teacherProfileHref ? (
-                    <Link
-                      href={teacherProfileHref}
+            <div className="space-y-1 text-sm text-slate-200">
+              <p className="text-base text-white">
+                {teacherProfileHref ? (
+                  <Link
+                    href={teacherProfileHref}
                       className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[12px] font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-white/10"
                     >
                       {teacherName}
@@ -162,12 +163,17 @@ export default async function StudentCourseDetailPage({
                 </p>
                 <p>
                   {remainingSeats} place(s) restante(s) · {cost} crédits
+              </p>
+              {course.school?.name && (
+                <p className="text-slate-300">
+                  École : {course.school.name}
                 </p>
-                {course.studio && (
-                  <p className="text-slate-300">
-                    Studio : {course.studio.name}
-                    {course.studio.address ? ` — ${course.studio.address}` : ""}
-                  </p>
+              )}
+              {course.studio && (
+                <p className="text-slate-300">
+                  Studio : {course.studio.name}
+                  {course.studio.address ? ` — ${course.studio.address}` : ""}
+                </p>
                 )}
               </div>
             </div>
