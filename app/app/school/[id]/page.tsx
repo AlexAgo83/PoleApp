@@ -2,8 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
 
@@ -91,29 +93,55 @@ export default async function StudioPage({ params }: PageProps) {
         ) : (
           <ul className="mt-3 space-y-3">
             {studio.courses.map((course) => (
-              <li key={course.id} className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
-                <div className="flex items-center justify-between text-xs font-semibold text-white">
-                  <span>{new Date(course.date).toLocaleString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false })}</span>
-                  <span className="text-[11px] text-cyan-100">
-                    {course.durationMinutes ?? 60} min
-                  </span>
-                </div>
-                <p className="mt-1 text-base font-semibold text-white">
-                  {course.title ?? "Cours"}
-                </p>
-                <p className="text-sm text-cyan-100">
-                  {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                </p>
-                <Link
-                  href={`${
-                    userRole === "STUDENT"
-                      ? "/app/student/courses"
-                      : "/app/teacher/courses"
-                  }/${course.id}?from=/app/school/${studio.id}`}
-                  className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Voir le cours
-                </Link>
+              <li key={course.id} className="block rounded-xl border border-white/10 bg-white/5">
+                <article className="flex flex-col gap-2 p-3 md:p-4">
+                  <div className="flex items-start gap-3">
+                    <SafeImage
+                      src={course.photoUrl?.trim() || COURSE_PLACEHOLDER}
+                      alt={course.title ?? "Cours"}
+                      width={96}
+                      height={64}
+                      className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
+                      fallbackSrc={COURSE_PLACEHOLDER}
+                    />
+                    <div className="min-w-[200px] flex-1 space-y-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-white">
+                        <span>
+                          {new Date(course.date).toLocaleString("fr-FR", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </span>
+                        <span className="text-[11px] text-cyan-100">
+                          Durée : {course.durationMinutes ?? 60} min
+                        </span>
+                      </div>
+                      <p className="text-base font-semibold text-white">
+                        {course.title ?? "Cours"}
+                      </p>
+                      <p className="text-sm text-cyan-100">
+                        {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                      </p>
+                      <p className="text-xs text-slate-300">Studio · {studio.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Link
+                      href={`${
+                        userRole === "STUDENT"
+                          ? "/app/student/courses"
+                          : "/app/teacher/courses"
+                      }/${course.id}?from=/app/school/${studio.id}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    >
+                      Voir le cours →
+                    </Link>
+                  </div>
+                </article>
               </li>
             ))}
           </ul>
