@@ -1,5 +1,7 @@
 # Backlog — Retours QA S002 (session 2025-12-21 01:00)
-[Compréhension: 85% / Avancement: 45%]
+[Compréhension: 90% / Avancement: 60%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
 
 ## 0) UI Quick win
 - Home : bouton “Connexion” trop sombre → augmenter contraste/hover/état actif. **(DONE)**
@@ -51,13 +53,13 @@
 6. Dashboard élève gamifié.
 7. Le reste.
 
-# UPDATE 2025-12-21 02:20
+# UPDATE 2025-12-21 02:20 (OctoPole)
 1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->". **(DONE)**
 2. Dans les Agendas > En mode mobile > les jours de semaines sans cours peuvent être cachés **(DONE)**
 3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours. (s'applique aussi dans la vue Admin pas que Agendas) **(DONE)**
 4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position **(DONE)**
-5. Mes blessures > Ajouteer une blessure, le titre du panel n'est pas à la bonne taille.
-6. Mes blessures > Proposer une nouvelle mise en page pour la liste des blessures.
-7. Fiche Mon école > Partenaires doit être déplacer en tant que module dans l'accueil de l'élève et du professeur
-8. Fiche Mon école > Plus besoin du switch entre studios et partenaires (Si 7. est fait)
-9. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés
+5. Mes blessures > Ajouter une blessure, le titre du panel n'est pas à la bonne taille. **(DONE)**
+6. Mes blessures > Proposer une nouvelle mise en page pour la liste des blessures. **(DONE)**
+7. Fiche Mon école > Partenaires doit être déplacer en tant que module dans l'accueil de l'élève et du professeur **(DONE)**
+8. Fiche Mon école > Plus besoin du switch entre studios et partenaires (Si 7. est fait) **(DONE)**
+9. Dans tout les Agendas > En mode mobile uniquement > les jours sans cours doivent être cachés **(DONE)**
