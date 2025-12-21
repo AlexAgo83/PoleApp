@@ -6,7 +6,7 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 import { FilterPanel } from "@/components/FilterPanel";
 import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
-import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 
@@ -285,16 +285,16 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     width={480}
                     height={240}
                     className="h-40 w-full object-cover"
-                    fallbackSrc={COURSE_PLACEHOLDER}
+                    fallbackSrc={POSITION_PLACEHOLDER}
                   />
                 ) : (
                   <SafeImage
-                    src={COURSE_PLACEHOLDER}
+                    src={POSITION_PLACEHOLDER}
                     alt={p.name}
                     width={480}
                     height={240}
                     className="h-40 w-full object-cover"
-                    fallbackSrc={COURSE_PLACEHOLDER}
+                    fallbackSrc={POSITION_PLACEHOLDER}
                   />
                 )}
                 <div className="flex flex-1 flex-col gap-2 p-4">

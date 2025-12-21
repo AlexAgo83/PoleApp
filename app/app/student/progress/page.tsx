@@ -5,7 +5,9 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
+import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
+import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 
 const statusLabels: Record<LearningStatus, string> = {
   NOT_STARTED: "Découverte",
@@ -225,23 +227,32 @@ export default async function StudentProgressPage({
             const status = progress?.learningStatus ?? "NOT_STARTED";
             const mastery = progress?.masteryLevel;
             const cover = position.media[0];
+            const detailHref = `/positions/${position.id}?from=/app/student/progress?page=${page}${qs ? `&${qs}` : ""}`;
 
             return (
-              <article
+              <Link
                 key={position.id}
+                href={detailHref}
                 className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-indigo-300/60 hover:bg-white/10"
               >
                 {cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <SafeImage
                     src={cover.url}
                     alt={position.name}
+                    width={480}
+                    height={200}
                     className="h-40 w-full object-cover"
+                    fallbackSrc={POSITION_PLACEHOLDER}
                   />
                 ) : (
-                  <div className="flex h-40 w-full items-center justify-center bg-white/5 text-sm text-slate-300">
-                    Pas d’image
-                  </div>
+                  <SafeImage
+                    src={POSITION_PLACEHOLDER}
+                    alt={position.name}
+                    width={480}
+                    height={200}
+                    className="h-40 w-full object-cover"
+                    fallbackSrc={POSITION_PLACEHOLDER}
+                  />
                 )}
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <div className="flex items-center justify-between gap-2">
@@ -263,14 +274,8 @@ export default async function StudentProgressPage({
                       Niveau : {masteryLabels[mastery]}
                     </p>
                   )}
-                  <Link
-                    href={`/positions/${position.id}?from=/app/student/progress?page=${page}`}
-                    className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
-                  >
-                    Détail position →
-                  </Link>
                 </div>
-              </article>
+              </Link>
             );
           })}
           {positions.length === 0 && (
