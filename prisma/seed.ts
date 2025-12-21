@@ -30,11 +30,22 @@ const COURSE_IMAGES = [
   "https://lh3.googleusercontent.com/gg/AIJ2gl_qqPNhkjJA4TDUzpb7YFL5zdbwHoneTjaeWdKNnuGHhMaGWqb7fV9Cp6-nf2pD_N0C7AnX0PTn38yb9PaJxfo9wERhdb02viRZ4I4cFHk2ZN_f5y3ONh5iTN2sglGuwiQVmpMzVUh2CTKu8_3i0dKSkMUz999ny8YEv3-QNJTR6acsbMhy=s1024-rj-mp2",
 ];
 
-const STUDENT_AVATARS = [
+const FEMALE_STUDENT_AVATARS = [
   "https://lh3.googleusercontent.com/gg/AIJ2gl9OatjXArFO9VZUH9L4-ZiuW3YNQ1PVDkF0kVmVNFR8YhfYN7rPXrJnq5MB9mcHZ5DsZvVrJmkm115sA-MrDI-dCO4Ax3YfJXe8iolzTt0T-BnBnScKO1jLVHxIU6yXa-Zm6i6MpPsTC2a0fOqVjnc9C7MRAucv0GUlOLmB2yuTAjW__xLb=s1024-rj-mp2",
   "https://lh3.googleusercontent.com/gg/AIJ2gl8s9-6udyKGuznwJoy32Pdx8s5zWHN9GGPnj7oM46m870P-Z1t8klX36MVzoiSmlRFXtlRvWC4azmkXKQ4KSPwWzq6nsC57SICSkOcYtUgt3-XrhYG0WjwjDOLBISzl2-WO4PO5veoL2sR7GuPOQXywzsIGZB9RcB2Y7vuzF5z6U7JYWDA=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl939d1xytOOTnNkTfBwuTCpmZD83dDELf5CxBvEHfps_flkoi50EjioZkiKrHHQYE0sjB0sIEcmNGvzKZsfoAtMJgUi2RiNzGpmz-_K0oUs6zg_9J6pU_4N6S134NuUpxw0jUoTjODsxL-peV1Yt63Be59F_beyUqzJXGgoWcX5EgBpPIxE=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl_E4VE1iNVrb0XhoGQlLf5gzDXs9CFyRH2PFTmUWu4_YWr6j_BEELSH-nzM91V1zt3HER5aNv0XcRZp8NeniiuYe1HtDYDN0mjDIKSZpnaN5W-VRzyizCQUJgQTNfSU_0R7Kf2xVItyM8Kua5jQVj0gltifJ9fiJVl7IUpnbs9k6z9PIowx=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl-jbNxp_3kuz2MF2_LuLdA3m4aR_l8LoyU-W-MYQN_wuGId9usRGRl7AXai40mAKeL_rEcBaqcIBgza47zXuPfX42GAqSF-GGOyuqjyfVty1jHebFbfQHdxCR3B9kZhRvM818ZHiuYZ-LhF14Qwnhoin7ThzjMQP2QbQqKqAf5H6kiRrJI=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl_dK7xQiBw3wA5a8o4esOIOX1Fd6CYpPI6R170rRHPEZegYiap9P7Z9Bnsv0TqN1auA4vOky2kcOwG8qOlmcqfuMMbpanNv-O6_blnvK7rPEFYHBNMhhTH3rRtDssmh99hwPXhd9ork1HxqE_HceaQo7fmLumdTT59xkbZYG-dBgmHpBMNm=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl-jLSTgz6L2eUiVUBsZ5M3hmKSohtXnsA0gWPIsnNAda9VGeTxCKur5rHA0FUj-1tb1RPojFsHanu4wx8mOJnTg2n1KKhYXWcwdYo_Bz5qya7vZ8ULIAt_N3crhxHkuybuvM0g8GqljPM-ja6s6gx0xlpLRLMWv4zqz5aXVvWsCLj058sdv=s1024-rj-mp2",
+];
+
+const MALE_STUDENT_AVATARS = [
   "https://lh3.googleusercontent.com/gg/AIJ2gl9-QMyG3ZTbjzl_LNyVFHP_c88-kAnLxLdFGl84RBafV7bPzb_SAkM7nLYWnJoksuQCuwfFLWq7f5Ix_R3gO0yNIpPvDQmaPGRVYW9qpo8zIXxmgO0y0Hl-qfieLtM7bxoruJHstL_aj4gCCupE0do7SpU9BkzuYU4A8f6qpK8zDZN-cHym=s1024-rj-mp2",
   "https://lh3.googleusercontent.com/gg/AIJ2gl_1ByxtCV0xeaZuSG4RFA0YTKGc_Q9_t2i4KbylznUlNuqK2F_Gexhs8Xqb6qC0mr0LY4FjUzVOI8lpkRo-O7MjPo8q_Uhg5D8G7VAbjbUUbiYpFWqtr5fhUQpnk5O8TJtvjjIQpy1F48NFloiMPz6abzDgIAjLeN1samqI6uTjAioi8yhk=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl8-rlnYXLrvQyIiE93WWhoQd0EdjUgDYT9PNlu1RG2K_Ubve4ACJFpKzyXszSbQZiWCVUw7HXWpyUjQJ6FQakE1z8Fj3-gfFOveg9-YQeU3OuFXw40Nw1wLWog_FsRnn9vtDl6dVOVzLyBHqTbCpaG2nzuGlBSsLhj5-8bD0XF6uweJnXc=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl8dtRjZOPnC1dl-Xvj02p55WSoxt6DIyrO1mRBnU5Rxy2p-biF4g5ClJ1MSHLqlLVLkyt0KwDZJqXYK5AGsZ3BlTFQQugP1aKz6sOktmNDArp9L53Pn_FIARdxs3AptAZ_VfNHzWvs2DxrLejqQhIrRL5hY_M29t0uM2K9nZ-fOaKnh4Y4=s1024-rj-mp2",
+  "https://lh3.googleusercontent.com/gg/AIJ2gl8krWlQv83Zsj8JC6e23v0DR3o-q-_0s7882aKGroQV-ZiBTkA8WbTGPU336pYjShm2g1lic-paGpxZkF549HrAHPyuidTQhnM8aNLet4KGa5h7dYtxCj5jo0fJIn8o2rULvMzP7-1OHUUrJxL1TF4wQSbAl-7W_XHQsMse_lYGbQrQgCnA=s1024-rj-mp2",
 ];
 
 const TEACHER_AVATARS = [
@@ -103,27 +114,29 @@ const courseNames = [
   "Tricks Intermédiaire",
 ];
 
-const people = [
-  { name: "Léa Morel", age: 22 },
-  { name: "Julien Caron", age: 28 },
-  { name: "Maya Lefèvre", age: 19 },
-  { name: "Arthur Dubois", age: 30 },
-  { name: "Inès Laurent", age: 24 },
-  { name: "Amine Petit", age: 33 },
-  { name: "Camille Simon", age: 21 },
-  { name: "Léo Bernard", age: 27 },
-  { name: "Zoé Fournier", age: 25 },
-  { name: "Raphaël Michel", age: 29 },
-  { name: "Nora Garcia", age: 18 },
-  { name: "Hugo Martin", age: 32 },
-  { name: "Eva Roux", age: 23 },
-  { name: "Thomas Girard", age: 35 },
-  { name: "Sarah Lambert", age: 26 },
-  { name: "Maxime Lopez", age: 31 },
-  { name: "Alice Robert", age: 20 },
-  { name: "Yanis Colin", age: 34 },
-  { name: "Chloé Didier", age: 28 },
-  { name: "Victor Marin", age: 40 },
+type Gender = "F" | "M";
+
+const people: { name: string; age: number; gender: Gender }[] = [
+  { name: "Léa Morel", age: 22, gender: "F" },
+  { name: "Julien Caron", age: 28, gender: "M" },
+  { name: "Maya Lefèvre", age: 19, gender: "F" },
+  { name: "Arthur Dubois", age: 30, gender: "M" },
+  { name: "Inès Laurent", age: 24, gender: "F" },
+  { name: "Amine Petit", age: 33, gender: "M" },
+  { name: "Camille Simon", age: 21, gender: "F" },
+  { name: "Léo Bernard", age: 27, gender: "F" },
+  { name: "Zoé Fournier", age: 25, gender: "F" },
+  { name: "Raphaël Michel", age: 29, gender: "M" },
+  { name: "Nora Garcia", age: 18, gender: "F" },
+  { name: "Hugo Martin", age: 32, gender: "M" },
+  { name: "Eva Roux", age: 23, gender: "F" },
+  { name: "Thomas Girard", age: 35, gender: "M" },
+  { name: "Sarah Lambert", age: 26, gender: "F" },
+  { name: "Maxime Lopez", age: 31, gender: "M" },
+  { name: "Alice Robert", age: 20, gender: "F" },
+  { name: "Yanis Colin", age: 34, gender: "M" },
+  { name: "Chloé Didier", age: 28, gender: "F" },
+  { name: "Victor Marin", age: 40, gender: "M" },
 ];
 
 function slugify(input: string) {
@@ -212,8 +225,26 @@ async function seedSchoolsAndUsers() {
   const fixedAccounts = [
     { email: "admin@poleapp.test", role: Role.SCHOOL_ADMIN, premium: true, name: "Admin PoleApp", schoolIdx: 0 },
     { email: "teacher@poleapp.test", role: Role.TEACHER, premium: true, name: "Teacher PoleApp", schoolIdx: 0, avatar: TEACHER_AVATARS[0] },
-    { email: "student1@poleapp.test", role: Role.STUDENT, premium: false, name: "Student One", schoolIdx: 0, avatar: STUDENT_AVATARS[0], age: 22 },
-    { email: "student2@poleapp.test", role: Role.STUDENT, premium: true, name: "Student Two", schoolIdx: 0, avatar: STUDENT_AVATARS[1], age: 24 },
+    {
+      email: "student1@poleapp.test",
+      role: Role.STUDENT,
+      premium: false,
+      name: "Student One",
+      schoolIdx: 0,
+      avatar: FEMALE_STUDENT_AVATARS[0],
+      age: 22,
+      gender: "F" as Gender,
+    },
+    {
+      email: "student2@poleapp.test",
+      role: Role.STUDENT,
+      premium: true,
+      name: "Student Two",
+      schoolIdx: 0,
+      avatar: MALE_STUDENT_AVATARS[0],
+      age: 24,
+      gender: "M" as Gender,
+    },
   ];
 
   for (const acc of fixedAccounts) {
@@ -237,7 +268,14 @@ async function seedSchoolsAndUsers() {
   const students: { id: string; schoolId: string }[] = [];
 
   const teacherAvatars = [...TEACHER_AVATARS];
-  const studentAvatars = [...STUDENT_AVATARS];
+  const femaleAvatars = [...FEMALE_STUDENT_AVATARS];
+  const maleAvatars = [...MALE_STUDENT_AVATARS];
+
+  const pickStudentAvatar = (gender: Gender) => {
+    if (gender === "F" && femaleAvatars.length) return femaleAvatars.shift()!;
+    if (gender === "M" && maleAvatars.length) return maleAvatars.shift()!;
+    return null;
+  };
 
   for (const school of schools) {
     // 2 profs
@@ -271,7 +309,7 @@ async function seedSchoolsAndUsers() {
           schoolId: school.id,
           name: person.name,
           age: person.age,
-          avatarUrl: studentAvatars.length ? studentAvatars.shift() : null,
+          avatarUrl: pickStudentAvatar(person.gender),
         },
       });
       students.push({ id: created.id, schoolId: school.id });
