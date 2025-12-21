@@ -37,6 +37,9 @@ async function ensureSchemaAndSeed() {
 
   const state = await checkDbState();
   console.log(`DB state after schema sync: ${state}`);
+  // Régénérer le client Prisma après migration/push
+  run("npx prisma generate");
+
   if (state === "missing") {
     run("npm run db:push");
     run("npx tsx prisma/seed.ts");
