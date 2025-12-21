@@ -120,12 +120,17 @@ Exemple (format libre):
 - Femme : https://i.postimg.cc/gjBTy0N6/Gemini-Generated-Image-it8ll5it8ll5it8l.png
 - Femme : https://i.postimg.cc/wMBrsNct/Gemini-Generated-Image-1s02y51s02y51s02.png
 - Femme : https://i.postimg.cc/ZnDMPqVR/Gemini-Generated-Image-f3pd1gf3pd1gf3pd.png
+- Femme : https://i.postimg.cc/xTtW2Mbv/Gemini-Generated-Image-z9rg13z9rg13z9rg.png
+- Femme : https://i.postimg.cc/13Xb5Xpf/Gemini-Generated-Image-tddvoztddvoztddv.png
+- Femme : https://i.postimg.cc/J4P9LZBj/Gemini-Generated-Image-ofh61jofh61jofh6.png
 - Homme : https://i.postimg.cc/KYnDcYTw/Gemini-Generated-Image-h13y3wh13y3wh13y.png
 - Homme : https://i.postimg.cc/VNjWsNtT/Gemini-Generated-Image-q1xtvnq1xtvnq1xt.png
 - Homme : https://i.postimg.cc/k5xvM58r/Gemini-Generated-Image-hagw0mhagw0mhagw.png
 - Homme : https://i.postimg.cc/C5K2f8Hf/Gemini-Generated-Image-krr7xokrr7xokrr7.png
 - Homme : https://i.postimg.cc/6qQPGZL8/Gemini-Generated-Image-9ifeph9ifeph9ife.png
 - Homme : https://i.postimg.cc/pr16QdqF/Gemini-Generated-Image-f6cfrf6cfrf6cfrf.png
+- Homme : https://i.postimg.cc/VLD38nbM/Gemini-Generated-Image-i27lxyi27lxyi27l.png
+- Homme : https://i.postimg.cc/7Ympk0T0/Gemini-Generated-Image-apgygfapgygfapgy.png
 
 ## (à utiliser pour le seed) Liens images à utiliser pour les "Professeurs" (ne peut être utiliser qu'une fois)
 - Femme : https://i.postimg.cc/ZqkLhNWN/Gemini-Generated-Image-ir90ejir90ejir90.png
