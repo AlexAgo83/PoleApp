@@ -1,22 +1,24 @@
 # Backlog — Retours QA S006 (session 2025-12-21 23:55)
-[Compréhension: 55% / Avancement: 0%]
+[Compréhension: 90% / Avancement: 0%]
 
 Source : 06_QA_S006.md (tests sur v0.5.0)
 
 ## Tâches
-- [ ] Admin > Studios/Partenaires : ajouter une vue consultation + bouton ✏️ pour passer en mode édition (au lieu d’édition directe).
-- [ ] Admin > Élèves : n’afficher que les positions enseignées à l’élève (masquer les positions non commencées/non enseignées).
-- [ ] Admin > Cours : aligner avec les retours espace Teacher (mêmes manques que Teacher cours).
-- [ ] Admin > Positions : retirer l’encadré “gating”.
-- [ ] Admin > Jeux : aligner avec l’espace Teacher (mêmes corrections/ajouts).
-- [ ] Admin > Facturation : créer l’onglet/fonctionnalités (actuellement inexistant).
+- [ ] Admin > Studios/Partenaires : vue lecture seule par défaut + bouton ✏️ pour éditer (inline ou modale), sauvegarde puis retour lecture.
+- [ ] Admin > Élèves : afficher uniquement les positions enseignées (celles vues en cours inscrits) ; si aucune vue, afficher “aucune position”.
+- [ ] Admin > Cours : ajouter générateur de cours, afficher niveau atteint par élève/position (edit + display), rendre les élèves cliquables (prof/admin).
+- [ ] Admin > Positions : retirer le bloc “gating”.
+- [ ] Admin > Jeux : ajouter l’énoncé pour les modes Description→Nom, Nom→Niveau, Nom→Grips, Nom→Type, Blitz mix (comme Teacher).
+- [ ] Admin > Facturation : suivi des cours donnés, tarif à facturer à l’école, état facture (générée/envoyée/payée) ; suivi abonnements élèves (crédits restants, péremption).
+- [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens.
 
 ## Definition of Done (DoD)
-- Studios/Partenaires : affichage en lecture seule par défaut, passage en édition via ✏️, sauvegarde OK.
-- Élèves : liste des positions filtrée aux positions enseignées (aucune non-commencée hors scope enseigné).
-- Cours/Jeux admin : parité fonctionnelle avec l’espace Teacher selon les retours précédents.
-- Positions admin : plus d’encadré “gating”.
-- Facturation : onglet accessible sans erreur, contenu minimal validé (ou placeholder clairement identifié si specs manquantes).
+- Studios/Partenaires : lecture par défaut, édition via ✏️, retour lecture après sauvegarde.
+- Élèves : uniquement positions enseignées visibles (sinon message “aucune position”).
+- Cours : générateur actif, niveaux élève/position visibles et éditables, élèves cliquables.
+- Jeux admin : énoncé affiché pour tous les modes concernés.
+- Positions admin : bloc “gating” supprimé.
+- Facturation : liste cours donnés avec montant + statut facture (générée/envoyée/payée) ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées.
 
 ## Tests / Vérifications
 - QA manuel Admin : studios/partenaires basculent lecture → édition via ✏️, sauvegarde et re-affichage en lecture.
