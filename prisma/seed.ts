@@ -2,6 +2,7 @@ import {
   GameMode,
   PositionLevel,
   PositionType,
+  Prisma,
   PrismaClient,
   Role,
 } from "@prisma/client";
