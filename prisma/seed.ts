@@ -506,7 +506,7 @@ async function seedGameSessions(students: { id: string; schoolId: string }[]) {
     "BLITZ_MIX",
   ];
   const now = Date.now();
-  const data = [];
+  const data: Prisma.GameSessionCreateManyInput[] = [];
 
   sampleStudents.forEach((student, idx) => {
     modes.forEach((mode, mIdx) => {
