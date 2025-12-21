@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -105,8 +106,7 @@ export default async function StudentCourseDetailPage({
   const seatsUsed = course._count?.attendances ?? 0;
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
-  const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
-  const coursePhoto = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
+  const coursePhoto = course.photoUrl?.trim() || COURSE_PLACEHOLDER;
   const isAttending = course.attendances.length > 0;
   const endTime =
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
@@ -136,10 +136,11 @@ export default async function StudentCourseDetailPage({
               </h1>
             </div>
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={coursePhoto}
                 alt={course.title ?? "Cours"}
+                width={128}
+                height={80}
                 className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
               />
               <div className="space-y-1 text-sm text-slate-200">
