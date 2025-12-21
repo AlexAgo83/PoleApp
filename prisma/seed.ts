@@ -45,16 +45,16 @@ const TEACHER_AVATARS = [
 const injuryTypes = ["Épaule", "Poignet", "Coude", "Bas du dos", "Genou"];
 
 const positionsData = [
-  { name: "Fireman Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: ["TRUE"] },
-  { name: "Chair Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: ["TRUE"] },
-  { name: "Back Hook Spin", type: PositionType.SPIN, level: PositionLevel.INTERMEDIATE, grips: ["TRUE"] },
-  { name: "Jasmine", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: ["CUP"] },
-  { name: "Gemini", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: ["CUP"] },
-  { name: "Scorpio", type: PositionType.TRICK, level: PositionLevel.ADVANCED, grips: ["CUP"] },
-  { name: "Front Hook Transition", type: PositionType.TRANSITION, level: PositionLevel.BEGINNER, grips: ["TRUE"] },
-  { name: "Basic Climb", type: PositionType.STRENGTH, level: PositionLevel.BEGINNER, grips: ["TRUE"] },
-  { name: "Shoulder Mount Prep", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: ["FOREARM"] },
-  { name: "Warmup Flow 1", type: PositionType.WARMUP, level: PositionLevel.BEGINNER, grips: ["OTHER"] },
+  { name: "Fireman Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Chair Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Back Hook Spin", type: PositionType.SPIN, level: PositionLevel.INTERMEDIATE, grips: "TRUE" },
+  { name: "Jasmine", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: "CUP" },
+  { name: "Gemini", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: "CUP" },
+  { name: "Scorpio", type: PositionType.TRICK, level: PositionLevel.ADVANCED, grips: "CUP" },
+  { name: "Front Hook Transition", type: PositionType.TRANSITION, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Basic Climb", type: PositionType.STRENGTH, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Shoulder Mount Prep", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: "FOREARM" },
+  { name: "Warmup Flow 1", type: PositionType.WARMUP, level: PositionLevel.BEGINNER, grips: "OTHER" },
 ];
 
 const schoolsList = [
