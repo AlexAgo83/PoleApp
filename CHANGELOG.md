@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-12-21 — Release v0.5.0 (mini-jeux étendus)
+- Version bump 0.5.0.
+- Modèle `GameSession` + API d’enregistrement, seed de sessions démo.
+- Mini-jeux : 6 modes (photo→nom, nom→type/level/grips, description→nom, blitz 5 questions), sélection par cartes, historique, leaderboards, sauvegarde durée front, résultats détaillés et bouton rejouer.
+- Vue prof/admin élève : historique des 5 dernières sessions de mini-jeux.
+
 ## 2025-12-21 — Release v0.4.8 (squash + seed + Render FR)
 - Version bump 0.4.8.
 - Migrations squashées en une `init` pour repartir proprement (Render FR, DB vide).
@@ -11,8 +17,6 @@
 - Version bump 0.4.7.
 - Mini-jeux : ouverts aux rôles prof/admin (accès direct), CTA “Jeux” ajouté au dashboard admin.
 - Script baseline Prisma pour Render ajouté (`db:baseline:render`) afin de débloquer `migrate deploy` sur DB existante.
-
-# Changelog
 
 ## 2025-12-20 — UI cours & médias (v0.4.6+)
 - Cours : photos optionnelles (placeholder), listes prof/élève alignées (titre en haut, stats en bas, CTA “Voir le cours”), détails élève repositionnés comme la vue prof.

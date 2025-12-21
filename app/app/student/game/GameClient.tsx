@@ -2,19 +2,26 @@
 
 import { useMemo, useState } from "react";
 
-import { GameQuestion } from "./logic";
+import { GameMode, GameQuestion } from "./logic";
 
 type Props = {
+  mode: GameMode;
   questions: GameQuestion[];
 };
 
-export function GameClient({ questions }: Props) {
-  const prepared = useMemo(() => questions.slice(0, 10), [questions]);
+type AnswerRecord = { questionId: string; optionId: string };
+
+export function GameClient({ questions, mode }: Props) {
+  const prepared = useMemo(() => questions, [questions]);
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<AnswerRecord[]>([]);
   const [finished, setFinished] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [reveal, setReveal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [startedAt] = useState(() => performance.now());
 
   const question = prepared[current];
 
@@ -24,12 +31,12 @@ export function GameClient({ questions }: Props) {
   };
 
   const handleNext = () => {
-    if (!reveal || !selected) return;
-    const nextAnswers = [...answers];
-    nextAnswers[current] = selected;
+    if (!reveal || !selected || !question) return;
+    const nextAnswers = [...answers, { questionId: question.id, optionId: selected }];
     setAnswers(nextAnswers);
     if (current === prepared.length - 1) {
       setFinished(true);
+      void persistResults(nextAnswers);
     } else {
       setCurrent((c) => c + 1);
       setSelected(null);
@@ -37,26 +44,71 @@ export function GameClient({ questions }: Props) {
     }
   };
 
+  const persistResults = async (records: AnswerRecord[]) => {
+    setSaving(true);
+    setError(null);
+    const correctAnswers = records.reduce((acc, record, idx) => {
+      const q = prepared[idx];
+      return acc + (q && record.optionId === q.correctOptionId ? 1 : 0);
+    }, 0);
+    const durationMs = Math.max(0, Math.round(performance.now() - startedAt));
+    try {
+      await fetch("/api/game/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          totalQuestions: prepared.length,
+          correctAnswers,
+          durationMs,
+        }),
+      });
+      setSaved(true);
+    } catch (err) {
+      setError("Impossible d'enregistrer la session (hors ligne ?)");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!question) {
     return <p className="text-slate-200">Pas de questions disponibles.</p>;
   }
 
-  if (finished) {
+  const renderResults = () => {
     const score = answers.reduce((acc, ans, idx) => {
       const q = prepared[idx];
-      return acc + (ans === q.correctPositionId ? 1 : 0);
+      return acc + (q && ans.optionId === q.correctOptionId ? 1 : 0);
     }, 0);
+    const accuracy = Math.round((score / prepared.length) * 100);
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-white">Résultats</h2>
-        <p className="text-slate-200">
-          Score : {score} / {prepared.length}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Résultats</h2>
+            <p className="text-slate-200">
+              Score : {score} / {prepared.length} ({accuracy}%)
+            </p>
+            {saving && <p className="text-xs text-slate-300">Sauvegarde...</p>}
+            {saved && <p className="text-xs text-emerald-300">Session enregistrée</p>}
+            {error && <p className="text-xs text-red-300">{error}</p>}
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-400/60 hover:bg-white/10"
+            >
+              Rejouer ce mode
+            </button>
+          </div>
+        </div>
         <div className="grid gap-3 md:grid-cols-2">
           {prepared.map((q, idx) => {
-            const correct = q.correctPositionId === answers[idx];
-            const chosen = q.options.find((o) => o.id === answers[idx]);
-            const correctOpt = q.options.find((o) => o.id === q.correctPositionId);
+            const record = answers[idx];
+            const correct = q.correctOptionId === record?.optionId;
+            const chosen = q.options.find((o) => o.id === record?.optionId);
+            const correctOpt = q.options.find((o) => o.id === q.correctOptionId);
             return (
               <div
                 key={q.id}
@@ -67,8 +119,9 @@ export function GameClient({ questions }: Props) {
                 } text-sm text-slate-200`}
               >
                 <p className="font-semibold text-white">Q{idx + 1}</p>
-                <p className="text-xs text-slate-300">
-                  Ta réponse : {chosen?.name ?? "—"} | Bonne réponse : {correctOpt?.name}
+                <p className="text-xs text-slate-300">{q.prompt}</p>
+                <p className="text-xs text-slate-200">
+                  Ta réponse : {chosen?.label ?? "—"} | Bonne réponse : {correctOpt?.label ?? "—"}
                 </p>
               </div>
             );
@@ -76,6 +129,10 @@ export function GameClient({ questions }: Props) {
         </div>
       </div>
     );
+  };
+
+  if (finished) {
+    return renderResults();
   }
 
   return (
@@ -87,27 +144,31 @@ export function GameClient({ questions }: Props) {
         {reveal && selected && (
           <span
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              selected === question.correctPositionId
+              selected === question.correctOptionId
                 ? "border border-emerald-400/60 bg-emerald-500/15 text-emerald-50"
                 : "border border-red-400/60 bg-red-500/15 text-red-50"
             }`}
           >
-            {selected === question.correctPositionId ? "Bonne réponse" : "Mauvaise réponse"}
+            {selected === question.correctOptionId ? "Bonne réponse" : "Mauvaise réponse"}
           </span>
         )}
       </div>
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={question.image}
-          alt="question"
-          className="h-80 w-full object-cover"
-        />
-      </div>
+
+      {question.image && (
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={question.image}
+            alt="question"
+            className="h-80 w-full object-cover"
+          />
+        </div>
+      )}
+
       <div className="grid gap-3 md:grid-cols-2">
         {question.options.map((opt) => {
           const isSelected = selected === opt.id;
-          const isCorrect = question.correctPositionId === opt.id;
+          const isCorrect = question.correctOptionId === opt.id;
           const style =
             reveal && isCorrect
               ? "border-emerald-400/60 bg-emerald-500/15"
@@ -123,7 +184,7 @@ export function GameClient({ questions }: Props) {
                 reveal ? "cursor-not-allowed opacity-90" : ""
               }`}
             >
-              {opt.name}
+              {opt.label}
             </button>
           );
         })}

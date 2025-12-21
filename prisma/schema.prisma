@@ -46,6 +46,15 @@ enum MasteryLevel {
   CHOREO
 }
 
+enum GameMode {
+  PHOTO_NAME
+  NAME_TYPE
+  NAME_LEVEL
+  NAME_GRIPS
+  DESCRIPTION_NAME
+  BLITZ_MIX
+}
+
 model School {
   id        String   @id @default(cuid())
   name      String
@@ -56,6 +65,7 @@ model School {
   courses  Course[]
   studios  Studio[]
   partners Partner[]
+  gameSessions GameSession[]
 
   @@unique([name])
 }
@@ -81,6 +91,7 @@ model User {
   attendances   CourseAttendance[]
   coursesTaught Course[]                  @relation("CourseTeacher")
   favoritePositions TeacherFavoritePosition[]
+  gameSessions     GameSession[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -269,4 +280,22 @@ model TeacherFavoritePosition {
   @@unique([teacherId, positionId])
   @@index([teacherId])
   @@index([positionId])
+}
+
+model GameSession {
+  id             String    @id @default(cuid())
+  userId         String
+  schoolId       String?
+  mode           GameMode
+  totalQuestions Int
+  correctAnswers Int
+  durationMs     Int?
+  createdAt      DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  school School? @relation(fields: [schoolId], references: [id])
+
+  @@index([userId])
+  @@index([schoolId])
+  @@index([mode])
 }

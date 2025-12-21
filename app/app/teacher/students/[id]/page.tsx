@@ -1,4 +1,4 @@
-import { LearningStatus } from "@prisma/client";
+import { GameMode, LearningStatus } from "@prisma/client";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -21,6 +21,15 @@ const statusClass: Record<LearningStatus, string> = {
   IN_PROGRESS: "border-amber-400/40 bg-amber-500/15 text-amber-50",
   PASSED: "border-cyan-400/40 bg-cyan-500/15 text-cyan-50",
   MASTERED: "border-emerald-400/40 bg-emerald-500/15 text-emerald-50",
+};
+
+const gameModeLabel: Record<GameMode, string> = {
+  PHOTO_NAME: "Photo → Nom",
+  NAME_TYPE: "Nom → Type",
+  NAME_LEVEL: "Nom → Niveau",
+  NAME_GRIPS: "Nom → Grips",
+  DESCRIPTION_NAME: "Description → Nom",
+  BLITZ_MIX: "Blitz mix",
 };
 
 type Props = {
@@ -85,6 +94,12 @@ export default async function TeacherStudentDetailPage({
   const positions = await prisma.position.findMany({
     orderBy: { name: "asc" },
     include: { media: { take: 1 } },
+  });
+
+  const gameSessions = await prisma.gameSession.findMany({
+    where: { userId: student.id },
+    orderBy: { createdAt: "desc" },
+    take: 5,
   });
 
   const progressMap = new Map(
@@ -196,6 +211,44 @@ export default async function TeacherStudentDetailPage({
             <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
           )}
         </div>
+      </section>
+
+      <section className="panel border-indigo-400/15 p-6">
+        <h2 className="text-lg font-semibold text-white">Mini-jeux (5 dernières)</h2>
+        {gameSessions.length === 0 ? (
+          <p className="mt-2 text-sm text-slate-200">Aucune session jouée pour le moment.</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-white/5 text-sm text-slate-200">
+            {gameSessions.map((g) => {
+              const accuracy =
+                g.totalQuestions > 0
+                  ? Math.round((g.correctAnswers / g.totalQuestions) * 100)
+                  : 0;
+              return (
+                <li key={g.id} className="py-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-white">
+                        {gameModeLabel[g.mode]} ({g.mode})
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {g.correctAnswers}/{g.totalQuestions} · {accuracy}% ·{" "}
+                        {g.durationMs ? `${Math.round(g.durationMs / 1000)}s` : "—"}
+                      </p>
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      {g.createdAt.toLocaleDateString("fr-FR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
       <section className="panel border-indigo-400/15 p-6">
