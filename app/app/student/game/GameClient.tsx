@@ -13,17 +13,27 @@ export function GameClient({ questions }: Props) {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [reveal, setReveal] = useState(false);
 
   const question = prepared[current];
 
-  const handleAnswer = (optionId: string) => {
+  const handleSelect = (optionId: string) => {
+    setSelected(optionId);
+    setReveal(true);
+  };
+
+  const handleNext = () => {
+    if (!reveal || !selected) return;
     const nextAnswers = [...answers];
-    nextAnswers[current] = optionId;
+    nextAnswers[current] = selected;
     setAnswers(nextAnswers);
     if (current === prepared.length - 1) {
       setFinished(true);
     } else {
       setCurrent((c) => c + 1);
+      setSelected(null);
+      setReveal(false);
     }
   };
 
@@ -74,6 +84,17 @@ export function GameClient({ questions }: Props) {
         <p>
           Question {current + 1} / {prepared.length}
         </p>
+        {reveal && selected && (
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              selected === question.correctPositionId
+                ? "border border-emerald-400/60 bg-emerald-500/15 text-emerald-50"
+                : "border border-red-400/60 bg-red-500/15 text-red-50"
+            }`}
+          >
+            {selected === question.correctPositionId ? "Bonne réponse" : "Mauvaise réponse"}
+          </span>
+        )}
       </div>
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -84,15 +105,42 @@ export function GameClient({ questions }: Props) {
         />
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        {question.options.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => handleAnswer(opt.id)}
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            {opt.name}
-          </button>
-        ))}
+        {question.options.map((opt) => {
+          const isSelected = selected === opt.id;
+          const isCorrect = question.correctPositionId === opt.id;
+          const style =
+            reveal && isCorrect
+              ? "border-emerald-400/60 bg-emerald-500/15"
+              : reveal && isSelected && !isCorrect
+              ? "border-red-400/60 bg-red-500/15"
+              : "border-white/10 bg-white/5 hover:border-cyan-400/70 hover:bg-white/10";
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt.id)}
+              disabled={reveal}
+              className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold text-white transition ${style} ${
+                reveal ? "cursor-not-allowed opacity-90" : ""
+              }`}
+            >
+              {opt.name}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleNext}
+          disabled={!reveal || !selected}
+          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+            !reveal || !selected
+              ? "cursor-not-allowed border border-white/10 text-slate-500"
+              : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5"
+          }`}
+        >
+          {current === prepared.length - 1 ? "Voir les résultats" : "Question suivante"}
+        </button>
       </div>
     </div>
   );
