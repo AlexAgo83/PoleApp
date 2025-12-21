@@ -100,7 +100,7 @@ export default async function StudentInjuriesPage({
             <div className="md:col-span-2">
               <button
                 type="submit"
-                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
                 Ajouter
               </button>
@@ -172,7 +172,7 @@ export default async function StudentInjuriesPage({
                   </button>
                   <button
                     type="submit"
-                    className="rounded-full bg-amber-500 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:bg-amber-400"
+                    className="rounded-full bg-amber-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-amber-400"
                   >
                     Marquer {injury.isActive ? "résolue" : "active"}
                   </button>

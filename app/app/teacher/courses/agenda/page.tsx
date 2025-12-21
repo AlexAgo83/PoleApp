@@ -173,7 +173,7 @@ export default async function CoursesAgendaPage({
           </Link>
           <Link
             href="/app/teacher/courses/new"
-            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
           >
             Nouveau cours
           </Link>
@@ -253,7 +253,7 @@ export default async function CoursesAgendaPage({
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
                 type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-slate-900 transition hover:bg-cyan-400"
+                className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-white transition hover:bg-cyan-400"
               >
                 Filtrer
               </button>

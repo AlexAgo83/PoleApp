@@ -192,7 +192,7 @@ export default async function AdminUsersPage({
             <div className="flex items-end justify-end md:col-span-2">
               <button
                 type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
               >
                 Créer
               </button>
@@ -259,7 +259,7 @@ export default async function AdminUsersPage({
             <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
               >
                 Filtrer
               </button>

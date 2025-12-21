@@ -131,7 +131,7 @@ export default async function StudentTeachersPage({
             <div className="flex gap-2 md:justify-end">
               <button
                 type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
               >
                 Filtrer
               </button>
