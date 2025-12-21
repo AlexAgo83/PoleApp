@@ -1,4 +1,7 @@
 # Backlog — Générateur de cours (notes S004)
+[Compréhension: 40% / Avancement: 0%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
 
 ## Objectif
 Automatiser la construction d’un cours en tenant compte du niveau réel des élèves, des blessures, et des envies (positions “cœur”), pour proposer des combos équilibrés et variés.

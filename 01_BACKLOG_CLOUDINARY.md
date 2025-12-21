@@ -1,4 +1,7 @@
 # Backlog Cloudinary (uploads médias)
+[Compréhension: 30% / Avancement: 0%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
 
 ## Pré-requis & configuration
 - Créer le compte Cloudinary (env de prod + dev) et générer les credentials : `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.

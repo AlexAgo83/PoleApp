@@ -1,4 +1,7 @@
 # Backlog Mapbox (affichage studios/partenaires)
+[Compréhension: 25% / Avancement: 0%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
 
 ## Pré-requis & configuration
 - Créer un compte Mapbox, générer un token restreint (domaines autorisés, referrers).
