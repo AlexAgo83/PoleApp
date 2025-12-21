@@ -236,6 +236,23 @@ export default async function StudentProgressPage({
             </div>
           </form>
         </FilterPanel>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.NOT_STARTED}`}>
+            ● {statusLabels.NOT_STARTED}
+          </span>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.IN_PROGRESS}`}>
+            ● {statusLabels.IN_PROGRESS}
+          </span>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.PASSED}`}>
+            ● {statusLabels.PASSED}
+          </span>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.MASTERED}`}>
+            ● {statusLabels.MASTERED}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-3 py-1 font-semibold text-cyan-100">
+            ● Vu : compteur de cours contenant la position
+          </span>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {positions.map((position) => {
             const progress = progressMap.get(position.id);

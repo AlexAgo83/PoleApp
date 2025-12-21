@@ -78,9 +78,9 @@ export default async function TeacherDashboard() {
             <p className="text-base font-semibold text-white">
               Créer et suivre les cours
           </p>
-          <p className="text-sm text-slate-300">
-            Présences, positions, notes élève×position, impact progression.
-          </p>
+            <p className="text-sm text-slate-300">
+              Présences, positions, notes élève×position, impact progression.
+            </p>
           </Link>
           <Link
             href={teacherProfileHref}
