@@ -71,6 +71,12 @@ export default async function StudentCoursesAgendaPage({
     });
     allowedSchoolIds = Array.from(ids);
   }
+
+  const now = Date.now();
+  const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
+    const endMs = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
+    return endMs < now;
+  };
   const buildViewHref = (mode: "month" | "week") => {
     const params = new URLSearchParams();
     if (mode !== "month") params.set("view", mode);
@@ -213,11 +219,6 @@ export default async function StudentCoursesAgendaPage({
     (studioFilter ? 1 : 0) +
     (teacherFilter ? 1 : 0) +
     (onlyMine ? 1 : 0);
-  const now = Date.now();
-  const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
-    const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
-    return end < now;
-  };
 
   const monthParams = new URLSearchParams();
   if (studioFilter) monthParams.set("studio", studioFilter);
@@ -598,6 +599,7 @@ export default async function StudentCoursesAgendaPage({
                                 {a.course.studio.name}
                               </span>
                             ) : null}
+                          </div>
                         </Link>
                       );
                     })}
