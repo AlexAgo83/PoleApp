@@ -63,6 +63,8 @@ const MALE_STUDENT_AVATARS = [
   "https://i.postimg.cc/C5K2f8Hf/Gemini-Generated-Image-krr7xokrr7xokrr7.png",
   "https://i.postimg.cc/6qQPGZL8/Gemini-Generated-Image-9ifeph9ifeph9ife.png",
   "https://i.postimg.cc/pr16QdqF/Gemini-Generated-Image-f6cfrf6cfrf6cfrf.png",
+  "https://i.postimg.cc/VLD38nbM/Gemini-Generated-Image-i27lxyi27lxyi27l.png",
+  "https://i.postimg.cc/7Ympk0T0/Gemini-Generated-Image-apgygfapgygfapgy.png",
 ];
 
 const TEACHER_AVATARS = [
@@ -135,6 +137,13 @@ const studiosList = [
   "Pivot",
   "Eclipse",
   "Tempo",
+];
+
+const STUDIO_IMAGES = [
+  "https://i.postimg.cc/43ttzvzM/Gemini-Generated-Image-ed0cxzed0cxzed0c.png",
+  "https://i.postimg.cc/cLPwgknd/Gemini-Generated-Image-l8ods0l8ods0l8od.png",
+  "https://i.postimg.cc/Zq33rPr2/Gemini-Generated-Image-pkf3n7pkf3n7pkf3.png",
+  "https://i.postimg.cc/jjNNz6zB/Gemini-Generated-Image-vbzhjgvbzhjgvbzh.png",
 ];
 
 const courseNames = [
@@ -434,6 +443,7 @@ async function seedCourses(schoolsData: {
     const studiosForSchool = studiosList.slice(0, 3).map((name, idx) => ({
       name: `${name} ${idx + 1}`,
       address: `Paris ${idx + 1}`,
+      photoUrl: STUDIO_IMAGES[idx % STUDIO_IMAGES.length],
     }));
     const createdStudios = await Promise.all(
       studiosForSchool.map((s, idx) =>
@@ -442,6 +452,7 @@ async function seedCourses(schoolsData: {
             name: s.name,
             address: s.address,
             schoolId: school.id,
+            photoUrl: s.photoUrl,
           },
         })
       )
