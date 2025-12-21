@@ -7,7 +7,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FilterPanel } from "@/components/FilterPanel";
 
-const TEACHER_AVATAR_PLACEHOLDER = "https://placehold.co/160x160/111827/ffffff?text=Prof";
+const TEACHER_AVATAR_PLACEHOLDER =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNjAgMTYwJz48cmVjdCB3aWR0aD0nMTYwJyBoZWlnaHQ9JzE2MCcgcng9JzgwJyBmaWxsPScjMTExODI3Jy8+PGNpcmNsZSBjeD0nODAnIGN5PSc2MCcgcj0nMzInIGZpbGw9JyMyMjI5MzgnLz48dGV4dCB4PSc4MCcgeT0nMTEwJyBzdHlsZT0iZmlsbDojZjZmN2ZmO2ZvbnQtd2VpZ2h0OjcwO2ZvbnQtc2l6ZToxNHB4O2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6bWlkZGxlO3RleHQtYW5jaG9yOm1pZGRsZSI+UHJvZjwvdGV4dD48L3N2Zz4=";
 
 const PAGE_SIZE = 10;
 

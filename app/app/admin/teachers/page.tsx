@@ -10,7 +10,8 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 10;
-const TEACHER_AVATAR_PLACEHOLDER = "https://placehold.co/80x80/111827/ffffff?text=Prof";
+const TEACHER_AVATAR_PLACEHOLDER =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCA4MCc+PHJlY3Qgd2lkdGg9JzgwJyBoZWlnaHQ9JzgwJyByeD0nNDAnIGZpbGw9JyMxMTE4MjcnLz48Y2lyY2xlIGN4PSc0MCcgY3k9JzMwJyByPScxNicgZmlsbD0nIzIyMjkzOCcvPjx0ZXh0IHg9JzQwJyB5PSc1NCcgc3R5bGU9ImZpbGw6I2Y2ZjdmZjtmb250LXdlaWdodDo3MDtmb250LXNpemU6MTBweDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2RvbWluYW50LWJhc2VsaW5lOm1pZGRsZTt0ZXh0LWFuY2hvcjptaWRkbGUiPlByb2Y8L3RleHQ+PC9zdmc+";
 
 type SearchParams =
   | {

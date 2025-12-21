@@ -26,7 +26,8 @@ type Props = {
   searchParams?: Promise<{ from?: string }>;
 };
 
-const STUDENT_AVATAR_PLACEHOLDER = "https://placehold.co/160x160/1f2937/ffffff?text=Eleve";
+const STUDENT_AVATAR_PLACEHOLDER =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNjAgMTYwJz48cmVjdCB3aWR0aD0nMTYwJyBoZWlnaHQ9JzE2MCcgcng9JzgwJyBmaWxsPScjMWYyOTM3Jy8+PGNpcmNsZSBjeD0nODAnIGN5PSc2MCcgcj0nMzInIGZpbGw9JyMzMzQxNTUnLz48cGF0aCBkPSdNNDMgMTI1YzgtMjIgNjYtMjIgNzQgMCcgc3R5bGU9ImZpbGw6IzMzNDE1NSIvPjwvc3ZnPg==";
 
 export default async function TeacherStudentDetailPage({
   params,
