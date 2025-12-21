@@ -28,9 +28,14 @@
 - Coude
 - Bas du dos
 - Genou
+- Ventre
+- Tête
+- Bassin
+- Jambes
+- Bras
 
 ## Positions (exemples — placeholder)
-> 10 positions “fake” suffisent pour le prototype.
+> 20 positions “fake” suffisent pour le prototype.
 Chaque position doit avoir au moins 1 image (voir images plus bas)
 
 Exemple (format libre):
@@ -44,6 +49,16 @@ Exemple (format libre):
 8. Basic Climb — STRENGTH — BEGINNER
 9. Shoulder Mount Prep — STRENGTH — INTERMEDIATE (contre-indication épaule)
 10. Warmup Flow 1 — WARMUP — BEGINNER
+11.	Carousel Spin — SPIN — BEGINNER — grips: TRUE
+12.	Cradle Spin	— SPIN — BEGINNER — grips: TRUE
+13.	Butterfly — TRICK — INTERMEDIATE — grips: CUP
+14.	Flatline Scorpio — TRICK — INTERMEDIATE
+15.	Superman — TRICK — ADVANCED — grips: CUP
+16.	Aysha — TRICK — ADVANCED — grips: CUP
+17.	Back-to-Pole — Transition — TRANSITION — BEGINNER
+18.	Fan Kick — STRENGTH — BEGINNER
+19.	Invert Prep (V-Lift) — STRENGTH — INTERMEDIATE
+20.	Dynamic Leg Swings — WARMUP — BEGINNER
 
 ## Écoles et utilisateurs générés (mot de passe `poleapp123`)
 - 2 écoles créées : (voir noms plus bas) la première école sera utilisée en priorité.
@@ -71,7 +86,12 @@ Exemple (format libre):
 - https://i.postimg.cc/SKWfQK9f/Gemini-Generated-Image-ob9xeuob9xeuob9x.png
 - https://i.postimg.cc/fbxfWbdj/Gemini-Generated-Image-nr8lxdnr8lxdnr8l.png
 - https://i.postimg.cc/xdK3jdmv/Gemini-Generated-Image-w69zmgw69zmgw69z.png
-
+- https://i.postimg.cc/JzmTFnh6/Gemini-Generated-Image-59vczf59vczf59vc.png
+- https://i.postimg.cc/jSK815jZ/Gemini-Generated-Image-5nkvun5nkvun5nkv.png
+- https://i.postimg.cc/Qds6ztMz/Gemini-Generated-Image-5x1h3e5x1h3e5x1h.png
+- https://i.postimg.cc/13PWdtzW/Gemini-Generated-Image-8df1hr8df1hr8df1.png
+- https://i.postimg.cc/T3Gksw-Pt/Gemini-Generated-Image-tqk096tqk096tqk0.png
+- https://i.postimg.cc/CxYv21KQ/Gemini-Generated-Image-x6c36yx6c36yx6c3.png
 
 ## (à utiliser pour le seed) Liens images à utiliser pour les "Cours" (peut être réutiliser avec proportion) 
 - https://i.postimg.cc/nL81tmX2/Gemini-Generated-Image-gwcxudgwcxudgwcx.png
@@ -135,7 +155,7 @@ Exemple (format libre):
 - Victor Marin age:40 Homme
 
 ## (à utiliser pour le seed) Liste des noms d'école de dance (ne peut être utiliser qu'une fois)
-- Élan
+- Donuts
 - Horizon
 - Académie Arabesque
 - Pulsation Dance Center
