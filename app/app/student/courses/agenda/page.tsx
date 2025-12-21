@@ -129,8 +129,35 @@ export default async function StudentCoursesAgendaPage({
             },
           },
           orderBy: { date: "asc" },
-        })
-      : [];
+      })
+    : [];
+
+  // Tous les cours auxquels l'élève est inscrit (pour badge "inscrit")
+  const myAttendancesForMonth = await prisma.courseAttendance.findMany({
+    where: {
+      studentId: session.user.id,
+      course: {
+        date: { gte: start, lte: end },
+        ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+        ...(studioFilter ? { studioId: studioFilter } : {}),
+        ...(allowedSchoolIds && allowedSchoolIds.length > 0
+          ? { schoolId: { in: allowedSchoolIds } }
+          : session.user.schoolId
+          ? { schoolId: session.user.schoolId }
+          : {}),
+      },
+    },
+    select: {
+      courseId: true,
+      course: { select: { date: true, durationMinutes: true } },
+    },
+  });
+  const attendingCourseIds = new Set(myAttendancesForMonth.map((a) => a.courseId));
+  const attendedPastCourseIds = new Set(
+    myAttendancesForMonth
+      .filter((a) => isPastCourse(a.course.date, a.course.durationMinutes))
+      .map((a) => a.courseId)
+  );
 
   const agendaItems = onlyMine
     ? attendances.map((a) => ({
@@ -358,51 +385,60 @@ export default async function StudentCoursesAgendaPage({
             Mensuelle
           </Link>
         </div>
+      </section>
 
-        {view === "month" && (
-          <>
-            <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
-              {cells.map((cell, idx) => {
-                const weekDayIndex = (idx % 7) + 1; // 1-based
-                const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
-                const cellDate = cell.day
-                  ? new Date(start.getFullYear(), start.getMonth(), cell.day)
-                  : null;
-                const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
-                const hideOnMobileMonth =
-                  !cell.attendances || cell.attendances.length === 0 ? "hidden sm:block" : "";
-                return (
-                  <div
-                    key={idx}
-                    className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
-                      !cell.attendances || cell.attendances.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
-                    }`}
-                  >
-                    <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                      <span className="flex items-center gap-1">
-                        <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
-                          {label}
-                        </span>
-                        <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
+      {view === "month" && (
+        <section className="panel p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
+            {cells.map((cell, idx) => {
+              const weekDayIndex = (idx % 7) + 1; // 1-based
+              const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
+              const cellDate = cell.day
+                ? new Date(start.getFullYear(), start.getMonth(), cell.day)
+                : null;
+              const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
+              const hideOnMobileMonth =
+                !cell.attendances || cell.attendances.length === 0 ? "hidden sm:block" : "";
+              return (
+                <div
+                  key={idx}
+                  className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
+                    !cell.attendances || cell.attendances.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
+                  }`}
+                >
+                  <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+                    <span className="flex items-center gap-1">
+                      <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
+                        {label}
                       </span>
-                      {cell.attendances && cell.attendances.length > 0 && (
-                        <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
-                          {cell.attendances.length}
-                        </span>
-                      )}
-                    </div>
+                      <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
+                    </span>
+                    {cell.attendances && cell.attendances.length > 0 && (
+                      <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[11px] font-semibold text-cyan-100">
+                        {cell.attendances.length}
+                      </span>
+                    )}
+                  </div>
                     {cell.attendances &&
                       cell.attendances.slice(0, 3).map((a) => {
                         const past = isPastCourse(a.course.date, a.course.durationMinutes);
+                        const isMine = attendingCourseIds.has(a.courseId);
+                        const badgeClass = past
+                          ? "border border-cyan-300/60 bg-cyan-500/20"
+                          : "border border-emerald-300/60 bg-emerald-500/20";
+                        const showBadge = isMine || !isMine;
                         return (
                           <Link
                             key={a.id}
                             href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
                             className={`mt-1 block rounded-md px-2 py-1 text-[11px] transition hover:border hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                              past
-                                ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                                : "bg-white/10 text-white"
-                            }`}
+                            past
+                              ? "border border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                              : "bg-white/10 text-white"
+                          }`}
                           >
                             <div className="text-[10px] leading-snug">
                               {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
@@ -411,65 +447,86 @@ export default async function StudentCoursesAgendaPage({
                                 Durée : {formatDuration(a.course.durationMinutes ?? 60)}
                               </div>
                             </div>
-                            {a.course.studio?.name ? (
-                              <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
-                                {a.course.studio.name}
-                              </span>
-                            ) : null}
-                          </Link>
-                        );
-                      })}
-                    {cell.attendances && cell.attendances.length > 3 && (
-                      <div className="mt-1 text-[11px] text-slate-300">
-                        +{cell.attendances.length - 3} autres
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-              <form
-                action="/app/student/courses/agenda"
-                method="get"
-                className="inline-flex"
+                            <div className="mt-1 flex items-center gap-1">
+                              {showBadge && (
+                                <span
+                                  className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${
+                                    isMine
+                                      ? past
+                                        ? `${badgeClass} text-cyan-50`
+                                        : `${badgeClass} text-emerald-50`
+                                      : "border border-white/20 bg-white/10 text-slate-300"
+                                  }`}
+                                  title={
+                                    isMine
+                                      ? past
+                                        ? "Cours déjà suivi"
+                                        : "Inscrit"
+                                      : "Non inscrit"
+                                  }
+                                >
+                                  ●
+                                </span>
+                              )}
+                              {a.course.studio?.name ? (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100">
+                                  {a.course.studio.name}
+                                </span>
+                              ) : null}
+                            </div>
+                        </Link>
+                      );
+                    })}
+                  {cell.attendances && cell.attendances.length > 3 && (
+                    <div className="mt-1 text-[11px] text-slate-300">
+                      +{cell.attendances.length - 3} autres
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+            <form
+              action="/app/student/courses/agenda"
+              method="get"
+              className="inline-flex"
+            >
+              <input type="hidden" name="month" value={prevMonthValue} />
+              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+              {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+              {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
               >
-                <input type="hidden" name="month" value={prevMonthValue} />
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-                {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-                {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  ← Mois précédent
-                </button>
-              </form>
-              <form
-                action="/app/student/courses/agenda"
-                method="get"
-                className="inline-flex"
+                ← Mois précédent
+              </button>
+            </form>
+            <form
+              action="/app/student/courses/agenda"
+              method="get"
+              className="inline-flex"
+            >
+              <input type="hidden" name="month" value={nextMonthValue} />
+              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+              {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+              {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
               >
-                <input type="hidden" name="month" value={nextMonthValue} />
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-                {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-                {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Mois suivant →
-                </button>
-              </form>
-            </div>
-            {agendaItems.length === 0 && (
-              <p className="mt-4 text-sm text-slate-200">
-                Aucun cours prévu pour ce mois.
-              </p>
-            )}
-          </>
-        )}
-      </section>
+                Mois suivant →
+              </button>
+            </form>
+          </div>
+          {agendaItems.length === 0 && (
+            <p className="mt-4 text-sm text-slate-200">
+              Aucun cours prévu pour ce mois.
+            </p>
+          )}
+        </section>
+      )}
 
       {view === "week" && (
       <section className="panel p-6">
@@ -495,11 +552,15 @@ export default async function StudentCoursesAgendaPage({
                     {dayAttendances.length === 0 && <span className="text-slate-400">—</span>}
                     {dayAttendances.map((a) => {
                       const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                      return (
-                        <Link
-                          key={a.id}
-                          href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                          className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                      const isMine = attendingCourseIds.has(a.courseId);
+                      const badgeClass = past
+                        ? "border border-cyan-300/60 bg-cyan-500/20 text-cyan-50"
+                        : "border border-emerald-300/60 bg-emerald-500/20 text-emerald-50";
+                    return (
+                      <Link
+                        key={a.id}
+                        href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
+                        className={`inline-flex w-full flex-col rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
                             past
                               ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                               : "border-white/10 bg-white/10 text-white"
@@ -512,13 +573,30 @@ export default async function StudentCoursesAgendaPage({
                           <span className="truncate text-[11px] md:text-[12px]">
                             {a.course.title ?? "Cours"}
                           </span>
-                          <span className="text-[10px] text-cyan-100 hidden md:inline">
-                            {formatDuration(a.course.durationMinutes ?? 60)}
-                          </span>
-                          {a.course.studio?.name ? (
-                            <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100 md:mt-1.5">
-                              {a.course.studio.name}
+                          <div className="mt-1 flex items-center gap-1">
+                            <span
+                              className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${
+                                isMine
+                                  ? badgeClass
+                                  : "border border-white/20 bg-white/10 text-slate-300"
+                              }`}
+                              title={
+                                isMine
+                                  ? past
+                                    ? "Cours déjà suivi"
+                                    : "Inscrit"
+                                  : "Non inscrit"
+                              }
+                            >
+                              ●
                             </span>
+                            <span className="text-[10px] text-cyan-100 hidden md:inline">
+                              {formatDuration(a.course.durationMinutes ?? 60)}
+                            </span>
+                            {a.course.studio?.name ? (
+                              <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] text-cyan-100 md:mt-1.5">
+                                {a.course.studio.name}
+                              </span>
                           ) : null}
                         </Link>
                       );
