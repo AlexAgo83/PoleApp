@@ -1,4 +1,5 @@
 # 01 — Backlog Produit (v0.4.6 → produit complet)
+[Compréhension: ??% / Avancement: ??%]
 
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
