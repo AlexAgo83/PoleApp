@@ -38,8 +38,8 @@ export default async function StudentDashboard() {
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-semibold text-white">
-            Bonjour {displayName},
+          <h2 className="text-xl text-white">
+            Bonjour <span className="font-semibold">{displayName}</span>,
           </h2>
           <Link
             href="/app/profile"
@@ -168,10 +168,10 @@ export default async function StudentDashboard() {
               Mini-jeu
             </p>
             <p className="text-base font-semibold text-white">
-              Quiz photo → nom
+              6 mini-jeux de révision
             </p>
             <p className="text-sm text-slate-300">
-              Pool basé sur tes positions débloquées ({isPremium ? "ou toutes si premium" : "libérées via cours"}).
+              Photo→nom + variantes (type/niveau/grips/tips) sur tes positions débloquées ({isPremium ? "ou toutes si premium" : "libérées via cours"}).
             </p>
           </Link>
         </div>
