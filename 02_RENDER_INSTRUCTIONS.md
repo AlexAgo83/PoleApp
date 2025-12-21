@@ -13,8 +13,9 @@
 À renseigner dans Render (service web) :
 - **Build command** : `npm install && npm run db:baseline:render && npm run db:migrate:deploy && npm run build`
   - But : baseliner la DB existante (P3005) puis appliquer les migrations. Une fois le baseline passé, tu pourras revenir à `npm install && npm run db:migrate:deploy && npm run build`.
-- **Start command** : `npm run db:migrate:deploy && npm run start`
-  - Si le baseline n’est pas encore appliqué, utiliser temporairement `npm run db:baseline:render && npm run db:migrate:deploy && npm run start`. `db:seed` n’est plus lancé automatiquement pour éviter de reseeder en prod.
+- **Start command** : `npm run start:render`
+  - `start:render` utilise `start-auto` : tente `db:migrate:deploy` (fallback `db:push`), puis **seed uniquement si la base est vide** (aucun `User`), vérifie l’état, puis lance `next start`. Pas de reseed si des données existent. En cas de base neuve, cela injecte les données de démo (admin@poleapp.test / change-me-password, etc.).
+  - Si le baseline n’est pas encore appliqué, utiliser temporairement `npm run db:baseline:render && npm run db:migrate:deploy && npm run build` côté build pour éviter P3005.
 
 ## Procédure Render lorsqu’on change le schéma Prisma
 
