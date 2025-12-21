@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
+import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 
@@ -83,7 +85,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <header className="panel flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/20 bg-gradient-to-r from-indigo-900/50 via-slate-900/60 to-cyan-900/40 p-6 shadow-lg shadow-indigo-900/30 backdrop-blur-lg">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             {session?.user?.role === "SCHOOL_ADMIN"
@@ -124,7 +126,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           )}
         </div>
       </header>
-      <header className="flex flex-wrap items-center justify-between gap-4">
+      <header className="panel flex flex-wrap items-center justify-between gap-4 p-4 md:p-6">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
             Position
@@ -145,16 +147,23 @@ export default async function PositionDetailPage({ params, searchParams }: Props
       <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <div className="panel space-y-4 p-6">
           {cover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <SafeImage
               src={cover.url}
               alt={position.name}
+              width={960}
+              height={400}
               className="w-full rounded-xl object-cover"
+              fallbackSrc={POSITION_PLACEHOLDER}
             />
           ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl bg-white/5 text-sm text-slate-300">
-              Pas d’image
-            </div>
+            <SafeImage
+              src={POSITION_PLACEHOLDER}
+              alt={position.name}
+              width={960}
+              height={400}
+              className="w-full rounded-xl object-cover"
+              fallbackSrc={POSITION_PLACEHOLDER}
+            />
           )}
           {canViewPremium ? (
             <div className="space-y-2 text-slate-200">

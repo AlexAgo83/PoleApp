@@ -408,8 +408,12 @@ export default async function StudentCoursesAgendaPage({
           <div className="mt-3 grid gap-1.5 md:grid-cols-7 md:gap-3">
             {weekDays.map((day, idx) => {
               const dayAttendances = attendancesByDay[idx];
+              const hideOnMobile = dayAttendances.length === 0 ? "hidden md:block" : "";
               return (
-                <div key={day.toISOString()} className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200">
+                <div
+                  key={day.toISOString()}
+                  className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
+                >
                   <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                     <span>{day.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}</span>
                     <span className="text-[11px] text-cyan-100">{dayAttendances.length} cours</span>
