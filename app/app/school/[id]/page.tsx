@@ -92,6 +92,18 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             </a>
           </p>
         )}
+        {studio.photoUrl && (
+          <div className="mt-3 w-full">
+            <SafeImage
+              src={studio.photoUrl}
+              alt={`Photo du studio ${studio.name}`}
+              width={960}
+              height={360}
+              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+              fallbackSrc={COURSE_PLACEHOLDER}
+            />
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap justify-end gap-2 text-sm">
           <Link
             href={returnHref}

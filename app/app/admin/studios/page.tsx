@@ -132,6 +132,15 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                 <option value="3 Rue des Lilas, Marseille" />
               </datalist>
             </label>
+            <label className="text-sm text-slate-200">
+              Photo (URL)
+              <input
+                name="photoUrl"
+                type="url"
+                placeholder="https://..."
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
             <div className="md:col-span-2 flex justify-end">
               <button
                 type="submit"
@@ -245,6 +254,16 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                     defaultValue={studio.address ?? ""}
                     placeholder="Adresse"
                     className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <label className="grid gap-1">
+                  Photo (URL)
+                  <input
+                    name="photoUrl"
+                    defaultValue={studio.photoUrl ?? ""}
+                    placeholder="https://..."
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                    type="url"
                   />
                 </label>
                 <div className="md:col-span-2 flex justify-end">
