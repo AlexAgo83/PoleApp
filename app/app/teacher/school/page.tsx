@@ -168,9 +168,6 @@ export default async function TeacherSchoolPage() {
                     {studio.address}
                   </a>
                 )}
-                <div className="mt-2 rounded-lg border border-white/10 bg-gradient-to-r from-indigo-900/30 via-slate-900/40 to-cyan-900/30 p-3 text-xs text-slate-300">
-                  Carte (aperçu mock) – ouvre la carte sur le lien ci-dessus.
-                </div>
               </li>
             ))}
           </ul>

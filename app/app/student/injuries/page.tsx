@@ -72,7 +72,7 @@ export default async function StudentInjuriesPage({
         <FilterPanel
           storageKey="filters:student-injuries-add"
           title="Ajouter une blessure"
-          titleClassName="text-lg"
+          titleClassName="text-lg font-semibold"
           userKey={userKey}
         >
           <form action={createInjuryAction} className="mt-4 grid gap-3 md:grid-cols-2">
@@ -122,66 +122,73 @@ export default async function StudentInjuriesPage({
           </div>
         )}
         <h2 className="text-lg font-semibold text-white">Mes blessures</h2>
-        <div className="grid gap-3">
+        <div className="grid gap-4">
           {injuries.map((injury) => (
             <article
               key={injury.id}
-              className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-[1.5fr_1fr]"
+              className="grid gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-950/50 via-slate-900/40 to-cyan-900/40 p-5 shadow-lg shadow-black/20"
             >
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-base font-semibold text-white">
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-lg font-semibold text-white">
                     {injury.injuryType.name}
                   </p>
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
                       injury.isActive
-                        ? "border border-amber-300/50 bg-amber-500/20 text-amber-50"
-                        : "border border-emerald-300/50 bg-emerald-500/15 text-emerald-50"
+                        ? "border border-amber-300/60 bg-amber-500/25 text-amber-50"
+                        : "border border-emerald-300/60 bg-emerald-500/20 text-emerald-50"
                     }`}
                   >
                     {injury.isActive ? "Active" : "Résolue"}
                   </span>
                 </div>
                 {injury.notes && (
-                  <p className="text-sm text-slate-200">Notes : {injury.notes}</p>
+                  <p className="rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm text-slate-100">
+                    Notes : {injury.notes}
+                  </p>
                 )}
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-300">
                   Créée le {new Date(injury.createdAt).toLocaleDateString("fr-FR")}
                 </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <form action={updateInjuryAction} className="flex flex-wrap items-center gap-2">
+                <form
+                  action={updateInjuryAction}
+                  className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3"
+                >
                   <input type="hidden" name="injuryId" value={injury.id} />
                   <input
                     type="hidden"
                     name="isActive"
                     value={injury.isActive ? "false" : "true"}
                   />
-                  <input
-                    name="notes"
-                    defaultValue={injury.notes ?? ""}
-                    placeholder="Notes"
-                    className="w-48 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-                  >
-                    Sauver
-                  </button>
-                  <button
-                    type="submit"
-                    className="rounded-full bg-amber-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-amber-400"
-                  >
-                    Marquer {injury.isActive ? "résolue" : "active"}
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      name="notes"
+                      defaultValue={injury.notes ?? ""}
+                      placeholder="Notes"
+                      className="w-56 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                    />
+                    <button
+                      type="submit"
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+                    >
+                      Sauver
+                    </button>
+                    <button
+                      type="submit"
+                      className="rounded-full bg-amber-500 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-amber-400"
+                    >
+                      Marquer {injury.isActive ? "résolue" : "active"}
+                    </button>
+                  </div>
                 </form>
+              </div>
+              <div className="flex items-end justify-end">
                 <form action={deleteInjuryAction}>
                   <input type="hidden" name="injuryId" value={injury.id} />
                   <button
                     type="submit"
-                    className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
+                    className="rounded-full border border-red-500/40 bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-300 hover:bg-red-400/30"
                   >
                     Supprimer
                   </button>
