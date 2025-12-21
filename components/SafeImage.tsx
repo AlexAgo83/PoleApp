@@ -1,5 +1,9 @@
 "use client";
 
+import Image from "next/image";
+import { useMemo, useState } from "react";
+import { allowedImageHosts } from "@/lib/imageHosts";
+
 /* eslint-disable @next/next/no-img-element */
 
 type SafeImageProps = {
@@ -13,8 +17,10 @@ type SafeImageProps = {
 };
 
 /**
- * Simple <img> fallback to avoid next/image remote host whitelisting issues.
- * Use for dynamic/external URLs where domains are not guaranteed.
+ * Hybrid image component:
+ * - Data URIs or relative paths -> plain <img>.
+ * - Allowed remote hosts -> next/image (unoptimized to avoid pipeline surprises).
+ * - Disallowed hosts -> plain <img> with fallback on error.
  */
 export function SafeImage({
   src,
@@ -25,19 +31,42 @@ export function SafeImage({
   loading = "lazy",
   fallbackSrc,
 }: SafeImageProps) {
+  const [forceFallback, setForceFallback] = useState(false);
+  const parsedUrl = useMemo(() => {
+    try {
+      return new URL(src);
+    } catch {
+      return null;
+    }
+  }, [src]);
+
+  const isDataOrRelative = !parsedUrl;
+  const isAllowedHost = parsedUrl ? allowedImageHosts.includes(parsedUrl.hostname) : false;
+
+  if (forceFallback || isDataOrRelative || !isAllowedHost) {
+    return (
+      <img
+        src={forceFallback ? fallbackSrc ?? src : src}
+        alt={alt}
+        className={className}
+        width={width}
+        height={height}
+        loading={loading}
+        onError={() => setForceFallback(true)}
+      />
+    );
+  }
+
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
       className={className}
       width={width}
       height={height}
       loading={loading}
-      onError={(e) => {
-        if (fallbackSrc && e.currentTarget.src !== fallbackSrc) {
-          e.currentTarget.src = fallbackSrc;
-        }
-      }}
+      unoptimized
+      onError={() => setForceFallback(true)}
     />
   );
 }
