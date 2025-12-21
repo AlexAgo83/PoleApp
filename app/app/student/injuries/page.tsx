@@ -72,6 +72,7 @@ export default async function StudentInjuriesPage({
         <FilterPanel
           storageKey="filters:student-injuries-add"
           title="Ajouter une blessure"
+          titleClassName="text-lg"
           userKey={userKey}
         >
           <form action={createInjuryAction} className="mt-4 grid gap-3 md:grid-cols-2">
@@ -108,7 +109,7 @@ export default async function StudentInjuriesPage({
         </FilterPanel>
       </section>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel border-indigo-400/15 p-6 space-y-4">
         {(success || error) && (
           <div
             className={`mb-4 rounded-xl border px-4 py-3 text-sm ${
@@ -121,25 +122,33 @@ export default async function StudentInjuriesPage({
           </div>
         )}
         <h2 className="text-lg font-semibold text-white">Mes blessures</h2>
-        <div className="mt-4 flex flex-col divide-y divide-white/5">
+        <div className="grid gap-3">
           {injuries.map((injury) => (
             <article
               key={injury.id}
-              className="flex flex-col gap-3 rounded-2xl border border-white/5 py-4 px-3 transition hover:border-indigo-300/50 hover:bg-indigo-500/10 md:flex-row md:items-center md:justify-between"
+              className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-indigo-300/60 hover:bg-indigo-500/15 md:grid-cols-[1.5fr_1fr]"
             >
-              <div>
-                <p className="text-base font-semibold text-white">
-                  {injury.injuryType.name}
-                </p>
-                <p className="text-sm text-slate-300">
-                  Statut :{" "}
-                  <span className={injury.isActive ? "text-amber-200" : "text-green-200"}>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-base font-semibold text-white">
+                    {injury.injuryType.name}
+                  </p>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      injury.isActive
+                        ? "border border-amber-300/50 bg-amber-500/20 text-amber-50"
+                        : "border border-emerald-300/50 bg-emerald-500/15 text-emerald-50"
+                    }`}
+                  >
                     {injury.isActive ? "Active" : "Résolue"}
                   </span>
-                </p>
+                </div>
                 {injury.notes && (
                   <p className="text-sm text-slate-200">Notes : {injury.notes}</p>
                 )}
+                <p className="text-xs text-slate-400">
+                  Créée le {new Date(injury.createdAt).toLocaleDateString("fr-FR")}
+                </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <form action={updateInjuryAction} className="flex flex-wrap items-center gap-2">

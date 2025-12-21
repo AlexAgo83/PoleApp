@@ -10,6 +10,7 @@ type FilterPanelProps = {
   className?: string;
   contentClassName?: string;
   userKey?: string;
+  titleClassName?: string;
 };
 
 /**
@@ -24,6 +25,7 @@ export function FilterPanel({
   className,
   contentClassName,
   userKey = "anon",
+  titleClassName,
 }: FilterPanelProps) {
   const fullKey = `${userKey}:${storageKey}`;
   const [open, setOpen] = useState<boolean>(() => {
@@ -64,7 +66,11 @@ export function FilterPanel({
       open={open}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >
-      <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+      <summary
+        className={`flex cursor-pointer items-center justify-between text-sm font-semibold text-white ${
+          titleClassName ?? ""
+        }`}
+      >
         <span className="inline-flex items-center gap-2">
           <span>{title}</span>
           {activeCount > 0 && (
