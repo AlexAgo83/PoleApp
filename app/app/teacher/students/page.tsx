@@ -1,11 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
@@ -214,12 +214,13 @@ export default async function TeacherStudentsPage({
               className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
             >
               <div className="flex items-center gap-3">
-                <Image
+                <SafeImage
                   src={student.avatarUrl?.trim() || STUDENT_AVATAR_PLACEHOLDER}
                   alt={`Avatar de ${student.name ?? student.email}`}
                   width={48}
                   height={48}
                   className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                  fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
                 />
                 <div>
                   <p className="text-base font-semibold text-white">

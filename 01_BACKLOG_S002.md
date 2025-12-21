@@ -50,8 +50,8 @@
 6. Dashboard élève gamifié.
 7. Le reste.
 
-
-
 # UPDATE 2025-12-21 02:20
-1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->"
-2. Positions > Detail d'une position, le panel POSITION devrait avoir un fond comme les autres panels
+1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->".
+2. Positions > Detail d'une position, le panel POSITION devrait avoir un fond comme les autres panels.
+3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours.
+4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position

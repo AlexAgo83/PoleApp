@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -271,12 +271,13 @@ export default async function TeacherCoursesPage({
                     <p className="text-lg font-semibold text-white">{course.title ?? "Cours sans titre"}</p>
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
-                    <Image
+                    <SafeImage
                       src={photoUrl}
                       alt={course.title ?? "Cours"}
                       width={96}
                       height={64}
                       className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
+                      fallbackSrc={COURSE_PHOTO_PLACEHOLDER}
                     />
                     <div className="min-w-[220px] flex-1 space-y-1">
                       <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">
