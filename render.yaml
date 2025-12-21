@@ -1,5 +1,6 @@
 databases:
   - name: poleapp-db
+    region: frankfurt
     plan: free
     databaseName: poleapp
     user: poleapp
@@ -8,10 +9,11 @@ services:
   - type: web
     name: poleapp
     env: node
+    region: frankfurt
     plan: free
     branch: main
-    buildCommand: npm install && npx prisma db push && npx prisma generate && npm run build
-    startCommand: npm run db:push && npm run db:seed && npm run start
+    buildCommand: npm install && npm run db:migrate:deploy && npm run build
+    startCommand: npm run start:render
     envVars:
       - key: NODE_VERSION
         value: "20"
