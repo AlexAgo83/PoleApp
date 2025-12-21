@@ -24,17 +24,14 @@ async function checkDbState() {
 }
 
 async function ensureSchemaAndSeed() {
-  // Try migrate deploy, fallback to db:push on P3005 or P3014
+  // Try migrate deploy, fallback to db:push on typical bootstrap failures
   try {
     run("npm run db:migrate:deploy");
   } catch (err) {
-    const msg = String(err?.stderr || err?.message || "");
-    if (msg.includes("P3005") || msg.includes("P3014")) {
-      console.warn("Migration deploy failed, attempting db:push instead.");
-      run("npm run db:push");
-    } else {
-      throw err;
-    }
+    const msg = String(err?.stderr || err?.stdout || err?.message || "");
+    console.warn("Migration deploy failed, attempting db:push instead.");
+    console.warn(msg);
+    run("npm run db:push");
   }
 
   const state = await checkDbState();
