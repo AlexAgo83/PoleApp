@@ -23,6 +23,12 @@ const POSITION_IMAGES = [
   "https://i.postimg.cc/SKWfQK9f/Gemini-Generated-Image-ob9xeuob9xeuob9x.png",
   "https://i.postimg.cc/fbxfWbdj/Gemini-Generated-Image-nr8lxdnr8lxdnr8l.png",
   "https://i.postimg.cc/xdK3jdmv/Gemini-Generated-Image-w69zmgw69zmgw69z.png",
+  "https://i.postimg.cc/JzmTFnh6/Gemini-Generated-Image-59vczf59vczf59vc.png",
+  "https://i.postimg.cc/jSK815jZ/Gemini-Generated-Image-5nkvun5nkvun5nkv.png",
+  "https://i.postimg.cc/Qds6ztMz/Gemini-Generated-Image-5x1h3e5x1h3e5x1h.png",
+  "https://i.postimg.cc/13PWdtzW/Gemini-Generated-Image-8df1hr8df1hr8df1.png",
+  "https://i.postimg.cc/T3Gksw-Pt/Gemini-Generated-Image-tqk096tqk096tqk0.png",
+  "https://i.postimg.cc/CxYv21KQ/Gemini-Generated-Image-x6c36yx6c36yx6c3.png",
 ];
 
 const COURSE_IMAGES = [
@@ -30,6 +36,13 @@ const COURSE_IMAGES = [
   "https://i.postimg.cc/43C1TcYz/Gemini-Generated-Image-jqc1bsjqc1bsjqc1.png",
   "https://i.postimg.cc/FKtxQSY3/Gemini-Generated-Image-qzcezwqzcezwqzce.png",
   "https://i.postimg.cc/9f3Bj9Dd/Gemini-Generated-Image-w7xzpow7xzpow7xz.png",
+  "https://i.postimg.cc/KzbjFG77/Gemini-Generated-Image-15whr115whr115wh.png",
+  "https://i.postimg.cc/XJWq3jK5/Gemini-Generated-Image-1zx8nf1zx8nf1zx8.png",
+  "https://i.postimg.cc/26YymkdF/Gemini-Generated-Image-eor5freor5freor5.png",
+  "https://i.postimg.cc/4dGyZfvt/Gemini-Generated-Image-hime9ohime9ohime.png",
+  "https://i.postimg.cc/50Jy145L/Gemini-Generated-Image-nvh7mrnvh7mrnvh7.png",
+  "https://i.postimg.cc/fLsyZz70/Gemini-Generated-Image-o5cowyo5cowyo5co.png",
+  "https://i.postimg.cc/bJPr8y0x/Gemini-Generated-Image-o77i1wo77i1wo77i.png",
 ];
 
 const FEMALE_STUDENT_AVATARS = [
@@ -63,7 +76,18 @@ const TEACHER_AVATARS = [
   "https://i.postimg.cc/1XYj0zJX/Gemini-Generated-Image-b3b57vb3b57vb3b5.png",
 ];
 
-const injuryTypes = ["Épaule", "Poignet", "Coude", "Bas du dos", "Genou"];
+const injuryTypes = [
+  "Épaule",
+  "Poignet",
+  "Coude",
+  "Bas du dos",
+  "Genou",
+  "Ventre",
+  "Tête",
+  "Bassin",
+  "Jambes",
+  "Bras",
+];
 
 const positionsData = [
   { name: "Fireman Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
@@ -76,10 +100,20 @@ const positionsData = [
   { name: "Basic Climb", type: PositionType.STRENGTH, level: PositionLevel.BEGINNER, grips: "TRUE" },
   { name: "Shoulder Mount Prep", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: "FOREARM" },
   { name: "Warmup Flow 1", type: PositionType.WARMUP, level: PositionLevel.BEGINNER, grips: "OTHER" },
+  { name: "Carousel Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Cradle Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Butterfly", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: "CUP" },
+  { name: "Flatline Scorpio", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: "CUP" },
+  { name: "Superman", type: PositionType.TRICK, level: PositionLevel.ADVANCED, grips: "CUP" },
+  { name: "Aysha", type: PositionType.TRICK, level: PositionLevel.ADVANCED, grips: "CUP" },
+  { name: "Back-to-Pole", type: PositionType.TRANSITION, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Fan Kick", type: PositionType.STRENGTH, level: PositionLevel.BEGINNER, grips: "TRUE" },
+  { name: "Invert Prep (V-Lift)", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: "FOREARM" },
+  { name: "Dynamic Leg Swings", type: PositionType.WARMUP, level: PositionLevel.BEGINNER, grips: "OTHER" },
 ];
 
 const schoolsList = [
-  "Élan",
+  "Donuts",
   "Horizon",
   "Académie Arabesque",
   "Pulsation Dance Center",
