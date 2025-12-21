@@ -28,31 +28,23 @@ export function FilterPanel({
   titleClassName,
 }: FilterPanelProps) {
   const fullKey = `${userKey}:${storageKey}`;
-  const [open, setOpen] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      const saved = localStorage.getItem(fullKey);
-      if (saved === "true" || saved === "false") {
-        return saved === "true";
-      }
-    } catch {
-      // ignore
-    }
-    return false;
-  });
+  const [open, setOpen] = useState<boolean | null>(null);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
         setOpen(saved === "true");
+        return;
       }
     } catch {
       // ignore
     }
+    setOpen(false);
   }, [fullKey]);
 
   useEffect(() => {
+    if (open === null) return;
     try {
       localStorage.setItem(fullKey, open ? "true" : "false");
     } catch {
@@ -60,10 +52,12 @@ export function FilterPanel({
     }
   }, [fullKey, open]);
 
+  const resolvedOpen = open ?? undefined;
+
   return (
     <details
       className={className ? `group ${className}` : "group"}
-      open={open}
+      open={resolvedOpen}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >
       <summary

@@ -28,31 +28,23 @@ export function PersistedPanel({
   userKey = "anon",
 }: PersistedPanelProps) {
   const fullKey = `${userKey}:${storageKey}`;
-  const [open, setOpen] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultOpen;
-    try {
-      const saved = localStorage.getItem(fullKey);
-      if (saved === "true" || saved === "false") {
-        return saved === "true";
-      }
-    } catch {
-      // ignore storage errors
-    }
-    return defaultOpen;
-  });
+  const [open, setOpen] = useState<boolean | null>(null);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
         setOpen(saved === "true");
+        return;
       }
     } catch {
       // ignore
     }
+    setOpen(defaultOpen);
   }, [fullKey]);
 
   useEffect(() => {
+    if (open === null) return;
     try {
       localStorage.setItem(fullKey, open ? "true" : "false");
     } catch {
@@ -60,10 +52,12 @@ export function PersistedPanel({
     }
   }, [fullKey, open]);
 
+  const resolvedOpen = open ?? undefined;
+
   return (
     <details
       className={className ? `group ${className}` : "group"}
-      open={open}
+      open={resolvedOpen}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >
       <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white">
