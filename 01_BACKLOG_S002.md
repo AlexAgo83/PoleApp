@@ -52,6 +52,6 @@
 
 # UPDATE 2025-12-21 02:20
 1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->".
-2. Positions > Detail d'une position, le panel POSITION devrait avoir un fond comme les autres panels.
-3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours.
+2. Dans les Agendas > En mode mobile > les jours de semaines sans cours peuvent être cachés
+3. Dans les vues "Vue semaine", si mode Mobile cacher les jours où il n'y a pas de cours. (s'applique aussi dans la vue Admin pas que Agendas)
 4. Positions > la placeholder par défaut utilisé n'est pas le bon, c'est celui du Cours alors qu'il faudrait un svg Position
