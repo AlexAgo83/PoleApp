@@ -1,7 +1,7 @@
-# Backlog — Retours QA S007 (session 2025-12-21 23:54)
+# Backlog — Retours QA S007 (session 2025-12-21 23:55)
 [Compréhension: 60% / Avancement: 0%]
 
-Source : 06_QA_S007.md (tests sur v0.4.5)
+Source : 06_QA_S007.md (tests sur v0.5.0)
 
 ## Tâches
 - [ ] Student > École : ajouter la vue planning/agenda pour les cours à venir (pas seulement la liste).
