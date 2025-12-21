@@ -49,3 +49,8 @@
 5. Facturation prof.
 6. Dashboard élève gamifié.
 7. Le reste.
+
+
+
+# UPDATE 2025-12-21 02:20
+1. Espace élève > Ma prgression, rendres les tuiles cliquables en lieu et place de "Détail position ->"
