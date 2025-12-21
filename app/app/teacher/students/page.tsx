@@ -86,6 +86,7 @@ export default async function TeacherStudentsPage({
       id: true,
       email: true,
       name: true,
+      age: true,
       avatarUrl: true,
       isPremium: true,
       injuries: {

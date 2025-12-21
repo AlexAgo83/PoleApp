@@ -333,7 +333,11 @@ export default async function AdminPartnersPage({
                   <div className="md:col-span-2">
                     <SponsoredLinksField
                       name="sponsored"
-                      initialLinks={toSponsoredLinksArray(partner.sponsoredLinks)}
+                      initialLinks={
+                        supportsSponsored && "sponsoredLinks" in partner
+                          ? toSponsoredLinksArray((partner as unknown as { sponsoredLinks?: unknown }).sponsoredLinks)
+                          : []
+                      }
                     />
                   </div>
                 ) : (

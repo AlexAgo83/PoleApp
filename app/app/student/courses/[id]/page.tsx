@@ -75,6 +75,7 @@ export default async function StudentCourseDetailPage({
         return prisma.course.findUnique({
           where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
+            school: { select: { name: true } },
             teacher: { select: { id: true, name: true, email: true } },
             studio: { select: { name: true, address: true } },
             positions: { include: { position: true } },
