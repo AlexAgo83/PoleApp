@@ -126,7 +126,7 @@ export default async function StudentInjuriesPage({
           {injuries.map((injury) => (
             <article
               key={injury.id}
-              className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-indigo-300/60 hover:bg-indigo-500/15 md:grid-cols-[1.5fr_1fr]"
+              className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-[1.5fr_1fr]"
             >
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
