@@ -42,6 +42,8 @@ const TEACHER_AVATARS = [
   "https://lh3.googleusercontent.com/gg/AIJ2gl_JGOH9kOa4P2H1dImuOkaDZJP8HUosYiG6Nju6UH19YX7U77NQvFj9lSMOXg0QN7PbDPzE2gNtrY0tjQfb_rD_DF_yEJ_b-ZBfq0T4qphLRvLJ9iMLSTVaIZL2iUziAyOGQ15T259quTeqWmJEIDecbCHJvxKu6ZtdtsHhiR5WvGKyMDCu=s1024-rj-mp2",
 ];
 
+const injuryTypes = ["Épaule", "Poignet", "Coude", "Bas du dos", "Genou"];
+
 const positionsData = [
   { name: "Fireman Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: ["TRUE"] },
   { name: "Chair Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: ["TRUE"] },
