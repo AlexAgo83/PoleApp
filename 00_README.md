@@ -23,7 +23,12 @@ Ce dossier contient :
 - `00_README.md` (index)
 - `01_BACKLOG.md`
 - `01_BACKLOG_CLOUDINARY.md`
-- `01_BACKLOG_STEP_009.md`
+- `01_BACKLOG_MAPBOX.md`
+- `01_BACKLOG_S001.md`
+- `01_BACKLOG_S002.md`
+- `01_BACKLOG_S003.md`
+- `01_BACKLOG_S004.md`
+- `01_BACKLOG_S001.md`
 - `02_CODEX_INSTRUCTIONS.md`
 - `02_RENDER_INSTRUCTIONS.md`
 - `03_DATA_MODEL.md`
@@ -57,7 +62,7 @@ Ce dossier contient :
 ## Progression des Steps
 - Step 0 → 8 : livrées (bootstrap, auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + homepage “Profile”).
 - v0.2.2 : filtres admin/positions/élèves, harmonisation UI des filtres, pagination (10 items), page profil utilisateur et navigation par rôle.
-- **Step 9 (terminée)** : Discovery QA — voir synthèse dans `01_BACKLOG_STEP_009.md`.
+- **Step 9 (terminée)** : Discovery QA — voir synthèse dans `01_BACKLOG_S001.md`.
 - **Basculé en phase produit** : tag `v0.4.6` figé comme baseline; prochaines Steps à aborder sous l’angle produit (fiabilité, sécurité, observabilité, billing/credits).
 
 ## Mise en route (implémentation actuelle)

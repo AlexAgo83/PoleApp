@@ -2,6 +2,8 @@
 [Compréhension: 90% / Avancement: 65%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 ## 0) UI Quick win
 - Home : bouton “Connexion” trop sombre → augmenter contraste/hover/état actif. **(DONE)**

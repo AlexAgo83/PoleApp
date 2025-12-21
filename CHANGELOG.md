@@ -91,7 +91,7 @@
 - Pagination (10 items/page) généralisée : cours élève/prof, progression élève, blessures élève, liste élèves prof, liste cours prof (tri date desc).
 - Navigation / positions : liste 2 colonnes partagée, bannière session/role/accueil partout, retour contextuel `from` préservé.
 - Modules homepage : carte Profile ajoutée, “Status build” et “Modules” repliables par défaut, bandeau mis à jour.
-- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, Step 9 Discovery QA pilotée dans `01_BACKLOG_STEP_009.md`).
+- Changelogs/Routes/Backlog synchronisés (steps 0→8 livrées, Step 9 Discovery QA pilotée dans `01_BACKLOG_S001.md`).
 - Suites à cadrer après Step 9 : journal d’audit, contre-indications, badges/UX.
 
 ## 2025-12-22 — Step 9 (Discovery QA — navigation & login)
@@ -101,5 +101,5 @@
 - Inscription self-serve élève via `/signup` (email + mot de passe + école, premium optionnel). Prof/Admin restent créés côté école.
 
 ## Roadmap prochaine
-- Step 9 — Discovery QA : plan détaillé dans `01_BACKLOG_STEP_009.md` (navigation cohérente, pagination, profils/home).
+- Step 9 — Discovery QA : plan détaillé dans `01_BACKLOG_S001.md` (navigation cohérente, pagination, profils/home).
 - À cadrer ensuite : journal d’audit, contre-indications position/blessure, badges & polish UX.
