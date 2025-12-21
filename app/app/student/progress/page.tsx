@@ -75,6 +75,7 @@ export default async function StudentProgressPage({
       where: { studentId: session.user.id },
       include: { position: true },
     }),
+    // Total positions visible (all if premium, else only unlocked)
     session.user.isPremium
       ? prisma.position.count()
       : prisma.studentPositionProgress.count({
@@ -103,6 +104,20 @@ export default async function StudentProgressPage({
 
   const filteredCount = await prisma.position.count({
     where,
+  });
+
+  // Nombre de fois où l’élève a vu/enseigné la position (basé sur les cours suivis)
+  const attendanceWithPositions = await prisma.courseAttendance.findMany({
+    where: { studentId: session.user.id },
+    select: {
+      course: { select: { positions: { select: { positionId: true } } } },
+    },
+  });
+  const seenCounts = new Map<string, number>();
+  attendanceWithPositions.forEach((att) => {
+    att.course.positions.forEach((cp) => {
+      seenCounts.set(cp.positionId, (seenCounts.get(cp.positionId) ?? 0) + 1);
+    });
   });
 
   const positions = await prisma.position.findMany({
@@ -228,6 +243,7 @@ export default async function StudentProgressPage({
             const mastery = progress?.masteryLevel;
             const cover = position.media[0];
             const detailHref = `/positions/${position.id}?from=/app/student/progress?page=${page}${qs ? `&${qs}` : ""}`;
+            const seen = seenCounts.get(position.id) ?? 0;
 
             return (
               <Link
@@ -274,6 +290,11 @@ export default async function StudentProgressPage({
                       Niveau : {masteryLabels[mastery]}
                     </p>
                   )}
+                  <div className="mt-auto flex flex-wrap items-center justify-end gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-2 py-0.5 font-semibold text-cyan-100">
+                      Vu : {seen}
+                    </span>
+                  </div>
                 </div>
               </Link>
             );
