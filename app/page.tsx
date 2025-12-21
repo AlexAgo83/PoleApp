@@ -156,7 +156,7 @@ export default async function Home() {
           ) : (
             <Link
               href="/login"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 font-semibold text-slate-900 shadow-lg transition hover:brightness-110"
+              className="rounded-full border border-indigo-200/70 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 font-semibold text-slate-900 shadow-lg shadow-indigo-900/30 transition hover:brightness-110 hover:-translate-y-0.5"
               style={{ flexShrink: 0, whiteSpace: "nowrap" }}
             >
               Se connecter
