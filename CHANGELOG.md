@@ -7,6 +7,11 @@
 - Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
 - Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
 
+## 2025-12-22 — Release v0.6.5 (fix build + export billing)
+- Version bump 0.6.5.
+- Facturation : export CSV via route API dédiée, actions statut guidées, validation Zod + logs structurés.
+- Build Next : page facturation admin ne renvoie plus de Response (fix compatibilité App Router).
+
 ## 2025-12-22 — Release v0.6.4 (facturation + agendas)
 - Version bump 0.6.4.
 - Agenda élève : grille responsive sans scroll, légende/badges, filtres persistés.
