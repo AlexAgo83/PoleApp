@@ -8,6 +8,12 @@
 - Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
 - Facturation admin : polish UI (filtres regroupés en panel stylisé, actions header alignées à droite, compteur sous les filtres, titre/date dissociés).
 
+## 2025-12-22 — Release v0.6.9 (agenda inline + toast facturation)
+- Version bump 0.6.9.
+- Agenda admin/teacher/student : navigation semaine sans reload + bouton “Semaine actuelle”, filtres préservés, loaders discrets.
+- Facturation admin : toast succès/erreur ancré en bas à droite (remplace la popin statut/montant).
+- Générateur : table `CourseRecommendation` ajoutée et fallback gracieux si absence en base (pour compatibilité).
+
 ## 2025-12-22 — Release v0.6.8 (générateur suggestions + factu UX)
 - Version bump 0.6.8.
 - Générateur : suggestions basées sur la progression des élèves affichées sur la fiche cours (teacher/admin), édition des notes via l’écran d’édition (inline retiré), page cours admin dédiée.
