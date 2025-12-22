@@ -11,6 +11,8 @@ export type CourseSuggestion = {
   tag: SuggestionTag;
   reason: string;
   favoriteCount?: number;
+  excludedForInjury?: boolean;
+  unsafeInjuries?: string[];
 };
 
 type CandidateInput = {
@@ -19,6 +21,7 @@ type CandidateInput = {
   type?: Position["type"] | null;
   recentOccurrences: number;
   unsafeForStudents: string[];
+  excludedForInjury: boolean;
   perStudentStatus: Array<"NOT_STARTED" | "IN_PROGRESS" | "PASSED" | "MASTERED">;
   favoriteCount: number;
 };
@@ -76,12 +79,18 @@ function summarizeCandidate(candidate: CandidateInput): {
   };
 }
 
-function selectTopSuggestions(candidates: CandidateInput[], limit = 4): CourseSuggestion[] {
+function selectTopSuggestions(
+  candidates: CandidateInput[],
+  limit = 4,
+  options?: { forceDiscoverySlot?: boolean }
+): CourseSuggestion[] {
   const scored = candidates.map((c) => ({ ...summarizeCandidate(c), candidate: c }));
+  const safe = scored.filter((s) => !s.candidate.excludedForInjury);
+  const excluded = scored.filter((s) => s.candidate.excludedForInjury);
   const byTag: Record<SuggestionTag, typeof scored> = {
-    DISCOVERY: scored.filter((s) => s.tag === "DISCOVERY").sort((a, b) => b.score - a.score),
-    REVISION: scored.filter((s) => s.tag === "REVISION").sort((a, b) => b.score - a.score),
-    SAFE: scored.filter((s) => s.tag === "SAFE").sort((a, b) => b.score - a.score),
+    DISCOVERY: safe.filter((s) => s.tag === "DISCOVERY").sort((a, b) => b.score - a.score),
+    REVISION: safe.filter((s) => s.tag === "REVISION").sort((a, b) => b.score - a.score),
+    SAFE: safe.filter((s) => s.tag === "SAFE").sort((a, b) => b.score - a.score),
   };
 
   const selection: typeof scored = [];
@@ -96,11 +105,21 @@ function selectTopSuggestions(candidates: CandidateInput[], limit = 4): CourseSu
   take("SAFE");
 
   if (selection.length < limit) {
-    const remaining = scored
+    const remaining = safe
       .filter((s) => !selection.includes(s))
       .sort((a, b) => b.score - a.score);
     while (selection.length < limit && remaining.length > 0) {
       selection.push(remaining.shift()!);
+    }
+  }
+
+  if (options?.forceDiscoverySlot && !selection.some((s) => s.tag === "DISCOVERY")) {
+    const bestExcludedDiscovery = excluded
+      .filter((s) => s.tag === "DISCOVERY")
+      .sort((a, b) => b.score - a.score)[0];
+    if (bestExcludedDiscovery) {
+      selection.pop();
+      selection.unshift(bestExcludedDiscovery);
     }
   }
 
@@ -111,6 +130,8 @@ function selectTopSuggestions(candidates: CandidateInput[], limit = 4): CourseSu
     tag: item.tag,
     reason: item.reason,
     favoriteCount: item.candidate.favoriteCount,
+    excludedForInjury: item.candidate.excludedForInjury,
+    unsafeInjuries: item.candidate.unsafeForStudents,
   }));
 }
 
@@ -142,8 +163,9 @@ export async function generateCourseSuggestions(params: {
   studentIds: string[];
   existingPositionIds?: string[];
   limit?: number;
+  forceDiscoverySlot?: boolean;
 }): Promise<CourseSuggestion[]> {
-  const { courseId, schoolId, studentIds, existingPositionIds = [], limit = 4 } = params;
+  const { courseId, schoolId, studentIds, existingPositionIds = [], limit = 4, forceDiscoverySlot = false } = params;
   if (studentIds.length === 0) return [];
 
   const [positions, progress, injuries, recentCourses, favorites] = await Promise.all([
@@ -228,12 +250,13 @@ export async function generateCourseSuggestions(params: {
         type: position.type,
         recentOccurrences: recentPositionCounts.get(position.id) ?? 0,
         unsafeForStudents: unsafe,
+        excludedForInjury: unsafe.length > 0,
         perStudentStatus,
         favoriteCount: favoriteCounts.get(position.id) ?? 0,
       };
     });
 
-  return selectTopSuggestions(candidates, limit);
+  return selectTopSuggestions(candidates, limit, { forceDiscoverySlot });
 }
 
 // Exported for unit tests

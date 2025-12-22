@@ -316,6 +316,7 @@ const applySuggestionsSchema = z.object({
         tag: z.nativeEnum(SuggestionTag),
         reason: z.string().optional(),
         favoriteCount: z.number().optional(),
+        excludedForInjury: z.boolean().optional(),
       })
     )
     .default([]),
@@ -399,7 +400,11 @@ export async function applySuggestedPositionsAction(formData: FormData) {
           existingPositionIds: existingIds,
         });
 
-  const allowed = new Map(suggestionsList.map((s) => [s.positionId, s]));
+  const allowed = new Map(
+    suggestionsList
+      .filter((s) => !s.excludedForInjury)
+      .map((s) => [s.positionId, s])
+  );
   const toInsert = parsed.data.positionIds.filter((id) => allowed.has(id));
   if (toInsert.length === 0) {
     throw new Error("Aucune suggestion valide à appliquer");
