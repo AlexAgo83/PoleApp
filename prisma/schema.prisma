@@ -223,6 +223,12 @@ enum AttendanceStatus {
   WAITLIST
 }
 
+enum SuggestionTag {
+  DISCOVERY
+  REVISION
+  SAFE
+}
+
 model CoursePosition {
   id         String   @id @default(cuid())
   courseId   String
@@ -299,6 +305,21 @@ model TeacherFavoritePosition {
   @@unique([teacherId, positionId])
   @@index([teacherId])
   @@index([positionId])
+}
+
+model CourseRecommendation {
+  id         String        @id @default(cuid())
+  courseId   String
+  positionId String
+  tag        SuggestionTag
+  reason     String?
+  appliedAt  DateTime?
+  createdAt  DateTime      @default(now())
+  course     Course        @relation(fields: [courseId], references: [id])
+  position   Position      @relation(fields: [positionId], references: [id])
+
+  @@unique([courseId, positionId])
+  @@index([courseId])
 }
 
 model GameSession {

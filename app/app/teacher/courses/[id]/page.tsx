@@ -101,6 +101,12 @@ export default async function TeacherCourseDetailPage({
           existingPositionIds: course.positions.map((p) => p.position.id),
         })
       : [];
+  const storedRecommendations = await prisma.courseRecommendation.findMany({
+    where: { courseId: course.id },
+  });
+  const appliedBadge = new Set(
+    storedRecommendations.filter((r) => r.appliedAt).map((r) => r.positionId)
+  );
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
@@ -110,8 +116,10 @@ export default async function TeacherCourseDetailPage({
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom
       : undefined;
+  const baseHref = `/app/teacher/courses/${course.id}`;
   const backHref = safeFrom ?? "/app/teacher/courses";
-  const currentPath = `/app/teacher/courses/${course.id}${
+  const successToast = resolvedSearch.applied === "1";
+  const currentPath = `${baseHref}${
     safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
   }`;
   const seatsUsed = course._count?.attendances ?? 0;
@@ -208,6 +216,11 @@ export default async function TeacherCourseDetailPage({
                     {cp.position.type}
                   </span>
                 ) : null}
+                {appliedBadge.has(cp.position.id) && (
+                  <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
+                    Appliqué
+                  </span>
+                )}
               </div>
             </li>
           ))}
@@ -263,6 +276,7 @@ export default async function TeacherCourseDetailPage({
         ) : (
           <form action={applySuggestedPositionsAction} className="mt-4 space-y-3">
             <input type="hidden" name="courseId" value={course.id} />
+            <input type="hidden" name="suggestions" value={JSON.stringify(suggestions)} />
             <div className="grid gap-2 md:grid-cols-2">
               {suggestions.map((s) => (
                 <label
@@ -316,6 +330,11 @@ export default async function TeacherCourseDetailPage({
           </form>
         )}
       </section>
+      {successToast && (
+        <div className="fixed bottom-4 right-4 z-20 rounded-xl border border-emerald-300/50 bg-emerald-600/80 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
+          Suggestions appliquées au cours.
+        </div>
+      )}
 
       <section className="panel border-indigo-400/15 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">

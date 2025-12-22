@@ -1,6 +1,6 @@
 "use server";
 
-import { LearningStatus, MasteryLevel, Prisma } from "@prisma/client";
+import { LearningStatus, MasteryLevel, Prisma, SuggestionTag } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -309,6 +309,15 @@ const deleteSchema = z.object({
 const applySuggestionsSchema = z.object({
   courseId: z.string().cuid(),
   positionIds: z.array(z.string().cuid()).min(1),
+  suggestions: z
+    .array(
+      z.object({
+        positionId: z.string().cuid(),
+        tag: z.nativeEnum(SuggestionTag),
+        reason: z.string().optional(),
+      })
+    )
+    .default([]),
 });
 
 export async function deleteCourseAction(formData: FormData) {
@@ -359,6 +368,7 @@ export async function applySuggestedPositionsAction(formData: FormData) {
   const parsed = applySuggestionsSchema.safeParse({
     courseId: formData.get("courseId"),
     positionIds: Array.from(formData.getAll("positionIds") ?? []).map((value) => value.toString()),
+    suggestions: JSON.parse((formData.get("suggestions") as string) ?? "[]"),
   });
   if (!parsed.success) {
     throw new Error("Form invalid");
@@ -373,31 +383,56 @@ export async function applySuggestedPositionsAction(formData: FormData) {
   }
 
   const existingIds = course.positions.map((p) => p.positionId);
-  const suggestions = await generateCourseSuggestions({
-    courseId: course.id,
-    schoolId: session.user.schoolId,
-    studentIds: await prisma.courseAttendance
-      .findMany({
-        where: { courseId: course.id },
-        select: { studentId: true },
-      })
-      .then((rows) => rows.map((r) => r.studentId)),
-    existingPositionIds: existingIds,
-  });
-  const allowed = new Set(suggestions.map((s) => s.positionId));
+  const suggestionsList =
+    parsed.data.suggestions.length > 0
+      ? parsed.data.suggestions
+      : await generateCourseSuggestions({
+          courseId: course.id,
+          schoolId: session.user.schoolId,
+          studentIds: await prisma.courseAttendance
+            .findMany({
+              where: { courseId: course.id },
+              select: { studentId: true },
+            })
+            .then((rows) => rows.map((r) => r.studentId)),
+          existingPositionIds: existingIds,
+        });
+
+  const allowed = new Map(suggestionsList.map((s) => [s.positionId, s]));
   const toInsert = parsed.data.positionIds.filter((id) => allowed.has(id));
   if (toInsert.length === 0) {
     throw new Error("Aucune suggestion valide à appliquer");
   }
 
-  await prisma.coursePosition.createMany({
-    data: toInsert.map((positionId) => ({
-      courseId: course.id,
-      positionId,
-    })),
-    skipDuplicates: true,
+  await prisma.$transaction(async (tx) => {
+    await tx.coursePosition.createMany({
+      data: toInsert.map((positionId) => ({
+        courseId: course.id,
+        positionId,
+      })),
+      skipDuplicates: true,
+    });
+
+    await tx.courseRecommendation.deleteMany({ where: { courseId: course.id } });
+    if (suggestionsList.length > 0) {
+      await tx.courseRecommendation.createMany({
+        data: suggestionsList.map((s) => ({
+          courseId: course.id,
+          positionId: s.positionId,
+          tag: s.tag,
+          reason: s.reason ?? null,
+          appliedAt: toInsert.includes(s.positionId) ? new Date() : null,
+        })),
+        skipDuplicates: true,
+      });
+    }
   });
 
   revalidatePath(`/app/teacher/courses/${course.id}`);
   revalidatePath("/app/teacher/courses");
+  redirect(`${baseUrlForCourse(course.id)}?applied=1`);
+}
+
+function baseUrlForCourse(courseId: string) {
+  return `/app/teacher/courses/${courseId}`;
 }
