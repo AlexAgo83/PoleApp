@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { InvoiceStatus } from "@prisma/client";
 
 import { FilterPanel } from "@/components/FilterPanel";
-import { backfillInvoicesAction, updateInvoiceStatusAction } from "./actions";
+import { backfillInvoicesAction } from "./actions";
 
 type InvoiceDTO = {
   id: string;
@@ -52,6 +52,7 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, startTransition] = useTransition();
   const [flash, setFlash] = useState<string | null>(() => new URLSearchParams(initialQuery).get("flash"));
+  const [mutatingId, setMutatingId] = useState<string | null>(null);
 
   const qs = useMemo(() => {
     const clone = new URLSearchParams(searchParams);
@@ -103,6 +104,37 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
   };
 
   const filteredQs = qs ? `?${qs}` : "";
+
+  const applyUpdate = async (payload: { invoiceId: string; status: InvoiceStatus; amount?: string; note?: string }) => {
+    setMutatingId(payload.invoiceId);
+    setFlash(null);
+    try {
+      const res = await fetch("/api/admin/billing/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        setFlash("error");
+        return;
+      }
+      const json = (await res.json()) as { invoice: InvoiceDTO };
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              invoices: prev.invoices.map((inv) => (inv.id === json.invoice.id ? { ...inv, ...json.invoice } : inv)),
+            }
+          : prev
+      );
+      setFlash("updated");
+    } catch (err) {
+      console.error(err);
+      setFlash("error");
+    } finally {
+      setMutatingId(null);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -400,12 +432,19 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                       )}
                     </div>
                     <form
-                      action={updateInvoiceStatusAction}
                       className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end"
-                      onSubmit={() => setFlash("updated")}
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const fd = new FormData(e.currentTarget);
+                        void applyUpdate({
+                          invoiceId: invoice.id,
+                          status: invoice.status,
+                          amount: fd.get("amount")?.toString(),
+                          note: fd.get("note")?.toString(),
+                        });
+                      }}
                     >
                       <input type="hidden" name="invoiceId" value={invoice.id} />
-                      <input type="hidden" name="redirectTo" value={`/app/admin/billing${filteredQs ? `${filteredQs}&flash=updated` : "?flash=updated"}`} />
                       <label className="text-xs text-slate-300">
                         Montant (€)
                         <input
@@ -426,10 +465,10 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                           className="ml-2 w-40 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
                         />
                       </label>
-                      <input type="hidden" name="status" value={invoice.status} />
                       <button
                         type="submit"
-                        className="rounded-full bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-cyan-400"
+                        className="rounded-full bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-cyan-400 disabled:opacity-60"
+                        disabled={mutatingId === invoice.id}
                         title="Mettre à jour montant/note"
                       >
                         Sauvegarder
@@ -439,33 +478,31 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 text-[11px]">
                     {[InvoiceStatus.SENT, InvoiceStatus.PAID, InvoiceStatus.CANCELLED, InvoiceStatus.LATE].map(
                       (target) => (
-                        <form
+                        <button
                           key={target}
-                          action={updateInvoiceStatusAction}
-                          className="inline-flex"
-                          onSubmit={() => setFlash("updated")}
+                          type="button"
+                          onClick={() =>
+                            applyUpdate({
+                              invoiceId: invoice.id,
+                              status: target,
+                              amount: (invoice.amountCents / 100).toFixed(2),
+                              note: invoice.note ?? "",
+                            })
+                          }
+                          className={`rounded-full border px-2 py-1 font-semibold text-white transition shadow-sm ${
+                            target === InvoiceStatus.PAID
+                              ? "border-emerald-400/80 bg-emerald-500/40 hover:bg-emerald-400/70"
+                              : target === InvoiceStatus.SENT
+                              ? "border-cyan-400/80 bg-cyan-500/30 hover:bg-cyan-400/60"
+                              : target === InvoiceStatus.LATE
+                              ? "border-amber-400/80 bg-amber-500/30 hover:bg-amber-400/60"
+                              : "border-red-400/80 bg-red-500/30 hover:bg-red-400/60"
+                          } ${mutatingId === invoice.id ? "opacity-60" : ""}`}
+                          title={`Marquer ${statusLabels[target]}`}
+                          disabled={mutatingId === invoice.id}
                         >
-                          <input type="hidden" name="invoiceId" value={invoice.id} />
-                          <input type="hidden" name="amount" value={(invoice.amountCents / 100).toFixed(2)} />
-                          <input type="hidden" name="note" value={invoice.note ?? ""} />
-                          <input type="hidden" name="redirectTo" value={`/app/admin/billing${filteredQs ? `${filteredQs}&flash=updated` : "?flash=updated"}`} />
-                          <input type="hidden" name="status" value={target} />
-                          <button
-                            type="submit"
-                            className={`rounded-full border px-2 py-1 font-semibold text-white transition shadow-sm ${
-                              target === InvoiceStatus.PAID
-                                ? "border-emerald-400/80 bg-emerald-500/40 hover:bg-emerald-400/70"
-                                : target === InvoiceStatus.SENT
-                                ? "border-cyan-400/80 bg-cyan-500/30 hover:bg-cyan-400/60"
-                                : target === InvoiceStatus.LATE
-                                ? "border-amber-400/80 bg-amber-500/30 hover:bg-amber-400/60"
-                                : "border-red-400/80 bg-red-500/30 hover:bg-red-400/60"
-                            }`}
-                            title={`Marquer ${statusLabels[target]}`}
-                          >
-                            {statusLabels[target]}
-                          </button>
-                        </form>
+                          {statusLabels[target]}
+                        </button>
                       )
                     )}
                   </div>
