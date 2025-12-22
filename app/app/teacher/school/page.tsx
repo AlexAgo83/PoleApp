@@ -143,23 +143,19 @@ export default async function TeacherSchoolPage() {
             </Link>
           )}
         </div>
-      </header>
-
-      {school.photoUrl && (
-        <section className="panel p-6">
-          <h2 className="text-lg font-semibold text-white">Photo de l’école</h2>
-          <div className="mt-3">
+        {school.photoUrl && (
+          <div className="mt-3 w-full">
             <SafeImage
               src={school.photoUrl}
               alt={`Photo de l’école ${school.name}`}
-              width={960}
+              width={1200}
               height={360}
-              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+              className="h-56 w-full rounded-xl border border-white/10 object-cover shadow"
               fallbackSrc={COURSE_PLACEHOLDER}
             />
           </div>
-        </section>
-      )}
+        )}
+      </header>
 
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Studios</h2>

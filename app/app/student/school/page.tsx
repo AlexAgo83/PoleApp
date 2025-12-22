@@ -122,8 +122,8 @@ export default async function StudentSchoolPage({
 
   return (
       <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30">
-        <div>
+      <header className="panel flex flex-wrap items-start justify-between gap-3 border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30">
+        <div className="flex-1">
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
           <h1 className="text-3xl font-semibold text-white">{school.name}</h1>
           {school.website ? (
@@ -145,23 +145,19 @@ export default async function StudentSchoolPage({
             ← Retour accueil
           </Link>
         </div>
-      </header>
-
-      {school.photoUrl && (
-        <section className="panel p-4 md:p-6">
-          <h2 className="text-lg font-semibold text-white">Photo de l’école</h2>
-          <div className="mt-3">
+        {school.photoUrl && (
+          <div className="mt-3 w-full">
             <SafeImage
               src={school.photoUrl}
               alt={`Photo de l’école ${school.name}`}
-              width={960}
+              width={1200}
               height={360}
-              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+              className="h-56 w-full rounded-xl border border-white/10 object-cover shadow"
               fallbackSrc={COURSE_PLACEHOLDER}
             />
           </div>
-        </section>
-      )}
+        )}
+      </header>
 
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Studios</h2>
