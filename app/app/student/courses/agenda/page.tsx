@@ -137,13 +137,19 @@ export default async function StudentCoursesAgendaPage({
               : {}),
           },
         },
-        include: {
+        select: {
+          id: true,
+          courseId: true,
+          status: true,
+          waitlistRank: true,
           course: {
             include: {
               teacher: { select: { name: true, email: true } },
               studio: { select: { name: true } },
             },
           },
+        },
+        include: {
         },
         orderBy: { course: { date: "asc" } },
       })
@@ -165,7 +171,7 @@ export default async function StudentCoursesAgendaPage({
             studio: { select: { name: true } },
             attendances: {
               where: { studentId: session.user.id },
-              select: { id: true },
+              select: { id: true, status: true, waitlistRank: true },
             },
           },
           orderBy: { date: "asc" },
@@ -189,13 +195,24 @@ export default async function StudentCoursesAgendaPage({
     },
     select: {
       courseId: true,
+      status: true,
+      waitlistRank: true,
       course: { select: { date: true, durationMinutes: true } },
     },
   });
-  const attendingCourseIds = new Set(myAttendancesForMonth.map((a) => a.courseId));
+  const attendingCourseIds = new Set(
+    myAttendancesForMonth.filter((a) => a.status === "CONFIRMED").map((a) => a.courseId)
+  );
+  const waitlistCourseMap = new Map<string, number | null>();
+  myAttendancesForMonth
+    .filter((a) => a.status === "WAITLIST")
+    .forEach((a) => waitlistCourseMap.set(a.courseId, a.waitlistRank ?? null));
   const attendedPastCourseIds = new Set(
     myAttendancesForMonth
-      .filter((a) => isPastCourse(a.course.date, a.course.durationMinutes))
+      .filter(
+        (a) =>
+          a.status === "CONFIRMED" && isPastCourse(a.course.date, a.course.durationMinutes)
+      )
       .map((a) => a.courseId)
   );
 
@@ -205,12 +222,14 @@ export default async function StudentCoursesAgendaPage({
         courseId: a.courseId,
         course: a.course,
         isMine: true,
+        myAttendance: { status: a.status, waitlistRank: a.waitlistRank },
       }))
     : schoolCourses.map((c) => ({
         id: c.id,
         courseId: c.id,
         course: c,
         isMine: Boolean(c.attendances?.length),
+        myAttendance: c.attendances?.[0],
       }));
 
   const attendancesByDay = weekDays.map((d) => {
@@ -273,7 +292,7 @@ export default async function StudentCoursesAgendaPage({
   const legendItems = [
     { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
     { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
-    { label: "Liste d’attente (rang, quota 14) — à brancher", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+    { label: "Liste d’attente (rang, quota 14)", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
     { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
   ];
 
@@ -319,7 +338,7 @@ export default async function StudentCoursesAgendaPage({
           ))}
         </div>
         <p className="mt-2 text-xs text-slate-300">
-          Les rangs de liste d’attente doivent être reliés aux données (quota 14 élèves).
+          Le rang s’affiche si fourni (quota 14 élèves, statut WAITLIST requis).
         </p>
       </section>
 
@@ -470,10 +489,19 @@ export default async function StudentCoursesAgendaPage({
                   {cell.attendances &&
                     cell.attendances.slice(0, 3).map((a) => {
                       const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                      const isMine = attendingCourseIds.has(a.courseId);
-                      const badgeClass = past
-                        ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                        : "border border-amber-300/70 bg-amber-500/25 text-amber-50";
+                      const isMineConfirmed = Boolean(a.myAttendance?.status === "CONFIRMED");
+                      const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
+                      const badgeClass = isWaitlist
+                        ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
+                        : isMineConfirmed
+                        ? past
+                          ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
+                          : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                        : "border border-white/20 bg-white/10 text-slate-300";
+                      const rankLabel =
+                        isWaitlist && a.myAttendance?.waitlistRank
+                          ? `#${a.myAttendance.waitlistRank}`
+                          : null;
                       return (
                         <Link
                           key={a.id}
@@ -487,20 +515,22 @@ export default async function StudentCoursesAgendaPage({
                         <div className="flex-1 space-y-0.5 overflow-hidden">
                           <div className="flex items-center gap-2">
                             <span
-                              className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${
-                                isMine
+                                className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${
+                                isMineConfirmed || isWaitlist
                                   ? badgeClass
                                   : "border border-white/20 bg-white/10 text-slate-300"
                               }`}
                               title={
-                                isMine
+                                isWaitlist
+                                  ? "Liste d'attente"
+                                  : isMineConfirmed
                                   ? past
                                     ? "Cours déjà suivi"
                                     : "Inscrit"
                                   : "Non inscrit"
                               }
                             >
-                              ●
+                              {rankLabel ?? "●"}
                             </span>
                             <p className="text-[9px] text-cyan-100 whitespace-nowrap">
                               {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
@@ -578,11 +608,11 @@ export default async function StudentCoursesAgendaPage({
         </div>
           <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
             {weekDays.map((day, idx) => {
-              const dayAttendances = attendancesByDay[idx];
-              const isPastDay = day < new Date(new Date().setHours(0, 0, 0, 0));
-              const hideOnMobile = dayAttendances.length === 0 ? "hidden md:block" : "";
-              return (
-                <div
+                  const dayAttendances = attendancesByDay[idx];
+                  const isPastDay = day < new Date(new Date().setHours(0, 0, 0, 0));
+                  const hideOnMobile = dayAttendances.length === 0 ? "hidden md:block" : "";
+                  return (
+                    <div
                   key={day.toISOString()}
                   className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
                 >
@@ -602,54 +632,66 @@ export default async function StudentCoursesAgendaPage({
                     <div className="flex flex-col gap-1.5 md:gap-2">
                     {dayAttendances.map((a) => {
                       const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                      const isMine = attendingCourseIds.has(a.courseId);
+                      const isMineConfirmed = attendingCourseIds.has(a.courseId);
+                      const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
+                      const waitlistRank = a.myAttendance?.waitlistRank;
                       const badgeClass = past
                         ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                        : "border border-amber-300/70 bg-amber-500/25 text-amber-50";
-                    return (
-                      <Link
-                        key={a.id}
-                        href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                        className={`inline-flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                          past
-                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                            : "border-white/10 bg-white/10 text-white"
-                        }`}
-                        title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
-                      >
+                        : isWaitlist
+                        ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
+                        : isMineConfirmed
+                        ? "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                        : "border border-white/20 bg-white/10 text-slate-300";
+                      return (
+                        <Link
+                          key={a.id}
+                          href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
+                          className={`inline-flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                            past
+                              ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                              : "border-white/10 bg-white/10 text-white"
+                          }`}
+                          title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
+                        >
                           <div className="flex-1 space-y-0.5 overflow-hidden">
                             <div className="flex items-center gap-2">
                               <span
                                 className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${
-                                  isMine
+                                  isWaitlist || isMineConfirmed
                                     ? badgeClass
                                     : "border border-white/20 bg-white/10 text-slate-300"
                                 }`}
                                 title={
-                                  isMine
+                                  isWaitlist
+                                    ? "Liste d'attente"
+                                    : isMineConfirmed
                                     ? past
                                       ? "Cours déjà suivi"
                                       : "Inscrit"
                                     : "Non inscrit"
                                 }
                               >
-                                ●
+                                {isWaitlist && waitlistRank ? `#${waitlistRank}` : "●"}
                               </span>
                               <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                {new Date(a.course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
+                                {new Date(a.course.date).toLocaleTimeString("fr-FR", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                })}{" "}
                                 - {formatDuration(a.course.durationMinutes ?? 60)}
                               </p>
+                            </div>
+                            <p className="truncate text-[11px] font-semibold text-white">
+                              {a.course.title ?? "Cours"}
+                            </p>
+                            <p className="truncate text-[10px] text-cyan-100">
+                              {a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur"}
+                            </p>
+                            <p className="truncate text-[10px] text-slate-200">
+                              {a.course.studio?.name ?? "Studio non renseigné"}
+                            </p>
                           </div>
-                          <p className="truncate text-[11px] font-semibold text-white">
-                            {a.course.title ?? "Cours"}
-                          </p>
-                          <p className="truncate text-[10px] text-cyan-100">
-                            {a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur"}
-                          </p>
-                          <p className="truncate text-[10px] text-slate-200">
-                            {a.course.studio?.name ?? "Studio non renseigné"}
-                          </p>
-                        </div>
                         </Link>
                       );
                     })}
