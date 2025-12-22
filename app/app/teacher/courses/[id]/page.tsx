@@ -91,6 +91,9 @@ export default async function TeacherCourseDetailPage({
     return notFound();
   }
 
+  const resolvedSearch = (await searchParams) ?? {};
+  const forceDiscovery = resolvedSearch.forceDiscovery === "1";
+
   const studentIds = course.attendances.map((a) => a.studentId).filter(Boolean);
   const suggestions =
     studentIds.length > 0
@@ -99,6 +102,7 @@ export default async function TeacherCourseDetailPage({
           schoolId: session.user.schoolId,
           studentIds,
           existingPositionIds: course.positions.map((p) => p.position.id),
+          forceDiscoverySlot: forceDiscovery,
         })
       : [];
   const storedRecommendations =
@@ -119,7 +123,6 @@ export default async function TeacherCourseDetailPage({
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
-  const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
@@ -273,12 +276,28 @@ export default async function TeacherCourseDetailPage({
               Propositions basées sur la progression des élèves présents, en évitant les positions déjà planifiées et récentes.
             </p>
           </div>
-          <Link
-            href={currentPath}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Régénérer
-          </Link>
+          <div className="flex items-center gap-2">
+            <form action={currentPath} method="get" className="inline-flex items-center gap-2">
+              {safeFrom ? <input type="hidden" name="from" value={safeFrom} /> : null}
+              <input type="hidden" name="forceDiscovery" value={forceDiscovery ? "1" : "0"} />
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Régénérer
+              </button>
+            </form>
+            <form action={currentPath} method="get" className="inline-flex items-center gap-2">
+              {safeFrom ? <input type="hidden" name="from" value={safeFrom} /> : null}
+              <input type="hidden" name="forceDiscovery" value={forceDiscovery ? "0" : "1"} />
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                {forceDiscovery ? "Slot découverte auto" : "Forcer 1 découverte"}
+              </button>
+            </form>
+          </div>
         </div>
         {suggestions.length === 0 ? (
           <p className="mt-2 text-slate-300">Aucune suggestion disponible (ajoutez des élèves ou des positions).</p>
@@ -288,26 +307,32 @@ export default async function TeacherCourseDetailPage({
             <input type="hidden" name="suggestions" value={JSON.stringify(suggestions)} />
             <div className="grid gap-2 md:grid-cols-2">
               {suggestions.map((s) => (
-                <label
-                  key={s.positionId}
-                  className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
-                >
-                  <input
-                    type="checkbox"
-                    name="positionIds"
-                    value={s.positionId}
-                    defaultChecked
-                    className="mt-1"
-                  />
-                  <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">{s.name}</span>
+              <label
+                key={s.positionId}
+                className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              >
+                <input
+                  type="checkbox"
+                  name="positionIds"
+                  value={s.positionId}
+                  defaultChecked={!s.excludedForInjury}
+                  disabled={s.excludedForInjury}
+                  className="mt-1"
+                />
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold">{s.name}</span>
                       {s.type ? (
                         <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{s.type}</span>
                       ) : null}
                       {s.favoriteCount && s.favoriteCount > 0 ? (
                         <span className="rounded-full border border-pink-300/60 bg-pink-500/15 px-2 py-0.5 text-[11px] font-semibold text-pink-50">
                           {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
+                        </span>
+                      ) : null}
+                      {s.excludedForInjury ? (
+                        <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                          Exclu blessure
                         </span>
                       ) : null}
                       <span
@@ -331,19 +356,19 @@ export default async function TeacherCourseDetailPage({
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-              >
-                Valider ces positions
-              </button>
-              <Link
-                href={`/app/teacher/courses/${course.id}/edit?from=${encodeURIComponent(currentPath)}`}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                Ajuster dans l’édition
-              </Link>
-            </div>
-          </form>
-        )}
-      </section>
+                >
+                  Valider ces positions
+                </button>
+                <Link
+                  href={`/app/teacher/courses/${course.id}/edit?from=${encodeURIComponent(currentPath)}`}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Ajuster dans l’édition
+                </Link>
+              </div>
+            </form>
+          )}
+        </section>
       {successToast && (
         <div className="fixed bottom-4 right-4 z-20 rounded-xl border border-emerald-300/50 bg-emerald-600/80 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
           Suggestions appliquées au cours.

@@ -140,6 +140,11 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                       {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
                     </span>
                   ) : null}
+                  {s.excludedForInjury ? (
+                    <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                      Exclu blessure
+                    </span>
+                  ) : null}
                   <span
                     className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                       s.tag === "DISCOVERY"
