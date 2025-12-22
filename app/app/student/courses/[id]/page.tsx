@@ -63,7 +63,10 @@ export default async function StudentCourseDetailPage({
           where: { studentId: session.user.id },
           include: { position: true },
         },
-        attendances: { where: { studentId: session.user.id }, select: { id: true } },
+        attendances: {
+          where: { studentId: session.user.id },
+          select: { id: true, status: true, waitlistRank: true },
+        },
         _count: { select: { attendances: true } },
       },
     })
@@ -83,7 +86,10 @@ export default async function StudentCourseDetailPage({
               where: { studentId: session.user.id },
               include: { position: true },
             },
-            attendances: { where: { studentId: session.user.id }, select: { id: true } },
+            attendances: {
+              where: { studentId: session.user.id },
+              select: { id: true, status: true, waitlistRank: true },
+            },
             _count: { select: { attendances: true } },
           },
         });
@@ -107,18 +113,19 @@ export default async function StudentCourseDetailPage({
   const teacherProfileHref = course.teacher?.id
     ? `/app/teachers/${course.teacher.id}?from=${encodeURIComponent(backHref)}`
     : null;
-  const seatsUsed = course._count?.attendances ?? 0;
-  const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+  const confirmedSeats = await prisma.courseAttendance.count({
+    where: { courseId: course.id, status: "CONFIRMED" },
+  });
+  const remainingSeats = (course.maxSeats ?? 30) - confirmedSeats;
   const cost = course.costCredits ?? 100;
   const coursePhoto = course.photoUrl?.trim() || COURSE_PLACEHOLDER;
-  const isAttending = course.attendances.length > 0;
+  const myAttendance = course.attendances[0];
+  const isWaitlist = myAttendance?.status === "WAITLIST";
+  const isAttending = Boolean(myAttendance);
   const endTime =
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
   const canBuy =
-    !isAttending &&
-    endTime > NOW_MS &&
-    remainingSeats > 0 &&
-    (user.credits ?? 0) >= cost;
+    !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
     year: "numeric",
@@ -164,8 +171,16 @@ export default async function StudentCourseDetailPage({
                 <p>
                   {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
                 </p>
-                <p>
+                <p className="flex flex-wrap items-center gap-2">
                   {remainingSeats} place(s) restante(s) · {cost} crédits
+                  {isWaitlist && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
+                      Liste d’attente
+                      {typeof myAttendance.waitlistRank === "number"
+                        ? ` · rang #${myAttendance.waitlistRank}`
+                        : ""}
+                    </span>
+                  )}
               </p>
               {course.school?.name && (
                 <p className="text-slate-300">
@@ -195,9 +210,9 @@ export default async function StudentCourseDetailPage({
                   }`}
                   title={
                     canBuy
-                      ? "Acheter ce cours"
-                      : remainingSeats <= 0
-                      ? "Plus de places"
+                      ? remainingSeats > 0
+                        ? "S'inscrire"
+                        : "Rejoindre la liste d’attente"
                       : endTime <= NOW_MS
                       ? "Cours passé"
                       : (session.user.credits ?? 0) < cost
@@ -205,7 +220,7 @@ export default async function StudentCourseDetailPage({
                       : "Non disponible"
                   }
                 >
-                  Acheter ({cost} crédits)
+                  {remainingSeats > 0 ? "S'inscrire" : "Liste d’attente"} ({cost} crédits)
                 </button>
               </form>
             )}
