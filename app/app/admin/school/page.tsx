@@ -19,6 +19,7 @@ export default async function AdminSchoolPage() {
     select: {
       id: true,
       name: true,
+      photoUrl: true,
       studios: { select: { id: true, name: true, address: true } },
       partners: {
         select: {
@@ -102,6 +103,16 @@ export default async function AdminSchoolPage() {
             />
           </label>
           <label className="block text-sm text-slate-200">
+            Photo (URL)
+            <input
+              name="photoUrl"
+              type="url"
+              placeholder="https://..."
+              defaultValue={baseSchool?.photoUrl ?? ""}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+          </label>
+          <label className="block text-sm text-slate-200">
             Site web (optionnel)
             <input
               name="website"
@@ -121,6 +132,19 @@ export default async function AdminSchoolPage() {
           </div>
         </form>
       </section>
+
+      {baseSchool?.photoUrl && (
+        <section className="panel p-6">
+          <h3 className="text-lg font-semibold text-white">Photo de l’école</h3>
+          <div className="mt-3">
+            <img
+              src={baseSchool.photoUrl}
+              alt={`Photo de l’école ${baseSchool.name}`}
+              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+            />
+          </div>
+        </section>
+      )}
 
       <section className="panel space-y-3 p-6">
         <h3 className="text-lg font-semibold text-white">Résumé</h3>
