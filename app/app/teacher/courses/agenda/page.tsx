@@ -324,6 +324,15 @@ export default async function CoursesAgendaPage({
                   {cell.courses &&
                     cell.courses.slice(0, 3).map((course) => {
                       const past = isPastCourse(course.date, course.durationMinutes);
+                      const statusBadge = past ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/60 bg-blue-500/20 px-2 py-0.5 text-[10px] font-semibold text-blue-50">
+                          Passé
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/60 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-50">
+                          À venir
+                        </span>
+                      );
                       return (
                         <Link
                           key={course.id}
@@ -339,9 +348,12 @@ export default async function CoursesAgendaPage({
                               {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
                               - {formatDuration(course.durationMinutes ?? 60)}
                             </p>
-                            <p className="truncate text-[11px] font-semibold text-white">
-                              {course.title ?? "Cours"}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="truncate text-[11px] font-semibold text-white">
+                                {course.title ?? "Cours"}
+                              </p>
+                              {statusBadge}
+                            </div>
                             <p className="truncate text-[10px] text-cyan-100">
                               {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
                             </p>
@@ -419,6 +431,15 @@ export default async function CoursesAgendaPage({
                 <div className="flex flex-col gap-1.5 md:gap-2">
                   {dayCourses.map((course) => {
                     const past = isPastCourse(course.date, course.durationMinutes);
+                    const statusBadge = past ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/60 bg-blue-500/20 px-2 py-0.5 text-[10px] font-semibold text-blue-50">
+                        Passé
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/60 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-50">
+                        À venir
+                      </span>
+                    );
                     return (
                       <Link
                         key={course.id}
@@ -434,9 +455,12 @@ export default async function CoursesAgendaPage({
                           {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
                           - {formatDuration(course.durationMinutes ?? 60)}
                         </p>
-                        <p className="truncate text-[11px] font-semibold text-white">
-                          {course.title ?? "Cours"}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="truncate text-[11px] font-semibold text-white">
+                            {course.title ?? "Cours"}
+                          </p>
+                          {statusBadge}
+                        </div>
                         <p className="truncate text-[10px] text-cyan-100">
                           {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
                         </p>

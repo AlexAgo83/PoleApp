@@ -44,7 +44,7 @@ const moduleSections = [
   {
     title: "Admin école",
     href: "/admin",
-    description: "Pilotage école : utilisateurs, stats rapides.",
+    description: "Pilotage école : utilisateurs, stats rapides, studios et partenaires.",
     status: "Étape 7",
     role: "Admin",
     icon: "🏢",
@@ -52,7 +52,7 @@ const moduleSections = [
   {
     title: "Agenda (élève)",
     href: "/app/student/courses/agenda",
-    description: "Vue agenda mensuelle + semaine (collapsée), filtres studios/profs/« mes cours ».",
+    description: "Vue agenda mensuelle + semaine, filtres studios/profs/« mes cours ».",
     status: "Étape 9",
     role: "Élève",
     icon: "🗓️",
@@ -60,7 +60,7 @@ const moduleSections = [
   {
     title: "Agenda (prof/admin)",
     href: "/app/teacher/courses/agenda",
-    description: "Agenda cours avec filtres studio/prof, navigation mois, vue semaine collapsée.",
+    description: "Agenda cours avec filtres studio/prof, navigation mois + vue semaine.",
     status: "Étape 9",
     role: "Professeur / Admin",
     icon: "📆",
@@ -76,7 +76,7 @@ const moduleSections = [
   {
     title: "Studios & partenaires",
     href: "/app/admin/studios",
-    description: "Gestion studios (pagination, adresse), accès partenaires et navigation admin.",
+    description: "Gestion studios (toggle lecture/édition), accès partenaires et navigation admin.",
     status: "Étape 9",
     role: "Admin",
     icon: "🏬",
@@ -171,19 +171,16 @@ export default async function Home() {
           <summary className="flex w-full cursor-pointer items-center justify-between gap-3 text-left text-white">
             <div className="space-y-1">
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — v0.5.0
+                Pole App — v0.6.0
               </p>
             </div>
             <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>
           </summary>
           <div className="space-y-3">
             <p className="max-w-2xl text-slate-200">
-              Une plateforme pour que professeurs et élèves alignent entraînement,
-              sécurité et progression : base de positions (gating premium),
-              suivi des blessures, fiches cours (durée) et mini-jeu de révision.
-              Crédits élèves visibles, studios avec adresses cliquables. Cette
-              homepage sert de guide vers chaque module clé, avec un bandeau de
-              navigation commun par rôle.
+              Plateforme unifiée élève/prof/admin : positions sans gating côté staff, suivi des blessures,
+              cours avec crédits + liste d’attente (rang), mini-jeux parité rôles (6 modes + leaderboard),
+              agendas élève et prof/admin, studios/partenaires éditables, navigation par rôle.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-slate-200">
               <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
@@ -193,16 +190,16 @@ export default async function Home() {
                 Suivi sécurité : blessures visibles par le professeur
               </span>
               <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1">
-                Progression et révision des positions
+                Progression + mini-jeux (6 modes) avec leaderboard
               </span>
               <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
                 Navigation unifiée (session, rôle, Mon espace)
               </span>
               <span className="rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1">
-                Premium : gating positions + crédits élèves
+                Crédits + liste d’attente (rang) sur les cours
               </span>
               <span className="rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1">
-                Agenda semaine avec durées proportionnelles
+                Agendas multi-rôles (élève / prof / admin)
               </span>
             </div>
           </div>
