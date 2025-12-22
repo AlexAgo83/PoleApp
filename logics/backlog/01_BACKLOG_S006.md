@@ -25,7 +25,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens.
 - [~] Admin > Agenda cours : filtres date min/max, prof, studio et recherche (titre) sur vue mois/semaine.
   - Navigation semaine → semaine sans rechargement complet (même pattern que Facturation admin), conservation des filtres actifs, sans modifier visuellement l’agencement des panels.
-- [ ] Admin > Studios (lecture seule) : ne plus afficher l’URL brute dans “Photo : XXX”, remplacer par un libellé/placeholder propre.
+- [ ] Admin > Studios (lecture seule) : retirer l’URL brute “Photo : XXX” (la photo est visible ailleurs), laisser la cellule propre/compacte.
 
 ## Definition of Done (DoD)
 - Studios/Partenaires : lecture par défaut, édition via ✏️, retour lecture après sauvegarde. **(OK)**
@@ -35,7 +35,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - Positions admin : bloc “gating” supprimé. **(OK)**
 - Facturation : table `Invoice` en place + backfill cours existants, montants calculés/persistés, statuts complets (Générée/Envoyée/Payée/En retard/Annulée) ; UI admin avec filtres/pagination/exports/tri, actions de statut ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées. **(Facturation DONE v0.6.8 ; métriques partenaires à faire)**
 - Agenda admin : navigation semaine sans reload (pattern Facturation admin), filtres conservés lors du changement de semaine et panels visuellement identiques.
-- Studios admin (lecture) : cellule photo sans URL brute, affiche un libellé/placeholder propre.
+- Studios admin (lecture) : cellule photo sans URL brute (photo visible ailleurs), affichage minimal propre.
 
 ## Tests / Vérifications
 - QA manuel Admin : studios/partenaires basculent lecture → édition via ✏️, sauvegarde et re-affichage en lecture.
