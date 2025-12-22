@@ -18,7 +18,6 @@ type SearchParams =
       studio?: string | string[];
       from?: string | string[];
       to?: string | string[];
-      export?: string | string[];
     }
   | undefined;
 
@@ -67,7 +66,6 @@ export default async function AdminBillingPage({
   const studioFilter = paramValue(resolved.studio);
   const fromParam = paramValue(resolved.from);
   const toParam = paramValue(resolved.to);
-  const exportParam = paramValue(resolved.export);
   const fromDate = dateFromParam(fromParam);
   const toDate = dateFromParam(toParam);
 
@@ -136,54 +134,10 @@ export default async function AdminBillingPage({
   if (studioFilter) queryParams.set("studio", studioFilter);
   if (fromParam) queryParams.set("from", fromParam);
   if (toParam) queryParams.set("to", toParam);
-  if (exportParam) queryParams.set("export", exportParam);
   const qs = queryParams.toString();
   const userKey = session.user.id ?? "anon";
   const activeFilters = [statusFilter, teacherFilter, studioFilter, fromParam, toParam].filter(Boolean).length;
-
-  if (exportParam === "csv") {
-    const rows = invoices.map((invoice) => {
-      const course = invoice.course;
-      const formattedDate = new Date(course.date).toISOString();
-      const paid = invoice.paidAt ? new Date(invoice.paidAt).toISOString() : "";
-      return [
-        invoice.id,
-        course.title ?? "Cours",
-        formattedDate,
-        course.teacher?.name ?? course.teacher?.email ?? "",
-        course.studio?.name ?? "",
-        course._count.attendances.toString(),
-        (invoice.amountCents / 100).toFixed(2),
-        invoice.currency,
-        invoice.status,
-        invoice.note ?? "",
-        paid,
-      ];
-    });
-    const header = [
-      "invoiceId",
-      "courseTitle",
-      "courseDate",
-      "teacher",
-      "studio",
-      "attendances",
-      "amount",
-      "currency",
-      "status",
-      "note",
-      "paidAt",
-    ];
-    const csv = [header, ...rows]
-      .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
-      .join("\n");
-    return new Response(csv, {
-      status: 200,
-      headers: {
-        "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": "attachment; filename=\"billing.csv\"",
-      },
-    });
-  }
+  const exportHref = `/api/admin/billing/export${qs ? `?${qs}` : ""}`;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
