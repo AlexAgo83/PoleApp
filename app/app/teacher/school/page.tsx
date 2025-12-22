@@ -19,6 +19,7 @@ export default async function TeacherSchoolPage() {
   type SchoolView = {
     id: string;
     name: string;
+    photoUrl: string | null;
     website: string | null;
     studios: { id: string; name: string; address: string | null }[];
     partners: {
@@ -38,6 +39,7 @@ export default async function TeacherSchoolPage() {
       select: {
         id: true,
         name: true,
+        photoUrl: true,
         website: true,
         studios: { select: { id: true, name: true, address: true } },
         partners: {
@@ -56,6 +58,7 @@ export default async function TeacherSchoolPage() {
       school = {
         id: fetched.id,
         name: fetched.name,
+        photoUrl: fetched.photoUrl ?? null,
         website: fetched.website ?? null,
         studios: fetched.studios,
         partners: fetched.partners,
@@ -71,6 +74,7 @@ export default async function TeacherSchoolPage() {
       select: {
         id: true,
         name: true,
+        photoUrl: true,
         studios: { select: { id: true, name: true, address: true } },
         partners: {
           select: {
@@ -88,6 +92,7 @@ export default async function TeacherSchoolPage() {
       school = {
         id: fetched.id,
         name: fetched.name,
+        photoUrl: fetched.photoUrl ?? null,
         website: null,
         studios: fetched.studios,
         partners: fetched.partners,
@@ -137,6 +142,19 @@ export default async function TeacherSchoolPage() {
           )}
         </div>
       </header>
+
+      {school.photoUrl && (
+        <section className="panel p-6">
+          <h2 className="text-lg font-semibold text-white">Photo de l’école</h2>
+          <div className="mt-3">
+            <img
+              src={school.photoUrl}
+              alt={`Photo de l’école ${school.name}`}
+              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+            />
+          </div>
+        </section>
+      )}
 
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Studios</h2>

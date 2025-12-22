@@ -59,6 +59,7 @@ model School {
   id        String   @id @default(cuid())
   name      String
   website   String?
+  photoUrl  String?
   createdAt DateTime @default(now())
 
   users    User[]
