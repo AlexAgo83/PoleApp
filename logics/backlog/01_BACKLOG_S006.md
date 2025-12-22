@@ -1,13 +1,13 @@
 # Backlog — Retours QA S006 (session 2025-12-21 23:55)
-[Compréhension: 90% / Avancement: 0%]
+[Compréhension: 90% / Avancement: 20%]
 
 Source : 06_QA_S006.md (tests sur v0.5.0)
 
 ## Tâches
-- [ ] Admin > Studios/Partenaires : vue lecture seule par défaut + bouton ✏️ pour éditer (inline ou modale), sauvegarde puis retour lecture.
+- [x] Admin > Studios/Partenaires : vue lecture seule par défaut + bouton ✏️ pour éditer (inline ou modale), sauvegarde puis retour lecture. (DONE)
 - [ ] Admin > Élèves : afficher uniquement les positions enseignées (celles vues en cours inscrits) ; si aucune vue, afficher “aucune position”.
 - [ ] Admin > Cours : ajouter générateur de cours, afficher niveau atteint par élève/position (edit + display), rendre les élèves cliquables (prof/admin).
-- [ ] Admin > Positions : retirer le bloc “gating”.
+- [x] Admin > Positions : retirer le bloc “gating”. (OK via vue commune /positions sans encadré staff)
 - [ ] Admin > Jeux : ajouter l’énoncé pour les modes Description→Nom, Nom→Niveau, Nom→Grips, Nom→Type, Blitz mix (comme Teacher).
 - [ ] Admin > Facturation : suivi des cours donnés, tarif à facturer à l’école, état facture (générée/envoyée/payée) ; suivi abonnements élèves (crédits restants, péremption).
 - [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens.
