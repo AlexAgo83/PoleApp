@@ -127,6 +127,24 @@ export default async function AdminDashboard({
     const dayStr = d.toDateString();
     return weekCourses.filter((c) => new Date(c.date).toDateString() === dayStr);
   });
+  const days = weekDays.map((d, idx) => {
+    const dayCourses = coursesByDay[idx];
+    return {
+      isoDate: d.toISOString(),
+      label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+      day: d.getDate(),
+      isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
+      courses: dayCourses.map((course) => ({
+        id: course.id,
+        title: course.title,
+        date: course.date.toISOString(),
+        durationMinutes: course.durationMinutes,
+        teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
+        studioName: course.studio?.name ?? "Studio non renseigné",
+        past: isPastCourse(course.date, course.durationMinutes),
+      })),
+    };
+  });
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
