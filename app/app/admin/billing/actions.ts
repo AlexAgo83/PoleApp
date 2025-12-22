@@ -48,6 +48,7 @@ export async function updateInvoiceStatusAction(formData: FormData) {
   }
 
   const paidAt = statusStr === InvoiceStatus.PAID ? new Date() : null;
+  const previousStatus = invoice.status;
   await prisma.invoice.update({
     where: { id: invoiceId },
     data: {
@@ -57,5 +58,19 @@ export async function updateInvoiceStatusAction(formData: FormData) {
       note: note ?? undefined,
     },
   });
+  console.info(
+    JSON.stringify({
+      event: "invoice_status_updated",
+      invoiceId,
+      previousStatus,
+      newStatus: statusStr,
+      amountCents: parsedAmount ?? invoice.amountCents,
+      hasNote: Boolean(note),
+      paidAt: paidAt ?? null,
+      courseId: invoice.courseId,
+      schoolId: invoice.course.schoolId,
+      userId: session.user.id,
+    })
+  );
   revalidatePath("/app/admin/billing");
 }
