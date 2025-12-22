@@ -39,7 +39,7 @@ export async function updateInvoiceStatusAction(formData: FormData) {
     redirectTo: formData.get("redirectTo")?.toString(),
   });
   if (!parsed.success) {
-    throw new Error("Paramètres invalides");
+    redirect("/app/admin/billing?flash=error");
   }
   const { invoiceId, status: statusStr, amount: parsedAmount, note, redirectTo } = parsed.data;
 
@@ -48,7 +48,7 @@ export async function updateInvoiceStatusAction(formData: FormData) {
     include: { course: true },
   });
   if (!invoice || invoice.course.schoolId !== session.user.schoolId) {
-    throw new Error("Facture introuvable");
+    redirect("/app/admin/billing?flash=error");
   }
 
   const paidAt = statusStr === InvoiceStatus.PAID ? new Date() : null;
