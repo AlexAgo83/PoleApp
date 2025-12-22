@@ -56,8 +56,29 @@ export async function GET(request: Request) {
       },
     });
   } catch (err) {
-    console.warn("[partner-event] failed to record", err);
+    console.warn(
+      JSON.stringify({
+        event: "partner_event_failed",
+        partnerId,
+        userId,
+        courseId,
+        studioId,
+        type,
+        error: (err as Error)?.message ?? String(err),
+      })
+    );
   }
+
+  console.info(
+    JSON.stringify({
+      event: "partner_event_recorded",
+      partnerId,
+      userId,
+      courseId,
+      studioId,
+      type,
+    })
+  );
 
   return NextResponse.redirect(safeUrl.toString(), { status: 302 });
 }

@@ -39,6 +39,8 @@ export default async function CoursesAgendaPage({
     from?: string;
     to?: string;
     q?: string;
+    discipline?: string;
+    level?: string;
   }>;
 }) {
   const session = await getServerSession(authOptions);
@@ -64,6 +66,14 @@ export default async function CoursesAgendaPage({
     typeof resolved.studio === "string" && resolved.studio.length > 0
       ? resolved.studio
       : undefined;
+  const disciplineFilter =
+    typeof resolved.discipline === "string" && resolved.discipline.length > 0
+      ? resolved.discipline
+      : undefined;
+  const levelFilter =
+    typeof resolved.level === "string" && resolved.level.length > 0
+      ? resolved.level
+      : undefined;
   const viewParam = resolved.view;
   const view: "month" | "week" = viewParam === "week" ? "week" : "month";
   const weekParam = typeof resolved.week === "string" && resolved.week ? resolved.week : undefined;
@@ -84,6 +94,8 @@ export default async function CoursesAgendaPage({
     if (toParam) params.set("to", toParam);
     if (studioFilter) params.set("studio", studioFilter);
     if (teacherFilter) params.set("teacher", teacherFilter);
+    if (disciplineFilter) params.set("discipline", disciplineFilter);
+    if (levelFilter) params.set("level", levelFilter);
     if (q) params.set("q", q);
     return `/app/teacher/courses/agenda${params.toString() ? `?${params}` : ""}`;
   };
@@ -98,6 +110,22 @@ export default async function CoursesAgendaPage({
         ? {
             OR: [
               { title: { contains: q, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(disciplineFilter
+        ? {
+            OR: [
+              { title: { contains: disciplineFilter, mode: "insensitive" } },
+              { description: { contains: disciplineFilter, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(levelFilter
+        ? {
+            OR: [
+              { title: { contains: levelFilter, mode: "insensitive" } },
+              { description: { contains: levelFilter, mode: "insensitive" } },
             ],
           }
         : {}),
@@ -140,6 +168,8 @@ export default async function CoursesAgendaPage({
   const baseParams = new URLSearchParams();
   if (teacherParamForNav) baseParams.set("teacher", teacherParamForNav);
   if (studioFilter) baseParams.set("studio", studioFilter);
+  if (disciplineFilter) baseParams.set("discipline", disciplineFilter);
+  if (levelFilter) baseParams.set("level", levelFilter);
   const prevMonth = new Date(monthStart);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
   const nextMonth = new Date(monthStart);
@@ -253,7 +283,9 @@ export default async function CoursesAgendaPage({
             (teacherFilter ? 1 : 0) +
             (fromParam ? 1 : 0) +
             (toParam ? 1 : 0) +
-            (q ? 1 : 0)
+            (q ? 1 : 0) +
+            (disciplineFilter ? 1 : 0) +
+            (levelFilter ? 1 : 0)
           }
           userKey={userKey}
         >
@@ -303,6 +335,26 @@ export default async function CoursesAgendaPage({
                   </option>
                 ))}
               </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline (titre/description)
+              <input
+                type="text"
+                name="discipline"
+                defaultValue={disciplineFilter ?? ""}
+                placeholder="Souplesse, Exotic..."
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Niveau (libellé)
+              <input
+                type="text"
+                name="level"
+                defaultValue={levelFilter ?? ""}
+                placeholder="Débutant, Intermédiaire..."
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
             </label>
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (titre/description)
