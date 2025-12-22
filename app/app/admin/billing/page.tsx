@@ -291,6 +291,12 @@ export default async function AdminBillingPage({
               >
                 Réinitialiser
               </Link>
+              <Link
+                href={exportHref}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Export CSV
+              </Link>
             </div>
           </form>
         </FilterPanel>
@@ -406,6 +412,25 @@ export default async function AdminBillingPage({
                       Mettre à jour
                     </button>
                   </form>
+                  <div className="flex flex-wrap items-center gap-1 text-[11px]">
+                    {[InvoiceStatus.SENT, InvoiceStatus.PAID, InvoiceStatus.CANCELLED, InvoiceStatus.LATE].map(
+                      (target) => (
+                        <form key={target} action={updateInvoiceStatusAction} className="inline-flex">
+                          <input type="hidden" name="invoiceId" value={invoice.id} />
+                          <input type="hidden" name="amount" value={(invoice.amountCents / 100).toFixed(2)} />
+                          <input type="hidden" name="note" value={invoice.note ?? ""} />
+                          <input type="hidden" name="status" value={target} />
+                          <button
+                            type="submit"
+                            className="rounded-full border border-white/10 bg-white/5 px-2 py-1 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                            title={`Marquer ${statusLabels[target]}`}
+                          >
+                            {statusLabels[target]}
+                          </button>
+                        </form>
+                      )
+                    )}
+                  </div>
                 </div>
               </article>
             );
