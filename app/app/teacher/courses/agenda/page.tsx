@@ -29,7 +29,16 @@ function formatDuration(minutes: number) {
 export default async function CoursesAgendaPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ month?: string; teacher?: string; studio?: string; view?: string; week?: string }>;
+  searchParams?: Promise<{
+    month?: string;
+    teacher?: string;
+    studio?: string;
+    view?: string;
+    week?: string;
+    from?: string;
+    to?: string;
+    q?: string;
+  }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId || !session.user.role) {
@@ -43,6 +52,9 @@ export default async function CoursesAgendaPage({
 
   const resolved = (await searchParams) ?? {};
   const monthParam = resolved.month;
+  const fromParam = resolved.from && typeof resolved.from === "string" ? resolved.from : undefined;
+  const toParam = resolved.to && typeof resolved.to === "string" ? resolved.to : undefined;
+  const q = resolved.q?.toString().trim() ?? "";
   const teacherFilter =
     typeof resolved.teacher === "string" && resolved.teacher.length > 0
       ? resolved.teacher
@@ -55,11 +67,11 @@ export default async function CoursesAgendaPage({
   const view: "month" | "week" = viewParam === "week" ? "week" : "month";
   const weekParam = typeof resolved.week === "string" && resolved.week ? resolved.week : undefined;
   const hasMonthFilter = Boolean(monthParam);
-  const baseDate = monthParam
-    ? new Date(`${monthParam}-01T00:00:00`)
-    : new Date();
-  const start = startOfMonth(baseDate);
-  const end = endOfMonth(baseDate);
+  const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
+  const monthStart = startOfMonth(baseDate);
+  const monthEnd = endOfMonth(baseDate);
+  const rangeStart = fromParam ? new Date(`${fromParam}T00:00:00`) : monthStart;
+  const rangeEnd = toParam ? new Date(`${toParam}T23:59:59`) : monthEnd;
 
   const effectiveTeacherFilter = isTeacher ? teacherFilter ?? session.user.id : teacherFilter;
   const buildViewHref = (mode: "month" | "week", weekValue?: string) => {
@@ -67,8 +79,11 @@ export default async function CoursesAgendaPage({
     if (mode !== "month") params.set("view", mode);
     if (mode === "week" && weekValue) params.set("week", weekValue);
     if (monthParam) params.set("month", monthParam);
+    if (fromParam) params.set("from", fromParam);
+    if (toParam) params.set("to", toParam);
     if (studioFilter) params.set("studio", studioFilter);
     if (teacherFilter) params.set("teacher", teacherFilter);
+    if (q) params.set("q", q);
     return `/app/teacher/courses/agenda${params.toString() ? `?${params}` : ""}`;
   };
 
@@ -77,7 +92,14 @@ export default async function CoursesAgendaPage({
       schoolId: session.user.schoolId,
       ...(effectiveTeacherFilter ? { teacherId: effectiveTeacherFilter } : {}),
       ...(studioFilter ? { studioId: studioFilter } : {}),
-      date: { gte: start, lte: end },
+      date: { gte: rangeStart, lte: rangeEnd },
+      ...(q
+        ? {
+            OR: [
+              { title: { contains: q, mode: "insensitive" } },
+            ],
+          }
+        : {}),
     },
     include: { teacher: { select: { name: true, email: true } }, studio: { select: { name: true } } },
     orderBy: { date: "asc" },
@@ -93,22 +115,22 @@ export default async function CoursesAgendaPage({
     orderBy: { name: "asc" },
   });
 
-  const daysInMonth = end.getDate();
-  const firstDay = start.getDay() === 0 ? 7 : start.getDay(); // Monday=1 ... Sunday=7
+  const daysInMonth = monthEnd.getDate();
+  const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
   const calendarCells: Array<{ day?: number; courses?: typeof courses }> = [];
   for (let i = 1; i < firstDay; i += 1) {
     calendarCells.push({});
   }
   for (let day = 1; day <= daysInMonth; day += 1) {
-    const dateStr = new Date(start.getFullYear(), start.getMonth(), day).toDateString();
+    const dateStr = new Date(monthStart.getFullYear(), monthStart.getMonth(), day).toDateString();
     const dayCourses = courses.filter(
       (c) => new Date(c.date).toDateString() === dateStr
     );
     calendarCells.push({ day, courses: dayCourses });
   }
 
-  const monthLabel = start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-  const monthValue = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
+  const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const monthValue = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}`;
   const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
     const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
     return end < NOW_MS;
@@ -117,9 +139,9 @@ export default async function CoursesAgendaPage({
   const baseParams = new URLSearchParams();
   if (teacherParamForNav) baseParams.set("teacher", teacherParamForNav);
   if (studioFilter) baseParams.set("studio", studioFilter);
-  const prevMonth = new Date(start);
+  const prevMonth = new Date(monthStart);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
-  const nextMonth = new Date(start);
+  const nextMonth = new Date(monthStart);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
@@ -203,13 +225,20 @@ export default async function CoursesAgendaPage({
         <FilterPanel
           storageKey="filters:teacher-agenda"
           title="Filtres"
-          activeCount={(hasMonthFilter ? 1 : 0) + (studioFilter ? 1 : 0) + (teacherFilter ? 1 : 0)}
+          activeCount={
+            (hasMonthFilter ? 1 : 0) +
+            (studioFilter ? 1 : 0) +
+            (teacherFilter ? 1 : 0) +
+            (fromParam ? 1 : 0) +
+            (toParam ? 1 : 0) +
+            (q ? 1 : 0)
+          }
           userKey={userKey}
         >
           <form
             key={`agenda-${monthParam ?? "current"}`}
             method="get"
-            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Mois
@@ -217,6 +246,24 @@ export default async function CoursesAgendaPage({
                 type="month"
                 name="month"
                 defaultValue={monthValue}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Date min
+              <input
+                type="date"
+                name="from"
+                defaultValue={fromParam}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Date max
+              <input
+                type="date"
+                name="to"
+                defaultValue={toParam}
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
@@ -235,6 +282,16 @@ export default async function CoursesAgendaPage({
                 ))}
               </select>
             </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Recherche (titre/description)
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Titre ou description"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
             <label className="text-sm text-slate-200">
               Professeur
               <select
@@ -250,7 +307,7 @@ export default async function CoursesAgendaPage({
                 ))}
               </select>
             </label>
-            <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
+            <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-4">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-white transition hover:bg-cyan-400"
@@ -300,7 +357,7 @@ export default async function CoursesAgendaPage({
               const weekDayIndex = (idx % 7) + 1;
               const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
               const cellDate = cell.day
-                ? new Date(start.getFullYear(), start.getMonth(), cell.day)
+                ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day)
                 : null;
               const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
               const hideOnMobileMonth =
@@ -373,8 +430,11 @@ export default async function CoursesAgendaPage({
           <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
             <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
               <input type="hidden" name="month" value={prevMonthValue} />
+              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
+              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
               {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
               {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+              {q ? <input type="hidden" name="q" value={q} /> : null}
               <button
                 type="submit"
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -384,8 +444,11 @@ export default async function CoursesAgendaPage({
             </form>
             <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
               <input type="hidden" name="month" value={nextMonthValue} />
+              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
+              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
               {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
               {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+              {q ? <input type="hidden" name="q" value={q} /> : null}
               <button
                 type="submit"
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -476,8 +539,11 @@ export default async function CoursesAgendaPage({
             <input type="hidden" name="view" value="week" />
             <input type="hidden" name="week" value={prevWeekValue} />
             {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
+            {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
+            {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
             {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
             {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+            {q ? <input type="hidden" name="q" value={q} /> : null}
             <button
               type="submit"
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -489,8 +555,11 @@ export default async function CoursesAgendaPage({
             <input type="hidden" name="view" value="week" />
             <input type="hidden" name="week" value={nextWeekValue} />
             {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
+            {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
+            {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
             {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
             {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
+            {q ? <input type="hidden" name="q" value={q} /> : null}
             <button
               type="submit"
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
