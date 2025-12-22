@@ -14,8 +14,15 @@ export async function updateInvoiceStatusAction(formData: FormData) {
   }
   const invoiceId = formData.get("invoiceId")?.toString();
   const statusStr = formData.get("status")?.toString() as InvoiceStatus | undefined;
+  const amount = formData.get("amount")?.toString();
+  const note = formData.get("note")?.toString();
+  const parsedAmount =
+    amount && amount.trim().length > 0 ? Math.round(parseFloat(amount.replace(",", ".")) * 100) : undefined;
   if (!invoiceId || !statusStr || !Object.values(InvoiceStatus).includes(statusStr)) {
     throw new Error("Paramètres invalides");
+  }
+  if (parsedAmount !== undefined && Number.isNaN(parsedAmount)) {
+    throw new Error("Montant invalide");
   }
 
   const invoice = await prisma.invoice.findUnique({
@@ -31,7 +38,9 @@ export async function updateInvoiceStatusAction(formData: FormData) {
     where: { id: invoiceId },
     data: {
       status: statusStr,
-      ...(paidAt ? { paidAt } : {}),
+      ...(paidAt ? { paidAt } : { paidAt: null }),
+      ...(parsedAmount !== undefined ? { amountCents: parsedAmount } : {}),
+      note: note ?? undefined,
     },
   });
   revalidatePath("/app/admin/billing");

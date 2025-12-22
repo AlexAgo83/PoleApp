@@ -199,6 +199,12 @@ export default async function AdminDashboard({
             Cours
           </Link>
           <Link
+            href="/app/admin/billing"
+            className="rounded-full border border-emerald-400/70 bg-emerald-500/15 px-3 py-2 text-white transition hover:border-emerald-300/80 hover:bg-emerald-500/25"
+          >
+            Facturation
+          </Link>
+          <Link
             href="/positions"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
