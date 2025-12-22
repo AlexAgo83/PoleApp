@@ -1,5 +1,10 @@
 # Step 9 — Discovery QA (terminée) — v0.4.4 baseline (release v0.4.6)
 [Compréhension: 100% / Avancement: 100%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 Objectif : traiter le lot de retours QA pour stabiliser la V0.4.4 (navigation, cohérence UI/UX, fiabilité des données affichées). Release globale en v0.4.6.
 
