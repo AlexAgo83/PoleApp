@@ -82,6 +82,22 @@ const moduleSections = [
     icon: "💳",
   },
   {
+    title: "Facturation (admin)",
+    href: "/app/admin/billing",
+    description: "Factures cours avec filtres/statuts, export CSV, update statut/ montant.",
+    status: "In progress",
+    role: "Admin",
+    icon: "💼",
+  },
+  {
+    title: "Facturation (prof)",
+    href: "/app/teacher/billing",
+    description: "Vue lecture factures de mes cours (montants/statuts).",
+    status: "In progress",
+    role: "Professeur",
+    icon: "🧾",
+  },
+  {
     title: "Studios & partenaires",
     href: "/app/admin/studios",
     description: "Gestion studios (toggle lecture/édition), accès partenaires et navigation admin.",
