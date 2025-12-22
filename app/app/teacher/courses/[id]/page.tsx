@@ -5,8 +5,6 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CourseNotesEditor } from "./CourseNotesEditor";
-import { updateCourseNotesOnlyAction } from "./actions";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -91,6 +89,14 @@ export default async function TeacherCourseDetailPage({
     return notFound();
   }
 
+  const studentIds = course.attendances.map((a) => a.studentId).filter(Boolean);
+  const progress = studentIds.length
+    ? await prisma.studentPositionProgress.findMany({
+        where: { studentId: { in: studentIds } },
+        include: { position: true },
+      })
+    : [];
+
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const resolvedSearch = (await searchParams) ?? {};
@@ -115,6 +121,31 @@ export default async function TeacherCourseDetailPage({
     hour: "2-digit",
     minute: "2-digit",
   });
+  const existingPositionIds = new Set(course.positions.map((p) => p.position.id));
+  const weights: Record<string, number> = {
+    NOT_STARTED: 3,
+    IN_PROGRESS: 2,
+    PASSED: 1,
+    MASTERED: 0,
+  };
+  const scored = new Map<string, { score: number; name: string; type?: string | null }>();
+  progress.forEach((p) => {
+    if (existingPositionIds.has(p.positionId)) return;
+    const masteryPenalty =
+      p.masteryLevel === "FLUID" || p.masteryLevel === "CHOREO" ? -1 : 0;
+    const base = weights[p.learningStatus ?? "IN_PROGRESS"] ?? 1;
+    const score = base + masteryPenalty;
+    if (score <= 0) return;
+    const prev = scored.get(p.positionId);
+    scored.set(p.positionId, {
+      score: (prev?.score ?? 0) + score,
+      name: p.position.name,
+      type: p.position.type,
+    });
+  });
+  const suggestions = Array.from(scored.entries())
+    .sort((a, b) => b[1].score - a[1].score || a[1].name.localeCompare(b[1].name))
+    .slice(0, 6);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -233,37 +264,79 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
+      {suggestions.length > 0 && (
+        <section className="panel border-indigo-400/15 p-6">
+          <h2 className="text-lg font-semibold text-white">Suggestions (générateur)</h2>
+          <p className="text-sm text-slate-300">
+            Positions proposées selon la progression des élèves présents (hors positions déjà planifiées).
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {suggestions.map(([positionId, meta]) => (
+              <span
+                key={positionId}
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-3 py-1 text-sm text-white"
+              >
+                {meta.name}
+                {meta.type ? (
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{meta.type}</span>
+                ) : null}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Notes</h2>
-        <p className="text-sm text-slate-300">
-          Édite inline les niveaux/notes par élève × position, la progression est mise à jour automatiquement.
-        </p>
-        <div className="mt-3">
-          <CourseNotesEditor
-            students={course.attendances
-              .filter((a) => a.student?.id)
-              .map((a) => ({
-                id: a.student!.id,
-                name: a.student?.name ?? a.student?.email ?? "Élève",
-                email: a.student?.email ?? null,
-              }))}
-            positions={course.positions
-              .filter((p) => p.position.id)
-              .map((p) => ({
-                id: p.position.id,
-                name: p.position.name,
-                type: p.position.type ?? null,
-              }))}
-            existingNotes={course.notes.map((n) => ({
-              studentId: n.studentId,
-              positionId: n.positionId,
-              masteryLevel: n.masteryLevel,
-              comment: n.comment,
-            }))}
-            courseId={course.id}
-            action={updateCourseNotesOnlyAction}
-          />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Notes</h2>
+            <p className="text-sm text-slate-300">Niveaux/commentaires saisis pendant/avant cours.</p>
+          </div>
+          <Link
+            href={`/app/teacher/courses/${course.id}/edit?from=${encodeURIComponent(currentPath)}`}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Éditer les notes
+          </Link>
         </div>
+        {course.notes.length === 0 ? (
+          <p className="mt-2 text-slate-300">Aucune note pour ce cours.</p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-sm text-slate-200">
+            {course.notes.map((note) => (
+              <li
+                key={note.id}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-white">
+                      {(note.student as { id?: string | null } | null | undefined)?.id ? (
+                        <Link
+                          href={`/app/teacher/students/${(note.student as { id: string }).id}?from=${encodeURIComponent(currentPath)}`}
+                          className="underline-offset-4 hover:underline"
+                        >
+                          {note.student?.name ?? note.student?.email ?? "Élève"}
+                        </Link>
+                      ) : (
+                        note.student?.name ?? note.student?.email ?? "Élève"
+                      )}
+                    </p>
+                    <p className="text-xs text-slate-300">
+                      {note.position.name}
+                    </p>
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
+                    {note.masteryLevel ?? "(non renseigné)"}
+                  </span>
+                </div>
+                {note.comment && (
+                  <p className="mt-1 text-slate-300">{note.comment}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
   );
