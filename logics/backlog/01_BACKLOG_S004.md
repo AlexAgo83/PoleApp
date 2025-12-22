@@ -15,7 +15,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
   - `Course` : champ pour stocker les positions proposées (liste d’ids) et exclues (pour suivi).
   - `Position` : marquer “safe”/“risky” (optionnel) pour filtrer selon blessures.
 - Champs facultatifs :
-  - `CourseRecommendation` (table) pour historiser les suggestions générées.
+  - `CourseRecommendation` (table) pour historiser les suggestions générées. **(pas prioritaire pour le moment)**
   - `PositionTag` pour classer les positions (découverte/révision/safe).
 
 ## Sources d’entrée
