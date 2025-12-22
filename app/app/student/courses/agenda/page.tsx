@@ -143,13 +143,18 @@ export default async function StudentCoursesAgendaPage({
           status: true,
           waitlistRank: true,
           course: {
-            include: {
+            select: {
+              id: true,
+              title: true,
+              date: true,
+              durationMinutes: true,
+              maxSeats: true,
+              photoUrl: true,
+              schoolId: true,
               teacher: { select: { name: true, email: true } },
               studio: { select: { name: true } },
             },
           },
-        },
-        include: {
         },
         orderBy: { course: { date: "asc" } },
       })
