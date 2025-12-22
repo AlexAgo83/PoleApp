@@ -1,5 +1,5 @@
 # Backlog — Retours QA S007 (session 2025-12-21 23:55)
-[Compréhension: 70% / Avancement: 30%]
+[Compréhension: 70% / Avancement: 35%]
 
 Source : 06_QA_S007.md (tests sur v0.5.0)
 
