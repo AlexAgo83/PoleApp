@@ -37,7 +37,7 @@
 - Onglet Cours :
   - Suivi pédagogique par code couleur (tableau élève x positions).
   - Notes internes par cours (admin/prof uniquement).
-  - Onglet “Suivi de facturation” (cours donnés, facture envoyée/paiement reçu, génération facture).
+  - Onglet “Suivi de facturation” (cours donnés, facture envoyée/paiement reçu, génération facture) — s’appuyer sur le modèle `Invoice` (courseId, montant, statut).
   - Générateur de cours (voir backlog S004) avec prise en compte blessures/positions souhaitées.
 
 ## 3) Élève Premium — UX
