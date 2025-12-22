@@ -1,5 +1,5 @@
 # Backlog — Retours QA S006 (session 2025-12-21 23:55)
-[Compréhension: 95% / Avancement: 70%]
+[Compréhension: 95% / Avancement: 72%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -11,7 +11,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 ## Tâches
 - [x] Admin > Studios/Partenaires : vue lecture seule par défaut + bouton ✏️ pour éditer (inline ou modale), sauvegarde puis retour lecture. (DONE)
 - [x] Admin > Élèves : afficher uniquement les positions enseignées (celles vues en cours inscrits) ; si aucune vue, afficher “aucune position”.
-- [ ] Admin > Cours : ajouter générateur de cours, afficher niveau atteint par élève/position (edit + display), rendre les élèves cliquables (prof/admin).
+- [~] Admin > Cours : ajouter générateur de cours, afficher niveau atteint par élève/position (edit + display), rendre les élèves cliquables (prof/admin). **(suggestions générateur visibles sur la fiche, notes en lecture avec bouton vers édition)** 
 - [x] Admin > Positions : retirer le bloc “gating”. (OK via vue commune /positions sans encadré staff)
 - [x] Admin > Jeux : ajouter l’énoncé pour les modes Description→Nom, Nom→Niveau, Nom→Grips, Nom→Type, Blitz mix (comme Teacher).
 - [x] Admin > Facturation (basé sur `Invoice`) :
@@ -27,7 +27,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 ## Definition of Done (DoD)
 - Studios/Partenaires : lecture par défaut, édition via ✏️, retour lecture après sauvegarde. **(OK)**
 - Élèves : uniquement positions enseignées visibles (sinon message “aucune position”). **(OK)**
-- Cours : générateur actif, niveaux élève/position visibles et éditables, élèves cliquables. **(à livrer)**
+- Cours : générateur actif, niveaux élève/position visibles (lecture) et éditables via l’écran d’édition, élèves cliquables. **(partiel, inline retiré, suggestions affichées)**
 - Jeux admin : énoncé affiché pour tous les modes concernés. **(OK)**
 - Positions admin : bloc “gating” supprimé. **(OK)**
 - Facturation : table `Invoice` en place + backfill cours existants, montants calculés/persistés, statuts complets (Générée/Envoyée/Payée/En retard/Annulée) ; UI admin avec filtres/pagination/exports/tri, actions de statut ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées. **(Facturation DONE v0.6.7 ; métriques partenaires à faire)**
