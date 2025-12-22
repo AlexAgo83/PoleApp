@@ -321,11 +321,11 @@ export default async function AdminBillingPage({
             <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Top alertes</p>
             <ul className="mt-2 space-y-1 text-sm text-slate-200">
               {lowCredits.length === 0 && <li className="text-slate-400">Aucune alerte</li>}
-              {lowCredits.map((s) => (
-                <li key={s.id} className="flex items-center justify-between">
-                  <Link
-                    href={`/app/teacher/students/${s.id}`}
-                    className="truncate text-cyan-100 underline underline-offset-2"
+          {lowCredits.map((s) => (
+            <li key={s.id} className="flex items-center justify-between">
+              <Link
+                href={`/app/teacher/students/${s.id}`}
+                className="truncate text-cyan-100 underline underline-offset-2"
                   >
                     {s.name ?? s.email ?? "Élève"}
                   </Link>
@@ -353,22 +353,35 @@ export default async function AdminBillingPage({
             });
             const redirectUpdated = `${baseBillingPath}${qsPrefix}${qs ? "&" : "?"}flash=updated#invoice-${invoice.id}`;
             return (
-              <article id={`invoice-${invoice.id}`} key={invoice.id} className="flex flex-col gap-2 py-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+              <article id={`invoice-${invoice.id}`} key={invoice.id} className="flex flex-col gap-3 py-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
                     <span
                       className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-semibold ${badgeClass}`}
                     >
                       {badgeLabel}
                     </span>
-                    <p className="text-base font-semibold text-white">
-                      {course.title ?? "Cours"} · {formattedDate}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-base font-semibold text-white">
+                        {course.title ?? "Cours"} · {formattedDate}
+                      </p>
+                      <p className="text-xs text-slate-300">
+                        ID cours : {course.id}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-sm text-slate-200">
-                    {formatAmount(invoice.amountCents, invoice.currency)}
+                  <div className="flex flex-col items-end gap-1 text-right">
+                    <div className="text-lg font-semibold text-white">
+                      {formatAmount(invoice.amountCents, invoice.currency)}
+                    </div>
+                    {invoice.paidAt && (
+                      <span className="inline-flex items-center rounded-full border border-emerald-400/40 bg-emerald-500/15 px-2 py-0.5 text-[12px] text-emerald-50">
+                        Payée le {new Date(invoice.paidAt).toLocaleDateString("fr-FR")}
+                      </span>
+                    )}
                   </div>
                 </div>
+
                 <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
                   <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
                     Prof : {course.teacher?.name ?? course.teacher?.email ?? "N/A"}
@@ -381,65 +394,68 @@ export default async function AdminBillingPage({
                   <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
                     Présences : {attendees}
                   </span>
-                  {invoice.paidAt && (
-                    <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2 py-1 text-[12px] text-emerald-50">
-                      Payée le {new Date(invoice.paidAt).toLocaleDateString("fr-FR")}
+                  {invoice.note && (
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
+                      Note : {invoice.note}
                     </span>
                   )}
                 </div>
-                {invoice.note && (
-                  <p className="text-sm text-slate-300">Note : {invoice.note}</p>
-                )}
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                      href={`/app/teacher/courses/${course.id}?from=/app/admin/billing`}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                    >
-                      Voir le cours
-                    </Link>
-                    {course.teacher?.id && (
+
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-indigo-900/20">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Link
-                        href={`/app/teachers/${course.teacher.id}?from=/app/admin/billing`}
+                        href={`/app/teacher/courses/${course.id}?from=/app/admin/billing`}
                         className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                       >
-                        Voir le prof
+                        Voir le cours
                       </Link>
-                    )}
-                  </div>
-                  <form action={updateInvoiceStatusAction} className="flex flex-wrap items-center gap-2">
-                    <input type="hidden" name="invoiceId" value={invoice.id} />
-                    <input type="hidden" name="redirectTo" value={redirectUpdated} />
-                    <label className="text-xs text-slate-300">
-                      Montant (€)
-                      <input
-                        type="number"
-                        name="amount"
-                        step="0.01"
-                        defaultValue={(invoice.amountCents / 100).toFixed(2)}
-                        className="ml-2 w-28 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
-                      />
-                    </label>
-                    <label className="text-xs text-slate-300">
-                      Note
-                      <input
-                        type="text"
-                        name="note"
-                        defaultValue={invoice.note ?? ""}
-                        placeholder="Note"
-                        className="ml-2 w-40 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
-                      />
-                    </label>
-                    <input type="hidden" name="status" value={invoice.status} />
-                    <button
-                      type="submit"
-                      className="rounded-full bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-cyan-400"
-                      title="Mettre à jour montant/note"
+                      {course.teacher?.id && (
+                        <Link
+                          href={`/app/teachers/${course.teacher.id}?from=/app/admin/billing`}
+                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                        >
+                          Voir le prof
+                        </Link>
+                      )}
+                    </div>
+                    <form
+                      action={updateInvoiceStatusAction}
+                      className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end"
                     >
-                      Sauvegarder
-                    </button>
-                  </form>
-                  <div className="flex flex-wrap items-center gap-1 text-[11px]">
+                      <input type="hidden" name="invoiceId" value={invoice.id} />
+                      <input type="hidden" name="redirectTo" value={redirectUpdated} />
+                      <label className="text-xs text-slate-300">
+                        Montant (€)
+                        <input
+                          type="number"
+                          name="amount"
+                          step="0.01"
+                          defaultValue={(invoice.amountCents / 100).toFixed(2)}
+                          className="ml-2 w-28 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
+                        />
+                      </label>
+                      <label className="text-xs text-slate-300">
+                        Note
+                        <input
+                          type="text"
+                          name="note"
+                          defaultValue={invoice.note ?? ""}
+                          placeholder="Note"
+                          className="ml-2 w-40 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
+                        />
+                      </label>
+                      <input type="hidden" name="status" value={invoice.status} />
+                      <button
+                        type="submit"
+                        className="rounded-full bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-cyan-400"
+                        title="Mettre à jour montant/note"
+                      >
+                        Sauvegarder
+                      </button>
+                    </form>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center justify-end gap-2 text-[11px]">
                     {[InvoiceStatus.SENT, InvoiceStatus.PAID, InvoiceStatus.CANCELLED, InvoiceStatus.LATE].map(
                       (target) => (
                         <form key={target} action={updateInvoiceStatusAction} className="inline-flex">
