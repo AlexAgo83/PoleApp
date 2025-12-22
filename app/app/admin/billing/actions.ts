@@ -82,11 +82,12 @@ export async function updateInvoiceStatusAction(formData: FormData) {
   }
 }
 
-export async function backfillInvoicesAction() {
+export async function backfillInvoicesAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     throw new Error("Accès refusé");
   }
+  const redirectTo = formData.get("redirectTo")?.toString();
   const courses = await prisma.course.findMany({
     where: { schoolId: session.user.schoolId, invoices: { none: {} } },
     select: {
@@ -96,6 +97,7 @@ export async function backfillInvoicesAction() {
     },
   });
   if (courses.length === 0) {
+    if (redirectTo) redirect(redirectTo);
     return;
   }
   await prisma.$transaction(
@@ -116,5 +118,5 @@ export async function backfillInvoicesAction() {
     })
   );
   revalidatePath("/app/admin/billing");
-  redirect("/app/admin/billing?flash=backfill");
+  redirect(redirectTo ?? "/app/admin/billing?flash=backfill");
 }
