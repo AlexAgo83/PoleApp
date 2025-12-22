@@ -5,6 +5,8 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { CourseNotesEditor } from "./CourseNotesEditor";
+import { updateCourseNotesOnlyAction } from "./actions";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -233,44 +235,35 @@ export default async function TeacherCourseDetailPage({
 
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Notes</h2>
-        {course.notes.length === 0 ? (
-          <p className="text-slate-300">Aucune note pour ce cours.</p>
-        ) : (
-          <ul className="mt-3 space-y-2 text-sm text-slate-200">
-            {course.notes.map((note) => (
-              <li
-                key={note.id}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="space-y-0.5">
-                    <p className="font-semibold text-white">
-                      {(note.student as { id?: string | null } | null | undefined)?.id ? (
-                        <Link
-                          href={`/app/teacher/students/${(note.student as { id: string }).id}?from=${encodeURIComponent(currentPath)}`}
-                          className="underline-offset-4 hover:underline"
-                        >
-                          {note.student?.name ?? note.student?.email ?? "Élève"}
-                        </Link>
-                      ) : (
-                        note.student?.name ?? note.student?.email ?? "Élève"
-                      )}
-                    </p>
-                    <p className="text-xs text-slate-300">
-                      {note.position.name}
-                    </p>
-                  </div>
-                  <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {note.masteryLevel}
-                  </span>
-                </div>
-                {note.comment && (
-                  <p className="mt-1 text-slate-300">{note.comment}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+        <p className="text-sm text-slate-300">
+          Édite inline les niveaux/notes par élève × position, la progression est mise à jour automatiquement.
+        </p>
+        <div className="mt-3">
+          <CourseNotesEditor
+            students={course.attendances
+              .filter((a) => a.student?.id)
+              .map((a) => ({
+                id: a.student!.id,
+                name: a.student?.name ?? a.student?.email ?? "Élève",
+                email: a.student?.email ?? null,
+              }))}
+            positions={course.positions
+              .filter((p) => p.position.id)
+              .map((p) => ({
+                id: p.position.id,
+                name: p.position.name,
+                type: p.position.type ?? null,
+              }))}
+            existingNotes={course.notes.map((n) => ({
+              studentId: n.studentId,
+              positionId: n.positionId,
+              masteryLevel: n.masteryLevel,
+              comment: n.comment,
+            }))}
+            courseId={course.id}
+            action={updateCourseNotesOnlyAction}
+          />
+        </div>
       </section>
     </main>
   );

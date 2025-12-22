@@ -36,6 +36,20 @@ const updateSchema = z.object({
     .optional(),
 });
 
+const updateNotesSchema = z.object({
+  courseId: z.string().cuid(),
+  notes: z
+    .array(
+      z.object({
+        studentId: z.string().cuid(),
+        positionId: z.string().cuid(),
+        masteryLevel: z.nativeEnum(MasteryLevel).optional(),
+        comment: z.string().optional(),
+      })
+    )
+    .default([]),
+});
+
 export async function updateCourseAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || !session.user.schoolId) {
@@ -197,6 +211,51 @@ export async function updateCourseAction(formData: FormData) {
   revalidatePath("/app/teacher/courses");
   revalidatePath(`/app/teacher/courses/${data.id}`);
   redirect(`/app/teacher/courses/${data.id}`);
+}
+
+export async function updateCourseNotesOnlyAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const parsed = updateNotesSchema.safeParse({
+    courseId: formData.get("courseId"),
+    notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Form invalid");
+  }
+
+  const course = await prisma.course.findFirst({
+    where: { id: parsed.data.courseId, schoolId: session.user.schoolId },
+    select: { id: true },
+  });
+  if (!course) {
+    redirect("/access-denied");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.courseNote.deleteMany({ where: { courseId: parsed.data.courseId } });
+    if (parsed.data.notes.length > 0) {
+      await tx.courseNote.createMany({
+        data: parsed.data.notes.map((n) => ({
+          courseId: parsed.data.courseId,
+          studentId: n.studentId,
+          positionId: n.positionId,
+          masteryLevel: n.masteryLevel ?? MasteryLevel.INITIATED,
+          comment: n.comment || null,
+        })),
+      });
+      await upsertProgressFromNotes(tx, parsed.data.notes, session.user.id);
+    }
+  });
+
+  revalidatePath(`/app/teacher/courses/${parsed.data.courseId}`);
 }
 
 async function upsertProgressFromNotes(
