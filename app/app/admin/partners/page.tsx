@@ -15,6 +15,10 @@ type PageLink = number | "...";
 type SponsoredLinkRaw = { category?: unknown; label?: unknown; url?: unknown };
 const toSponsoredLinksArray = (value: unknown): SponsoredLinkRaw[] =>
   Array.isArray(value) ? (value as SponsoredLinkRaw[]) : [];
+const formatSponsoredLink = (link: SponsoredLinkRaw) => ({
+  label: typeof link.label === "string" && link.label.trim().length > 0 ? link.label : "Lien",
+  url: typeof link.url === "string" ? link.url : "",
+});
 
 function buildPageRange(totalPages: number, currentPage: number): PageLink[] {
   if (totalPages <= 7) {
@@ -319,9 +323,9 @@ export default async function AdminPartnersPage({
                             <ul className="space-y-1">
                               {toSponsoredLinksArray(
                                 (partner as unknown as { sponsoredLinks?: unknown }).sponsoredLinks
-                              ).map((link, idx) => (
+                              ).map(formatSponsoredLink).map((link, idx) => (
                                 <li key={`${partner.id}-sponsored-${idx}`} className="text-xs text-slate-200">
-                                  {link.label ?? "Lien"} — {link.url ?? ""}
+                                  {link.label} — {link.url}
                                 </li>
                               ))}
                             </ul>
