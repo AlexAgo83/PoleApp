@@ -18,6 +18,7 @@ type SearchParams =
       studio?: string | string[];
       from?: string | string[];
       to?: string | string[];
+      flash?: string | string[];
     }
   | undefined;
 
@@ -66,6 +67,7 @@ export default async function AdminBillingPage({
   const studioFilter = paramValue(resolved.studio);
   const fromParam = paramValue(resolved.from);
   const toParam = paramValue(resolved.to);
+  const flash = paramValue(resolved.flash);
   const fromDate = dateFromParam(fromParam);
   const toDate = dateFromParam(toParam);
 
@@ -146,6 +148,7 @@ export default async function AdminBillingPage({
   const totalCredits = students.reduce((acc, s) => acc + (s.credits ?? 0), 0);
   const lowCredits = students.filter((s) => (s.credits ?? 0) < 200).slice(0, 5);
   const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < 200).length;
+  const redirectUpdated = qs ? `/app/admin/billing?${qs}&flash=updated` : "/app/admin/billing?flash=updated";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -160,18 +163,30 @@ export default async function AdminBillingPage({
         <Link
           href="/app/admin"
           className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+      >
+        ← Retour dashboard
+      </Link>
+      <form action={backfillInvoicesAction} className="w-full">
+        <input type="hidden" name="redirectTo" value="/app/admin/billing?flash=backfill" />
+        <button
+          type="submit"
+          className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
         >
-          ← Retour dashboard
-        </Link>
-        <form action={backfillInvoicesAction} className="w-full">
-          <button
-            type="submit"
-            className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
-          >
-            Générer les factures manquantes
-          </button>
-        </form>
-      </header>
+          Générer les factures manquantes
+        </button>
+      </form>
+    </header>
+
+      {flash === "backfill" && (
+        <div className="rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50">
+          Factures manquantes générées avec succès.
+        </div>
+      )}
+      {flash === "updated" && (
+        <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/15 px-4 py-3 text-sm text-cyan-50">
+          Statut/montant mis à jour.
+        </div>
+      )}
 
       <section className="panel p-4 md:p-6">
         <FilterPanel
@@ -368,6 +383,7 @@ export default async function AdminBillingPage({
                   </div>
                   <form action={updateInvoiceStatusAction} className="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="invoiceId" value={invoice.id} />
+                    <input type="hidden" name="redirectTo" value={redirectUpdated} />
                     <label className="text-xs text-slate-300">
                       Montant (€)
                       <input
@@ -416,6 +432,7 @@ export default async function AdminBillingPage({
                           <input type="hidden" name="invoiceId" value={invoice.id} />
                           <input type="hidden" name="amount" value={(invoice.amountCents / 100).toFixed(2)} />
                           <input type="hidden" name="note" value={invoice.note ?? ""} />
+                          <input type="hidden" name="redirectTo" value={redirectUpdated} />
                           <input type="hidden" name="status" value={target} />
                           <button
                             type="submit"
