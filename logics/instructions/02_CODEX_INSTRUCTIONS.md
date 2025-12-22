@@ -1,4 +1,5 @@
 # 02 — Instructions pour CODEX (phase produit)
+> Doit être à jour avec le projet
 
 Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.6 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions

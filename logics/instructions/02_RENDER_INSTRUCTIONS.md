@@ -1,4 +1,5 @@
 # Bonnes pratiques avant push Render
+> Doit être à jour avec le projet
 
 - **Schéma Prisma à jour** : si le schéma change (ex. ajout de `School.website`), faire `DATABASE_URL=... npx prisma db push` sur un env local raccordé à la base Render avant de pousser. Sinon les colonnes manquantes provoquent des erreurs au runtime.
 - **Nouvelles colonnes** (v0.4.6) : `User.age`, `User.avatarUrl`, `User.diplomas`, table `TeacherFavoritePosition`, `Course.maxSeats`, `Course.costCredits`, `Course.photoUrl`. Appliquer `DATABASE_URL="..." npx prisma db push` (ou `npm run db:migrate:deploy` si une baseline existe) avant déploiement Render.

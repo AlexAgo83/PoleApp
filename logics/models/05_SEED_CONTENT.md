@@ -1,4 +1,6 @@
-# 05 — Seed content (MVP)
+# 05 — Seed content (v0.7.x)
+
+> Seed dev actuelle : 2 écoles, comptes fixes (admin/teacher/student1/2, mdp `change-me-password`), studios avec photos, 1 cours démo/école, progression/blessures, favoris et invoices/backfill pour facturation.
 
 ## Taxonomies
 
