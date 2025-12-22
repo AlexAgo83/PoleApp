@@ -95,6 +95,19 @@ export default async function TeacherStudentDetailPage({
     orderBy: { name: "asc" },
     include: { media: { take: 1 } },
   });
+  const attendancePositions = await prisma.courseAttendance.findMany({
+    where: {
+      studentId,
+      status: { in: ["CONFIRMED", "WAITLIST"] },
+    },
+    select: { course: { select: { positions: { select: { positionId: true } } } } },
+  });
+  const taughtPositionIds = new Set<string>();
+  attendancePositions.forEach((att) => {
+    att.course.positions.forEach((cp) => {
+      if (cp.positionId) taughtPositionIds.add(cp.positionId);
+    });
+  });
 
   const gameSessions = await prisma.gameSession.findMany({
     where: { userId: student.id },
@@ -105,6 +118,9 @@ export default async function TeacherStudentDetailPage({
   const progressMap = new Map(
     student.progress.map((p) => [p.positionId, p])
   );
+  const filteredPositions = taughtPositionIds.size
+    ? positions.filter((p) => taughtPositionIds.has(p.id))
+    : [];
   const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom =
@@ -254,7 +270,7 @@ export default async function TeacherStudentDetailPage({
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Progression</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {positions.map((position) => {
+          {filteredPositions.map((position) => {
             const progress = progressMap.get(position.id);
             return (
               <article
@@ -331,6 +347,11 @@ export default async function TeacherStudentDetailPage({
               </article>
             );
           })}
+          {filteredPositions.length === 0 && (
+            <p className="md:col-span-2 text-sm text-slate-200">
+              Aucune position enseignée pour l&apos;instant.
+            </p>
+          )}
         </div>
       </section>
     </main>
