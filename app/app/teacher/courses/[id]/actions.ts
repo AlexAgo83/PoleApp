@@ -317,9 +317,11 @@ const applySuggestionsSchema = z.object({
         reason: z.string().optional(),
         favoriteCount: z.number().optional(),
         excludedForInjury: z.boolean().optional(),
+        unsafeInjuries: z.array(z.string()).optional(),
       })
     )
     .default([]),
+  forcePositionIds: z.array(z.string().cuid()).optional(),
 });
 
 export async function deleteCourseAction(formData: FormData) {
@@ -358,6 +360,50 @@ export async function deleteCourseAction(formData: FormData) {
   redirect("/app/teacher/courses");
 }
 
+export async function removeCoursePositionAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const courseId = formData.get("courseId")?.toString();
+  const positionId = formData.get("positionId")?.toString();
+  if (!courseId || !positionId) {
+    throw new Error("Form invalid");
+  }
+
+  const course = await prisma.course.findFirst({
+    where: { id: courseId, schoolId: session.user.schoolId },
+    select: { id: true, teacherId: true },
+  });
+  if (!course) {
+    redirect("/access-denied");
+  }
+  if (session.user.role === "TEACHER" && course.teacherId !== session.user.id) {
+    redirect("/access-denied");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.coursePosition.deleteMany({ where: { courseId, positionId } });
+    try {
+      await tx.courseRecommendation.updateMany({
+        where: { courseId, positionId },
+        data: { appliedAt: null },
+      });
+    } catch (error) {
+      const message = (error as Error)?.message ?? "";
+      const tableMissing = message.includes("CourseRecommendation") || message.includes("does not exist");
+      if (!tableMissing) throw error;
+    }
+  });
+
+  revalidatePath(`/app/teacher/courses/${courseId}`);
+  revalidatePath("/app/teacher/courses");
+}
+
 export async function applySuggestedPositionsAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || !session.user.schoolId) {
@@ -371,6 +417,7 @@ export async function applySuggestedPositionsAction(formData: FormData) {
     courseId: formData.get("courseId"),
     positionIds: Array.from(formData.getAll("positionIds") ?? []).map((value) => value.toString()),
     suggestions: JSON.parse((formData.get("suggestions") as string) ?? "[]"),
+    forcePositionIds: Array.from(formData.getAll("forcePositionIds") ?? []).map((value) => value.toString()),
   });
   if (!parsed.success) {
     throw new Error("Form invalid");
@@ -400,14 +447,21 @@ export async function applySuggestedPositionsAction(formData: FormData) {
           existingPositionIds: existingIds,
         });
 
-  const allowed = new Map(
-    suggestionsList
-      .filter((s) => !s.excludedForInjury)
-      .map((s) => [s.positionId, s])
-  );
-  const toInsert = parsed.data.positionIds.filter((id) => allowed.has(id));
+  const suggestionMap = new Map(suggestionsList.map((s) => [s.positionId, s]));
+  const forcedSet = new Set(parsed.data.forcePositionIds ?? []);
+  const toInsert: string[] = [];
+
+  for (const id of parsed.data.positionIds) {
+    const suggestion = suggestionMap.get(id);
+    if (!suggestion) continue;
+    if (suggestion.excludedForInjury && !forcedSet.has(id)) {
+      continue;
+    }
+    toInsert.push(id);
+  }
+
   if (toInsert.length === 0) {
-    throw new Error("Aucune suggestion valide à appliquer");
+    throw new Error("Aucune suggestion valide à appliquer (sélectionnez ou forcez une position).");
   }
 
   await prisma.$transaction(async (tx) => {
@@ -427,7 +481,7 @@ export async function applySuggestedPositionsAction(formData: FormData) {
             courseId: course.id,
             positionId: s.positionId,
             tag: s.tag,
-            reason: s.reason ?? null,
+            reason: buildReasonWithFlags(s, forcedSet.has(s.positionId)),
             appliedAt: toInsert.includes(s.positionId) ? new Date() : null,
           })),
           skipDuplicates: true,
@@ -450,4 +504,23 @@ export async function applySuggestedPositionsAction(formData: FormData) {
 
 function baseUrlForCourse(courseId: string) {
   return `/app/teacher/courses/${courseId}`;
+}
+
+function buildReasonWithFlags(
+  s: {
+    reason?: string | null;
+    excludedForInjury?: boolean;
+    unsafeInjuries?: string[];
+  },
+  forced: boolean
+) {
+  const parts: string[] = [];
+  if (s.reason) parts.push(s.reason);
+  if (s.excludedForInjury && s.unsafeInjuries?.length) {
+    parts.push(`Incompatible blessure: ${s.unsafeInjuries.join(", ")}`);
+  }
+  if (forced && s.excludedForInjury) {
+    parts.push("Forcé malgré blessure");
+  }
+  return parts.length > 0 ? parts.join(" | ") : null;
 }
