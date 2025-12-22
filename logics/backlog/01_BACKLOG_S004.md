@@ -11,7 +11,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
 
 ## Données / Modèle
 - Étendre le modèle :
-  - `User` : préférences “positions favorites” (ids) + blessures déjà présentes. **(multi-select côté élève à ajouter)**
+  - `User` : préférences “positions favorites” (ids) + blessures déjà présentes. **(multi-select côté élève/teacher en place, exploité par le générateur)**
   - `Course` : champ pour stocker les positions proposées (liste d’ids) et exclues (pour suivi).
   - `Position` : marquer “safe”/“risky” (optionnel) pour filtrer selon blessures.
 - Champs facultatifs :
@@ -40,7 +40,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
   - Bouton “Valider” → associe les positions au cours et enregistre en base.
   - Afficher les positions exclues (pour transparence).
 - Option : permettre au prof d’ajuster manuellement (remplacer une position).
-- **État actuel (partiel)** : suggestions calculées à partir des élèves inscrits/leur progression et affichées sur la fiche cours (teacher/admin), hors positions déjà planifiées. Pas de tags ni de validation automatique ; l’édition des notes se fait via la page d’édition du cours (plus d’inline dans la fiche).
+- **État actuel (partiel)** : suggestions calculées à partir des élèves inscrits/leur progression et affichées sur la fiche cours (teacher/admin), hors positions déjà planifiées. Pas de tags ni de validation automatique ; l’édition des notes se fait via la page d’édition du cours (plus d’inline dans la fiche). Badge “cœur” affiché si des élèves ont plébiscité la position.
 
 ## Intégration données existantes
 - Utiliser les niveaux par position (progression élève) pour savoir qui a acquis quoi.

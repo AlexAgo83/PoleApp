@@ -315,6 +315,7 @@ const applySuggestionsSchema = z.object({
         positionId: z.string().cuid(),
         tag: z.nativeEnum(SuggestionTag),
         reason: z.string().optional(),
+        favoriteCount: z.number().optional(),
       })
     )
     .default([]),

@@ -135,6 +135,11 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                   {s.type ? (
                     <span className="text-[11px] uppercase tracking-[0.12em] text-emerald-100">{s.type}</span>
                   ) : null}
+                  {s.favoriteCount && s.favoriteCount > 0 ? (
+                    <span className="rounded-full border border-pink-300/60 bg-pink-500/15 px-2 py-0.5 text-[11px] font-semibold text-pink-50">
+                      {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
+                    </span>
+                  ) : null}
                   <span
                     className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                       s.tag === "DISCOVERY"
