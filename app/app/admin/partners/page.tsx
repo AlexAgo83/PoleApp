@@ -52,7 +52,7 @@ function buildPageRange(totalPages: number, currentPage: number): PageLink[] {
 export default async function AdminPartnersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; q?: string; kind?: string; edit?: string }>;
+  searchParams?: Promise<{ page?: string; q?: string; kind?: string; edit?: string; from?: string; to?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
@@ -75,6 +75,8 @@ export default async function AdminPartnersPage({
   const q = resolved.q?.toString().trim() || "";
   const kindFilter = resolved.kind?.toString().trim() || "";
   const currentPage = Math.max(1, Number.isFinite(rawPage) ? rawPage : 1);
+  const from = resolved.from?.toString();
+  const to = resolved.to?.toString();
   const editId = resolved.edit?.toString();
 
   const whereClause = {
@@ -126,7 +128,17 @@ export default async function AdminPartnersPage({
         .groupBy({
           by: ["partnerId", "type"],
           _count: { _all: true },
-          where: { partnerId: { in: partnerIds } },
+          where: {
+            partnerId: { in: partnerIds },
+            ...(from || to
+              ? {
+                  createdAt: {
+                    ...(from ? { gte: new Date(`${from}T00:00:00`) } : {}),
+                    ...(to ? { lte: new Date(`${to}T23:59:59`) } : {}),
+                  },
+                }
+              : {}),
+          },
         })
         .then((rows) => {
           const map = new Map<string, { clicks: number; purchases: number }>();
@@ -162,6 +174,91 @@ export default async function AdminPartnersPage({
       </header>
 
       <section className="panel p-4 md:p-6">
+        <div className="mb-4 grid gap-3 md:grid-cols-3">
+          <FilterPanel
+            storageKey="filters:admin-partners"
+            title="Filtres"
+            userKey={userKey}
+            className="md:col-span-2"
+            contentClassName="mt-3"
+            titleClassName="text-sm font-semibold text-white"
+          >
+            <form
+              className="grid gap-3 md:grid-cols-4 md:items-end"
+              action="/app/admin/partners"
+              method="get"
+            >
+              <label className="text-sm text-slate-200">
+                Recherche
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={q}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="text-sm text-slate-200">
+                Type
+                <input
+                  type="text"
+                  name="kind"
+                  defaultValue={kindFilter}
+                  placeholder="SERVICE / REVENDEUR"
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="text-sm text-slate-200">
+                Date min (événements)
+                <input
+                  type="date"
+                  name="from"
+                  defaultValue={from ?? ""}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="text-sm text-slate-200">
+                Date max (événements)
+                <input
+                  type="date"
+                  name="to"
+                  defaultValue={to ?? ""}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <div className="md:col-span-4 flex flex-wrap justify-end gap-2">
+                <button
+                  type="submit"
+                  className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+                >
+                  Filtrer
+                </button>
+                <Link
+                  href="/app/admin/partners"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Réinitialiser
+                </Link>
+              </div>
+            </form>
+          </FilterPanel>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+              Stats filtrées
+            </p>
+            <p className="mt-1 text-lg font-semibold text-white">
+              {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0)} clics ·{" "}
+              {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0)} achats
+            </p>
+            {(from || to) && (
+              <p className="text-xs text-slate-400">
+                Plage : {from ?? "—"} → {to ?? "—"}
+              </p>
+            )}
+            <p className="mt-2 text-xs text-slate-400">
+              Les compteurs ci-dessous respectent la plage de dates (si définie).
+            </p>
+          </div>
+        </div>
         <PersistedPanel
           storageKey="panel:admin-partners-create"
           title="Ajouter un partenaire"
