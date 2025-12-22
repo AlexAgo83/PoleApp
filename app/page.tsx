@@ -99,19 +99,6 @@ const moduleSections = [
   },
 ];
 
-const buildSteps = [
-  { label: "Step 0 — Bootstrap + health", done: true },
-  { label: "Step 1 — Auth/RBAC (login + middleware)", done: true },
-  { label: "Step 2 — Positions (browse + create professeur)", done: true },
-  { label: "Step 3 — Blessures élève (UI + professeur)", done: true },
-  { label: "Step 4 — Progression par position", done: true },
-  { label: "Step 5 — Fiche cours (notes + progression)", done: true },
-  { label: "Step 6 — Mini-jeu", done: true },
-  { label: "Step 7 — Admin école", done: true },
-  { label: "Step 8 — Navigation par rôle + Positions unifiées", done: true },
-  { label: "Step 9 — Discovery QA", done: true },
-];
-
 const roleLabels: Record<string, string> = {
   STUDENT: "Élève",
   TEACHER: "Professeur",

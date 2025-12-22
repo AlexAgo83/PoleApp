@@ -5,7 +5,6 @@ import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
-import { purchaseCourseAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 
 const NOW_MS = Date.now();
@@ -78,10 +77,6 @@ export default async function StudentCoursesPage({
     return null;
   }
   const userKey = session.user.id ?? "anon";
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { credits: true },
-  });
 
   const mineParam = paramValue(resolvedParams.mine);
   const onlyMine = Boolean(
@@ -105,7 +100,6 @@ export default async function StudentCoursesPage({
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = paramValue(resolvedParams.withNotes) === "true";
   const sort = paramValue(resolvedParams.sort) === "date_asc" ? "date_asc" : "date_desc";
-  const userCredits = user?.credits ?? session.user.credits ?? 0;
   const activeFilters = [
     validFrom,
     validTo,

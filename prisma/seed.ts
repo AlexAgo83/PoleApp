@@ -212,10 +212,6 @@ function slugify(input: string) {
     .replace(/(^-|-$)+/g, "");
 }
 
-function range(n: number) {
-  return Array.from({ length: n }, (_, i) => i);
-}
-
 async function resetAll() {
   await prisma.$executeRawUnsafe(`TRUNCATE
     "CourseAttendance",
@@ -336,7 +332,6 @@ async function seedSchoolsAndUsers() {
   }
 
   // Distribute remaining names for teachers/students
-  let nameIdx = 0;
   const teachers: { id: string; schoolId: string }[] = [];
   const students: { id: string; schoolId: string }[] = [];
 
@@ -446,7 +441,7 @@ async function seedCourses(schoolsData: {
       photoUrl: STUDIO_IMAGES[idx % STUDIO_IMAGES.length],
     }));
     const createdStudios = await Promise.all(
-      studiosForSchool.map((s, idx) =>
+      studiosForSchool.map((s) =>
         prisma.studio.create({
           data: {
             name: s.name,

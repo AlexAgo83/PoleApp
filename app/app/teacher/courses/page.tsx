@@ -56,7 +56,6 @@ export default async function TeacherCoursesPage({
     withNotes ? "notes" : null,
     q && q.length > 0 ? "q" : null,
   ].filter(Boolean).length;
-  const hasFilters = Boolean(validFrom || validTo || teacherFilter || withNotes);
 
   const session = await getServerSession(authOptions);
   if (!session?.user?.schoolId) {

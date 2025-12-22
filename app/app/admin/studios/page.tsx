@@ -75,7 +75,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       skip,
       take: 10,
     });
-  } catch (err) {
+  } catch {
     return (
       <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
         <section className="panel p-4 md:p-6">

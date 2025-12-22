@@ -42,7 +42,7 @@ export function PersistedPanel({
       // ignore
     }
     setOpen(defaultOpen);
-  }, [fullKey]);
+  }, [defaultOpen, fullKey]);
 
   useEffect(() => {
     if (open === null) return;
