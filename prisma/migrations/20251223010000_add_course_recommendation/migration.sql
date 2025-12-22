@@ -1,3 +1,11 @@
+-- Ensure enum exists (Render DB may not have it yet)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'SuggestionTag') THEN
+        CREATE TYPE "SuggestionTag" AS ENUM ('DISCOVERY', 'REVISION', 'SAFE');
+    END IF;
+END $$;
+
 -- CreateTable
 CREATE TABLE "CourseRecommendation" (
     "id" TEXT NOT NULL,
