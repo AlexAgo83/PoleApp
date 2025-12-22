@@ -25,10 +25,10 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
 - Onglet École : agenda semaine+mois par studio, filtres multi (niveau/prof/date/discipline/studio), inclut passé/à venir, pagination/scroll OK sur mobile/desktop. **(à livrer)**
 - Fiche cours : niveaux élève/position visibles (lecture sur la fiche) et éditables via l’écran d’édition ; élèves cliquables vers fiche ; générateur actif et propose des positions adaptées aux élèves inscrits (suggestions affichées). **(partiel, inline retiré)**
 - Positions Teacher : encadré “gating” supprimé. **(DONE)**
-- Facturation : table `Invoice` en place + backfill des cours existants, statuts enum complets (Générée/Envoyée/Payée/En retard/Annulée), montants calculés/persistés ; onglet facturation (lecture prof / écriture admin) avec filtres/pagination/tri/export, pas d’erreur runtime. **(DONE v0.6.7)**
+- Facturation : table `Invoice` en place + backfill des cours existants, statuts enum complets (Générée/Envoyée/Payée/En retard/Annulée), montants calculés/persistés ; onglet facturation (lecture prof / écriture admin) avec filtres/pagination/tri/export, pas d’erreur runtime. **(DONE v0.6.8)**
 
 ## Tests / Vérifications
 - QA manuel Teacher : onglet École → agenda semaine/mois par studio, filtres agissent (niveau/prof/date/discipline/studio), passé/à venir visibles, pagination/scroll OK sur desktop/mobile.
 - QA manuel Teacher : fiche cours affiche/édite niveaux élève/position (badges/tableau), élèves cliquables, générateur propose positions selon inscrits.
 - UI Positions Teacher : encadré gating absent. **(OK)**
-- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents avec la règle choisie, filtres date/prof/studio/statut/tri OK, pagination 10 ; changement de statut côté admin fonctionne ; aucun crash. **(OK v0.6.7)**
+- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents avec la règle choisie, filtres date/prof/studio/statut/tri OK, pagination 10 ; changement de statut côté admin fonctionne ; aucun crash. **(OK v0.6.8)**
