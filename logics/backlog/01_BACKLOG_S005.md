@@ -1,5 +1,5 @@
 # Backlog — Retours QA S005 (session 2025-12-21 23:55)
-[Compréhension: 90% / Avancement: 10%]
+[Compréhension: 90% / Avancement: 15%]
 
 Source: 06_QA_S005.md (tests faits sur v0.5.0)
 
