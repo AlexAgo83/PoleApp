@@ -6,6 +6,7 @@
 - Page école élève : agenda semaine/mois avec filtres (studio/prof/date/recherche/«mes cours»), légende code couleur, prochains cours, liens vers agenda/liste.
 - Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
 - Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
+- Facturation admin : polish UI (filtres regroupés en panel stylisé, actions header alignées à droite, compteur sous les filtres, titre/date dissociés).
 
 ## 2025-12-22 — Release v0.6.8 (générateur suggestions + factu UX)
 - Version bump 0.6.8.

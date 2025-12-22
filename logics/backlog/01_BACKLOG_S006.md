@@ -18,6 +18,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
   - Modèle : table `Invoice` liée à `Course` (courseId, amountCents, currency, status enum Générée/Envoyée/Payée/En retard/Annulée, issuedAt, paidAt, notes).
   - Calcul : règle par défaut fixée (présences CONFIRMED × 50€, fallback maxSeats × 30€) + override montant/note manuel (persisté sur l’Invoice).
   - UI : onglet Facturation admin listant les cours donnés (vue liste + filtres date/prof/studio/statut + tri, pagination 10), export CSV, actions guidées de changement de statut (marquer envoyé/payé/annulé/retard), badge retard. **(fait)**
+  - Polish : filtres regroupés (titre sans fond, formulaire encadré), compteur sous le panel, actions header alignées à droite, titre/date séparés sur les cartes. **(fait)**
   - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié (résumé crédits + alertes). **(fait partiel)**
   - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut) + initialiser abonnements.
   - Accès : par défaut SCHOOL_ADMIN lecture/édition ; éventuelle lecture limitée pour TEACHER à confirmer.
