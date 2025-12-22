@@ -503,6 +503,13 @@ export default async function StudentCoursesAgendaPage({
                           ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
                           : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
                         : "border border-white/20 bg-white/10 text-slate-300";
+                      const statusLabel = past
+                        ? "Passé"
+                        : isWaitlist
+                        ? "Attente"
+                        : isMineConfirmed
+                        ? "À venir"
+                        : "Ouvert";
                       const rankLabel =
                         isWaitlist && a.myAttendance?.waitlistRank
                           ? `#${a.myAttendance.waitlistRank}`
@@ -554,11 +561,11 @@ export default async function StudentCoursesAgendaPage({
                                 : "Non inscrit"
                             }
                           >
-                            {rankLabel ?? "●"}
+                            {rankLabel ?? statusLabel}
                           </span>
                         </Link>
-                  );
-                })}
+                      );
+                    })}
                   {cell.attendances && cell.attendances.length > 3 && (
                     <div className="mt-1 text-[11px] text-slate-300">
                       +{cell.attendances.length - 3} autres
@@ -651,6 +658,13 @@ export default async function StudentCoursesAgendaPage({
                         : isMineConfirmed
                         ? "border border-amber-300/70 bg-amber-500/25 text-amber-50"
                         : "border border-white/20 bg-white/10 text-slate-300";
+                      const statusLabel = past
+                        ? "Passé"
+                        : isWaitlist
+                        ? "Attente"
+                        : isMineConfirmed
+                        ? "À venir"
+                        : "Ouvert";
                       return (
                         <Link
                           key={a.id}
@@ -699,7 +713,7 @@ export default async function StudentCoursesAgendaPage({
                                 : "Non inscrit"
                             }
                           >
-                            {isWaitlist && waitlistRank ? `#${waitlistRank}` : "●"}
+                            {isWaitlist && waitlistRank ? `#${waitlistRank}` : statusLabel}
                           </span>
                         </Link>
                       );
