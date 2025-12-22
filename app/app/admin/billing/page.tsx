@@ -19,6 +19,7 @@ type SearchParams =
       from?: string | string[];
       to?: string | string[];
       flash?: string | string[];
+      threshold?: string | string[];
     }
   | undefined;
 
@@ -68,6 +69,9 @@ export default async function AdminBillingPage({
   const fromParam = paramValue(resolved.from);
   const toParam = paramValue(resolved.to);
   const flash = paramValue(resolved.flash);
+  const thresholdParam = paramValue(resolved.threshold);
+  const threshold = Number.parseInt(thresholdParam ?? "", 10);
+  const creditThreshold = Number.isFinite(threshold) && threshold > 0 ? threshold : 200;
   const fromDate = dateFromParam(fromParam);
   const toDate = dateFromParam(toParam);
 
@@ -141,13 +145,14 @@ export default async function AdminBillingPage({
   if (studioFilter) queryParams.set("studio", studioFilter);
   if (fromParam) queryParams.set("from", fromParam);
   if (toParam) queryParams.set("to", toParam);
+  if (thresholdParam) queryParams.set("threshold", thresholdParam);
   const qs = queryParams.toString();
   const userKey = session.user.id ?? "anon";
   const activeFilters = [statusFilter, teacherFilter, studioFilter, fromParam, toParam].filter(Boolean).length;
   const exportHref = `/api/admin/billing/export${qs ? `?${qs}` : ""}`;
   const totalCredits = students.reduce((acc, s) => acc + (s.credits ?? 0), 0);
-  const lowCredits = students.filter((s) => (s.credits ?? 0) < 200).slice(0, 5);
-  const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < 200).length;
+  const lowCredits = students.filter((s) => (s.credits ?? 0) < creditThreshold).slice(0, 5);
+  const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < creditThreshold).length;
   const redirectUpdated = qs ? `/app/admin/billing?${qs}&flash=updated` : "/app/admin/billing?flash=updated";
 
   return (
@@ -249,6 +254,16 @@ export default async function AdminBillingPage({
               </select>
             </label>
             <label className="text-sm text-slate-200">
+              Seuil crédits
+              <input
+                type="number"
+                name="threshold"
+                min="1"
+                defaultValue={thresholdParam ?? creditThreshold}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
               Statut
               <select
                 name="status"
@@ -295,7 +310,7 @@ export default async function AdminBillingPage({
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-amber-200">Crédits faibles (&lt;200)</p>
             <p className="text-2xl font-semibold text-white">{lowCreditsCount}</p>
-            <p className="text-sm text-slate-300">Nombre d’élèves proches du seuil.</p>
+            <p className="text-sm text-slate-300">Seuil : {creditThreshold} crédits.</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Top alertes</p>
@@ -303,7 +318,12 @@ export default async function AdminBillingPage({
               {lowCredits.length === 0 && <li className="text-slate-400">Aucune alerte</li>}
               {lowCredits.map((s) => (
                 <li key={s.id} className="flex items-center justify-between">
-                  <span className="truncate">{s.name ?? s.email ?? "Élève"}</span>
+                  <Link
+                    href={`/app/teacher/students/${s.id}`}
+                    className="truncate text-cyan-100 underline underline-offset-2"
+                  >
+                    {s.name ?? s.email ?? "Élève"}
+                  </Link>
                   <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-2 py-0.5 text-[12px] text-amber-50">
                     {s.credits} cr
                   </span>
