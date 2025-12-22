@@ -430,25 +430,13 @@ export default async function AdminBillingPage({
                         className="ml-2 w-40 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
                       />
                     </label>
-                    <label className="text-xs text-slate-300">
-                      Statut
-                      <select
-                        name="status"
-                        defaultValue={invoice.status}
-                        className="ml-2 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
-                      >
-                        {Object.values(InvoiceStatus).map((st) => (
-                          <option key={st} value={st}>
-                            {statusLabels[st]}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <input type="hidden" name="status" value={invoice.status} />
                     <button
                       type="submit"
                       className="rounded-full bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-cyan-400"
+                      title="Mettre à jour montant/note"
                     >
-                      Mettre à jour
+                      Sauvegarder
                     </button>
                   </form>
                   <div className="flex flex-wrap items-center gap-1 text-[11px]">
@@ -462,7 +450,15 @@ export default async function AdminBillingPage({
                           <input type="hidden" name="status" value={target} />
                           <button
                             type="submit"
-                            className="rounded-full border border-white/10 bg-white/5 px-2 py-1 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                            className={`rounded-full border px-2 py-1 font-semibold text-white transition shadow-sm ${
+                              target === InvoiceStatus.PAID
+                                ? "border-emerald-400/80 bg-emerald-500/40 hover:bg-emerald-400/70"
+                                : target === InvoiceStatus.SENT
+                                ? "border-cyan-400/80 bg-cyan-500/30 hover:bg-cyan-400/60"
+                                : target === InvoiceStatus.LATE
+                                ? "border-amber-400/80 bg-amber-500/30 hover:bg-amber-400/60"
+                                : "border-red-400/80 bg-red-500/30 hover:bg-red-400/60"
+                            }`}
                             title={`Marquer ${statusLabels[target]}`}
                           >
                             {statusLabels[target]}
