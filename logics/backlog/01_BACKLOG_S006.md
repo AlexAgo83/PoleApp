@@ -22,7 +22,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
   - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié (résumé crédits + alertes). **(fait partiel)**
   - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut) + initialiser abonnements.
   - Accès : par défaut SCHOOL_ADMIN lecture/édition ; éventuelle lecture limitée pour TEACHER à confirmer.
-- [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens.
+- [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens (userId, partenaire, horodatage, contexte course/studio). **Source/referrer à ajouter plus tard si besoin.**
 - [~] Admin > Agenda cours : filtres date min/max, prof, studio et recherche (titre) sur vue mois/semaine.
   - Navigation semaine → semaine sans rechargement complet (même pattern que Facturation admin), conservation des filtres actifs, sans modifier visuellement l’agencement des panels.
 - [ ] Admin > Studios (lecture seule) : retirer l’URL brute “Photo : XXX” (la photo est visible ailleurs), laisser la cellule propre/compacte (ou masquer la ligne en lecture seule).
