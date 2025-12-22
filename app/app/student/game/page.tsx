@@ -202,9 +202,11 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     include: { media: { take: 1 } },
   });
 
-  let eligible = positions;
   const isStudent = session.user.role === "STUDENT";
   const isTeacherOrAdmin = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
+  const isPremium = Boolean(session.user.isPremium);
+
+  let eligible = positions;
 
   if (isStudent) {
     const progress = await prisma.studentPositionProgress.findMany({
@@ -212,7 +214,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
       select: { positionId: true },
     });
     const unlockedIds = new Set(progress.map((p) => p.positionId));
-    eligible = session.user.isPremium ? positions : positions.filter((p) => unlockedIds.has(p.id));
+    eligible = isPremium ? positions : positions.filter((p) => unlockedIds.has(p.id));
   } else if (isTeacherOrAdmin) {
     eligible = positions; // prof/admin : accès illimité
   } else {
@@ -232,6 +234,8 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     include: { user: { select: { id: true, name: true, email: true } } },
   });
   const leaderboardByMode = buildLeaderboard(leaderboardSessions);
+
+  const isLockedStudent = isStudent && !isPremium;
 
   if (!selectedMode) {
     return (
@@ -290,16 +294,30 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
                   )}
                 </div>
                 <div className="mt-auto flex items-center justify-end gap-2">
-                  <Link
-                    href={`/app/student/game?mode=${mode.id}`}
-                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
-                      eligible.length < 4
-                        ? "cursor-not-allowed border border-white/10 text-slate-500"
-                        : "border border-white/15 bg-white/5 hover:border-cyan-400/70 hover:bg-white/10"
-                    }`}
-                  >
-                    Jouer
-                  </Link>
+                  {isLockedStudent ? (
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full border border-amber-300/50 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                        Premium
+                      </span>
+                      <Link
+                        href="/app/profile"
+                        className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                      >
+                        Débloquer avec Premium
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link
+                      href={`/app/student/game?mode=${mode.id}`}
+                      className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
+                        eligible.length < 4
+                          ? "cursor-not-allowed border border-white/10 text-slate-500"
+                          : "border border-white/15 bg-white/5 hover:border-cyan-400/70 hover:bg-white/10"
+                      }`}
+                    >
+                      Jouer
+                    </Link>
+                  )}
                 </div>
               </article>
             );
@@ -350,6 +368,26 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
             })}
           </div>
         </section>
+      </main>
+    );
+  }
+
+  if (isLockedStudent) {
+    return (
+      <main className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 px-6 py-12">
+        <div className="panel w-full max-w-md space-y-3 p-6 text-center text-slate-200">
+          <p className="text-lg font-semibold text-white">Réservé aux membres Premium</p>
+          <p className="text-sm text-slate-300">
+            Passe en Premium pour débloquer les 6 mini-jeux et sauvegarder tes scores.
+          </p>
+          <Link
+            href="/app/profile"
+            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Débloquer avec Premium
+          </Link>
+          <ReturnCta role={session.user.role} />
+        </div>
       </main>
     );
   }

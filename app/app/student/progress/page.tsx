@@ -23,11 +23,23 @@ const masteryLabels: Record<MasteryLevel, string> = {
   CHOREO: "Choréo",
 };
 
-const statusClass: Record<LearningStatus, string> = {
-  NOT_STARTED: "border border-white/10 bg-white/5 text-slate-200",
-  IN_PROGRESS: "border border-amber-400/40 bg-amber-500/20 text-amber-100",
-  PASSED: "border border-cyan-400/40 bg-cyan-500/20 text-cyan-100",
-  MASTERED: "border border-emerald-400/40 bg-emerald-500/20 text-emerald-100",
+const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {
+  NOT_STARTED: {
+    solid: "border-[#2563eb] bg-[#2563eb] text-white",
+    outline: "border-[#2563eb] text-[#2563eb]",
+  },
+  IN_PROGRESS: {
+    solid: "border-[#f59e0b] bg-[#f59e0b] text-white",
+    outline: "border-[#f59e0b] text-[#f59e0b]",
+  },
+  PASSED: {
+    solid: "border-[#10b981] bg-[#10b981] text-white",
+    outline: "border-[#10b981] text-[#10b981]",
+  },
+  MASTERED: {
+    solid: "border-[#7c3aed] bg-[#7c3aed] text-white",
+    outline: "border-[#7c3aed] text-[#7c3aed]",
+  },
 };
 
 const typeLabels = {
@@ -229,16 +241,16 @@ export default async function StudentProgressPage({
           </form>
         </FilterPanel>
         <div className="flex flex-wrap gap-2 text-xs">
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.NOT_STARTED}`}>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.NOT_STARTED.solid}`}>
             ● {statusLabels.NOT_STARTED}
           </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.IN_PROGRESS}`}>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.IN_PROGRESS.solid}`}>
             ● {statusLabels.IN_PROGRESS}
           </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.PASSED}`}>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.PASSED.solid}`}>
             ● {statusLabels.PASSED}
           </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusClass.MASTERED}`}>
+          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.MASTERED.solid}`}>
             ● {statusLabels.MASTERED}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-3 py-1 font-semibold text-cyan-100">
@@ -285,7 +297,7 @@ export default async function StudentProgressPage({
                       {position.name}
                     </h3>
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass[status as LearningStatus]}`}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[status as LearningStatus].solid}`}
                     >
                       {statusLabels[status as LearningStatus]}
                     </span>

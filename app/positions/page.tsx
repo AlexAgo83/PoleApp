@@ -106,13 +106,13 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     : [];
   const progressMap = new Map(studentProgress.map((p) => [p.positionId, p]));
   const progressBadgeClass: Record<string, string> = {
-    NOT_STARTED: "border border-white/10 bg-white/5 text-slate-200",
-    IN_PROGRESS: "border border-amber-400/40 bg-amber-500/15 text-amber-100",
-    PASSED: "border border-cyan-400/40 bg-cyan-500/20 text-cyan-100",
-    MASTERED: "border border-emerald-400/40 bg-emerald-500/20 text-emerald-100",
-    INITIATED: "border border-indigo-400/40 bg-indigo-500/15 text-indigo-100",
-    FLUID: "border border-emerald-400/50 bg-emerald-500/20 text-emerald-50",
-    CHOREO: "border border-purple-400/50 bg-purple-500/20 text-purple-50",
+    NOT_STARTED: "border-[#2563eb] bg-[#2563eb] text-white",
+    IN_PROGRESS: "border-[#f59e0b] bg-[#f59e0b] text-white",
+    PASSED: "border-[#10b981] bg-[#10b981] text-white",
+    MASTERED: "border-[#7c3aed] bg-[#7c3aed] text-white",
+    INITIATED: "border-[#2563eb] bg-[#2563eb] text-white",
+    FLUID: "border-[#7c3aed] bg-[#7c3aed] text-white",
+    CHOREO: "border-[#7c3aed] bg-[#7c3aed] text-white",
   };
   const canManage = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
 
