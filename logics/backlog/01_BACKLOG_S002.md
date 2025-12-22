@@ -1,5 +1,5 @@
 # Backlog — Retours QA S002 (session 2025-12-21 01:00)
-[Compréhension: 90% / Avancement: 72%]
+[Compréhension: 92% / Avancement: 75%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -82,6 +82,7 @@
 ## Mises à jour récentes
 - Page infos studio accessible à tous via `/app/school/[id]` (retour contextualisé) + liens depuis les listes de studios élèves/profs/admin. **(DONE)**
 - Mini-jeux accessibles aux profs/admin (accès direct) et CTA “Jeux” ajouté dans le dashboard admin. Gating premium/feedback final reste à faire. **(PARTIEL)**
+- Générateur de cours : suggestions basées sur la progression des élèves affichées sur la fiche cours (teacher/admin), édition des notes via l’écran d’édition (inline retiré). **(PARTIEL)**
 
 ## Clarifications nécessaires
 - Progression : valider palette/code couleur exacts et où l’afficher (liste élève, tableau prof, détail position, etc.).
