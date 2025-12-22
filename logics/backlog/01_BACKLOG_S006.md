@@ -14,11 +14,11 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - [ ] Admin > Cours : ajouter générateur de cours, afficher niveau atteint par élève/position (edit + display), rendre les élèves cliquables (prof/admin).
 - [x] Admin > Positions : retirer le bloc “gating”. (OK via vue commune /positions sans encadré staff)
 - [x] Admin > Jeux : ajouter l’énoncé pour les modes Description→Nom, Nom→Niveau, Nom→Grips, Nom→Type, Blitz mix (comme Teacher).
-- [~] Admin > Facturation (basé sur `Invoice`) :
+- [x] Admin > Facturation (basé sur `Invoice`) :
   - Modèle : table `Invoice` liée à `Course` (courseId, amountCents, currency, status enum Générée/Envoyée/Payée/En retard/Annulée, issuedAt, paidAt, notes).
   - Calcul : règle par défaut fixée (présences CONFIRMED × 50€, fallback maxSeats × 30€) + override montant/note manuel (persisté sur l’Invoice).
   - UI : onglet Facturation admin listant les cours donnés (vue liste + filtres date/prof/studio/statut, pagination 10), export CSV, actions guidées de changement de statut (marquer envoyé/payé/annulé/retard), badge retard. **(fait)**
-  - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié. **(reste à faire)**
+  - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié (résumé crédits + alertes). **(fait partiel)**
   - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut) + initialiser abonnements.
   - Accès : par défaut SCHOOL_ADMIN lecture/édition ; éventuelle lecture limitée pour TEACHER à confirmer.
 - [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens.
