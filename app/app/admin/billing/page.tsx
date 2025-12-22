@@ -94,7 +94,7 @@ export default async function AdminBillingPage({
     },
   };
 
-  const [totalCount, teachers, studios] = await Promise.all([
+  const [totalCount, teachers, studios, students] = await Promise.all([
     prisma.invoice.count({ where }),
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId, role: "TEACHER" },
@@ -105,6 +105,11 @@ export default async function AdminBillingPage({
       where: { schoolId: session.user.schoolId },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
+    }),
+    prisma.user.findMany({
+      where: { schoolId: session.user.schoolId, role: "STUDENT" },
+      select: { id: true, name: true, email: true, credits: true },
+      orderBy: { credits: "asc" },
     }),
   ]);
 
@@ -138,6 +143,9 @@ export default async function AdminBillingPage({
   const userKey = session.user.id ?? "anon";
   const activeFilters = [statusFilter, teacherFilter, studioFilter, fromParam, toParam].filter(Boolean).length;
   const exportHref = `/api/admin/billing/export${qs ? `?${qs}` : ""}`;
+  const totalCredits = students.reduce((acc, s) => acc + (s.credits ?? 0), 0);
+  const lowCredits = students.filter((s) => (s.credits ?? 0) < 200).slice(0, 5);
+  const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < 200).length;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -262,6 +270,33 @@ export default async function AdminBillingPage({
             </div>
           </form>
         </FilterPanel>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Crédits élèves</p>
+            <p className="text-2xl font-semibold text-white">{totalCredits} crédits</p>
+            <p className="text-sm text-slate-300">Somme totale sur les élèves de l’école.</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-amber-200">Crédits faibles (&lt;200)</p>
+            <p className="text-2xl font-semibold text-white">{lowCreditsCount}</p>
+            <p className="text-sm text-slate-300">Nombre d’élèves proches du seuil.</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Top alertes</p>
+            <ul className="mt-2 space-y-1 text-sm text-slate-200">
+              {lowCredits.length === 0 && <li className="text-slate-400">Aucune alerte</li>}
+              {lowCredits.map((s) => (
+                <li key={s.id} className="flex items-center justify-between">
+                  <span className="truncate">{s.name ?? s.email ?? "Élève"}</span>
+                  <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-2 py-0.5 text-[12px] text-amber-50">
+                    {s.credits} cr
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <div className="mt-4 divide-y divide-white/10">
           {invoices.map((invoice) => {
