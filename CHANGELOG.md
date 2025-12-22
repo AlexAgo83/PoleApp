@@ -11,6 +11,7 @@
 - Version bump 0.6.5.
 - Facturation : export CSV via route API dédiée, actions statut guidées, validation Zod + logs structurés.
 - Build Next : page facturation admin ne renvoie plus de Response (fix compatibilité App Router).
+- Bouton admin : génération des factures manquantes côté serveur (backfill sans CLI).
 
 ## 2025-12-22 — Release v0.6.4 (facturation + agendas)
 - Version bump 0.6.4.
