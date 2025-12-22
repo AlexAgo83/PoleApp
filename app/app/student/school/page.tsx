@@ -79,8 +79,9 @@ export default async function StudentSchoolPage({
       };
     }
   } catch (err) {
-    const message = (err as Error)?.message ?? "";
-    if (!message.toLowerCase().includes("website")) {
+    const message = (err as Error)?.message.toLowerCase() ?? "";
+    const shouldFallback = message.includes("website") || message.includes("photourl");
+    if (!shouldFallback) {
       throw err;
     }
     const fetched = await prisma.school.findUnique({
@@ -88,7 +89,6 @@ export default async function StudentSchoolPage({
       select: {
         id: true,
         name: true,
-        photoUrl: true,
         studios: { select: { id: true, name: true, address: true } },
         partners: {
           select: {
@@ -106,7 +106,7 @@ export default async function StudentSchoolPage({
       school = {
         id: fetched.id,
         name: fetched.name,
-        photoUrl: fetched.photoUrl ?? null,
+        photoUrl: null,
         website: null,
         studios: fetched.studios,
         partners: fetched.partners,
