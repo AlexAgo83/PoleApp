@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { WeekCourses } from "./WeekCourses";
 
 type RoleCounts = {
   total: number;
@@ -14,15 +15,6 @@ type RoleCounts = {
 };
 
 export const dynamic = "force-dynamic";
-
-function formatDuration(minutes: number) {
-  const hrs = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (hrs > 0) {
-    return `${hrs}h${mins.toString().padStart(2, "0")}`;
-  }
-  return `${mins} min`;
-}
 
 export default async function AdminDashboard({
   searchParams,
@@ -253,89 +245,12 @@ export default async function AdminDashboard({
         </div>
       </section>
 
-      <section className="panel p-6">
-        <div className="flex items-center justify-between text-lg font-semibold text-white">
-          <span className="inline-flex items-center gap-2">
-            <span>Vue semaine</span>
-            <span className="text-xs font-normal text-slate-300">(cette semaine)</span>
-          </span>
-        </div>
-        <div className="mt-3 grid gap-2 md:grid-cols-7 md:gap-3">
-          {weekDays.map((day, idx) => {
-            const dayCourses = coursesByDay[idx];
-            const hideOnMobile = dayCourses.length === 0 ? "hidden md:block" : "";
-            return (
-              <div
-                key={day.toISOString()}
-                className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
-              >
-                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
-                  <span className="flex items-center gap-1">
-                    <span className="text-[10px] uppercase tracking-wide md:text-xs text-cyan-100">
-                      {day.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
-                    </span>
-                    <span>{day.getDate()}</span>
-                  </span>
-                  <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
-                </div>
-                <div className="flex flex-col gap-1.5 md:gap-2">
-                  {dayCourses.map((course) => {
-                    const past = isPastCourse(course.date, course.durationMinutes);
-                    return (
-                      <Link
-                        key={course.id}
-                        href={`/app/admin/courses/${course.id}?from=/app/admin`}
-                        className={`inline-flex w-full rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
-                          past
-                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                            : "border-white/10 bg-white/10 text-white"
-                        }`}
-                        title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
-                      >
-                        <div className="space-y-0.5 overflow-hidden">
-                          <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                            {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
-                            - {formatDuration(course.durationMinutes ?? 60)}
-                          </p>
-                          <p className="truncate text-[11px] font-semibold text-white">
-                            {course.title ?? "Cours"}
-                          </p>
-                          <p className="truncate text-[10px] text-cyan-100">
-                            {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                          </p>
-                          <p className="truncate text-[10px] text-slate-200">
-                            {course.studio?.name ?? "Studio non renseigné"}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-          <form action="/app/admin" method="get" className="inline-flex">
-            <input type="hidden" name="week" value={prevWeekValue} />
-            <button
-              type="submit"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Semaine précédente
-            </button>
-          </form>
-          <form action="/app/admin" method="get" className="inline-flex">
-            <input type="hidden" name="week" value={nextWeekValue} />
-            <button
-              type="submit"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Semaine suivante →
-            </button>
-          </form>
-        </div>
-      </section>
+      <WeekCourses
+        initialWeek={weekParam ?? null}
+        initialPrev={prevWeekValue}
+        initialNext={nextWeekValue}
+        initialDays={days}
+      />
 
       <section className="panel p-6">
         <h2 className="text-lg font-semibold text-white">Actions rapides</h2>
