@@ -125,7 +125,11 @@ export default async function AdminBillingPage({
 
   const invoices = await prisma.invoice.findMany({
     where,
-    orderBy: { issuedAt: "desc" },
+    orderBy: [
+      { course: { date: "desc" } },
+      { issuedAt: "desc" },
+      { id: "desc" },
+    ],
     skip,
     take: 10,
     include: {
@@ -153,7 +157,8 @@ export default async function AdminBillingPage({
   const totalCredits = students.reduce((acc, s) => acc + (s.credits ?? 0), 0);
   const lowCredits = students.filter((s) => (s.credits ?? 0) < creditThreshold).slice(0, 5);
   const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < creditThreshold).length;
-  const redirectUpdated = qs ? `/app/admin/billing?${qs}&flash=updated` : "/app/admin/billing?flash=updated";
+  const baseBillingPath = "/app/admin/billing";
+  const qsPrefix = qs ? `?${qs}` : "";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -346,8 +351,9 @@ export default async function AdminBillingPage({
               hour: "2-digit",
               minute: "2-digit",
             });
+            const redirectUpdated = `${baseBillingPath}${qsPrefix}${qs ? "&" : "?"}flash=updated#invoice-${invoice.id}`;
             return (
-              <article key={invoice.id} className="flex flex-col gap-2 py-4">
+              <article id={`invoice-${invoice.id}`} key={invoice.id} className="flex flex-col gap-2 py-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span
