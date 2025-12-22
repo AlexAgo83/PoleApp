@@ -7,6 +7,9 @@
 - Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
 - Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
 - Facturation admin : polish UI (filtres regroupés en panel stylisé, actions header alignées à droite, compteur sous les filtres, titre/date dissociés).
+- Partenaires : filtres date/recherche/type appliqués aux stats clic/achat, toasts CRUD.
+- Studios : toasts CRUD.
+- Profil : toast de confirmation “Profil mis à jour”.
 
 ## 2025-12-22 — Release v0.7.0 (cœurs élèves, exclusions blessures, partenaires)
 - Version bump 0.7.0.
