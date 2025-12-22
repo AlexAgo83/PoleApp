@@ -6,6 +6,7 @@ import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
+import { WeekView } from "./WeekView";
 
 export const dynamic = "force-dynamic";
 const NOW_MS = Date.now();
@@ -677,149 +678,20 @@ export default async function StudentCoursesAgendaPage({
       )}
 
       {view === "week" && (
-      <section className="panel p-6">
-        <div className="flex items-center justify-between text-lg font-semibold text-white">
-          <span>Vue semaine</span>
-        </div>
-        <div className="mt-3">
-          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
-            {weekDays.map((day, idx) => {
-              const dayAttendances = attendancesByDay[idx];
-              const isPastDay = day < new Date(new Date().setHours(0, 0, 0, 0));
-              return (
-                <div
-                  key={day.toISOString()}
-                  className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200"
-                >
-                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
-                    <span className="flex items-center gap-1">
-                      <span
-                        className={`text-[10px] uppercase tracking-wide md:text-xs ${
-                          isPastDay ? "text-slate-400" : "text-cyan-100"
-                        }`}
-                      >
-                        {day.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
-                      </span>
-                      <span className={isPastDay ? "text-slate-400" : undefined}>{day.getDate()}</span>
-                    </span>
-                    <span className="text-[11px] text-cyan-100">{dayAttendances.length} cours</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5 md:gap-2">
-                    {dayAttendances.map((a) => {
-                      const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                      const isMineConfirmed = attendingCourseIds.has(a.courseId);
-                      const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
-                      const waitlistRank = a.myAttendance?.waitlistRank;
-                      const badgeClass = past
-                        ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                        : isWaitlist
-                        ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
-                        : isMineConfirmed
-                        ? "border border-amber-300/70 bg-amber-500/25 text-amber-50"
-                        : "border border-white/20 bg-white/10 text-slate-300";
-                      const statusLabel = past
-                        ? "Passé"
-                        : isWaitlist
-                        ? "Attente"
-                        : isMineConfirmed
-                        ? "À venir"
-                        : "Ouvert";
-                      return (
-                        <Link
-                          key={a.id}
-                          href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                          className={`relative inline-flex w-full items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                            past
-                              ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                              : "border-white/10 bg-white/10 text-white"
-                          }`}
-                          title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
-                        >
-                          <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
-                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                              {new Date(a.course.date).toLocaleTimeString("fr-FR", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                              })}{" "}
-                              - {formatDuration(a.course.durationMinutes ?? 60)}
-                            </p>
-                            <p className="truncate text-[11px] font-semibold text-white">
-                              {a.course.title ?? "Cours"}
-                            </p>
-                            <p className="truncate text-[10px] text-cyan-100">
-                              {a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur"}
-                            </p>
-                            <p className="truncate text-[10px] text-slate-200">
-                              {a.course.studio?.name ?? "Studio non renseigné"}
-                            </p>
-                          </div>
-                          <span
-                            className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                              isWaitlist || isMineConfirmed
-                                ? badgeClass
-                                : "border border-white/20 bg-white/10 text-slate-300"
-                            }`}
-                            title={
-                              isWaitlist
-                                ? "Liste d'attente"
-                                : isMineConfirmed
-                                ? past
-                                  ? "Cours déjà suivi"
-                                  : "Inscrit"
-                                : "Non inscrit"
-                            }
-                          >
-                            {isWaitlist && waitlistRank ? `#${waitlistRank}` : statusLabel}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-          <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-            <form action="/app/student/courses/agenda" method="get" className="inline-flex">
-              <input type="hidden" name="view" value="week" />
-              <input type="hidden" name="week" value={prevWeekValue} />
-              {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
-              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-              {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-              {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-              {schoolsParam ? <input type="hidden" name="schools" value="all" /> : null}
-              {q ? <input type="hidden" name="q" value={q} /> : null}
-              <button
-                type="submit"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                ← Semaine précédente
-              </button>
-            </form>
-            <form action="/app/student/courses/agenda" method="get" className="inline-flex">
-              <input type="hidden" name="view" value="week" />
-              <input type="hidden" name="week" value={nextWeekValue} />
-              {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
-              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-              {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-              {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-              {schoolsParam ? <input type="hidden" name="schools" value="all" /> : null}
-              {q ? <input type="hidden" name="q" value={q} /> : null}
-              <button
-                type="submit"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                Semaine suivante →
-              </button>
-            </form>
-          </div>
-      </section>
+        <WeekView
+          initialWeek={weekValue}
+          initialPrev={prevWeekValue}
+          initialNext={nextWeekValue}
+          initialDays={days}
+          filters={{
+            teacher: teacherFilter,
+            studio: studioFilter,
+            mine: onlyMine,
+            schools: schoolsParam,
+            q,
+          }}
+          baseFrom="/app/student/courses/agenda"
+        />
       )}
     </main>
   );
