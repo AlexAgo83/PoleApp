@@ -46,12 +46,12 @@ export default async function TeacherCourseDetailPage({
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true, address: true } },
         attendances: {
-          include: { student: { select: { name: true, email: true } } },
+          include: { student: { select: { id: true, name: true, email: true } } },
         },
         positions: { include: { position: true } },
         notes: {
           include: {
-            student: { select: { name: true, email: true } },
+            student: { select: { id: true, name: true, email: true } },
             position: true,
           },
         },
@@ -69,7 +69,7 @@ export default async function TeacherCourseDetailPage({
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true, address: true } },
             attendances: {
-              include: { student: { select: { name: true, email: true } } },
+              include: { student: { select: { id: true, name: true, email: true } } },
             },
             positions: { include: { position: true } },
             notes: {
@@ -98,6 +98,9 @@ export default async function TeacherCourseDetailPage({
       ? rawFrom
       : undefined;
   const backHref = safeFrom ?? "/app/teacher/courses";
+  const currentPath = `/app/teacher/courses/${course.id}${
+    safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
+  }`;
   const seatsUsed = course._count?.attendances ?? 0;
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
@@ -210,7 +213,16 @@ export default async function TeacherCourseDetailPage({
               key={attendance.id}
               className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200"
             >
-              {attendance.student?.name ?? attendance.student?.email ?? "Élève"}
+              {attendance.student?.id ? (
+                <Link
+                  href={`/app/teacher/students/${attendance.student.id}?from=${encodeURIComponent(currentPath)}`}
+                  className="inline-flex items-center gap-2 text-white underline-offset-4 hover:underline"
+                >
+                  {attendance.student?.name ?? attendance.student?.email ?? "Élève"}
+                </Link>
+              ) : (
+                attendance.student?.name ?? attendance.student?.email ?? "Élève"
+              )}
             </li>
           ))}
           {course.attendances.length === 0 && (
@@ -233,7 +245,16 @@ export default async function TeacherCourseDetailPage({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="space-y-0.5">
                     <p className="font-semibold text-white">
-                      {note.student?.name ?? note.student?.email ?? "Élève"}
+                      {(note.student as { id?: string | null } | null | undefined)?.id ? (
+                        <Link
+                          href={`/app/teacher/students/${(note.student as { id: string }).id}?from=${encodeURIComponent(currentPath)}`}
+                          className="underline-offset-4 hover:underline"
+                        >
+                          {note.student?.name ?? note.student?.email ?? "Élève"}
+                        </Link>
+                      ) : (
+                        note.student?.name ?? note.student?.email ?? "Élève"
+                      )}
                     </p>
                     <p className="text-xs text-slate-300">
                       {note.position.name}
