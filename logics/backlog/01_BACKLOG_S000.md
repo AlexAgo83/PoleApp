@@ -10,6 +10,7 @@
 > Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (positions listées pour tous sur `/positions`, création/édition prof/admin sous `/teacher/positions/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
 > Statut : Steps 0→9 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA). Phase produit enclenchée : facturation livrée (0.6.9) avec invoices auto/backfill, tri/export CSV, toasts ancrés, crédits en résumé, UI admin/prof. Générateur : suggestions visibles sur la fiche cours (teacher/admin), édition des notes via l’écran d’édition (inline retiré). Agendas admin/teacher/student : navigation semaine inline + bouton “Semaine actuelle”. À poursuivre : générateur complet (tags/validation), métriques partenaires, QA parité jeux/agenda élève.
+> UX : généraliser le système de notifications/toasts (pattern “Valider ces propositions” / “Statut/montant mis à jour.”) sur les principaux CTA de l’application.
 - À planifier : intégration Cloudinary pour l’hébergement des images (upload prof/élève/cours) quand on ouvrira le flux média produit.
 
 ---
