@@ -1,11 +1,11 @@
 # Backlog — Retours QA S007 (session 2025-12-21 23:55)
-[Compréhension: 70% / Avancement: 35%]
+[Compréhension: 70% / Avancement: 45%]
 
 Source : 06_QA_S007.md (tests sur v0.5.0)
 
 ## Tâches
 - [ ] Student > École/Cours : vue planning/agenda (liste + agenda) avec modes semaine/mensuel visibles en mobile/desktop (et par studio si pertinent).
-- [ ] Student > Jeux : parité complète avec l’espace Teacher (6 modes, affichages, historique/leaderboard s’il existe), aucune restriction élève.
+- [x] Student > Jeux : parité complète avec l’espace Teacher (6 modes, affichages, historique/leaderboard s’il existe), aucune restriction élève. (OK via `/app/student/game` accessible rôles)
 - [ ] Student > Cours : liste + agenda avec légende affichée en haut et code couleur clair pour différencier :
   - cours déjà suivis (passés),
   - cours inscrits (validation OK),
