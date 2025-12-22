@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 
 const updateInvoiceSchema = z.object({
   invoiceId: z.string().min(1),
@@ -70,6 +71,42 @@ export async function updateInvoiceStatusAction(formData: FormData) {
       courseId: invoice.courseId,
       schoolId: invoice.course.schoolId,
       userId: session.user.id,
+    })
+  );
+  revalidatePath("/app/admin/billing");
+}
+
+export async function backfillInvoicesAction() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
+    throw new Error("Accès refusé");
+  }
+  const courses = await prisma.course.findMany({
+    where: { schoolId: session.user.schoolId, invoices: { none: {} } },
+    select: {
+      id: true,
+      maxSeats: true,
+      _count: { select: { attendances: { where: { status: "CONFIRMED" } } } },
+    },
+  });
+  if (courses.length === 0) {
+    return;
+  }
+  await prisma.$transaction(
+    courses.map((course) => {
+      const amountCents = computeDefaultInvoiceAmountCents(
+        course._count.attendances,
+        course.maxSeats ?? 30
+      );
+      return prisma.invoice.create({
+        data: {
+          courseId: course.id,
+          amountCents,
+          currency: "EUR",
+          status: InvoiceStatus.GENERATED,
+          issuedAt: new Date(),
+        },
+      });
     })
   );
   revalidatePath("/app/admin/billing");

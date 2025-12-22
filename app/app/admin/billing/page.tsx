@@ -6,7 +6,7 @@ import { InvoiceStatus, Prisma } from "@prisma/client";
 import { FilterPanel } from "@/components/FilterPanel";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateInvoiceStatusAction } from "./actions";
+import { backfillInvoicesAction, updateInvoiceStatusAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -155,6 +155,14 @@ export default async function AdminBillingPage({
         >
           ← Retour dashboard
         </Link>
+        <form action={backfillInvoicesAction} className="w-full">
+          <button
+            type="submit"
+            className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
+          >
+            Générer les factures manquantes
+          </button>
+        </form>
       </header>
 
       <section className="panel p-4 md:p-6">
