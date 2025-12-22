@@ -6,7 +6,7 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCourseSuggestions } from "@/lib/courseGenerator";
-import { applySuggestedPositionsAction } from "./actions";
+import { applySuggestedPositionsAction, removeCoursePositionAction } from "./actions";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -233,6 +233,16 @@ export default async function TeacherCourseDetailPage({
                     Appliqué
                   </span>
                 )}
+                <form action={removeCoursePositionAction} method="post">
+                  <input type="hidden" name="courseId" value={course.id} />
+                  <input type="hidden" name="positionId" value={cp.position.id} />
+                  <button
+                    type="submit"
+                    className="text-xs font-semibold text-rose-200 underline-offset-4 hover:text-rose-100 hover:underline"
+                  >
+                    Retirer
+                  </button>
+                </form>
               </div>
             </li>
           ))}
@@ -307,21 +317,28 @@ export default async function TeacherCourseDetailPage({
             <input type="hidden" name="suggestions" value={JSON.stringify(suggestions)} />
             <div className="grid gap-2 md:grid-cols-2">
               {suggestions.map((s) => (
-              <label
-                key={s.positionId}
-                className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
-              >
-                <input
-                  type="checkbox"
-                  name="positionIds"
-                  value={s.positionId}
-                  defaultChecked={!s.excludedForInjury}
-                  disabled={s.excludedForInjury}
-                  className="mt-1"
-                />
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold">{s.name}</span>
+                <label
+                  key={s.positionId}
+                  className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                >
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="checkbox"
+                      name="positionIds"
+                      value={s.positionId}
+                      defaultChecked={!s.excludedForInjury}
+                      className="mt-1 h-4 w-4"
+                    />
+                    {s.excludedForInjury ? (
+                      <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-rose-100">
+                        <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-3 w-3" />
+                        <span>Forcer quand même</span>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">{s.name}</span>
                       {s.type ? (
                         <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{s.type}</span>
                       ) : null}
@@ -348,6 +365,11 @@ export default async function TeacherCourseDetailPage({
                       </span>
                     </div>
                     <p className="text-xs text-slate-300">{s.reason}</p>
+                    {s.excludedForInjury && s.unsafeInjuries && s.unsafeInjuries.length > 0 && (
+                      <p className="text-xs text-rose-200">
+                        Incompatible blessure(s) : {s.unsafeInjuries.join(", ")}
+                      </p>
+                    )}
                   </div>
                 </label>
               ))}
