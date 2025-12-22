@@ -16,7 +16,11 @@ const roleLabels: Record<string, string> = {
 const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 const TEACHER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ saved?: string }>;
+}) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -68,6 +72,9 @@ export default async function ProfilePage() {
   const avatarUrl =
     user.avatarUrl?.trim() ||
     (isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER);
+
+  const resolvedSearch = (await searchParams) ?? {};
+  const saved = resolvedSearch.saved === "1";
 
   return (
     <main className="mx-auto grid max-w-4xl gap-6">
@@ -296,6 +303,12 @@ export default async function ProfilePage() {
             </div>
           </div>
         </section>
+      )}
+
+      {saved && (
+        <div className="fixed bottom-4 right-4 z-30 rounded-xl border border-emerald-300/60 bg-emerald-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
+          Profil mis à jour.
+        </div>
       )}
     </main>
   );
