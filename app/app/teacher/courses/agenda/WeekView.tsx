@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 
 type DayCourse = {
@@ -22,10 +22,16 @@ type Day = {
 };
 
 type Props = {
-  initialWeek: string | null;
+  initialWeek: string;
   initialPrev: string;
   initialNext: string;
   initialDays: Day[];
+  filters: {
+    teacher?: string;
+    studio?: string;
+    q?: string;
+  };
+  baseFrom: string;
 };
 
 function formatDuration(minutes: number) {
@@ -37,9 +43,9 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
-export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays }: Props) {
+export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, filters, baseFrom }: Props) {
   const [days, setDays] = useState<Day[]>(initialDays);
-  const [week, setWeek] = useState<string | null>(initialWeek);
+  const [week, setWeek] = useState(initialWeek);
   const [prev, setPrev] = useState(initialPrev);
   const [next, setNext] = useState(initialNext);
   const [isPending, startTransition] = useTransition();
@@ -54,14 +60,14 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
 
   const fetchWeek = (target: string) => {
     startTransition(async () => {
-      const url = `/api/admin/week-courses?week=${encodeURIComponent(target)}`;
-      const res = await fetch(url, { cache: "no-store" });
+      const params = new URLSearchParams();
+      params.set("week", target);
+      if (filters.teacher) params.set("teacher", filters.teacher);
+      if (filters.studio) params.set("studio", filters.studio);
+      if (filters.q) params.set("q", filters.q);
+      const res = await fetch(`/api/teacher/week-courses?${params.toString()}`, { cache: "no-store" });
       if (!res.ok) return;
-      const json = (await res.json()) as {
-        prevWeek: string;
-        nextWeek: string;
-        days: Day[];
-      };
+      const json = (await res.json()) as { prevWeek: string; nextWeek: string; days: Day[] };
       setWeek(target);
       setPrev(json.prevWeek);
       setNext(json.nextWeek);
@@ -82,19 +88,10 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
     fetchWeek(currentWeekKey);
   };
 
-  const label = useMemo(() => {
-    if (!week) return "Semaine en cours";
-    const d = new Date(`${week}T00:00:00`);
-    const end = new Date(d);
-    end.setDate(end.getDate() + 6);
-    return `Semaine du ${d.toLocaleDateString("fr-FR")} au ${end.toLocaleDateString("fr-FR")}`;
-  }, [week]);
-
   return (
     <section className="panel p-6">
       <div className="flex items-center justify-between text-lg font-semibold text-white">
         <span>Vue semaine</span>
-        <span className="text-sm font-normal text-slate-300">{label}</span>
       </div>
       <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
         {days.map((day) => {
@@ -122,7 +119,7 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                   return (
                     <Link
                       key={course.id}
-                      href={`/app/teacher/courses/${course.id}?from=/app/admin`}
+                      href={`/app/teacher/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
                       className={`relative rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
                         course.past
                           ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
@@ -158,7 +155,7 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
           );
         })}
       </div>
-      <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-white">
         <form onSubmit={handlePrev} className="inline-flex">
           <input type="hidden" name="week" value={prev} />
           <button

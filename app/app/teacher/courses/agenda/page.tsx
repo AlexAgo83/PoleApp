@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
+import { WeekView } from "./WeekView";
 
 export const dynamic = "force-dynamic";
 const NOW_MS = Date.now();
@@ -170,6 +171,27 @@ export default async function CoursesAgendaPage({
   const coursesByDay = weekDays.map((d) => {
     const dayStr = d.toDateString();
     return courses.filter((c) => new Date(c.date).toDateString() === dayStr);
+  });
+  const days = weekDays.map((d, idx) => {
+    const dayCourses = coursesByDay[idx];
+    return {
+      isoDate: d.toISOString(),
+      label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+      day: d.getDate(),
+      isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
+      courses: dayCourses.map((course) => {
+        const past = isPastCourse(course.date, course.durationMinutes);
+        return {
+          id: course.id,
+          title: course.title,
+          date: course.date.toISOString(),
+          durationMinutes: course.durationMinutes,
+          teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
+          studioName: course.studio?.name ?? "Studio non renseigné",
+          past,
+        };
+      }),
+    };
   });
 
   return (
@@ -466,109 +488,18 @@ export default async function CoursesAgendaPage({
       )}
 
       {view === "week" && (
-        <section className="panel p-6">
-        <div className="flex items-center justify-between text-lg font-semibold text-white">
-          <span>Vue semaine</span>
-        </div>
-        <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
-          {weekDays.map((day, idx) => {
-            const dayCourses = coursesByDay[idx];
-            const hideOnMobile = dayCourses.length === 0 ? "hidden md:block" : "";
-            return (
-              <div
-                  key={day.toISOString()}
-                  className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
-                >
-                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
-                    <span className="flex items-center gap-1">
-                      <span className={`text-[10px] uppercase tracking-wide md:text-xs ${day < new Date(new Date().setHours(0,0,0,0)) ? "text-slate-400" : "text-cyan-100"}`}>
-                        {day.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
-                      </span>
-                      <span className={day < new Date(new Date().setHours(0,0,0,0)) ? "text-slate-400" : undefined}>{day.getDate()}</span>
-                    </span>
-                  <span className="text-[11px] text-cyan-100">{dayCourses.length} cours</span>
-                </div>
-                <div className="flex flex-col gap-1.5 md:gap-2">
-                  {dayCourses.map((course) => {
-                    const past = isPastCourse(course.date, course.durationMinutes);
-                    const statusLabel = past ? "Passé" : "À venir";
-                    const badgeClass = past
-                      ? "border border-blue-400/60 bg-blue-500/20 text-blue-50"
-                      : "border border-emerald-400/60 bg-emerald-500/20 text-emerald-50";
-                    return (
-                      <Link
-                        key={course.id}
-                        href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                        className={`relative rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                          past
-                            ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                            : "border-white/10 bg-white/10 text-white"
-                        }`}
-                        title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
-                      >
-                        <div className="space-y-0.5 overflow-hidden pr-6">
-                          <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                            {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
-                            - {formatDuration(course.durationMinutes ?? 60)}
-                          </p>
-                          <p className="truncate text-[11px] font-semibold text-white">
-                            {course.title ?? "Cours"}
-                          </p>
-                          <p className="truncate text-[10px] text-cyan-100">
-                            {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                          </p>
-                          <p className="truncate text-[10px] text-slate-200">
-                            {course.studio?.name ?? "Studio non renseigné"}
-                          </p>
-                        </div>
-                        <span
-                          className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
-                        >
-                          {statusLabel}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-          <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
-            <input type="hidden" name="view" value="week" />
-            <input type="hidden" name="week" value={prevWeekValue} />
-            {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
-            {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-            {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-            {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
-            {q ? <input type="hidden" name="q" value={q} /> : null}
-            <button
-              type="submit"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Semaine précédente
-            </button>
-          </form>
-          <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
-            <input type="hidden" name="view" value="week" />
-            <input type="hidden" name="week" value={nextWeekValue} />
-            {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
-            {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-            {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-            {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-            {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
-            {q ? <input type="hidden" name="q" value={q} /> : null}
-            <button
-              type="submit"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Semaine suivante →
-            </button>
-          </form>
-        </div>
-      </section>
+        <WeekView
+          initialWeek={weekValue}
+          initialPrev={prevWeekValue}
+          initialNext={nextWeekValue}
+          initialDays={days}
+          filters={{
+            teacher: teacherParamForNav,
+            studio: studioFilter,
+            q,
+          }}
+          baseFrom="/app/teacher/courses/agenda"
+        />
       )}
     </main>
   );
