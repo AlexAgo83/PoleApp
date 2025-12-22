@@ -12,7 +12,7 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
 - [ ] Teacher > École : vue agenda (semaine + mensuel) par studio, états mobile/desktop, incluant cours passés et à venir. Filtres multiples : niveau, prof, date, discipline (types de cours ex. souplesse/pole exotic/pole gym), studio. Pagination ou scroll infini.
 - [ ] Teacher > Cours : générateur de cours qui suggère positions selon élèves présents et leurs niveaux ; fiche cours affiche niveau atteint par élève/position (format badges/tableau), édition inline autorisée ; élèves cliquables vers leur fiche (prof et admin). (Voir BACKLOG_S004 — Générateur de cours (qa notes S004))
 - [x] Teacher > Positions : supprimer l’encadré “gating”. (OK via vue commune /positions)
-- [ ] Teacher > Facturation (basé sur `Invoice`) :
+- [x] Teacher > Facturation (basé sur `Invoice`) :
   - Modèle : table `Invoice` liée à `Course` (courseId, amountCents, currency, status enum Générée/Envoyée/Payée/En retard/Annulée, issuedAt, paidAt, notes).
   - Calcul : règle par défaut fixée (présences CONFIRMED × 50€, fallback maxSeats × 30€) + override montant/note manuel (persisté sur l’Invoice).
   - UI : onglet facturation prof (lecture confirmée) listant les cours donnés avec montant + statut ; filtres date/studio/statut, pagination 10.
