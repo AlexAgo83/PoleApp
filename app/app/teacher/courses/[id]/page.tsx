@@ -101,9 +101,18 @@ export default async function TeacherCourseDetailPage({
           existingPositionIds: course.positions.map((p) => p.position.id),
         })
       : [];
-  const storedRecommendations = await prisma.courseRecommendation.findMany({
-    where: { courseId: course.id },
-  });
+  const storedRecommendations =
+    (await prisma.courseRecommendation
+      .findMany({
+        where: { courseId: course.id },
+      })
+      .catch((error: unknown) => {
+        const message = (error as Error)?.message ?? "";
+        if (message.includes("CourseRecommendation") || message.includes("does not exist")) {
+          return [];
+        }
+        throw error;
+      })) ?? [];
   const appliedBadge = new Set(
     storedRecommendations.filter((r) => r.appliedAt).map((r) => r.positionId)
   );

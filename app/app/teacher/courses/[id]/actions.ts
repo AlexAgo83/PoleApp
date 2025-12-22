@@ -413,18 +413,27 @@ export async function applySuggestedPositionsAction(formData: FormData) {
       skipDuplicates: true,
     });
 
-    await tx.courseRecommendation.deleteMany({ where: { courseId: course.id } });
-    if (suggestionsList.length > 0) {
-      await tx.courseRecommendation.createMany({
-        data: suggestionsList.map((s) => ({
-          courseId: course.id,
-          positionId: s.positionId,
-          tag: s.tag,
-          reason: s.reason ?? null,
-          appliedAt: toInsert.includes(s.positionId) ? new Date() : null,
-        })),
-        skipDuplicates: true,
-      });
+    try {
+      await tx.courseRecommendation.deleteMany({ where: { courseId: course.id } });
+      if (suggestionsList.length > 0) {
+        await tx.courseRecommendation.createMany({
+          data: suggestionsList.map((s) => ({
+            courseId: course.id,
+            positionId: s.positionId,
+            tag: s.tag,
+            reason: s.reason ?? null,
+            appliedAt: toInsert.includes(s.positionId) ? new Date() : null,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    } catch (error) {
+      const message = (error as Error)?.message ?? "";
+      const tableMissing = message.includes("CourseRecommendation") || message.includes("does not exist");
+      if (!tableMissing) {
+        throw error;
+      }
+      console.warn("[courseRecommendation] table missing, skipping persistence");
     }
   });
 
