@@ -127,7 +127,7 @@ export default async function AdminDashboard({
     const dayStr = d.toDateString();
     return weekCourses.filter((c) => new Date(c.date).toDateString() === dayStr);
   });
-  const days = weekDays.map((d, idx) => {
+  const initialWeekDays = weekDays.map((d, idx) => {
     const dayCourses = coursesByDay[idx];
     return {
       isoDate: d.toISOString(),
@@ -147,7 +147,7 @@ export default async function AdminDashboard({
   });
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+  <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel p-3 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -267,7 +267,7 @@ export default async function AdminDashboard({
         initialWeek={weekParam ?? null}
         initialPrev={prevWeekValue}
         initialNext={nextWeekValue}
-        initialDays={days}
+        initialDays={initialWeekDays}
       />
 
       <section className="panel p-6">

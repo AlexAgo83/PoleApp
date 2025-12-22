@@ -282,7 +282,7 @@ export default async function StudentCoursesAgendaPage({
 
   const [studios, teachers] = await Promise.all([studiosPromise, teachersPromise]);
 
-  const days = weekDays.map((d, idx) => {
+  const initialWeekDays = weekDays.map((d, idx) => {
     const dayAttendances = attendancesByDay[idx];
     return {
       isoDate: d.toISOString(),
@@ -706,7 +706,7 @@ export default async function StudentCoursesAgendaPage({
           initialWeek={weekValue}
           initialPrev={prevWeekValue}
           initialNext={nextWeekValue}
-          initialDays={days}
+          initialDays={initialWeekDays}
           filters={{
             teacher: teacherFilter,
             studio: studioFilter,
