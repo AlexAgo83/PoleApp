@@ -137,9 +137,15 @@ export function GameClient({ questions, mode }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-        <p className="text-sm font-semibold text-white">Énoncé</p>
-        <p className="mt-1 text-sm text-slate-200">{question.prompt}</p>
+      <div className="relative">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-3 rounded-3xl bg-gradient-to-r from-cyan-300/60 via-fuchsia-500/55 to-indigo-500/60 blur-[18px] opacity-90 animate-pulse"
+        />
+        <div className="relative rounded-2xl border border-white/15 bg-white/10 p-4 ring ring-cyan-200/50 shadow-xl">
+          <p className="text-sm font-semibold text-white">Énoncé</p>
+          <p className="mt-1 text-sm text-slate-200">{question.prompt}</p>
+        </div>
       </div>
 
       <div className="flex items-center justify-between text-sm text-slate-300">
@@ -202,7 +208,7 @@ export function GameClient({ questions, mode }: Props) {
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
             !reveal || !selected
               ? "cursor-not-allowed border border-white/10 text-slate-500"
-              : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5"
+              : "border border-white/10 text-white hover:border-cyan-400/70 hover:bg-white/5 animate-[pulse_1.4s_ease-in-out_infinite] [animation-delay:0.05s]"
           }`}
         >
           {current === prepared.length - 1 ? "Voir les résultats" : "Question suivante"}

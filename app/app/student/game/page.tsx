@@ -65,7 +65,7 @@ function ReturnCta({ role }: { role: string }) {
   const href =
     role === "TEACHER" ? "/app/teacher" : role === "SCHOOL_ADMIN" ? "/app/admin" : "/app/student";
   return (
-    <div className="flex w-full justify-end">
+    <div className="flex justify-end">
       <Link
         href={href}
         className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -264,11 +264,11 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
           </section>
         )}
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid gap-4 md:grid-cols-2 [grid-auto-rows:minmax(0,1fr)]">
           {MODES.map((mode) => {
             const stats = statsByMode.get(mode.id);
             return (
-              <article key={mode.id} className="panel flex flex-col gap-3 p-5">
+              <article key={mode.id} className="panel flex h-full flex-col gap-3 p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-xl font-semibold text-white">{mode.title}</h3>
@@ -289,7 +289,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
                     </p>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="mt-auto flex items-center justify-end gap-2">
                   <Link
                     href={`/app/student/game?mode=${mode.id}`}
                     className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
@@ -415,7 +415,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+      <header className="panel flex flex-col gap-4 p-6">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
             {isTeacherOrAdmin ? "Prof / Admin" : "Élève"}
@@ -428,12 +428,12 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
             Stats : {userStats?.sessions ?? 0} parties · Meilleur {userStats?.best ? `${userStats.best.accuracy}%` : "—"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-nowrap items-center justify-end gap-2">
           <Link
             href="/app/student/game"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className="whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            ← Changer de mode
+            ← Autre mode
           </Link>
           <ReturnCta role={session.user.role} />
         </div>
