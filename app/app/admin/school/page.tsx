@@ -19,7 +19,6 @@ export default async function AdminSchoolPage() {
     select: {
       id: true,
       name: true,
-      photoUrl: true,
       studios: { select: { id: true, name: true, address: true } },
       partners: {
         select: {
@@ -33,12 +32,14 @@ export default async function AdminSchoolPage() {
     },
   });
   let schoolWebsite: string | null = null;
+  let schoolPhoto: string | null = null;
   try {
-    const withWebsite = await prisma.school.findUnique({
+    const withExtras = await prisma.school.findUnique({
       where: { id: session.user.schoolId },
-      select: { website: true },
+      select: { website: true, photoUrl: true },
     });
-    schoolWebsite = withWebsite?.website ?? null;
+    schoolWebsite = withExtras?.website ?? null;
+    schoolPhoto = withExtras?.photoUrl ?? null;
   } catch {
     // Column may not exist; ignore.
   }
@@ -75,11 +76,11 @@ export default async function AdminSchoolPage() {
           <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
           <p className="text-sm text-slate-300">
             ID : <span className="font-mono text-slate-200">{baseSchool?.id ?? "—"}</span>
-            {schoolWebsite ? (
-              <>
-                {" · "}
-                <Link
-                  href={schoolWebsite}
+        {schoolWebsite ? (
+          <>
+            {" · "}
+            <Link
+              href={schoolWebsite}
                   className="text-cyan-200 underline underline-offset-2"
                   target="_blank"
                   rel="noreferrer"
@@ -88,6 +89,12 @@ export default async function AdminSchoolPage() {
                 </Link>
               </>
             ) : null}
+            {schoolPhoto && (
+              <>
+                {" · "}
+                <span className="text-slate-400">Photo définie</span>
+              </>
+            )}
           </p>
         </div>
 
@@ -133,13 +140,13 @@ export default async function AdminSchoolPage() {
         </form>
       </section>
 
-      {baseSchool?.photoUrl && (
+      {schoolPhoto && (
         <section className="panel p-6">
           <h3 className="text-lg font-semibold text-white">Photo de l’école</h3>
           <div className="mt-3">
             <img
-              src={baseSchool.photoUrl}
-              alt={`Photo de l’école ${baseSchool.name}`}
+              src={schoolPhoto}
+              alt={`Photo de l’école ${baseSchool?.name ?? "École"}`}
               className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
             />
           </div>
