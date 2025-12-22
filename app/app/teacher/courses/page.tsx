@@ -25,11 +25,20 @@ function formatDuration(minutes: number) {
 export default async function TeacherCoursesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; from?: string; to?: string; teacher?: string; withNotes?: string; studio?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    from?: string;
+    to?: string;
+    teacher?: string;
+    withNotes?: string;
+    studio?: string;
+    q?: string;
+  }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
   const teacherFilter = typeof resolvedParams.teacher === "string" ? resolvedParams.teacher : undefined;
+  const q = resolvedParams.q?.toString().trim() ?? "";
   const studioFilter =
     typeof resolvedParams.studio === "string" && resolvedParams.studio.length > 0
       ? resolvedParams.studio
@@ -45,6 +54,7 @@ export default async function TeacherCoursesPage({
     teacherFilter,
     studioFilter,
     withNotes ? "notes" : null,
+    q && q.length > 0 ? "q" : null,
   ].filter(Boolean).length;
   const hasFilters = Boolean(validFrom || validTo || teacherFilter || withNotes);
 
@@ -61,6 +71,11 @@ export default async function TeacherCoursesPage({
     ...(validFrom ? { date: { gte: validFrom } } : {}),
     ...(validTo ? { date: { lte: validTo } } : {}),
     ...(withNotes ? { notes: { some: {} } } : {}),
+    ...(q
+      ? {
+          title: { contains: q, mode: "insensitive" as const },
+        }
+      : {}),
   };
 
   const [totalCount, teachers, studios] = await Promise.all([
@@ -171,7 +186,7 @@ export default async function TeacherCoursesPage({
           userKey={userKey}
         >
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${withNotes ? "notes" : "all"}`}
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${withNotes ? "notes" : "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -206,8 +221,18 @@ export default async function TeacherCoursesPage({
                 <option key={t.id} value={t.id}>
                   {t.name ?? t.email}
                 </option>
-              ))}
+                ))}
               </select>
+            </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Recherche (titre)
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Titre du cours"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
             </label>
             <label className="text-sm text-slate-200">
               Studio
