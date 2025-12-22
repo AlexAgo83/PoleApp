@@ -196,13 +196,21 @@ model Course {
 }
 
 model CourseAttendance {
-  id        String @id @default(cuid())
-  courseId  String
-  studentId String
-  course    Course @relation(fields: [courseId], references: [id])
-  student   User   @relation(fields: [studentId], references: [id])
+  id           String            @id @default(cuid())
+  courseId     String
+  studentId    String
+  status       AttendanceStatus  @default(CONFIRMED)
+  waitlistRank Int?
+  createdAt    DateTime          @default(now())
+  course       Course            @relation(fields: [courseId], references: [id])
+  student      User              @relation(fields: [studentId], references: [id])
 
   @@unique([courseId, studentId])
+}
+
+enum AttendanceStatus {
+  CONFIRMED
+  WAITLIST
 }
 
 model CoursePosition {

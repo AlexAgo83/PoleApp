@@ -30,7 +30,12 @@ type CourseRow = {
   positions: { position: { id: string; name: string } }[];
   notes: CourseNote[];
   _count: { attendances: number };
-  attendances?: { id: string }[];
+  attendances: {
+    id: string;
+    studentId: string;
+    status: "CONFIRMED" | "WAITLIST";
+    waitlistRank: number | null;
+  }[];
 };
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
@@ -150,8 +155,7 @@ export default async function StudentCoursesPage({
               include: { position: true },
             },
             attendances: {
-              where: { studentId: session.user.id },
-              select: { id: true },
+              select: { id: true, studentId: true, status: true, waitlistRank: true },
             },
             _count: { select: { attendances: true } },
           },
@@ -185,8 +189,7 @@ export default async function StudentCoursesPage({
               include: { position: true },
             },
             attendances: {
-              where: { studentId: session.user.id },
-              select: { id: true },
+              select: { id: true, studentId: true, status: true, waitlistRank: true },
             },
             _count: { select: { attendances: true } },
           },
@@ -210,8 +213,7 @@ export default async function StudentCoursesPage({
                   include: { position: true },
                 },
                 attendances: {
-                  where: { studentId: session.user.id },
-                  select: { id: true },
+                  select: { id: true, studentId: true, status: true, waitlistRank: true },
                 },
                 _count: { select: { attendances: true } },
               },
@@ -238,13 +240,15 @@ export default async function StudentCoursesPage({
   ]);
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
-  const coursesList: { key: string; course: CourseRow; isAttending: boolean }[] = (
-    items as CourseRow[]
-  ).map((course) => ({
-    key: course.id,
-    course,
-    isAttending: onlyMine ? true : Boolean(course.attendances?.length),
-  }));
+  const coursesList: { key: string; course: CourseRow; myAttendance: CourseRow["attendances"][number] | undefined }[] =
+    (items as CourseRow[]).map((course) => {
+      const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
+      return {
+        key: course.id,
+        course,
+        myAttendance,
+      };
+    });
 
   const queryParams = new URLSearchParams();
   if (resolvedParams.from) queryParams.set("from", resolvedParams.from);
@@ -316,7 +320,7 @@ export default async function StudentCoursesPage({
           ))}
         </div>
         <p className="mt-2 text-xs text-slate-300">
-          Les rangs de liste d’attente doivent être reliés aux données (quota 14 élèves).
+          Le rang s’affiche si fourni (quota 14 élèves, statut WAITLIST requis).
         </p>
       </section>
 
@@ -431,10 +435,10 @@ export default async function StudentCoursesPage({
           </form>
         </FilterPanel>
         <div className="flex flex-col divide-y divide-white/5">
-          {coursesList.map(({ key, course, isAttending }) => {
+          {coursesList.map(({ key, course, myAttendance }) => {
             const courseDate = new Date(course.date);
-            const seatsUsed = course._count?.attendances ?? 0;
-            const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+            const confirmedSeats = course.attendances.filter((a) => a.status === "CONFIRMED").length;
+            const remainingSeats = (course.maxSeats ?? 30) - confirmedSeats;
             const formattedDate = courseDate.toLocaleString("fr-FR", {
               hour12: false,
               year: "numeric",
@@ -448,24 +452,29 @@ export default async function StudentCoursesPage({
             const detailHref = `/app/student/courses/${course.id}?from=${encodeURIComponent(
               `/app/student/courses?page=${currentPage}`
             )}`;
-            const badgeClass = isAttending
+            const isWaitlist = myAttendance?.status === "WAITLIST";
+            const isAttending = Boolean(myAttendance && myAttendance.status === "CONFIRMED");
+            const badgeClass = isWaitlist
+              ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
+              : isAttending
               ? isPast
                 ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
                 : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
               : "border border-white/20 bg-white/10 text-slate-300";
+            const badgeTitle = isWaitlist
+              ? "Liste d'attente"
+              : isAttending
+              ? isPast
+                ? "Cours déjà suivi"
+                : "Inscrit"
+              : "Non inscrit";
             return (
               <div key={key} className={`block rounded-xl ${faded}`}>
                 <article className="flex flex-col gap-2 py-3 px-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}
-                      title={
-                        isAttending
-                          ? isPast
-                            ? "Cours déjà suivi"
-                            : "Inscrit"
-                          : "Non inscrit"
-                      }
+                      title={badgeTitle}
                     >
                       ●
                     </span>
@@ -506,6 +515,11 @@ export default async function StudentCoursesPage({
                         </p>
                         <p>
                           {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30}
+                          {isWaitlist && (
+                            <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
+                              Attente{myAttendance?.waitlistRank ? ` · rang #${myAttendance.waitlistRank}` : ""}
+                            </span>
+                          )}
                         </p>
                       </div>
                     </div>
