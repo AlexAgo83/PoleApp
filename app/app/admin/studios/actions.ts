@@ -56,7 +56,7 @@ export async function createStudioAction(formData: FormData) {
   });
 
   revalidatePath(basePath);
-  redirect(basePath);
+  redirect(`${basePath}?flash=created`);
 }
 
 export async function updateStudioAction(formData: FormData) {
@@ -89,7 +89,7 @@ export async function updateStudioAction(formData: FormData) {
   });
 
   revalidatePath(basePath);
-  redirect(basePath);
+  redirect(`${basePath}?flash=updated`);
 }
 
 export async function deleteStudioAction(formData: FormData) {
@@ -114,5 +114,5 @@ export async function deleteStudioAction(formData: FormData) {
   await prisma.studio.delete({ where: { id: parsed.data.id } });
 
   revalidatePath(basePath);
-  redirect(basePath);
+  redirect(`${basePath}?flash=deleted`);
 }
