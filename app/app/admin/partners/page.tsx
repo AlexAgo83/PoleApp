@@ -120,6 +120,29 @@ export default async function AdminPartnersPage({
     });
   }
 
+  const partnerIds = partners.map((p) => p.id);
+  const eventCounts = partnerIds.length
+    ? await prisma.partnerEvent
+        .groupBy({
+          by: ["partnerId", "type"],
+          _count: { _all: true },
+          where: { partnerId: { in: partnerIds } },
+        })
+        .then((rows) => {
+          const map = new Map<string, { clicks: number; purchases: number }>();
+          rows.forEach((row) => {
+            const current = map.get(row.partnerId) ?? { clicks: 0, purchases: 0 };
+            if (row.type === "PURCHASE") {
+              current.purchases += row._count._all;
+            } else {
+              current.clicks += row._count._all;
+            }
+            map.set(row.partnerId, current);
+          });
+          return map;
+        })
+    : new Map<string, { clicks: number; purchases: number }>();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel p-4 md:p-6">
@@ -287,14 +310,14 @@ export default async function AdminPartnersPage({
                             ✏️ Éditer
                           </Link>
                           {partner.website && (
-                            <a
-                              href={partner.website}
+                            <Link
+                              href={`/api/partners/redirect?partnerId=${partner.id}&url=${encodeURIComponent(partner.website)}&type=click`}
+                              className="text-xs font-semibold text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
                               target="_blank"
                               rel="noreferrer"
-                              className="text-xs font-semibold text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
                             >
                               Ouvrir le site
-                            </a>
+                            </Link>
                           )}
                         </div>
                         <form action={deletePartnerAction}>
@@ -315,6 +338,11 @@ export default async function AdminPartnersPage({
                         {partner.website && (
                           <p className="text-xs text-slate-400 break-all">{partner.website}</p>
                         )}
+                        {eventCounts.get(partner.id) ? (
+                          <p className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
+                            {eventCounts.get(partner.id)!.clicks} clics · {eventCounts.get(partner.id)!.purchases} achats
+                          </p>
+                        ) : null}
                         {supportsSponsored && "sponsoredLinks" in partner && partner.sponsoredLinks ? (
                           <div className="mt-1 space-y-1">
                             <p className="text-xs uppercase tracking-[0.12em] text-cyan-100">
@@ -325,7 +353,15 @@ export default async function AdminPartnersPage({
                                 (partner as unknown as { sponsoredLinks?: unknown }).sponsoredLinks
                               ).map(formatSponsoredLink).map((link, idx) => (
                                 <li key={`${partner.id}-sponsored-${idx}`} className="text-xs text-slate-200">
-                                  {link.label} — {link.url}
+                                  <Link
+                                    href={`/api/partners/redirect?partnerId=${partner.id}&url=${encodeURIComponent(link.url)}&type=click`}
+                                    className="text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    {link.label}
+                                  </Link>{" "}
+                                  — {link.url}
                                 </li>
                               ))}
                             </ul>
