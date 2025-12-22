@@ -7,6 +7,9 @@
 > (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
+## Décisions récentes
+- Filtres Mapbox (ex: type, rayon, recherche) : optionnels pour la prochaine itération, à garder simples si implémentés.
+
 ## Pré-requis & configuration
 - Créer un compte Mapbox, générer un token restreint (domaines autorisés, referrers).
 - Ajouter `NEXT_PUBLIC_MAPBOX_TOKEN` (lecture client) et documenter dans `02_RENDER_INSTRUCTIONS.md` si nécessaire.

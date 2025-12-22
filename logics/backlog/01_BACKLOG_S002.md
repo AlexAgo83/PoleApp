@@ -9,6 +9,12 @@
 ## 0) UI Quick win
 - Home : bouton “Connexion” trop sombre → augmenter contraste/hover/état actif. **(DONE)**
 
+## Décisions récentes
+- Mini-jeux : accès premium strict, pas de démo ni mode lecture seule (prof/admin toujours autorisés).
+- Mini-jeux non-premium : tuiles visibles avec cadenas + CTA upgrade (pas de lancement).
+- Progression : palette proposée (fond plein + texte blanc) — Découverte `#2563eb`, Tenté `#f59e0b`, Passé `#10b981`, Fluide `#7c3aed`; variante outline/texte seul à prévoir pour fonds clairs (tables/listes).
+- CTA upgrade mini-jeux : copy “Débloquer avec Premium” + icône cadenas/badge “Premium”.
+
 ## 1) Espace Élève
 - Catalogue positions :
   - Retirer le “grading élevé”. **(DONE)**
@@ -71,12 +77,12 @@
 12. Dans la fiche de l'école > Remplacer le "Mon école" par le titre de l'école (et du coup retirer le titre qui était en petit, en dessous). **(DONE)**
 
 ## Tâches restantes à prioriser (P0/P1/P2/P3 à définir)
-- Mini-jeux (6) accessibles en illimité pour prof + élève, gating premium (oui). Bouton d’accès sur dashboards admin/prof/élève. (P1)
-- Progression positions : finaliser code couleur homogène (élève + tableau prof + détail position), définir nuances/étiquettes et surfaces exactes. (P2)
+- Mini-jeux (6) accessibles en illimité pour prof + élève, gating premium strict (pas de démo/lecture seule), tuiles visibles non-premium avec cadenas + CTA “Débloquer avec Premium”. Bouton d’accès sur dashboards admin/prof/élève. (P1)
+- Mini-jeux premium : feedback immédiat (vert/rouge) + récap final conservé. (P1)
+- Progression positions : finaliser code couleur homogène (élève + tableau prof + détail position), appliquer palette solid par défaut + outline sur tableaux/lists claires, et compteur “Vu : X” généralisé. (P2)
 - Prof > Élèves : tri/filtre par cours suivis/école/niveau ; affichage âge sur fiche. (P1)
 - Admin > Studios : page studio avec infos (pas de vue semaine pour l’instant). (P1)
 - Prof/Admin > Cours : suivi pédagogique (tableau élève×positions), notes internes cours, suivi de facturation (facture envoyée/paiement reçu). (P1)
-- Élève Premium UX : feedback immédiat mini-jeux + récap final conservé. (P2)
 - Admin : planning/réservation, achats/abonnements, VOD (encore manquants). (P2)
 
 ## Mises à jour récentes
@@ -84,7 +90,19 @@
 - Mini-jeux accessibles aux profs/admin (accès direct) et CTA “Jeux” ajouté dans le dashboard admin. Gating premium/feedback final reste à faire. **(PARTIEL)**
 - Générateur de cours : suggestions basées sur la progression des élèves affichées sur la fiche cours (teacher/admin), édition des notes via l’écran d’édition (inline retiré). **(PARTIEL)**
 
+## Definition of Done (DoD)
+- Mini-jeux : tuiles visibles non-premium avec cadenas + CTA “Débloquer avec Premium”, lancement bloqué ; prof/admin accès direct ; premium lancent les 6 modes avec feedback immédiat et récap final persistant.
+- Progression : palette appliquée partout (solid par défaut, outline sur tableaux/fonds clairs), labels cohérents (Découverte/Tenté/Passé/Fluide) et compteur “Vu : X” présent sur les surfaces élève + tableau prof + détail position.
+- Prof > Élèves : tri/filtre cours suivis/école/niveau fonctionnels, âge affiché sur fiche.
+- Admin > Studios : page infos studio disponible (lecture seule OK).
+- Prof/Admin > Cours : tableau élève×positions + notes internes + suivi facturation accessibles.
+
+## Tests / Vérifications
+- QA mini-jeux : utilisateur non-premium voit les 6 tuiles avec cadenas + CTA “Débloquer avec Premium” et ne peut pas lancer ; premium/prof/admin peuvent lancer, feedback vert/rouge affiché par question, récap final reste visible après partie.
+- QA progression : vérifier la palette (solid vs outline) sur liste élève, tableau prof, détail position ; compteur “Vu : X” présent et exact.
+- QA prof > élèves : filtres/tri appliqués, âge affiché sur fiche, navigation vers élèves inchangée.
+- QA cours prof/admin : tableau élève×positions et notes internes visibles/éditables ; suivi facturation accessible.
+- QA admin studios : page studio accessible depuis listes, contenu affiché sans retour en erreur.
+
 ## Clarifications nécessaires
-- Progression : valider palette/code couleur exacts et où l’afficher (liste élève, tableau prof, détail position, etc.).
-- Mini-jeux : gating premium confirmé oui ; navigation cible : dashboards admin/prof/élève.
-- Studios : besoin actuel limité à la page infos studio (pas de vue semaine pour l’instant).
+- Aucune ouverte pour l’instant (palette/gating/CTA/studios cadrés).
