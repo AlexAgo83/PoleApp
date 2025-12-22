@@ -7,6 +7,11 @@
 - Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
 - Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
 
+## 2025-12-22 — Release v0.6.8 (générateur suggestions + factu UX)
+- Version bump 0.6.8.
+- Générateur : suggestions basées sur la progression des élèves affichées sur la fiche cours (teacher/admin), édition des notes via l’écran d’édition (inline retiré), page cours admin dédiée.
+- Facturation admin : toasts succès/erreur ancrés (#flash) pour actions rapides/backfill.
+
 ## 2025-12-22 — Release v0.6.7 (facturation tri + UX)
 - Version bump 0.6.7.
 - Facturation admin : tri configurable (date, montant, statut, prof) appliqué à l’export CSV, layout lisible (header montant/date, panneau actions séparé).
