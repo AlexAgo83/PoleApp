@@ -1,5 +1,5 @@
 # Backlog — Retours QA S007 (session 2025-12-21 23:55)
-[Compréhension: 70% / Avancement: 0%]
+[Compréhension: 70% / Avancement: 20%]
 
 Source : 06_QA_S007.md (tests sur v0.5.0)
 
@@ -9,7 +9,7 @@ Source : 06_QA_S007.md (tests sur v0.5.0)
 - [ ] Student > Cours : liste + agenda avec légende affichée en haut et code couleur clair pour différencier :
   - cours déjà suivis (passés),
   - cours inscrits (validation OK),
-  - cours inscrits en liste d’attente (rang affiché, cours contingentés à 14 élèves),
+  - cours inscrits en liste d’attente (rang affiché, cours contingentés à 14 élèves), **(PARTIEL : modèle + UI rang dispo, nécessite migration + données WAITLIST effectives)**
   - cours disponibles et encore ouverts à l’inscription.
   Objectif : lecture immédiate, intuitive, sans effort cognitif.
 - [ ] Ouvert : spécifier les filtres du planning élève (date/plage, prof, studio, type ?) et priorités P0/P1 + exigences responsives.
