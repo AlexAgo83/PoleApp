@@ -11,7 +11,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
 
 ## Données / Modèle
 - Étendre le modèle :
-  - `User` : préférences “positions favorites” (ids) + blessures déjà présentes.
+  - `User` : préférences “positions favorites” (ids) + blessures déjà présentes. **(multi-select côté élève à ajouter)**
   - `Course` : champ pour stocker les positions proposées (liste d’ids) et exclues (pour suivi).
   - `Position` : marquer “safe”/“risky” (optionnel) pour filtrer selon blessures.
 - Champs facultatifs :
@@ -20,7 +20,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
 
 ## Sources d’entrée
 - Élèves inscrits au cours (leur niveau par position + blessures).
-- Positions “cœur” (envies) marquées par les élèves.
+- Positions “cœur” (envies) marquées par les élèves. **Afficher un badge “cœur” sur les suggestions plébiscitées.**
 - Historique des positions déjà faites récemment (pour éviter la redite).
 
 ## Algorithme (pistes)
