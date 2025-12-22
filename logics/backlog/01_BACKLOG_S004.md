@@ -1,5 +1,5 @@
 # Backlog — Générateur de cours (notes S004)
-[Compréhension: 70% / Avancement: 30%]
+[Compréhension: 80% / Avancement: 45%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
