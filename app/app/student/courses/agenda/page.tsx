@@ -518,23 +518,21 @@ export default async function StudentCoursesAgendaPage({
                         <Link
                           key={a.id}
                           href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                          className={`relative mt-1 flex items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                          className={`relative mt-1 flex items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
                             past
                               ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                               : "border-white/10 bg-white/10 text-white"
                           }`}
                         >
-                          <div className="flex-1 space-y-0.5 overflow-hidden">
-                            <div className="flex items-center gap-2">
-                              <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                {new Date(a.course.date).toLocaleTimeString("fr-FR", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                })}{" "}
-                                - {formatDuration(a.course.durationMinutes ?? 60)}
-                              </p>
-                            </div>
+                          <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
+                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                              {new Date(a.course.date).toLocaleTimeString("fr-FR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              })}{" "}
+                              - {formatDuration(a.course.durationMinutes ?? 60)}
+                            </p>
                             <p className="truncate text-[11px] font-semibold text-white">
                               {a.course.title ?? "Cours"}
                             </p>
@@ -546,7 +544,7 @@ export default async function StudentCoursesAgendaPage({
                             </p>
                           </div>
                           <span
-                            className={`absolute bottom-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${
+                            className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               isMineConfirmed || isWaitlist
                                 ? badgeClass
                                 : "border border-white/20 bg-white/10 text-slate-300"
@@ -669,24 +667,22 @@ export default async function StudentCoursesAgendaPage({
                         <Link
                           key={a.id}
                           href={`/app/student/courses/${a.courseId}?from=/app/student/courses/agenda`}
-                          className={`relative inline-flex w-full items-center justify-between gap-2 rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
+                          className={`relative inline-flex w-full items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
                             past
                               ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                               : "border-white/10 bg-white/10 text-white"
                           }`}
                           title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
                         >
-                          <div className="flex-1 space-y-0.5 overflow-hidden">
-                            <div className="flex items-center gap-2">
-                              <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                {new Date(a.course.date).toLocaleTimeString("fr-FR", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                })}{" "}
-                                - {formatDuration(a.course.durationMinutes ?? 60)}
-                              </p>
-                            </div>
+                          <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
+                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                              {new Date(a.course.date).toLocaleTimeString("fr-FR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              })}{" "}
+                              - {formatDuration(a.course.durationMinutes ?? 60)}
+                            </p>
                             <p className="truncate text-[11px] font-semibold text-white">
                               {a.course.title ?? "Cours"}
                             </p>
@@ -698,7 +694,7 @@ export default async function StudentCoursesAgendaPage({
                             </p>
                           </div>
                           <span
-                            className={`absolute bottom-1 right-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${
+                            className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               isWaitlist || isMineConfirmed
                                 ? badgeClass
                                 : "border border-white/20 bg-white/10 text-slate-300"
