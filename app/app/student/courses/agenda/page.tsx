@@ -282,6 +282,30 @@ export default async function StudentCoursesAgendaPage({
 
   const [studios, teachers] = await Promise.all([studiosPromise, teachersPromise]);
 
+  const days = weekDays.map((d, idx) => {
+    const dayAttendances = attendancesByDay[idx];
+    return {
+      isoDate: d.toISOString(),
+      label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+      day: d.getDate(),
+      isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
+      courses: dayAttendances.map((a) => {
+        const past = isPastCourse(a.course.date, a.course.durationMinutes);
+        return {
+          id: a.course.id,
+          title: a.course.title,
+          date: a.course.date.toISOString(),
+          durationMinutes: a.course.durationMinutes,
+          teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
+          studioName: a.course.studio?.name ?? "Studio non renseigné",
+          past,
+          myStatus: a.myAttendance?.status ?? null,
+          waitlistRank: a.myAttendance?.waitlistRank ?? null,
+        };
+      }),
+    };
+  });
+
   const daysInMonth = monthEnd.getDate();
   const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
   const cells: Array<{ day?: number; attendances?: typeof agendaItems }> = [];
