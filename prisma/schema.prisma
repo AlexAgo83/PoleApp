@@ -231,6 +231,11 @@ enum SuggestionTag {
   SAFE
 }
 
+enum PartnerEventType {
+  CLICK
+  PURCHASE
+}
+
 model CoursePosition {
   id         String   @id @default(cuid())
   courseId   String
@@ -281,6 +286,7 @@ model Partner {
   updatedAt      DateTime        @updatedAt
   school         School          @relation(fields: [schoolId], references: [id])
   sponsoredLinks SponsoredLink[]
+  events         PartnerEvent[]
 
   @@index([schoolId])
 }
@@ -295,6 +301,26 @@ model SponsoredLink {
   partner   Partner  @relation(fields: [partnerId], references: [id])
 
   @@index([partnerId])
+}
+
+model PartnerEvent {
+  id        String           @id @default(cuid())
+  partnerId String
+  userId    String?
+  courseId  String?
+  studioId  String?
+  type      PartnerEventType @default(CLICK)
+  createdAt DateTime         @default(now())
+
+  partner Partner @relation(fields: [partnerId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
+  course  Course? @relation(fields: [courseId], references: [id])
+  studio  Studio? @relation(fields: [studioId], references: [id])
+
+  @@index([partnerId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([studioId])
 }
 
 model TeacherFavoritePosition {
