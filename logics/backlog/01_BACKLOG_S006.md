@@ -14,7 +14,13 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - [ ] Admin > Cours : ajouter générateur de cours, afficher niveau atteint par élève/position (edit + display), rendre les élèves cliquables (prof/admin).
 - [x] Admin > Positions : retirer le bloc “gating”. (OK via vue commune /positions sans encadré staff)
 - [x] Admin > Jeux : ajouter l’énoncé pour les modes Description→Nom, Nom→Niveau, Nom→Grips, Nom→Type, Blitz mix (comme Teacher).
-- [ ] Admin > Facturation : suivi des cours donnés, tarif à facturer à l’école, état facture (générée/envoyée/payée) ; suivi abonnements élèves (crédits restants, péremption).
+- [ ] Admin > Facturation (basé sur `Invoice`) :
+  - Modèle : table `Invoice` liée à `Course` (courseId, amountCents, currency, status enum Générée/Envoyée/Payée/En retard/Annulée, issuedAt, paidAt, notes).
+  - Calcul : montant configurable (fixe, par élève présent, par maxSeats, ou override manuel) — stocker le montant choisi sur l’Invoice.
+  - UI : onglet Facturation admin listant les cours donnés (vue liste + filtres date/prof/studio/statut, pagination 10, export CSV facultatif), actions de changement de statut (marquer envoyé/payé), badge retard.
+  - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié.
+  - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut) + initialiser abonnements.
+  - Accès : par défaut SCHOOL_ADMIN lecture/édition ; éventuelle lecture limitée pour TEACHER à confirmer.
 - [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens.
 - [~] Admin > Agenda cours : filtres date min/max, prof, studio et recherche (titre) sur vue mois/semaine.
 
@@ -24,11 +30,12 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - Cours : générateur actif, niveaux élève/position visibles et éditables, élèves cliquables.
 - Jeux admin : énoncé affiché pour tous les modes concernés.
 - Positions admin : bloc “gating” supprimé.
-- Facturation : liste cours donnés avec montant + statut facture (générée/envoyée/payée) ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées.
+- Facturation : table `Invoice` en place + backfill cours existants, montants calculés/persistés, statuts complets (Générée/Envoyée/Payée/En retard/Annulée) ; UI admin avec filtres/pagination/exports éventuels, actions de statut ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées.
 
 ## Tests / Vérifications
 - QA manuel Admin : studios/partenaires basculent lecture → édition via ✏️, sauvegarde et re-affichage en lecture.
 - QA manuel Admin : onglet Élèves n’affiche que les positions enseignées, pas de “non commencée” hors scope.
 - QA manuel Admin : onglets Cours et Jeux couvrent les mêmes fonctionnalités que Teacher (à valider selon tickets Teacher).
-- QA manuel Admin : Positions sans bloc gating ; onglet Facturation accessible (pas d’erreur runtime).
+- QA manuel Admin : Positions sans bloc gating.
+- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents, changement de statut Générée→Envoyée→Payée→Annulée/En retard fonctionne, filtres date/prof/studio/statut OK, pagination 10, export CSV le cas échéant ; crédits restants/péremption visibles.
 - QA Admin agenda : filtres date min/max + recherche titre opérationnels en mois/semaine, pastilles en bas à droite alignées élève.
