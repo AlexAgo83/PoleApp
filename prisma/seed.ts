@@ -9,6 +9,8 @@ import {
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
+import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
+
 const prisma = new PrismaClient();
 
 const PASSWORD = "poleapp123";
@@ -502,7 +504,7 @@ async function seedCourses(schoolsData: {
       });
 
       const confirmedCount = attendees.length;
-      const defaultAmountCents = confirmedCount > 0 ? confirmedCount * 5000 : (course.maxSeats ?? 30) * 3000;
+      const defaultAmountCents = computeDefaultInvoiceAmountCents(confirmedCount, course.maxSeats);
       await prisma.invoice.create({
         data: {
           courseId: course.id,
