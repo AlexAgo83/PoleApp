@@ -75,25 +75,45 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel p-4 md:p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Studio</p>
-        <h1 className="text-3xl font-semibold text-white">{studio.name}</h1>
-        <p className="text-sm text-slate-300">École : {schoolName}</p>
-        {studio.address && (
-          <p className="text-sm text-slate-200">
-            Adresse :{" "}
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
+      <header className="panel p-4 md:p-6 space-y-3">
+        <div className="flex flex-wrap items-start gap-2">
+          <div className="min-w-[240px] flex-1">
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Studio</p>
+            <h1 className="text-3xl font-semibold text-white">{studio.name}</h1>
+            <p className="text-sm text-slate-300">École : {schoolName}</p>
+            {studio.address && (
+              <p className="text-sm text-slate-200">
+                Adresse :{" "}
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
+                >
+                  {studio.address}
+                </a>
+              </p>
+            )}
+          </div>
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm">
+            {isAdmin && (
+              <Link
+                href={`/app/admin/studios?edit=${studio.id}`}
+                className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-amber-300/80 hover:bg-white/10"
+              >
+                Éditer (admin)
+              </Link>
+            )}
+            <Link
+              href={returnHref}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              {studio.address}
-            </a>
-          </p>
-        )}
+              ← Retour
+            </Link>
+          </div>
+        </div>
         {studio.photoUrl && (
-          <div className="mt-3 w-full">
+          <div className="w-full">
             <SafeImage
               src={studio.photoUrl}
               alt={`Photo du studio ${studio.name}`}
@@ -104,22 +124,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             />
           </div>
         )}
-        <div className="mt-3 flex flex-wrap justify-end gap-2 text-sm">
-          <Link
-            href={returnHref}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour
-          </Link>
-          {isAdmin && (
-            <Link
-              href="/app/admin/studios"
-              className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-amber-300/80 hover:bg-white/10"
-            >
-              Éditer (admin)
-            </Link>
-          )}
-        </div>
       </header>
 
       <section className="panel p-4 md:p-6">
