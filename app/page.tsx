@@ -5,6 +5,10 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 import HealthBadge from "@/components/HealthBadge";
 import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
+import packageJson from "../package.json";
+
+const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? packageJson.version ?? "0.0.0";
+const billingStatus = `Livré (${appVersion})`;
 
 const moduleSections = [
   {
@@ -85,7 +89,7 @@ const moduleSections = [
     title: "Facturation (admin)",
     href: "/app/admin/billing",
     description: "Factures cours avec filtres/statuts, export CSV, backfill, actions guidées.",
-    status: "Livré (0.6.8)",
+    status: billingStatus,
     role: "Admin",
     icon: "💼",
   },
@@ -93,7 +97,7 @@ const moduleSections = [
     title: "Facturation (prof)",
     href: "/app/teacher/billing",
     description: "Vue lecture factures de mes cours (montants/statuts).",
-    status: "Livré (0.6.8)",
+    status: billingStatus,
     role: "Professeur",
     icon: "🧾",
   },
@@ -182,7 +186,7 @@ export default async function Home() {
           <summary className="flex w-full cursor-pointer items-center justify-between gap-3 text-left text-white">
             <div className="space-y-1">
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — v0.6.8
+                Pole App — v{appVersion}
               </p>
             </div>
             <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>
