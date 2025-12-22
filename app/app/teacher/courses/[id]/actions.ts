@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { generateCourseSuggestions } from "@/lib/courseGenerator";
 
 const updateSchema = z.object({
   id: z.string().cuid(),
@@ -305,6 +306,11 @@ const deleteSchema = z.object({
   courseId: z.string().cuid(),
 });
 
+const applySuggestionsSchema = z.object({
+  courseId: z.string().cuid(),
+  positionIds: z.array(z.string().cuid()).min(1),
+});
+
 export async function deleteCourseAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || !session.user.schoolId) {
@@ -339,4 +345,59 @@ export async function deleteCourseAction(formData: FormData) {
 
   revalidatePath("/app/teacher/courses");
   redirect("/app/teacher/courses");
+}
+
+export async function applySuggestedPositionsAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const parsed = applySuggestionsSchema.safeParse({
+    courseId: formData.get("courseId"),
+    positionIds: Array.from(formData.getAll("positionIds") ?? []).map((value) => value.toString()),
+  });
+  if (!parsed.success) {
+    throw new Error("Form invalid");
+  }
+
+  const course = await prisma.course.findFirst({
+    where: { id: parsed.data.courseId, schoolId: session.user.schoolId },
+    select: { id: true, schoolId: true, positions: { select: { positionId: true } } },
+  });
+  if (!course) {
+    redirect("/access-denied");
+  }
+
+  const existingIds = course.positions.map((p) => p.positionId);
+  const suggestions = await generateCourseSuggestions({
+    courseId: course.id,
+    schoolId: session.user.schoolId,
+    studentIds: await prisma.courseAttendance
+      .findMany({
+        where: { courseId: course.id },
+        select: { studentId: true },
+      })
+      .then((rows) => rows.map((r) => r.studentId)),
+    existingPositionIds: existingIds,
+  });
+  const allowed = new Set(suggestions.map((s) => s.positionId));
+  const toInsert = parsed.data.positionIds.filter((id) => allowed.has(id));
+  if (toInsert.length === 0) {
+    throw new Error("Aucune suggestion valide à appliquer");
+  }
+
+  await prisma.coursePosition.createMany({
+    data: toInsert.map((positionId) => ({
+      courseId: course.id,
+      positionId,
+    })),
+    skipDuplicates: true,
+  });
+
+  revalidatePath(`/app/teacher/courses/${course.id}`);
+  revalidatePath("/app/teacher/courses");
 }

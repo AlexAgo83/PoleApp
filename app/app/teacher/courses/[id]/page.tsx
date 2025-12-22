@@ -5,6 +5,8 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { generateCourseSuggestions } from "@/lib/courseGenerator";
+import { applySuggestedPositionsAction } from "./actions";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -90,12 +92,15 @@ export default async function TeacherCourseDetailPage({
   }
 
   const studentIds = course.attendances.map((a) => a.studentId).filter(Boolean);
-  const progress = studentIds.length
-    ? await prisma.studentPositionProgress.findMany({
-        where: { studentId: { in: studentIds } },
-        include: { position: true },
-      })
-    : [];
+  const suggestions =
+    studentIds.length > 0
+      ? await generateCourseSuggestions({
+          courseId: course.id,
+          schoolId: session.user.schoolId,
+          studentIds,
+          existingPositionIds: course.positions.map((p) => p.position.id),
+        })
+      : [];
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
@@ -121,32 +126,6 @@ export default async function TeacherCourseDetailPage({
     hour: "2-digit",
     minute: "2-digit",
   });
-  const existingPositionIds = new Set(course.positions.map((p) => p.position.id));
-  const weights: Record<string, number> = {
-    NOT_STARTED: 3,
-    IN_PROGRESS: 2,
-    PASSED: 1,
-    MASTERED: 0,
-  };
-  const scored = new Map<string, { score: number; name: string; type?: string | null }>();
-  progress.forEach((p) => {
-    if (existingPositionIds.has(p.positionId)) return;
-    const masteryPenalty =
-      p.masteryLevel === "FLUID" || p.masteryLevel === "CHOREO" ? -1 : 0;
-    const base = weights[p.learningStatus ?? "IN_PROGRESS"] ?? 1;
-    const score = base + masteryPenalty;
-    if (score <= 0) return;
-    const prev = scored.get(p.positionId);
-    scored.set(p.positionId, {
-      score: (prev?.score ?? 0) + score,
-      name: p.position.name,
-      type: p.position.type,
-    });
-  });
-  const suggestions = Array.from(scored.entries())
-    .sort((a, b) => b[1].score - a[1].score || a[1].name.localeCompare(b[1].name))
-    .slice(0, 6);
-
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
@@ -264,27 +243,79 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
-      {suggestions.length > 0 && (
-        <section className="panel border-indigo-400/15 p-6">
-          <h2 className="text-lg font-semibold text-white">Suggestions (générateur)</h2>
-          <p className="text-sm text-slate-300">
-            Positions proposées selon la progression des élèves présents (hors positions déjà planifiées).
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {suggestions.map(([positionId, meta]) => (
-              <span
-                key={positionId}
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-3 py-1 text-sm text-white"
-              >
-                {meta.name}
-                {meta.type ? (
-                  <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{meta.type}</span>
-                ) : null}
-              </span>
-            ))}
+      <section className="panel border-indigo-400/15 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Suggestions (générateur)</h2>
+            <p className="text-sm text-slate-300">
+              Propositions basées sur la progression des élèves présents, en évitant les positions déjà planifiées et récentes.
+            </p>
           </div>
-        </section>
-      )}
+          <Link
+            href={currentPath}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Régénérer
+          </Link>
+        </div>
+        {suggestions.length === 0 ? (
+          <p className="mt-2 text-slate-300">Aucune suggestion disponible (ajoutez des élèves ou des positions).</p>
+        ) : (
+          <form action={applySuggestedPositionsAction} className="mt-4 space-y-3">
+            <input type="hidden" name="courseId" value={course.id} />
+            <div className="grid gap-2 md:grid-cols-2">
+              {suggestions.map((s) => (
+                <label
+                  key={s.positionId}
+                  className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                >
+                  <input
+                    type="checkbox"
+                    name="positionIds"
+                    value={s.positionId}
+                    defaultChecked
+                    className="mt-1"
+                  />
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">{s.name}</span>
+                      {s.type ? (
+                        <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{s.type}</span>
+                      ) : null}
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          s.tag === "DISCOVERY"
+                            ? "border border-amber-300/60 bg-amber-500/15 text-amber-50"
+                            : s.tag === "REVISION"
+                              ? "border border-indigo-300/60 bg-indigo-500/15 text-indigo-50"
+                              : "border border-emerald-300/60 bg-emerald-500/15 text-emerald-50"
+                        }`}
+                      >
+                        {s.tag === "DISCOVERY" ? "Découverte" : s.tag === "REVISION" ? "Révision" : "Safe"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300">{s.reason}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+              >
+                Valider ces positions
+              </button>
+              <Link
+                href={`/app/teacher/courses/${course.id}/edit?from=${encodeURIComponent(currentPath)}`}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Ajuster dans l’édition
+              </Link>
+            </div>
+          </form>
+        )}
+      </section>
 
       <section className="panel border-indigo-400/15 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
