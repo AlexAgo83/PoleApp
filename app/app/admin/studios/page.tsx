@@ -262,11 +262,9 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                             </a>
                           </p>
                         )}
-                        {studio.photoUrl && (
-                          <p className="text-xs text-slate-300 break-all">
-                            Photo : {studio.photoUrl}
-                          </p>
-                        )}
+                        {studio.photoUrl ? (
+                          <p className="text-xs text-slate-300">Photo disponible</p>
+                        ) : null}
                       </div>
                     </div>
                   );
