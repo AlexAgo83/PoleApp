@@ -89,7 +89,7 @@ export async function createPartnerAction(formData: FormData) {
   });
 
   revalidatePath(basePath);
-  redirect(basePath);
+  redirect(`${basePath}?flash=created`);
 }
 
 export async function updatePartnerAction(formData: FormData) {
@@ -135,7 +135,7 @@ export async function updatePartnerAction(formData: FormData) {
   });
 
   revalidatePath(basePath);
-  redirect(basePath);
+  redirect(`${basePath}?flash=updated`);
 }
 
 export async function deletePartnerAction(formData: FormData) {
@@ -155,7 +155,7 @@ export async function deletePartnerAction(formData: FormData) {
 
   await prisma.partner.delete({ where: { id: parsed.data.id } });
   revalidatePath(basePath);
-  redirect(basePath);
+  redirect(`${basePath}?flash=deleted`);
 }
 
 function safeParseSponsored(raw: string | undefined) {
