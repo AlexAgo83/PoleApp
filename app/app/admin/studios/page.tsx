@@ -17,6 +17,7 @@ type PageProps =
         page?: string | string[];
         q?: string | string[];
         edit?: string | string[];
+        flash?: string | string[];
       }>;
     };
 
@@ -29,6 +30,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   const resolvedParams = await Promise.resolve(searchParams);
   const pageParam = paramValue(resolvedParams?.page);
   const q = (paramValue(resolvedParams?.q) ?? "").toString().trim();
+  const flash = paramValue(resolvedParams?.flash);
   const rawPage = Number(pageParam ?? "1");
   const editId = paramValue(resolvedParams?.edit);
 
@@ -90,6 +92,25 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      {flash && (
+        <div className="fixed bottom-4 right-4 z-30 space-y-2">
+          {flash === "created" && (
+            <div className="rounded-xl border border-emerald-300/60 bg-emerald-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
+              Studio créé.
+            </div>
+          )}
+          {flash === "updated" && (
+            <div className="rounded-xl border border-cyan-300/60 bg-cyan-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-900/40">
+              Studio mis à jour.
+            </div>
+          )}
+          {flash === "deleted" && (
+            <div className="rounded-xl border border-red-400/60 bg-red-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-red-900/40">
+              Studio supprimé.
+            </div>
+          )}
+        </div>
+      )}
       <header className="panel p-4 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <h1 className="text-3xl font-semibold text-white">Studios</h1>
