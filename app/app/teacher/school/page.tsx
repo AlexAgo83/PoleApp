@@ -2,8 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
 
@@ -147,10 +149,13 @@ export default async function TeacherSchoolPage() {
         <section className="panel p-6">
           <h2 className="text-lg font-semibold text-white">Photo de l’école</h2>
           <div className="mt-3">
-            <img
+            <SafeImage
               src={school.photoUrl}
               alt={`Photo de l’école ${school.name}`}
+              width={960}
+              height={360}
               className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+              fallbackSrc={COURSE_PLACEHOLDER}
             />
           </div>
         </section>

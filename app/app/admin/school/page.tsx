@@ -2,8 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { updateSchoolAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -104,6 +106,18 @@ export default async function AdminSchoolPage() {
             )}
           </p>
         </div>
+        {schoolPhoto && (
+          <div className="mt-4">
+            <SafeImage
+              src={schoolPhoto}
+              alt={`Photo de l’école ${baseSchool?.name ?? "École"}`}
+              width={960}
+              height={360}
+              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+              fallbackSrc={COURSE_PLACEHOLDER}
+            />
+          </div>
+        )}
 
         <form action={updateSchoolAction} className="space-y-3">
           <input type="hidden" name="schoolId" value={session.user.schoolId} />
