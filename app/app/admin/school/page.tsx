@@ -63,20 +63,34 @@ export default async function AdminSchoolPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">Fiche école</h1>
-        <p className="text-sm text-slate-300">
-          Modifier les informations visibles par les professeurs et élèves rattachés.
-        </p>
-        <div className="mt-3 flex flex-wrap justify-end gap-3 text-sm">
-          <Link
-            href="/app/admin"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
+      <header className="panel p-6 space-y-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
+            <h1 className="text-3xl font-semibold text-white">Fiche école</h1>
+            <p className="text-sm text-slate-300">
+              Modifier les informations visibles par les professeurs et élèves rattachés.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-end gap-3 text-sm">
+            <Link
+              href="/app/admin"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+          </div>
         </div>
+        {schoolPhoto && (
+          <SafeImage
+            src={schoolPhoto}
+            alt={`Photo de l’école ${baseSchool?.name ?? "École"}`}
+            width={1200}
+            height={360}
+            className="h-56 w-full rounded-xl border border-white/10 object-cover shadow"
+            fallbackSrc={COURSE_PLACEHOLDER}
+          />
+        )}
       </header>
 
       <section className="panel space-y-4 p-6">
@@ -106,19 +120,6 @@ export default async function AdminSchoolPage() {
             )}
           </p>
         </div>
-        {schoolPhoto && (
-          <div className="mt-4">
-            <SafeImage
-              src={schoolPhoto}
-              alt={`Photo de l’école ${baseSchool?.name ?? "École"}`}
-              width={960}
-              height={360}
-              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
-              fallbackSrc={COURSE_PLACEHOLDER}
-            />
-          </div>
-        )}
-
         <form action={updateSchoolAction} className="space-y-3">
           <input type="hidden" name="schoolId" value={session.user.schoolId} />
           <label className="block text-sm text-slate-200">
