@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { InvoiceStatus } from "@prisma/client";
 import { z } from "zod";
@@ -22,6 +23,7 @@ const updateInvoiceSchema = z.object({
     })
     .refine((v) => v === undefined || v >= 0, "Montant invalide"),
   note: z.string().optional(),
+  redirectTo: z.string().optional(),
 });
 
 export async function updateInvoiceStatusAction(formData: FormData) {
@@ -34,11 +36,12 @@ export async function updateInvoiceStatusAction(formData: FormData) {
     status: formData.get("status")?.toString(),
     amount: formData.get("amount")?.toString(),
     note: formData.get("note")?.toString(),
+    redirectTo: formData.get("redirectTo")?.toString(),
   });
   if (!parsed.success) {
     throw new Error("Paramètres invalides");
   }
-  const { invoiceId, status: statusStr, amount: parsedAmount, note } = parsed.data;
+  const { invoiceId, status: statusStr, amount: parsedAmount, note, redirectTo } = parsed.data;
 
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
@@ -74,6 +77,9 @@ export async function updateInvoiceStatusAction(formData: FormData) {
     })
   );
   revalidatePath("/app/admin/billing");
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
 }
 
 export async function backfillInvoicesAction() {
@@ -110,4 +116,5 @@ export async function backfillInvoicesAction() {
     })
   );
   revalidatePath("/app/admin/billing");
+  redirect("/app/admin/billing?flash=backfill");
 }
