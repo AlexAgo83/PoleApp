@@ -61,6 +61,21 @@ export async function PATCH(req: Request) {
       },
     });
 
+    console.info(
+      JSON.stringify({
+        event: "invoice_status_updated_api",
+        invoiceId,
+        previousStatus: invoice.status,
+        newStatus: status,
+        previousAmountCents: invoice.amountCents,
+        newAmountCents: amount ?? invoice.amountCents,
+        paidAt: paidAt ?? null,
+        courseId: invoice.courseId,
+        schoolId: invoice.course.schoolId,
+        userId: session.user.id,
+      })
+    );
+
     return NextResponse.json({ invoice: updated });
   } catch (err) {
     console.error("update invoice failed", err);
