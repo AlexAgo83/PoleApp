@@ -162,19 +162,19 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
       )}
 
       {flash && (
-        <div id="flash" className="space-y-2">
+        <div className="fixed bottom-4 right-4 z-30 space-y-2">
           {flash === "backfill" && (
-            <div className="rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50">
+            <div className="rounded-xl border border-emerald-300/60 bg-emerald-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
               Factures manquantes générées avec succès.
             </div>
           )}
           {flash === "updated" && (
-            <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/15 px-4 py-3 text-sm text-cyan-50">
+            <div className="rounded-xl border border-emerald-300/60 bg-emerald-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
               Statut/montant mis à jour.
             </div>
           )}
           {flash === "error" && (
-            <div className="rounded-xl border border-red-400/50 bg-red-500/15 px-4 py-3 text-sm text-red-50">
+            <div className="rounded-xl border border-red-400/60 bg-red-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-red-900/40">
               Action invalide ou droits insuffisants.
             </div>
           )}
