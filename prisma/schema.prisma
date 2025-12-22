@@ -129,6 +129,7 @@ model Position {
   courseEntries CoursePosition[]
   courseNotes   CourseNote[]
   favoriteByTeachers TeacherFavoritePosition[]
+  recommendations CourseRecommendation[]
 
   @@unique([name])
 }
@@ -198,6 +199,7 @@ model Course {
   attendances CourseAttendance[]
   positions   CoursePosition[]
   notes       CourseNote[]
+  recommendations CourseRecommendation[]
   invoices    Invoice[]
 
   @@index([schoolId, date])
