@@ -16,6 +16,41 @@ function dateFromParam(value?: string) {
   return Number.isNaN(d.getTime()) ? undefined : d;
 }
 
+type SortKey = "date_desc" | "date_asc" | "amount_desc" | "amount_asc" | "status" | "teacher";
+
+const sortOptions: Record<SortKey, Prisma.InvoiceOrderByWithRelationInput[]> = {
+  date_desc: [
+    { course: { date: "desc" } },
+    { issuedAt: "desc" },
+    { id: "desc" },
+  ],
+  date_asc: [
+    { course: { date: "asc" } },
+    { issuedAt: "asc" },
+    { id: "asc" },
+  ],
+  amount_desc: [
+    { amountCents: "desc" },
+    { course: { date: "desc" } },
+    { id: "desc" },
+  ],
+  amount_asc: [
+    { amountCents: "asc" },
+    { course: { date: "desc" } },
+    { id: "desc" },
+  ],
+  status: [
+    { status: "asc" },
+    { course: { date: "desc" } },
+    { id: "desc" },
+  ],
+  teacher: [
+    { course: { teacher: { name: "asc" } } },
+    { course: { date: "desc" } },
+    { id: "desc" },
+  ],
+};
+
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
@@ -27,8 +62,10 @@ export async function GET(request: Request) {
   const studioFilter = paramValue(searchParams.getAll("studio"));
   const fromParam = paramValue(searchParams.getAll("from"));
   const toParam = paramValue(searchParams.getAll("to"));
+  const sortParam = paramValue(searchParams.getAll("sort"));
   const fromDate = dateFromParam(fromParam);
   const toDate = dateFromParam(toParam);
+  const sortKey: SortKey = sortParam && sortOptions[sortParam as SortKey] ? (sortParam as SortKey) : "date_desc";
 
   const statusFilter =
     statusParam && Object.values(InvoiceStatus).includes(statusParam as InvoiceStatus)
@@ -54,11 +91,7 @@ export async function GET(request: Request) {
 
   const invoices = await prisma.invoice.findMany({
     where,
-    orderBy: [
-      { course: { date: "desc" } },
-      { issuedAt: "desc" },
-      { id: "desc" },
-    ],
+    orderBy: sortOptions[sortKey],
     include: {
       course: {
         include: {
