@@ -171,7 +171,7 @@ export default async function Home() {
           <summary className="flex w-full cursor-pointer items-center justify-between gap-3 text-left text-white">
             <div className="space-y-1">
               <p className="text-sm uppercase tracking-[0.18em] text-cyan-200">
-                Pole App — v0.6.0
+                Pole App — v0.6.1
               </p>
             </div>
             <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>
@@ -180,7 +180,8 @@ export default async function Home() {
             <p className="max-w-2xl text-slate-200">
               Plateforme unifiée élève/prof/admin : positions sans gating côté staff, suivi des blessures,
               cours avec crédits + liste d’attente (rang), mini-jeux parité rôles (6 modes + leaderboard),
-              agendas élève et prof/admin, studios/partenaires éditables, navigation par rôle.
+              agendas élève et prof/admin avec pastilles d’état en bas à droite, studios/partenaires éditables,
+              navigation par rôle.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-slate-200">
               <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
