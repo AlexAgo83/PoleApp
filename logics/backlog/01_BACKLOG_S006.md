@@ -19,6 +19,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
   - Calcul : règle par défaut fixée (présences CONFIRMED × 50€, fallback maxSeats × 30€) + override montant/note manuel (persisté sur l’Invoice).
   - UI : onglet Facturation admin listant les cours donnés (vue liste + filtres date/prof/studio/statut + tri, pagination 10), export CSV, actions guidées de changement de statut (marquer envoyé/payé/annulé/retard), badge retard. **(fait)**
   - Polish : filtres regroupés (titre sans fond, formulaire encadré), compteur sous le panel, actions header alignées à droite, titre/date séparés sur les cartes. **(fait)**
+  - UX : remplacer la popin “Statut/montant mis à jour.” par une notification (toast) cohérente avec celle de “Valider ces propositions” (édition de cours).
   - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié (résumé crédits + alertes). **(fait partiel)**
   - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut) + initialiser abonnements.
   - Accès : par défaut SCHOOL_ADMIN lecture/édition ; éventuelle lecture limitée pour TEACHER à confirmer.
@@ -43,5 +44,5 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - QA manuel Admin : onglet Élèves n’affiche que les positions enseignées, pas de “non commencée” hors scope.
 - QA manuel Admin : onglets Cours et Jeux couvrent les mêmes fonctionnalités que Teacher (à valider selon tickets Teacher).
 - QA manuel Admin : Positions sans bloc gating. **(OK)**
-- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents, changement de statut Générée→Envoyée→Payée→Annulée/En retard fonctionne, filtres date/prof/studio/statut/tri OK, pagination 10, export CSV le cas échéant ; crédits restants/péremption visibles. **(OK v0.6.8)**
+- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents, changement de statut Générée→Envoyée→Payée→Annulée/En retard fonctionne, filtres date/prof/studio/statut/tri OK, pagination 10, export CSV le cas échéant ; crédits restants/péremption visibles ; notification toast affichée (plus de popin “Statut/montant mis à jour.”). **(OK v0.6.8 sauf toast)**
 - QA Admin agenda : filtres date min/max + recherche titre opérationnels en mois/semaine, pastilles en bas à droite alignées élève.
