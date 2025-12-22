@@ -11,7 +11,7 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
 ## Tâches
 - [ ] Teacher > École : vue agenda (semaine + mensuel) par studio, états mobile/desktop, incluant cours passés et à venir. Filtres multiples : niveau, prof, date, discipline (types de cours ex. souplesse/pole exotic/pole gym), studio. Pagination ou scroll infini. **(Vue semaine sans reload + bouton semaine actuelle en place)** 
 - [~] Teacher > Cours : générateur de cours qui suggère positions selon élèves présents et leurs niveaux ; fiche cours affiche niveau atteint par élève/position (format badges/tableau), édition inline autorisée ; élèves cliquables vers leur fiche (prof et admin). (Voir BACKLOG_S004 — Générateur de cours (qa notes S004)) **(suggestions visibles + édition via écran d’édition, plus d’inline sur la fiche)** 
-  - Prise en compte prochaine : pondérer avec les positions “cœur” élèves ; mapping blessures→exclusions. **(cœurs pondérés + badge cœur sur suggestions)**
+  - Prise en compte prochaine : pondérer avec les positions “cœur” élèves ; mapping blessures→exclusions. **(cœurs pondérés + badge cœur, exclusions blessures avec badge + désactivation)** 
   - Générateur : badge visible sur les positions appliquées, possibilité de retirer une position appliquée par erreur (layout inchangé).
 - [x] Teacher > Positions : supprimer l’encadré “gating”. (OK via vue commune /positions)
 - [x] Teacher > Facturation (basé sur `Invoice`) :
