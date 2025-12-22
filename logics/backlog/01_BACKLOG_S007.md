@@ -27,4 +27,4 @@ Source : 06_QA_S007.md (tests sur v0.5.0)
 ## Tests / Vérifications
 - QA manuel élève : onglet École/Cours → agenda semaines/mois visible sur mobile/desktop ; navigation OK.
 - QA manuel élève : onglet Jeux = même fonctionnalité que Teacher (6 modes, historique/leaderboard si présent).
-- QA manuel élève : onglet Cours liste + agenda ; légende en haut ; code couleur par état ; liste d’attente affiche le rang (quota 14) sans ambiguïté. Filtres peuvent être mémorisés localement (date/prof/studio/type) côté client.
+- QA manuel élève : onglet Cours liste + agenda ; légende en haut ; code couleur par état ; liste d’attente affiche le rang (quota 14) sans ambiguïté. Filtres peuvent être mémorisés localement (date/prof/studio/type) côté client (localStorage, pas besoin de sync URL).
