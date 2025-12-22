@@ -242,15 +242,6 @@ export default async function StudentCoursesAgendaPage({
   myAttendancesForMonth
     .filter((a) => a.status === "WAITLIST")
     .forEach((a) => waitlistCourseMap.set(a.courseId, a.waitlistRank ?? null));
-  const attendedPastCourseIds = new Set(
-    myAttendancesForMonth
-      .filter(
-        (a) =>
-          a.status === "CONFIRMED" && isPastCourse(a.course.date, a.course.durationMinutes)
-      )
-      .map((a) => a.courseId)
-  );
-
   const agendaItems = onlyMine
     ? attendances.map((a) => ({
         id: a.id,

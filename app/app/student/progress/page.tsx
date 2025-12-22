@@ -70,18 +70,10 @@ export default async function StudentProgressPage({
     Boolean
   ).length;
 
-  const [progressEntries, totalPositions] = await Promise.all([
-    prisma.studentPositionProgress.findMany({
-      where: { studentId: session.user.id },
-      include: { position: true },
-    }),
-    // Total positions visible (all if premium, else only unlocked)
-    session.user.isPremium
-      ? prisma.position.count()
-      : prisma.studentPositionProgress.count({
-          where: { studentId: session.user.id },
-        }),
-  ]);
+  const progressEntries = await prisma.studentPositionProgress.findMany({
+    where: { studentId: session.user.id },
+    include: { position: true },
+  });
 
   const progressMap = new Map(
     progressEntries.map((p) => [p.positionId, p])

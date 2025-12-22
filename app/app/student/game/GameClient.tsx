@@ -64,7 +64,7 @@ export function GameClient({ questions, mode }: Props) {
         }),
       });
       setSaved(true);
-    } catch (err) {
+    } catch {
       setError("Impossible d'enregistrer la session (hors ligne ?)");
     } finally {
       setSaving(false);
