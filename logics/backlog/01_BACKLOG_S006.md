@@ -28,6 +28,8 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
   - Navigation semaine → semaine sans rechargement complet (même pattern que Facturation admin), conservation des filtres actifs, sans modifier visuellement l’agencement des panels. **(OK dashboard admin)** 
   - Ajouter un bouton “Semaine actuelle” pour revenir rapidement à la semaine en cours depuis la vue semaine. **(OK)** 
 - [x] Admin > Studios (lecture seule) : retirer l’URL brute “Photo : XXX” (la photo est visible ailleurs), laisser la cellule propre/compacte (ou masquer la ligne en lecture seule).
+- [ ] Partenaires : exposer les métriques clics/achats dans l’UI admin (tableau ou cartes), filtres de base, logs structurés.
+- [ ] Facturation admin : remplacer définitivement la popin statut/montant par toast cohérent (si non livré), vérifier persist/refresh des filtres.
 
 ## Definition of Done (DoD)
 - Studios/Partenaires : lecture par défaut, édition via ✏️, retour lecture après sauvegarde. **(OK)**
@@ -46,3 +48,5 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - QA manuel Admin : Positions sans bloc gating. **(OK)**
 - QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents, changement de statut Générée→Envoyée→Payée→Annulée/En retard fonctionne, filtres date/prof/studio/statut/tri OK, pagination 10, export CSV le cas échéant ; crédits restants/péremption visibles ; notification toast affichée (plus de popin “Statut/montant mis à jour.”). **(OK v0.6.8 sauf toast)**
 - QA Admin agenda : filtres date min/max + recherche titre opérationnels en mois/semaine, pastilles en bas à droite alignées élève.
+- QA Partenaires : tableau/cartes des métriques clics/achats visibles, filtres basiques OK, logs structurés présents.
+- QA Facturation (toast) : changement statut/montant affiche un toast (pas de popin), filtres restent persistés après action/reload.
