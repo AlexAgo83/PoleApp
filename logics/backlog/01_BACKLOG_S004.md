@@ -1,5 +1,5 @@
 # Backlog — Générateur de cours (notes S004)
-[Compréhension: 40% / Avancement: 0%]
+[Compréhension: 70% / Avancement: 30%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -40,6 +40,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
   - Bouton “Valider” → associe les positions au cours et enregistre en base.
   - Afficher les positions exclues (pour transparence).
 - Option : permettre au prof d’ajuster manuellement (remplacer une position).
+- **État actuel (partiel)** : suggestions calculées à partir des élèves inscrits/leur progression et affichées sur la fiche cours (teacher/admin), hors positions déjà planifiées. Pas de tags ni de validation automatique ; l’édition des notes se fait via la page d’édition du cours (plus d’inline dans la fiche).
 
 ## Intégration données existantes
 - Utiliser les niveaux par position (progression élève) pour savoir qui a acquis quoi.
