@@ -106,7 +106,11 @@ export default async function TeacherBillingPage({
 
   const invoices = await prisma.invoice.findMany({
     where,
-    orderBy: { issuedAt: "desc" },
+    orderBy: [
+      { course: { date: "desc" } },
+      { issuedAt: "desc" },
+      { id: "desc" },
+    ],
     skip,
     take: 10,
     include: {

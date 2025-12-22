@@ -54,7 +54,11 @@ export async function GET(request: Request) {
 
   const invoices = await prisma.invoice.findMany({
     where,
-    orderBy: { issuedAt: "desc" },
+    orderBy: [
+      { course: { date: "desc" } },
+      { issuedAt: "desc" },
+      { id: "desc" },
+    ],
     include: {
       course: {
         include: {
