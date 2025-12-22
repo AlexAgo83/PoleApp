@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { InvoiceStatus } from "@prisma/client";
 
 import { FilterPanel } from "@/components/FilterPanel";
-import { backfillInvoicesAction } from "./actions";
 
 type InvoiceDTO = {
   id: string;
@@ -87,16 +86,6 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
     return undefined;
   }, [flash]);
 
-  const updateFilters = (key: string, value: string) => {
-    const clone = new URLSearchParams(searchParams);
-    if (value) clone.set(key, value);
-    else clone.delete(key);
-    clone.delete("page");
-    clone.set("flash", "updated");
-    setFlash("updated");
-    setSearchParams(clone);
-  };
-
   const handlePage = (page: number) => {
     const clone = new URLSearchParams(searchParams);
     clone.set("page", String(page));
@@ -172,144 +161,6 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
         </section>
       )}
 
-      <FilterPanel
-        storageKey="filters:admin-billing"
-        title="Filtres"
-        activeCount={activeCount}
-        userKey={userKey}
-        contentClassName="mt-3"
-      >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const form = e.currentTarget;
-            const fd = new FormData(form);
-            const clone = new URLSearchParams();
-            ["from", "to", "teacher", "studio", "threshold", "status", "sort"].forEach((k) => {
-              const v = fd.get(k)?.toString() ?? "";
-              if (v) clone.set(k, v);
-            });
-            setFlash(null);
-            setSearchParams(clone);
-          }}
-          className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
-        >
-          <label className="text-sm text-slate-200">
-            Date min
-            <input
-              type="date"
-              name="from"
-              defaultValue={searchParams.get("from") ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Date max
-            <input
-              type="date"
-              name="to"
-              defaultValue={searchParams.get("to") ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Professeur
-            <select
-              name="teacher"
-              defaultValue={searchParams.get("teacher") ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Tous</option>
-              {teachers.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name ?? t.email}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm text-slate-200">
-            Studio
-            <select
-              name="studio"
-              defaultValue={searchParams.get("studio") ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Tous</option>
-              {studios.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm text-slate-200">
-            Seuil crédits
-            <input
-              type="number"
-              name="threshold"
-              min="1"
-              defaultValue={searchParams.get("threshold") ?? ""}
-              placeholder="200"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Tri
-            <select
-              name="sort"
-              defaultValue={searchParams.get("sort") ?? "date_desc"}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="date_desc">Date (récent &gt; ancien)</option>
-              <option value="date_asc">Date (ancien &gt; récent)</option>
-              <option value="amount_desc">Montant décroissant</option>
-              <option value="amount_asc">Montant croissant</option>
-              <option value="status">Statut (A→Z)</option>
-              <option value="teacher">Prof (A→Z)</option>
-            </select>
-          </label>
-          <label className="text-sm text-slate-200">
-            Statut
-            <select
-              name="status"
-              defaultValue={searchParams.get("status") ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Tous</option>
-              {Object.values(InvoiceStatus).map((st) => (
-                <option key={st} value={st}>
-                  {statusLabels[st]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="md:col-span-6 flex flex-wrap items-center justify-end gap-2">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-            >
-              Filtrer
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setFlash(null);
-                setSearchParams(new URLSearchParams());
-              }}
-              className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Réinitialiser
-            </button>
-            <a
-              href={`/api/admin/billing/export${filteredQs}`}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Export CSV
-            </a>
-          </div>
-        </form>
-      </FilterPanel>
-
       {flash && (
         <div id="flash" className="space-y-2">
           {flash === "backfill" && (
@@ -331,24 +182,151 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
       )}
 
       <section className="panel p-4 md:p-6">
-        <div className="flex w-full flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-col gap-2">
+        <FilterPanel
+          storageKey="filters:admin-billing"
+          title="Filtres"
+          activeCount={activeCount}
+          userKey={userKey}
+          contentClassName="mt-3"
+          className="w-full"
+          titleClassName="text-sm font-semibold text-white"
+        >
           <form
-            action={backfillInvoicesAction}
-            className="inline-flex"
-            onSubmit={() => setFlash("backfill")}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const fd = new FormData(form);
+              const clone = new URLSearchParams();
+              ["from", "to", "teacher", "studio", "threshold", "status", "sort"].forEach((k) => {
+                const v = fd.get(k)?.toString() ?? "";
+                if (v) clone.set(k, v);
+              });
+              setFlash(null);
+              setSearchParams(clone);
+            }}
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
           >
-            <input type="hidden" name="redirectTo" value={`/app/admin/billing${qs ? `?${qs}&flash=backfill` : "?flash=backfill"}`} />
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
-            >
-              Générer les factures manquantes
-            </button>
+            <label className="text-sm text-slate-200">
+              Date min
+              <input
+                type="date"
+                name="from"
+                defaultValue={searchParams.get("from") ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Date max
+              <input
+                type="date"
+                name="to"
+                defaultValue={searchParams.get("to") ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Professeur
+              <select
+                name="teacher"
+                defaultValue={searchParams.get("teacher") ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name ?? t.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Studio
+              <select
+                name="studio"
+                defaultValue={searchParams.get("studio") ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                {studios.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Seuil crédits
+              <input
+                type="number"
+                name="threshold"
+                min="1"
+                defaultValue={searchParams.get("threshold") ?? ""}
+                placeholder="200"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Tri
+              <select
+                name="sort"
+                defaultValue={searchParams.get("sort") ?? "date_desc"}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="date_desc">Date (récent &gt; ancien)</option>
+                <option value="date_asc">Date (ancien &gt; récent)</option>
+                <option value="amount_desc">Montant décroissant</option>
+                <option value="amount_asc">Montant croissant</option>
+                <option value="status">Statut (A→Z)</option>
+                <option value="teacher">Prof (A→Z)</option>
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Statut
+              <select
+                name="status"
+                defaultValue={searchParams.get("status") ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                {Object.values(InvoiceStatus).map((st) => (
+                  <option key={st} value={st}>
+                    {statusLabels[st]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="md:col-span-6 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFlash(null);
+                  setSearchParams(new URLSearchParams());
+                }}
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </button>
+              <a
+                href={`/api/admin/billing/export${filteredQs}`}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Export CSV
+              </a>
+            </div>
           </form>
-          <p className="text-sm text-slate-300">
-            {loading ? "Chargement..." : `${data?.totalCount ?? 0} facture(s)`}
-          </p>
+        </FilterPanel>
+
+        <div className="flex w-full justify-end">
+          <p className="text-sm text-slate-300">{loading ? "Chargement..." : `${data?.totalCount ?? 0} facture(s)`}</p>
         </div>
+      </div>
 
         <div className="mt-4 divide-y divide-white/10">
           {!data && (
@@ -370,18 +348,19 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
               <article id={`invoice-${invoice.id}`} key={invoice.id} className="flex flex-col gap-3 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-semibold ${badgeClass}`}
-                    >
-                      {badgeLabel}
-                    </span>
-                    <div className="space-y-1">
-                      <p className="text-base font-semibold text-white">
-                        {invoice.course.title ?? "Cours"} · {formattedDate}
-                      </p>
-                      <p className="text-xs text-slate-300">ID cours : {invoice.course.id}</p>
-                    </div>
+                  <span
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-semibold ${badgeClass}`}
+                  >
+                    {badgeLabel}
+                  </span>
+                  <div className="space-y-1">
+                    <p className="text-base font-semibold text-white">
+                      {invoice.course.title ?? "Cours"}
+                    </p>
+                    <p className="text-sm text-slate-200">{formattedDate}</p>
+                    <p className="text-xs text-slate-300">ID cours : {invoice.course.id}</p>
                   </div>
+                </div>
                   <div className="flex flex-col items-end gap-1 text-right">
                     <div className="text-lg font-semibold text-white">
                       {(invoice.amountCents / 100).toFixed(2)} {invoice.currency}
