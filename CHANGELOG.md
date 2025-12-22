@@ -8,6 +8,13 @@
 - Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
 - Facturation admin : polish UI (filtres regroupés en panel stylisé, actions header alignées à droite, compteur sous les filtres, titre/date dissociés).
 
+## 2025-12-22 — Release v0.7.0 (cœurs élèves, exclusions blessures, partenaires)
+- Version bump 0.7.0.
+- Générateur : pondération par cœurs élèves (favorite positions), badge “cœur”, exclusion stricte des positions incompatibles blessures, badge “Exclu blessure”, toggle “forcer 1 découverte”.
+- Profil : élèves peuvent saisir leurs positions préférées (stockées, exploitées par le générateur).
+- Partenaires : tracking PartnerEvent (clic/achat) via route de redirection, compteurs affichés sur la page admin.
+- Docs : modèles/routes/instructions déplacés sous `logics/models` et `logics/instructions`.
+
 ## 2025-12-22 — Release v0.6.10 (fix migrations Render + types)
 - Version bump 0.6.10.
 - Prisma : migration `CourseRecommendation` robuste (enum `SuggestionTag` créé si absent), script `ci-migrate-deploy` qui resolve/force `db push` sur Render.

@@ -40,7 +40,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
   - Bouton “Valider” → associe les positions au cours et enregistre en base.
   - Afficher les positions exclues (pour transparence).
 - Option : permettre au prof d’ajuster manuellement (remplacer une position).
-- **État actuel (partiel)** : suggestions calculées à partir des élèves inscrits/leur progression et affichées sur la fiche cours (teacher/admin), hors positions déjà planifiées. Pas de tags ni de validation automatique ; l’édition des notes se fait via la page d’édition du cours (plus d’inline dans la fiche). Badge “cœur” affiché si des élèves ont plébiscité la position.
+- **État actuel (partiel)** : suggestions calculées à partir des élèves inscrits/leur progression et affichées sur la fiche cours (teacher/admin), hors positions déjà planifiées. Badge “cœur” affiché si des élèves ont plébiscité la position, exclusion stricte des positions incompatibles blessures (badge “Exclu blessure”), toggle pour forcer 1 slot découverte. L’édition des notes se fait via la page d’édition du cours (plus d’inline dans la fiche).
 
 ## Intégration données existantes
 - Utiliser les niveaux par position (progression élève) pour savoir qui a acquis quoi.
