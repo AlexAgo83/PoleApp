@@ -241,14 +241,23 @@ export default async function AdminBillingPage({
       </form>
     </header>
 
-      {flash === "backfill" && (
-        <div className="rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50">
-          Factures manquantes générées avec succès.
-        </div>
-      )}
-      {flash === "updated" && (
-        <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/15 px-4 py-3 text-sm text-cyan-50">
-          Statut/montant mis à jour.
+      {flash && (
+        <div id="flash" className="space-y-2">
+          {flash === "backfill" && (
+            <div className="rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50">
+              Factures manquantes générées avec succès.
+            </div>
+          )}
+          {flash === "updated" && (
+            <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/15 px-4 py-3 text-sm text-cyan-50">
+              Statut/montant mis à jour.
+            </div>
+          )}
+          {flash === "error" && (
+            <div className="rounded-xl border border-red-400/50 bg-red-500/15 px-4 py-3 text-sm text-red-50">
+              Action invalide ou droits insuffisants. Réessaie avec des paramètres valides.
+            </div>
+          )}
         </div>
       )}
 
@@ -419,7 +428,7 @@ export default async function AdminBillingPage({
               hour: "2-digit",
               minute: "2-digit",
             });
-            const redirectUpdated = `${baseBillingPath}${qsPrefix}${qs ? "&" : "?"}flash=updated#invoice-${invoice.id}`;
+            const redirectUpdated = `${baseBillingPath}${qsPrefix}${qs ? "&" : "?"}flash=updated#flash`;
             return (
               <article id={`invoice-${invoice.id}`} key={invoice.id} className="flex flex-col gap-3 py-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
