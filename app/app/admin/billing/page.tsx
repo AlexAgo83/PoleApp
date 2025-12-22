@@ -20,6 +20,7 @@ type SearchParams =
       to?: string | string[];
       flash?: string | string[];
       threshold?: string | string[];
+      sort?: string | string[];
     }
   | undefined;
 
@@ -37,6 +38,59 @@ const statusClasses: Record<InvoiceStatus, string> = {
   PAID: "border-emerald-300/60 bg-emerald-500/20 text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.4)]",
   LATE: "border-amber-300/70 bg-amber-500/20 text-amber-50 shadow-[0_0_14px_rgba(251,191,36,0.6)] animate-[pulse_1.8s_ease-in-out_infinite]",
   CANCELLED: "border-red-300/60 bg-red-500/15 text-red-50",
+};
+
+type SortKey = "date_desc" | "date_asc" | "amount_desc" | "amount_asc" | "status" | "teacher";
+
+const sortOptions: Record<SortKey, { label: string; orderBy: Prisma.InvoiceOrderByWithRelationInput[] }> = {
+  date_desc: {
+    label: "Date (récent > ancien)",
+    orderBy: [
+      { course: { date: "desc" } },
+      { issuedAt: "desc" },
+      { id: "desc" },
+    ],
+  },
+  date_asc: {
+    label: "Date (ancien > récent)",
+    orderBy: [
+      { course: { date: "asc" } },
+      { issuedAt: "asc" },
+      { id: "asc" },
+    ],
+  },
+  amount_desc: {
+    label: "Montant décroissant",
+    orderBy: [
+      { amountCents: "desc" },
+      { course: { date: "desc" } },
+      { id: "desc" },
+    ],
+  },
+  amount_asc: {
+    label: "Montant croissant",
+    orderBy: [
+      { amountCents: "asc" },
+      { course: { date: "desc" } },
+      { id: "desc" },
+    ],
+  },
+  status: {
+    label: "Statut (A→Z)",
+    orderBy: [
+      { status: "asc" },
+      { course: { date: "desc" } },
+      { id: "desc" },
+    ],
+  },
+  teacher: {
+    label: "Prof (A→Z)",
+    orderBy: [
+      { course: { teacher: { name: "asc" } } },
+      { course: { date: "desc" } },
+      { id: "desc" },
+    ],
+  },
 };
 
 function paramValue(value?: string | string[]) {
@@ -70,10 +124,13 @@ export default async function AdminBillingPage({
   const toParam = paramValue(resolved.to);
   const flash = paramValue(resolved.flash);
   const thresholdParam = paramValue(resolved.threshold);
+  const sortParam = paramValue(resolved.sort);
   const threshold = Number.parseInt(thresholdParam ?? "", 10);
   const creditThreshold = Number.isFinite(threshold) && threshold > 0 ? threshold : 200;
   const fromDate = dateFromParam(fromParam);
   const toDate = dateFromParam(toParam);
+  const sortKey: SortKey = sortParam && sortOptions[sortParam as SortKey] ? (sortParam as SortKey) : "date_desc";
+  const sortEntries = Object.entries(sortOptions) as [SortKey, { label: string }][];
 
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
@@ -125,11 +182,7 @@ export default async function AdminBillingPage({
 
   const invoices = await prisma.invoice.findMany({
     where,
-    orderBy: [
-      { course: { date: "desc" } },
-      { issuedAt: "desc" },
-      { id: "desc" },
-    ],
+    orderBy: sortOptions[sortKey].orderBy,
     skip,
     take: 10,
     include: {
@@ -150,6 +203,7 @@ export default async function AdminBillingPage({
   if (fromParam) queryParams.set("from", fromParam);
   if (toParam) queryParams.set("to", toParam);
   if (thresholdParam) queryParams.set("threshold", thresholdParam);
+  if (sortParam) queryParams.set("sort", sortKey);
   const qs = queryParams.toString();
   const userKey = session.user.id ?? "anon";
   const activeFilters = [statusFilter, teacherFilter, studioFilter, fromParam, toParam].filter(Boolean).length;
@@ -208,7 +262,7 @@ export default async function AdminBillingPage({
         >
           <form
             method="get"
-            className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
+            className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Date min
@@ -269,6 +323,20 @@ export default async function AdminBillingPage({
               />
             </label>
             <label className="text-sm text-slate-200">
+              Tri
+              <select
+                name="sort"
+                defaultValue={sortKey}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                {sortEntries.map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
               Statut
               <select
                 name="status"
@@ -283,7 +351,7 @@ export default async function AdminBillingPage({
                 ))}
               </select>
             </label>
-            <div className="md:col-span-5 flex flex-wrap items-center justify-end gap-2">
+            <div className="md:col-span-6 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
