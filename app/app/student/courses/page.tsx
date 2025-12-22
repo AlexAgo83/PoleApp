@@ -542,7 +542,7 @@ export default async function StudentCoursesPage({
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                     <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
                       <span>
-                        {seatsUsed} élèves · {course.positions.length} positions
+                        {confirmedSeats} élèves · {course.positions.length} positions
                       </span>
                       <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
                         Notes : {course.notes.length}
