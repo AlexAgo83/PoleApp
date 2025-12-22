@@ -52,7 +52,7 @@ const moduleSections = [
   {
     title: "Agenda (élève)",
     href: "/app/student/courses/agenda",
-    description: "Vue agenda mensuelle + semaine, filtres studios/profs/« mes cours ».",
+    description: "Vue agenda mensuelle + semaine, filtres studios/profs/« mes cours » sans scroll mobile.",
     status: "Étape 9",
     role: "Élève",
     icon: "🗓️",
@@ -64,6 +64,14 @@ const moduleSections = [
     status: "Étape 9",
     role: "Professeur / Admin",
     icon: "📆",
+  },
+  {
+    title: "École (élève)",
+    href: "/app/student/school",
+    description: "Studios/partenaires + agenda école (semaine/mois) et prochains cours.",
+    status: "Étape 9",
+    role: "Élève",
+    icon: "🏫",
   },
   {
     title: "Crédits & achats",
@@ -176,33 +184,75 @@ export default async function Home() {
             </div>
             <span className="text-sm text-slate-300 transition-transform group-open:rotate-180">▼</span>
           </summary>
-          <div className="space-y-3">
-            <p className="max-w-2xl text-slate-200">
-              Plateforme unifiée élève/prof/admin : positions sans gating côté staff, suivi des blessures,
-              cours avec crédits + liste d’attente (rang), mini-jeux parité rôles (6 modes + leaderboard),
-              agendas élève et prof/admin avec pastilles d’état en bas à droite, studios/partenaires éditables,
-              navigation par rôle.
-            </p>
-            <div className="flex flex-wrap gap-3 text-sm text-slate-200">
-              <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
-                Accès différencié élève / prof / admin
-              </span>
-              <span className="rounded-full border border-cyan-400/30 bg-cyan-500/15 px-3 py-1">
-                Suivi sécurité : blessures visibles par le professeur
-              </span>
-              <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1">
-                Progression + mini-jeux (6 modes) avec leaderboard
-              </span>
-              <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
-                Navigation unifiée (session, rôle, Mon espace)
-              </span>
-              <span className="rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1">
-                Crédits + liste d’attente (rang) sur les cours
-              </span>
-              <span className="rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1">
-                Agendas multi-rôles (élève / prof / admin)
-              </span>
+          <div className="relative grid gap-4 md:grid-cols-[2fr_1.05fr]">
+            <div className="space-y-3">
+              <p className="max-w-2xl text-slate-200">
+                Plateforme unifiée élève/prof/admin : positions sans gating côté staff, suivi des blessures,
+                cours avec crédits + liste d’attente (rang), mini-jeux parité rôles (6 modes + leaderboard),
+                agendas élève (cours + école) et prof/admin avec pastilles d’état, studios/partenaires éditables,
+                navigation par rôle.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm text-slate-200">
+                <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
+                  Accès différencié élève / prof / admin
+                </span>
+                <span className="rounded-full border border-cyan-400/30 bg-cyan-500/15 px-3 py-1">
+                  Suivi sécurité : blessures visibles par le professeur
+                </span>
+                <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1">
+                  Progression + mini-jeux (6 modes) avec leaderboard
+                </span>
+                <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
+                  Navigation unifiée (session, rôle, Mon espace)
+                </span>
+                <span className="rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1">
+                  Crédits + liste d’attente (rang) sur les cours
+                </span>
+                <span className="rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1">
+                  Agendas multi-rôles (élève / prof / admin)
+                </span>
+              </div>
             </div>
+            <aside className="relative rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/20">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Avancement</p>
+                <span className="inline-flex items-center rounded-full border border-emerald-400/50 bg-emerald-500/20 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-inner shadow-emerald-700/30">
+                  Phase produit
+                </span>
+              </div>
+              <div className="mt-3 grid gap-2">
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S007 — Élève</p>
+                    <p className="text-white font-semibold">Agendas + mini-jeux</p>
+                    <p className="text-xs text-slate-400">Avancement 80% (planning élève livré)</p>
+                  </div>
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/25 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                    Livré
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S006 — Admin</p>
+                    <p className="text-white font-semibold">Studios/positions OK, reste factu/agenda</p>
+                    <p className="text-xs text-slate-400">Avancement 45%</p>
+                  </div>
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
+                    En cours
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S005 — Prof</p>
+                    <p className="text-white font-semibold">Agenda studio + générateur + factu</p>
+                    <p className="text-xs text-slate-400">Avancement 15%</p>
+                  </div>
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-blue-400/60 bg-blue-500/25 px-3 py-1 text-[12px] font-semibold text-blue-50 shadow-inner shadow-blue-900/30">
+                    À lancer
+                  </span>
+                </div>
+              </div>
+            </aside>
           </div>
         </details>
       </header>

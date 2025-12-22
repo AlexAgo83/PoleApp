@@ -1,5 +1,11 @@
 # Changelog
 
+# Changelog
+
+## Unreleased — Planning école élève + responsive agenda
+- Page école élève : agenda semaine/mois avec filtres (studio/prof/date/recherche/«mes cours»), légende code couleur, prochains cours, liens vers agenda/liste.
+- Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
+
 ## 2025-12-21 — Release v0.5.1 (mini-jeux + studios)
 - Version bump 0.5.1.
 - Affichage de l’énoncé des questions pour les mini-jeux (fix prod).

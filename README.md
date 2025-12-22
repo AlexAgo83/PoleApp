@@ -44,6 +44,10 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Homepage “Modules” épurée (panels statut/nouveautés retirés) et inclut la carte Profile.
 - Panneaux de filtres : repliés par défaut avec état mémorisé localement (localStorage).
 
+## École (élève)
+- Page école `/app/student/school` enrichie : studios/partenaires et agenda de l’école (vues semaine/mensuelle, filtres studio/prof/date/recherche/« mes cours », légende code couleur, prochains cours).
+- Liens rapides vers la liste/agenda élève et navigation mois/semaine sans scroll horizontal en mobile.
+
 ## Positions
 - `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`.
 - Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin.
@@ -56,7 +60,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 
 ## Cours
 - Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés.
-- Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA.
+- Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA ; agenda semaine/mois dédié (`/app/student/courses/agenda`) aligné mobile/desktop.
 - Détail cours correct par id; updates progression lors de la création/édition.
 
 ## Mini-jeu
