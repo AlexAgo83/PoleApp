@@ -5,6 +5,7 @@ import {
   Prisma,
   PrismaClient,
   Role,
+  InvoiceStatus,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -429,6 +430,7 @@ async function seedCourses(schoolsData: {
   const { schools, teachers, students, positions } = schoolsData;
   let courseImageIdx = 0;
   let courseNameIdx = 0;
+  const euro = "EUR";
 
   for (const school of schools) {
     const schoolTeachers = teachers.filter((t) => t.schoolId === school.id);
@@ -497,6 +499,18 @@ async function seedCourses(schoolsData: {
 
       await prisma.courseAttendance.createMany({
         data: attendees.map((s) => ({ courseId: course.id, studentId: s.id })),
+      });
+
+      const confirmedCount = attendees.length;
+      const defaultAmountCents = confirmedCount > 0 ? confirmedCount * 5000 : (course.maxSeats ?? 30) * 3000;
+      await prisma.invoice.create({
+        data: {
+          courseId: course.id,
+          amountCents: defaultAmountCents,
+          currency: euro,
+          status: InvoiceStatus.GENERATED,
+          issuedAt: new Date(),
+        },
       });
     }
   }

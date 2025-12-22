@@ -14,10 +14,12 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
 - [x] Teacher > Positions : supprimer l’encadré “gating”. (OK via vue commune /positions)
 - [ ] Teacher > Facturation (basé sur `Invoice`) :
   - Modèle : table `Invoice` liée à `Course` (courseId, amountCents, currency, status enum Générée/Envoyée/Payée/En retard/Annulée, issuedAt, paidAt, notes).
-  - Calcul : montant configurable (fixe, par élève présent, par maxSeats, ou override manuel) — stocker le montant choisi sur l’Invoice.
-  - UI : onglet facturation prof (lecture) listant les cours donnés avec montant + statut ; filtres date/prof/studio/statut, pagination 10 ; actions limitées côté prof si RBAC confirmé.
+  - Calcul : règle par défaut fixée (présences CONFIRMED × 50€, fallback maxSeats × 30€) + override montant/note manuel (persisté sur l’Invoice).
+  - UI : onglet facturation prof (lecture confirmée) listant les cours donnés avec montant + statut ; filtres date/studio/statut, pagination 10.
+  - Actions : guidées côté admin (marquer envoyé/payé/annulé/retard) ; prof en lecture seule.
+  - Export : CSV souhaité.
   - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut).
-  - Accès : à confirmer (par défaut SCHOOL_ADMIN écritures, TEACHER lecture sur ses cours).
+  - Accès : lecture TEACHER sur ses cours (OK), SCHOOL_ADMIN pour les mises à jour.
 
 ## Definition of Done (DoD)
 - Onglet École : agenda semaine+mois par studio, filtres multi (niveau/prof/date/discipline/studio), inclut passé/à venir, pagination/scroll OK sur mobile/desktop.
