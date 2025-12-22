@@ -4,8 +4,8 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CourseNotesEditor } from "@/app/teacher/courses/[id]/CourseNotesEditor";
-import { updateCourseNotesOnlyAction } from "@/app/teacher/courses/[id]/actions";
+import { CourseNotesEditor } from "../../../teacher/courses/[id]/CourseNotesEditor";
+import { updateCourseNotesOnlyAction } from "../../../teacher/courses/[id]/actions";
 
 export const dynamic = "force-dynamic";
 
