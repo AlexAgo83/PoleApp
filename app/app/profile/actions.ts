@@ -45,6 +45,7 @@ export async function updateProfileAction(formData: FormData) {
     redirect("/login?callbackUrl=/app/profile");
   }
   const isTeacher = session.user.role === "TEACHER";
+  const isStudent = session.user.role === "STUDENT";
 
   const parsed = schema.safeParse({
     firstName: formData.get("firstName")?.toString() || undefined,
@@ -57,9 +58,7 @@ export async function updateProfileAction(formData: FormData) {
     diplomas: isTeacher
       ? formData.get("diplomas")?.toString().trim() || undefined
       : undefined,
-    favoritePositions: isTeacher
-      ? (formData.getAll("favoritePositions") ?? []).map((value) => value.toString())
-      : [],
+    favoritePositions: (formData.getAll("favoritePositions") ?? []).map((value) => value.toString()),
   });
 
   if (!parsed.success) {
@@ -88,6 +87,19 @@ export async function updateProfileAction(formData: FormData) {
         await tx.teacherFavoritePosition.createMany({
           data: favoritePositions.map((positionId) => ({
             teacherId: session.user.id,
+            positionId,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    } else if (isStudent) {
+      await tx.studentFavoritePosition.deleteMany({
+        where: { studentId: session.user.id },
+      });
+      if (favoritePositions.length > 0) {
+        await tx.studentFavoritePosition.createMany({
+          data: favoritePositions.map((positionId) => ({
+            studentId: session.user.id,
             positionId,
           })),
           skipDuplicates: true,

@@ -100,6 +100,7 @@ model User {
   attendances   CourseAttendance[]
   coursesTaught Course[]                  @relation("CourseTeacher")
   favoritePositions TeacherFavoritePosition[]
+  studentFavoritePositions StudentFavoritePosition[]
   gameSessions     GameSession[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
@@ -332,6 +333,18 @@ model TeacherFavoritePosition {
 
   @@unique([teacherId, positionId])
   @@index([teacherId])
+  @@index([positionId])
+}
+
+model StudentFavoritePosition {
+  id         String   @id @default(cuid())
+  studentId  String
+  positionId String
+  student    User     @relation(fields: [studentId], references: [id])
+  position   Position @relation(fields: [positionId], references: [id])
+
+  @@unique([studentId, positionId])
+  @@index([studentId])
   @@index([positionId])
 }
 

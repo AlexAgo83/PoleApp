@@ -30,6 +30,9 @@ export default async function ProfilePage() {
       favoritePositions: {
         include: { position: true },
       },
+      studentFavoritePositions: {
+        include: { position: true },
+      },
     },
   });
 
@@ -38,13 +41,19 @@ export default async function ProfilePage() {
   }
 
   const isTeacher = user.role === "TEACHER";
-  const positions = isTeacher
-    ? await prisma.position.findMany({
-        select: { id: true, name: true, type: true },
-        orderBy: { name: "asc" },
-      })
-    : [];
-  const favoritePositionIds = user.favoritePositions.map((fp) => fp.positionId);
+  const isStudent = user.role === "STUDENT";
+  const positions =
+    isTeacher || isStudent
+      ? await prisma.position.findMany({
+          select: { id: true, name: true, type: true },
+          orderBy: { name: "asc" },
+        })
+      : [];
+  const favoritePositionIds = isTeacher
+    ? user.favoritePositions.map((fp) => fp.positionId)
+    : isStudent
+      ? user.studentFavoritePositions.map((fp) => fp.positionId)
+      : [];
 
   const roleLabel = roleLabels[user.role] ?? user.role;
   const [firstNameDefault, ...restName] =
@@ -172,37 +181,37 @@ export default async function ProfilePage() {
           </label>
 
           {isTeacher && (
-            <>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium text-slate-200">Diplômes (texte libre)</span>
-                <textarea
-                  name="diplomas"
-                  defaultValue={user.diplomas ?? ""}
-                  rows={3}
-                  placeholder="Ex: BPJEPS AAN, Formation X, Certification Y…"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
-                />
-              </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Diplômes (texte libre)</span>
+              <textarea
+                name="diplomas"
+                defaultValue={user.diplomas ?? ""}
+                rows={3}
+                placeholder="Ex: BPJEPS AAN, Formation X, Certification Y…"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              />
+            </label>
+          )}
 
-              <label className="block space-y-2">
-                <span className="text-sm font-medium text-slate-200">Positions préférées</span>
-                <select
-                  name="favoritePositions"
-                  multiple
-                  defaultValue={favoritePositionIds}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
-                >
-                  {positions.map((position) => (
-                    <option key={position.id} value={position.id}>
-                      {position.name} ({position.type})
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-slate-400">
-                  Maintiens Ctrl/Cmd (ou Maj) pour sélectionner plusieurs positions.
-                </p>
-              </label>
-            </>
+          {(isTeacher || isStudent) && (
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Positions préférées</span>
+              <select
+                name="favoritePositions"
+                multiple
+                defaultValue={favoritePositionIds}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              >
+                {positions.map((position) => (
+                  <option key={position.id} value={position.id}>
+                    {position.name} ({position.type})
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-400">
+                Maintiens Ctrl/Cmd (ou Maj) pour sélectionner plusieurs positions.
+              </p>
+            </label>
           )}
 
           <p className="text-xs text-slate-400">
@@ -243,6 +252,36 @@ export default async function ProfilePage() {
               {favoritePositionIds.length > 0 ? (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {user.favoritePositions.map((fav) => (
+                    <span
+                      key={fav.positionId}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                    >
+                      {fav.position.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {isStudent && (
+        <section className="panel p-6">
+          <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+            Profil élève
+          </p>
+          <h2 className="text-xl font-semibold text-white">Préférences</h2>
+          <div className="mt-3 space-y-3 text-sm text-slate-200">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                Positions préférées
+              </p>
+              {favoritePositionIds.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {user.studentFavoritePositions.map((fav) => (
                     <span
                       key={fav.positionId}
                       className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"

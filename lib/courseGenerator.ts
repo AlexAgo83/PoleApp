@@ -10,6 +10,7 @@ export type CourseSuggestion = {
   type?: Position["type"] | null;
   tag: SuggestionTag;
   reason: string;
+  favoriteCount?: number;
 };
 
 type CandidateInput = {
@@ -19,6 +20,7 @@ type CandidateInput = {
   recentOccurrences: number;
   unsafeForStudents: string[];
   perStudentStatus: Array<"NOT_STARTED" | "IN_PROGRESS" | "PASSED" | "MASTERED">;
+  favoriteCount: number;
 };
 
 function summarizeCandidate(candidate: CandidateInput): {
@@ -45,7 +47,9 @@ function summarizeCandidate(candidate: CandidateInput): {
 
   const recencyPenalty = candidate.recentOccurrences * 1.2;
   const injuryPenalty = candidate.unsafeForStudents.length > 0 ? 6 : 0;
-  const totalScore = discoveryScore * 3 + revisionScore * 2 + safeScore - recencyPenalty - injuryPenalty;
+  const favoritesBonus = Math.min(3, candidate.favoriteCount) * 1.5;
+  const totalScore =
+    discoveryScore * 3 + revisionScore * 2 + safeScore + favoritesBonus - recencyPenalty - injuryPenalty;
 
   const parts: string[] = [];
   if (tag === "DISCOVERY") {
@@ -60,6 +64,9 @@ function summarizeCandidate(candidate: CandidateInput): {
   }
   if (candidate.unsafeForStudents.length > 0) {
     parts.push(`exclue blessures (${candidate.unsafeForStudents.join(", ")})`);
+  }
+  if (candidate.favoriteCount > 0) {
+    parts.push(`${candidate.favoriteCount} coup de cœur élève${candidate.favoriteCount > 1 ? "s" : ""}`);
   }
 
   return {
@@ -103,6 +110,7 @@ function selectTopSuggestions(candidates: CandidateInput[], limit = 4): CourseSu
     type: item.candidate.type,
     tag: item.tag,
     reason: item.reason,
+    favoriteCount: item.candidate.favoriteCount,
   }));
 }
 
@@ -138,7 +146,7 @@ export async function generateCourseSuggestions(params: {
   const { courseId, schoolId, studentIds, existingPositionIds = [], limit = 4 } = params;
   if (studentIds.length === 0) return [];
 
-  const [positions, progress, injuries, recentCourses] = await Promise.all([
+  const [positions, progress, injuries, recentCourses, favorites] = await Promise.all([
     prisma.position.findMany({
       select: { id: true, name: true, type: true, contraindications: true },
       orderBy: { name: "asc" },
@@ -168,6 +176,10 @@ export async function generateCourseSuggestions(params: {
       orderBy: { date: "desc" },
       take: 15,
     }),
+    prisma.studentFavoritePosition.findMany({
+      where: { studentId: { in: studentIds } },
+      select: { positionId: true },
+    }),
   ]);
 
   const existingSet = new Set(existingPositionIds);
@@ -187,6 +199,11 @@ export async function generateCourseSuggestions(params: {
     const list = injuriesByStudent.get(inj.studentId) ?? [];
     list.push(inj.injuryType.name);
     injuriesByStudent.set(inj.studentId, list);
+  });
+
+  const favoriteCounts = new Map<string, number>();
+  favorites.forEach((fav) => {
+    favoriteCounts.set(fav.positionId, (favoriteCounts.get(fav.positionId) ?? 0) + 1);
   });
 
   const recentPositionCounts = new Map<string, number>();
@@ -212,6 +229,7 @@ export async function generateCourseSuggestions(params: {
         recentOccurrences: recentPositionCounts.get(position.id) ?? 0,
         unsafeForStudents: unsafe,
         perStudentStatus,
+        favoriteCount: favoriteCounts.get(position.id) ?? 0,
       };
     });
 
