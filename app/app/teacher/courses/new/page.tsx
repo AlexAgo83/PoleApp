@@ -27,7 +27,7 @@ export default async function NewCoursePage() {
     );
   }
 
-  const [students, positions, teachers, studios] = await Promise.all([
+  const [students, positions, teachers, studios, progresses] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -48,6 +48,16 @@ export default async function NewCoursePage() {
       where: { schoolId },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
+    }),
+    prisma.studentPositionProgress.findMany({
+      where: { student: { schoolId } },
+      select: {
+        studentId: true,
+        positionId: true,
+        masteryLevel: true,
+        learningStatus: true,
+        position: { select: { name: true, type: true } },
+      },
     }),
   ]);
 
@@ -81,6 +91,14 @@ export default async function NewCoursePage() {
           defaultTeacherId={session.user.role === "TEACHER" ? teacherId : teachers[0]?.id}
           studios={studios}
           defaultPhotoUrl=""
+          progressByStudent={progresses.map((p) => ({
+            studentId: p.studentId,
+            positionId: p.positionId,
+            masteryLevel: p.masteryLevel,
+            learningStatus: p.learningStatus,
+            positionName: p.position.name,
+            positionType: p.position.type,
+          }))}
         />
       </section>
     </main>
