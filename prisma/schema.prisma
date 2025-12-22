@@ -102,6 +102,7 @@ model User {
   favoritePositions TeacherFavoritePosition[]
   studentFavoritePositions StudentFavoritePosition[]
   gameSessions     GameSession[]
+  partnerEvents    PartnerEvent[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -130,6 +131,7 @@ model Position {
   courseEntries CoursePosition[]
   courseNotes   CourseNote[]
   favoriteByTeachers TeacherFavoritePosition[]
+  favoriteByStudents StudentFavoritePosition[]
   recommendations CourseRecommendation[]
 
   @@unique([name])
@@ -202,6 +204,7 @@ model Course {
   notes       CourseNote[]
   recommendations CourseRecommendation[]
   invoices    Invoice[]
+  partnerEvents PartnerEvent[]
 
   @@index([schoolId, date])
   @@index([teacherId])
@@ -272,6 +275,7 @@ model Studio {
   updatedAt DateTime @updatedAt
   school    School   @relation(fields: [schoolId], references: [id])
   courses   Course[]
+  partnerEvents PartnerEvent[]
 
   @@index([schoolId])
 }
@@ -314,9 +318,9 @@ model PartnerEvent {
   createdAt DateTime         @default(now())
 
   partner Partner @relation(fields: [partnerId], references: [id])
-  user    User?   @relation(fields: [userId], references: [id])
-  course  Course? @relation(fields: [courseId], references: [id])
-  studio  Studio? @relation(fields: [studioId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  course  Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  studio  Studio? @relation(fields: [studioId], references: [id], onDelete: SetNull)
 
   @@index([partnerId])
   @@index([userId])
