@@ -25,6 +25,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - [ ] Admin > Partenaires : suivi des clics sur les liens et des achats via les liens (userId, partenaire, horodatage, contexte course/studio). **Source/referrer à ajouter plus tard si besoin.**
 - [~] Admin > Agenda cours : filtres date min/max, prof, studio et recherche (titre) sur vue mois/semaine.
   - Navigation semaine → semaine sans rechargement complet (même pattern que Facturation admin), conservation des filtres actifs, sans modifier visuellement l’agencement des panels.
+  - Ajouter un bouton “Semaine actuelle” pour revenir rapidement à la semaine en cours depuis la vue semaine.
 - [ ] Admin > Studios (lecture seule) : retirer l’URL brute “Photo : XXX” (la photo est visible ailleurs), laisser la cellule propre/compacte (ou masquer la ligne en lecture seule).
 
 ## Definition of Done (DoD)
