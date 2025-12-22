@@ -1,5 +1,5 @@
 # Backlog — Retours QA S007 (session 2025-12-21 23:55)
-[Compréhension: 70% / Avancement: 75%]
+[Compréhension: 70% / Avancement: 80%]
 
 Source : 06_QA_S007.md (tests sur v0.5.0)
 
@@ -12,7 +12,7 @@ Source : 06_QA_S007.md (tests sur v0.5.0)
   - cours inscrits en liste d’attente (rang affiché, cours contingentés à 14 élèves),
   - cours disponibles et encore ouverts à l’inscription.
   Objectif : lecture immédiate, intuitive, sans effort cognitif.
-- [ ] Ouvert : spécifier les filtres du planning élève (date/plage, prof, studio, type ?) et priorités P0/P1 + exigences responsives.
+- [~] Planning élève : filtres date min/max, studio, prof, “mes cours” et recherche titre en place (vue mois/semaine). À cadrer/étendre si besoin (type, plage, responsive fine).
 
 ## Definition of Done (DoD)
 - Vue agenda/planning accessible dans École et Cours (élève), modes semaine/mensuel, états cohérents sur mobile/desktop.
