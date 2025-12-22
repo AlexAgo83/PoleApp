@@ -32,7 +32,7 @@ export async function purchaseCourseAction(formData: FormData) {
     maxSeats?: number | null;
     costCredits?: number | null;
     _count: { attendances: number };
-    attendances: { id: string }[];
+    attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
   };
 
   let course: CourseWithCounts | null = null;
@@ -46,7 +46,10 @@ export async function purchaseCourseAction(formData: FormData) {
         maxSeats: true,
         costCredits: true,
         _count: { select: { attendances: true } },
-        attendances: { where: { studentId: session.user.id }, select: { id: true } },
+        attendances: {
+          where: { studentId: session.user.id },
+          select: { id: true, status: true, waitlistRank: true },
+        },
       },
     })) as CourseWithCounts | null;
   } catch (error) {
@@ -61,7 +64,10 @@ export async function purchaseCourseAction(formData: FormData) {
           date: true,
           durationMinutes: true,
           _count: { select: { attendances: true } },
-          attendances: { where: { studentId: session.user.id }, select: { id: true } },
+          attendances: {
+            where: { studentId: session.user.id },
+            select: { id: true, status: true, waitlistRank: true },
+          },
         },
       })) as CourseWithCounts | null;
     } else {
@@ -84,11 +90,6 @@ export async function purchaseCourseAction(formData: FormData) {
     throw new Error("Cours déjà passé");
   }
 
-  const remainingSeats = (course.maxSeats ?? 30) - (course._count.attendances ?? 0);
-  if (remainingSeats <= 0) {
-    throw new Error("Plus de places disponibles");
-  }
-
   const cost = course.costCredits ?? 100;
 
   await prisma.$transaction(async (tx) => {
@@ -104,7 +105,6 @@ export async function purchaseCourseAction(formData: FormData) {
       date: Date;
       durationMinutes: number | null;
       maxSeats?: number | null;
-      _count: { attendances: number };
     };
 
     let latest: LatestCourse | null = null;
@@ -115,7 +115,6 @@ export async function purchaseCourseAction(formData: FormData) {
           date: true,
           durationMinutes: true,
           maxSeats: true,
-          _count: { select: { attendances: true } },
         },
       })) as LatestCourse | null;
     } catch (error) {
@@ -128,7 +127,7 @@ export async function purchaseCourseAction(formData: FormData) {
           select: {
             date: true,
             durationMinutes: true,
-            _count: { select: { attendances: true } },
+            maxSeats: true,
           },
         })) as LatestCourse | null;
       } else {
@@ -143,12 +142,20 @@ export async function purchaseCourseAction(formData: FormData) {
     if (latestEnd <= Date.now()) {
       throw new Error("Cours déjà passé");
     }
-    if ((latest._count.attendances ?? 0) >= (latest.maxSeats ?? 30)) {
-      throw new Error("Plus de places disponibles");
-    }
+
+    const confirmedCount = await tx.courseAttendance.count({
+      where: { courseId: course.id, status: "CONFIRMED" },
+    });
+    const waitlistCount = await tx.courseAttendance.count({
+      where: { courseId: course.id, status: "WAITLIST" },
+    });
+    const capacity = latest.maxSeats ?? 30;
+    const isFull = confirmedCount >= capacity;
+    const status: "CONFIRMED" | "WAITLIST" = isFull ? "WAITLIST" : "CONFIRMED";
+    const waitlistRank = status === "WAITLIST" ? waitlistCount + 1 : null;
 
     await tx.courseAttendance.create({
-      data: { courseId: course.id, studentId: session.user.id },
+      data: { courseId: course.id, studentId: session.user.id, status, waitlistRank },
     });
   });
 
