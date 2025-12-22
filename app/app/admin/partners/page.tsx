@@ -52,7 +52,7 @@ function buildPageRange(totalPages: number, currentPage: number): PageLink[] {
 export default async function AdminPartnersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; q?: string; kind?: string; edit?: string; from?: string; to?: string }>;
+  searchParams?: Promise<{ page?: string; q?: string; kind?: string; edit?: string; from?: string; to?: string; flash?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
@@ -77,6 +77,7 @@ export default async function AdminPartnersPage({
   const currentPage = Math.max(1, Number.isFinite(rawPage) ? rawPage : 1);
   const from = resolved.from?.toString();
   const to = resolved.to?.toString();
+  const flash = resolved.flash?.toString();
   const editId = resolved.edit?.toString();
 
   const whereClause = {
@@ -157,6 +158,25 @@ export default async function AdminPartnersPage({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      {flash && (
+        <div className="fixed bottom-4 right-4 z-30 space-y-2">
+          {flash === "created" && (
+            <div className="rounded-xl border border-emerald-300/60 bg-emerald-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
+              Partenaire créé.
+            </div>
+          )}
+          {flash === "updated" && (
+            <div className="rounded-xl border border-cyan-300/60 bg-cyan-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-900/40">
+              Partenaire mis à jour.
+            </div>
+          )}
+          {flash === "deleted" && (
+            <div className="rounded-xl border border-red-400/60 bg-red-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-red-900/40">
+              Partenaire supprimé.
+            </div>
+          )}
+        </div>
+      )}
       <header className="panel p-4 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <h1 className="text-3xl font-semibold text-white">Partenaires</h1>
