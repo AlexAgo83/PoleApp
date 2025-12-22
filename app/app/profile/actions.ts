@@ -109,5 +109,5 @@ export async function updateProfileAction(formData: FormData) {
   });
 
   revalidatePath("/app/profile");
-  redirect("/app/profile");
+  redirect("/app/profile?saved=1");
 }
