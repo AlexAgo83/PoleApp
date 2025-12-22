@@ -42,29 +42,18 @@ export async function updateSchoolAction(formData: FormData) {
   const photoUrl =
     parsed.data.photoUrl && parsed.data.photoUrl.length > 0 ? parsed.data.photoUrl : null;
 
-  try {
-    await prisma.school.update({
-      where: { id: parsed.data.schoolId },
-      data: { name: trimmedName, website, photoUrl },
-    });
-  } catch (error) {
-    const message = (error as Error)?.message ?? "";
-    const isWebsiteUnsupported =
-      message.includes("Unknown argument `website`") || message.toLowerCase().includes("website");
-    const isPhotoUnsupported =
-      message.includes("Unknown argument `photoUrl`") || message.toLowerCase().includes("photourl");
-
-    if (!isWebsiteUnsupported && !isPhotoUnsupported) {
-      throw error;
-    }
-
-    // Fallback if the schema/DB doesn't yet have the column.
+  // Mise à jour sûre : Prisma pour nom/website, RAW pour photo (si colonne présente)
+  await prisma.school.update({
+    where: { id: parsed.data.schoolId },
+    data: { name: trimmedName, website },
+  });
+  if (photoUrl !== null) {
     try {
       await prisma.$executeRaw`
-        UPDATE "School" SET "name" = ${trimmedName}, "website" = ${website}::text, "photoUrl" = ${photoUrl}::text WHERE "id" = ${parsed.data.schoolId}
+        UPDATE "School" SET "photoUrl" = ${photoUrl}::text WHERE "id" = ${parsed.data.schoolId}
       `;
-    } catch (rawError) {
-      throw rawError;
+    } catch {
+      // colonne absente : ignorer
     }
   }
 
