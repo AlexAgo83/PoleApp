@@ -16,11 +16,23 @@ const statusLabel: Record<LearningStatus, string> = {
   MASTERED: "Fluide",
 };
 
-const statusClass: Record<LearningStatus, string> = {
-  NOT_STARTED: "border-white/15 bg-white/5 text-white",
-  IN_PROGRESS: "border-amber-400/40 bg-amber-500/15 text-amber-50",
-  PASSED: "border-cyan-400/40 bg-cyan-500/15 text-cyan-50",
-  MASTERED: "border-emerald-400/40 bg-emerald-500/15 text-emerald-50",
+const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {
+  NOT_STARTED: {
+    solid: "border-[#2563eb] bg-[#2563eb] text-white",
+    outline: "border-[#2563eb] text-[#2563eb]",
+  },
+  IN_PROGRESS: {
+    solid: "border-[#f59e0b] bg-[#f59e0b] text-white",
+    outline: "border-[#f59e0b] text-[#f59e0b]",
+  },
+  PASSED: {
+    solid: "border-[#10b981] bg-[#10b981] text-white",
+    outline: "border-[#10b981] text-[#10b981]",
+  },
+  MASTERED: {
+    solid: "border-[#7c3aed] bg-[#7c3aed] text-white",
+    outline: "border-[#7c3aed] text-[#7c3aed]",
+  },
 };
 
 const gameModeLabel: Record<GameMode, string> = {
@@ -284,7 +296,7 @@ export default async function TeacherStudentDetailPage({
                 <div className="flex flex-wrap items-center gap-2">
                   {progress ? (
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${statusClass[progress.learningStatus]}`}
+                      className={`inline-flex items-center gap-1 rounded-full border bg-transparent px-3 py-1 text-[11px] font-semibold ${statusStyles[progress.learningStatus].outline}`}
                     >
                       {statusLabel[progress.learningStatus]}
                     </span>
