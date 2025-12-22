@@ -1,5 +1,5 @@
 # Backlog — Retours QA S006 (session 2025-12-21 23:55)
-[Compréhension: 90% / Avancement: 45%]
+[Compréhension: 95% / Avancement: 70%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -17,7 +17,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - [x] Admin > Facturation (basé sur `Invoice`) :
   - Modèle : table `Invoice` liée à `Course` (courseId, amountCents, currency, status enum Générée/Envoyée/Payée/En retard/Annulée, issuedAt, paidAt, notes).
   - Calcul : règle par défaut fixée (présences CONFIRMED × 50€, fallback maxSeats × 30€) + override montant/note manuel (persisté sur l’Invoice).
-  - UI : onglet Facturation admin listant les cours donnés (vue liste + filtres date/prof/studio/statut, pagination 10), export CSV, actions guidées de changement de statut (marquer envoyé/payé/annulé/retard), badge retard. **(fait)**
+  - UI : onglet Facturation admin listant les cours donnés (vue liste + filtres date/prof/studio/statut + tri, pagination 10), export CSV, actions guidées de changement de statut (marquer envoyé/payé/annulé/retard), badge retard. **(fait)**
   - Suivi abonnements : crédits restants + péremption par élève ; affichage dans l’onglet Facturation ou bloc dédié (résumé crédits + alertes). **(fait partiel)**
   - Backfill : générer des invoices pour les cours existants (statut Générée, montant par défaut) + initialiser abonnements.
   - Accès : par défaut SCHOOL_ADMIN lecture/édition ; éventuelle lecture limitée pour TEACHER à confirmer.
@@ -25,17 +25,17 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
 - [~] Admin > Agenda cours : filtres date min/max, prof, studio et recherche (titre) sur vue mois/semaine.
 
 ## Definition of Done (DoD)
-- Studios/Partenaires : lecture par défaut, édition via ✏️, retour lecture après sauvegarde.
-- Élèves : uniquement positions enseignées visibles (sinon message “aucune position”).
-- Cours : générateur actif, niveaux élève/position visibles et éditables, élèves cliquables.
-- Jeux admin : énoncé affiché pour tous les modes concernés.
-- Positions admin : bloc “gating” supprimé.
-- Facturation : table `Invoice` en place + backfill cours existants, montants calculés/persistés, statuts complets (Générée/Envoyée/Payée/En retard/Annulée) ; UI admin avec filtres/pagination/exports éventuels, actions de statut ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées.
+- Studios/Partenaires : lecture par défaut, édition via ✏️, retour lecture après sauvegarde. **(OK)**
+- Élèves : uniquement positions enseignées visibles (sinon message “aucune position”). **(OK)**
+- Cours : générateur actif, niveaux élève/position visibles et éditables, élèves cliquables. **(à livrer)**
+- Jeux admin : énoncé affiché pour tous les modes concernés. **(OK)**
+- Positions admin : bloc “gating” supprimé. **(OK)**
+- Facturation : table `Invoice` en place + backfill cours existants, montants calculés/persistés, statuts complets (Générée/Envoyée/Payée/En retard/Annulée) ; UI admin avec filtres/pagination/exports/tri, actions de statut ; suivi abonnements (crédits restants + péremption). Partenaires : métriques clics/achats exposées. **(Facturation DONE v0.6.7 ; métriques partenaires à faire)**
 
 ## Tests / Vérifications
 - QA manuel Admin : studios/partenaires basculent lecture → édition via ✏️, sauvegarde et re-affichage en lecture.
 - QA manuel Admin : onglet Élèves n’affiche que les positions enseignées, pas de “non commencée” hors scope.
 - QA manuel Admin : onglets Cours et Jeux couvrent les mêmes fonctionnalités que Teacher (à valider selon tickets Teacher).
-- QA manuel Admin : Positions sans bloc gating.
-- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents, changement de statut Générée→Envoyée→Payée→Annulée/En retard fonctionne, filtres date/prof/studio/statut OK, pagination 10, export CSV le cas échéant ; crédits restants/péremption visibles.
+- QA manuel Admin : Positions sans bloc gating. **(OK)**
+- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents, changement de statut Générée→Envoyée→Payée→Annulée/En retard fonctionne, filtres date/prof/studio/statut/tri OK, pagination 10, export CSV le cas échéant ; crédits restants/péremption visibles. **(OK v0.6.7)**
 - QA Admin agenda : filtres date min/max + recherche titre opérationnels en mois/semaine, pastilles en bas à droite alignées élève.

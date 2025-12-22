@@ -1,5 +1,5 @@
-# 01 — Backlog Produit (v0.4.6 → produit complet)
-[Compréhension: ??% / Avancement: ??%]
+# 01 — Backlog Produit (v0.6.7 → produit complet)
+[Compréhension: 90% / Avancement: 80%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -9,7 +9,7 @@
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 > Implémentation actuelle : Next.js App Router + Prisma/PostgreSQL, routes protégées sous `/app/...` (positions listées pour tous sur `/positions`, création/édition prof/admin sous `/teacher/positions/...`), NextAuth Credentials, Docker compose (target `dev` + `docker compose watch`), déploiement Render via `render.yaml`.
-> Statut : Steps 0→9 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA), tag `v0.4.6` figé comme baseline. Phase produit enclenchée : fiabilité/observabilité/sécurité/perf/billing sont à intégrer dans chaque Step.
+> Statut : Steps 0→9 livrées (auth/RBAC, positions, blessures, progression, cours, mini-jeu, admin école, navigation unifiée par rôle + espaces dédiés + profil + pagination, Discovery QA). Phase produit enclenchée : facturation livrée (0.6.7) avec invoices auto/backfill, tri/export CSV, crédits en résumé, UI admin/prof. À poursuivre : générateur cours (teacher/admin), métriques partenaires, agenda admin, QA parité jeux/agenda élève.
 - À planifier : intégration Cloudinary pour l’hébergement des images (upload prof/élève/cours) quand on ouvrira le flux média produit.
 
 ---
