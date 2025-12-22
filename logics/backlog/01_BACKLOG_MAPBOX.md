@@ -1,7 +1,11 @@
 # Backlog Mapbox (affichage studios/partenaires)
 [Compréhension: 25% / Avancement: 0%]
+> NON PRIORISE / NE PAS FAIRE
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 ## Pré-requis & configuration
 - Créer un compte Mapbox, générer un token restreint (domaines autorisés, referrers).

@@ -1,5 +1,10 @@
 # Backlog — Retours QA S006 (session 2025-12-21 23:55)
 [Compréhension: 90% / Avancement: 45%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 Source : 06_QA_S006.md (tests sur v0.5.0)
 

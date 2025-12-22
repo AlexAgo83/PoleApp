@@ -1,5 +1,10 @@
 # Backlog — Mini-jeux (session 2025-12-21)
 [Compréhension: 100% / Avancement: 80%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 ## Rappel existant
 - Mode Photo → Nom déjà implémenté dans `/app/student/game` (à vérifier pour éviter les doublons).

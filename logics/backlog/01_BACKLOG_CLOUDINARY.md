@@ -1,7 +1,11 @@
 # Backlog Cloudinary (uploads médias)
 [Compréhension: 30% / Avancement: 0%]
+> FAIBLE PRIORITE
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 ## Pré-requis & configuration
 - Créer le compte Cloudinary (env de prod + dev) et générer les credentials : `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.

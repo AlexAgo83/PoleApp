@@ -1,5 +1,10 @@
 # 01 — Backlog Produit (v0.4.6 → produit complet)
 [Compréhension: ??% / Avancement: ??%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 > Style: chaque feature contient **user stories**, **critères d’acceptation** et **priorité**.
 > Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
