@@ -3,27 +3,41 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { InvoiceStatus } from "@prisma/client";
+import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+const updateInvoiceSchema = z.object({
+  invoiceId: z.string().min(1),
+  status: z.nativeEnum(InvoiceStatus),
+  amount: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val || val.trim().length === 0) return undefined;
+      const parsed = Number.parseFloat(val.replace(",", "."));
+      return Number.isNaN(parsed) ? undefined : Math.round(parsed * 100);
+    })
+    .refine((v) => v === undefined || v >= 0, "Montant invalide"),
+  note: z.string().optional(),
+});
 
 export async function updateInvoiceStatusAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     throw new Error("Accès refusé");
   }
-  const invoiceId = formData.get("invoiceId")?.toString();
-  const statusStr = formData.get("status")?.toString() as InvoiceStatus | undefined;
-  const amount = formData.get("amount")?.toString();
-  const note = formData.get("note")?.toString();
-  const parsedAmount =
-    amount && amount.trim().length > 0 ? Math.round(parseFloat(amount.replace(",", ".")) * 100) : undefined;
-  if (!invoiceId || !statusStr || !Object.values(InvoiceStatus).includes(statusStr)) {
+  const parsed = updateInvoiceSchema.safeParse({
+    invoiceId: formData.get("invoiceId")?.toString(),
+    status: formData.get("status")?.toString(),
+    amount: formData.get("amount")?.toString(),
+    note: formData.get("note")?.toString(),
+  });
+  if (!parsed.success) {
     throw new Error("Paramètres invalides");
   }
-  if (parsedAmount !== undefined && Number.isNaN(parsedAmount)) {
-    throw new Error("Montant invalide");
-  }
+  const { invoiceId, status: statusStr, amount: parsedAmount, note } = parsed.data;
 
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
