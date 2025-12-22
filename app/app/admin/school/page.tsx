@@ -36,10 +36,17 @@ export default async function AdminSchoolPage() {
   try {
     const withExtras = await prisma.school.findUnique({
       where: { id: session.user.schoolId },
-      select: { website: true, photoUrl: true },
+      select: { website: true },
     });
     schoolWebsite = withExtras?.website ?? null;
-    schoolPhoto = withExtras?.photoUrl ?? null;
+  } catch {
+    // Column may not exist; ignore.
+  }
+  try {
+    const rows = await prisma.$queryRawUnsafe<{ photoUrl: string | null }[]>(
+      `SELECT "photoUrl" FROM "School" WHERE "id" = '${session.user.schoolId}' LIMIT 1`
+    );
+    schoolPhoto = rows?.[0]?.photoUrl ?? null;
   } catch {
     // Column may not exist; ignore.
   }
@@ -115,7 +122,7 @@ export default async function AdminSchoolPage() {
               name="photoUrl"
               type="url"
               placeholder="https://..."
-              defaultValue={baseSchool?.photoUrl ?? ""}
+              defaultValue={schoolPhoto ?? ""}
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             />
           </label>
