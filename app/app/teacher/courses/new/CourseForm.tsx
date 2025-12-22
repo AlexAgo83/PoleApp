@@ -227,6 +227,25 @@ export function CourseForm({
 
       <label className="block text-sm text-slate-200">
         Positions abordées
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              // Génère une sélection rapide (top 5) en conservant l'ordre existant.
+              const pool = positions.map((p) => p.id);
+              const next = pool.slice(0, 5);
+              setSelectedPositions(next);
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+          >
+            Générer (auto)
+          </button>
+          {selectedPositions.length > 0 && (
+            <span className="text-xs text-slate-300">
+              {selectedPositions.length} sélectionnée(s)
+            </span>
+          )}
+        </div>
         <div className="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
           {positions.map((position) => {
             const checked = selectedPositions.includes(position.id);
