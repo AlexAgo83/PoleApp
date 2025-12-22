@@ -1,5 +1,5 @@
 # Backlog — Retours QA S005 (session 2025-12-21 23:55)
-[Compréhension: 90% / Avancement: 15%]
+[Compréhension: 95% / Avancement: 60%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -22,13 +22,13 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
   - Accès : lecture TEACHER sur ses cours (OK), SCHOOL_ADMIN pour les mises à jour.
 
 ## Definition of Done (DoD)
-- Onglet École : agenda semaine+mois par studio, filtres multi (niveau/prof/date/discipline/studio), inclut passé/à venir, pagination/scroll OK sur mobile/desktop.
-- Fiche cours : niveaux élève/position visibles et éditables, élèves cliquables vers fiche ; générateur actif et propose des positions adaptées aux élèves inscrits.
-- Positions Teacher : encadré “gating” supprimé.
-- Facturation : table `Invoice` en place + backfill des cours existants, statuts enum complets (Générée/Envoyée/Payée/En retard/Annulée), montants calculés/persistés ; onglet facturation (lecture prof / écriture admin) avec filtres/pagination, pas d’erreur runtime.
+- Onglet École : agenda semaine+mois par studio, filtres multi (niveau/prof/date/discipline/studio), inclut passé/à venir, pagination/scroll OK sur mobile/desktop. **(à livrer)**
+- Fiche cours : niveaux élève/position visibles et éditables, élèves cliquables vers fiche ; générateur actif et propose des positions adaptées aux élèves inscrits. **(à livrer)**
+- Positions Teacher : encadré “gating” supprimé. **(DONE)**
+- Facturation : table `Invoice` en place + backfill des cours existants, statuts enum complets (Générée/Envoyée/Payée/En retard/Annulée), montants calculés/persistés ; onglet facturation (lecture prof / écriture admin) avec filtres/pagination/tri/export, pas d’erreur runtime. **(DONE v0.6.7)**
 
 ## Tests / Vérifications
 - QA manuel Teacher : onglet École → agenda semaine/mois par studio, filtres agissent (niveau/prof/date/discipline/studio), passé/à venir visibles, pagination/scroll OK sur desktop/mobile.
 - QA manuel Teacher : fiche cours affiche/édite niveaux élève/position (badges/tableau), élèves cliquables, générateur propose positions selon inscrits.
-- UI Positions Teacher : encadré gating absent.
-- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents avec la règle choisie, filtres date/prof/studio/statut OK, pagination 10 ; changement de statut côté admin fonctionne ; aucun crash.
+- UI Positions Teacher : encadré gating absent. **(OK)**
+- QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents avec la règle choisie, filtres date/prof/studio/statut/tri OK, pagination 10 ; changement de statut côté admin fonctionne ; aucun crash. **(OK v0.6.7)**
