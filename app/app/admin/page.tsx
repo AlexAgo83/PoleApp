@@ -284,7 +284,7 @@ export default async function AdminDashboard({
                     return (
                       <Link
                         key={course.id}
-                        href={`/app/teacher/courses/${course.id}?from=/app/admin`}
+                        href={`/app/admin/courses/${course.id}?from=/app/admin`}
                         className={`inline-flex w-full rounded-md border px-2 py-1 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-1.5 ${
                           past
                             ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
