@@ -161,19 +161,6 @@ export default async function AdminSchoolPage() {
         </form>
       </section>
 
-      {schoolPhoto && (
-        <section className="panel p-6">
-          <h3 className="text-lg font-semibold text-white">Photo de l’école</h3>
-          <div className="mt-3">
-            <img
-              src={schoolPhoto}
-              alt={`Photo de l’école ${baseSchool?.name ?? "École"}`}
-              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
-            />
-          </div>
-        </section>
-      )}
-
       <section className="panel space-y-3 p-6">
         <h3 className="text-lg font-semibold text-white">Résumé</h3>
         <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 md:grid-cols-3">
