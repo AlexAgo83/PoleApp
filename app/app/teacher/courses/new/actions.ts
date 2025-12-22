@@ -1,6 +1,6 @@
 "use server";
 
-import { LearningStatus, MasteryLevel, Prisma } from "@prisma/client";
+import { InvoiceStatus, LearningStatus, MasteryLevel, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 
 const courseSchema = z.object({
   title: z.string().optional(),
@@ -157,6 +158,20 @@ export async function createCourseAction(formData: FormData) {
 
       await upsertProgressFromNotes(tx, parsed.data.notes, session.user.id);
     }
+
+    const defaultAmountCents = computeDefaultInvoiceAmountCents(
+      parsed.data.studentIds.length,
+      parsed.data.maxSeats ?? 30
+    );
+    await tx.invoice.create({
+      data: {
+        courseId: course.id,
+        amountCents: defaultAmountCents,
+        currency: "EUR",
+        status: InvoiceStatus.GENERATED,
+        issuedAt: new Date(),
+      },
+    });
 
     return course.id;
   });
