@@ -398,6 +398,43 @@ export default async function CoursesAgendaPage({
             </div>
           </form>
         </FilterPanel>
+        {activeFilters > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+              {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
+            </span>
+            {teacherFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Prof : {teachers.find((t) => t.id === teacherFilter)?.name ?? teacherFilter}
+              </span>
+            )}
+            {studioFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Studio : {studios.find((s) => s.id === studioFilter)?.name ?? studioFilter}
+              </span>
+            )}
+            {disciplineFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Discipline : “{disciplineFilter}”
+              </span>
+            )}
+            {levelFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Niveau : “{levelFilter}”
+              </span>
+            )}
+            {q && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Recherche : “{q}”
+              </span>
+            )}
+            {(fromParam || toParam) && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Dates : {fromParam ?? "—"} → {toParam ?? "—"}
+              </span>
+            )}
+          </div>
+        )}
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
           <Link
             href={buildViewHref("week", weekValue)}
