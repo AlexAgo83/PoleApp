@@ -207,7 +207,7 @@ export default async function AdminPartnersPage({
   const rankedPartners = partners
     .map((p) => ({ id: p.id, name: p.name, ...getPartnerStats(p.id) }))
     .sort((a, b) => b.purchases - a.purchases || b.clicks - a.clicks)
-    .slice(0, 3);
+    .slice(0, 10);
   const statsByKind = partners.reduce<Map<string, { clicks: number; purchases: number }>>((acc, p) => {
     const current = acc.get(p.kind) ?? { clicks: 0, purchases: 0 };
     const stats = getPartnerStats(p.id);
@@ -367,7 +367,7 @@ export default async function AdminPartnersPage({
           </div>
           {rankedPartners.length > 0 && (
             <div className="mt-3 space-y-1 text-xs text-slate-200">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">Top partenaires (achats)</p>
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">Top 10 partenaires (achats)</p>
               <ul className="space-y-1.5">
                 {rankedPartners.map((p, idx) => (
                   <li
