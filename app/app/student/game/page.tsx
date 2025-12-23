@@ -253,24 +253,35 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
           <ReturnCta role={session.user.role} />
         </header>
 
-        {eligible.length < 4 && (
+        {notEnoughPositions && (
           <section className="panel w-full max-w-3xl self-center p-6 text-center text-slate-200">
-            <p>Pas assez de positions pour générer un jeu.</p>
+            <p className="text-lg font-semibold text-white">Pas assez de positions pour générer un jeu.</p>
             <p className="text-sm text-slate-300">
               Ajoute des positions vues (ou passe premium) pour débloquer plus de questions.
             </p>
-            <Link
-              href="/positions"
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-            >
-              Voir les positions
-            </Link>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              <Link
+                href="/positions"
+                className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+              >
+                Voir les positions
+              </Link>
+              {isLockedStudent && (
+                <Link
+                  href="/app/profile"
+                  className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Débloquer avec Premium
+                </Link>
+              )}
+            </div>
           </section>
         )}
 
         <section className="grid gap-4 md:grid-cols-2 [grid-auto-rows:minmax(0,1fr)]">
           {MODES.map((mode) => {
             const stats = statsByMode.get(mode.id);
+            const locked = isLockedStudent;
             return (
               <article key={mode.id} className="panel flex h-full flex-col gap-3 p-5">
                 <div className="flex items-start justify-between gap-3">
@@ -294,10 +305,10 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
                   )}
                 </div>
                 <div className="mt-auto flex items-center justify-end gap-2">
-                  {isLockedStudent ? (
+                  {locked ? (
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full border border-amber-300/50 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-100">
-                        Premium
+                      <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                        🔒 Premium
                       </span>
                       <Link
                         href="/app/profile"
@@ -372,45 +383,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     );
   }
 
-  if (isLockedStudent) {
-    return (
-      <main className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 px-6 py-12">
-        <div className="panel w-full max-w-md space-y-3 p-6 text-center text-slate-200">
-          <p className="text-lg font-semibold text-white">Réservé aux membres Premium</p>
-          <p className="text-sm text-slate-300">
-            Passe en Premium pour débloquer les 6 mini-jeux et sauvegarder tes scores.
-          </p>
-          <Link
-            href="/app/profile"
-            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Débloquer avec Premium
-          </Link>
-          <ReturnCta role={session.user.role} />
-        </div>
-      </main>
-    );
-  }
-
-  if (eligible.length < 4) {
-    return (
-      <main className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 px-6 py-12">
-        <div className="panel w-full max-w-md p-6 text-center text-slate-200">
-          <p>Pas assez de positions pour générer un jeu.</p>
-          <p className="text-sm text-slate-300">
-            Ajoute des positions vues (ou passe premium) pour débloquer plus de questions.
-          </p>
-          <Link
-            href="/positions"
-            className="mt-4 inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-          >
-            Voir les positions
-          </Link>
-          <ReturnCta role={session.user.role} />
-        </div>
-      </main>
-    );
-  }
+  const notEnoughPositions = eligible.length < 4;
 
   const eligibleMeta = eligible.map((p) => ({
     id: p.id,
