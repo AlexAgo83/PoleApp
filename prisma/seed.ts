@@ -629,6 +629,10 @@ async function seedSuperAdmin() {
 }
 
 async function main() {
+  const allowDestructiveSeed = process.env.SEED_ALLOW_PROD === "true" || process.env.NODE_ENV !== "production";
+  if (!allowDestructiveSeed) {
+    throw new Error("Seed aborted: set SEED_ALLOW_PROD=true to allow destructive seed outside dev.");
+  }
   await resetAll();
   await seedSuperAdmin();
   await seedGlobalSettingsAndOffers();
