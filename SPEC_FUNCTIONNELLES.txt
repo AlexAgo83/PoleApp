@@ -1,0 +1,67 @@
+# Pole App — Cahier Produit (vision fonctionnelle)
+Version : consolidation backlogs S002–S008 (focus produit)
+
+## Promesse
+App pole pour élèves, profs et écoles : cours cohérents (niveaux/blessures/envies), suivi progression, factures fluides, contenus premium (jeux, vidéos), planning clair et achats simplifiés.
+
+## Rôles & parcours cibles
+- Élève : suivre/progresser, réserver cours, acheter crédits/abonnements, profiter du premium (jeux, vidéos).
+- Professeur : gérer ses élèves (réels), construire des cours adaptés, facturer ses cours, gérer son catalogue perso (positions/partenaires).
+- Admin école : piloter cours/studios/partenaires, facturer, suivre abonnements/crédits actifs, gérer vidéos.
+
+## Règles métier clés
+- Accès/RBAC : élève sur son école ; prof voit seulement les élèves ayant déjà eu cours avec lui ; prof modifie uniquement ses positions (globales en lecture seule) ; premium débloque contenus (positions complètes, mini-jeux, vidéos).
+- Générateur cours : inputs niveaux/blessures/favoris/historique récent ; exclut auto positions incompatibles (badge + message), mix découverte/révision/safe, pondère coups de cœur, option « forcer quand même » (trace), retrait d’une position appliquée, persistance des suggestions appliquées.
+- Progression : statuts Découverte/Tenté/Passé/Fluide + compteur “Vu : X” (cours suivis) ; palette cohérente (solid élève, contour prof/tableaux).
+- Facturation :
+  - Admin : 1 invoice par cours, statuts Générée/Envoyée/Payée/En retard/Annulée, export/tri/filtres, logs structurés, encart “élèves actifs” (abos/forfaits valides), bouton « Reçu ».
+  - Prof : PDF avec logo + adresse école + titre/date/prof/studio/montant, envoi email à l’école, switch payé/non payé (filtrable).
+- Partenaires : tracking clic/achat (partner events) ; admin voit métriques ; prof peut ajouter ses partenaires et les rattacher à sa fiche.
+- Premium & achats : élèves premium ont crédits élevés par défaut ; page école permet achat de crédits/abos (forfait/mensuel/annuel) — simulation sans paiement pour l’instant, formules à préciser.
+- Planning : agenda semaine/mois, jours vides masqués en mobile ; légende cliquable (Passé/Inscrit/Attente rang quota 14/Disponible) à mémoriser, valeurs par défaut à décider ; nom d’école visible, switch école rafraîchit le planning.
+- Vidéos : élève premium voit onglet « Vidéos » (replay/live) basé sur liens/URLs existants (player/hosting ultérieur) ; live = lien externe avec planning ; admin gère catalogue par liens (discipline/niveau/type, accès premium vs tous).
+
+## Parcours par rôle
+### Élève
+- Voir cours (liste + agenda) avec positions/profs/discipline ; filtrer via légende états (à définir par défaut).
+- Acheter crédits/abos sur page école (simulation), voir crédits restants et dates butoirs ; inscrire aux cours.
+- Consulter progression (badges + compteur), blessures ; jouer aux 6 mini-jeux si premium (sinon tuiles verrouillées + CTA).
+- Accéder aux vidéos premium (replay/live) si premium ; sinon verrou/badge.
+
+### Professeur
+- Liste élèves (présences passées uniquement), filtre discipline multi (Pole/Exotic/Souplesse/Pilates).
+- Construire un cours via générateur (niveaux/blessures/favoris/rareté, force exclu, retrait position appliquée), tags Découverte/Révision/Safe.
+- Par cours, saisir niveau atteint par élève×trick (Non tenté/En cours/Acquis/Maîtrisé) en direct.
+- Gérer ses positions (créées par lui) ; globales en lecture seule.
+- Générer/envoi facture PDF, marquer payée/non payée, filtrer.
+- Ajouter ses partenaires et les lier à sa fiche.
+
+### Admin école
+- Factures : statuts, export, backfill, bouton « Reçu », encart “élèves actifs” (répartition abo annuel/mensuel/forfait), logs.
+- Fiches élèves : type abonnement, crédits restants, date butoir (fin abo/expiration crédits).
+- Studios/partenaires : lecture puis ✏️ édition ; métriques clic/achat visibles.
+- Cours/générateur : mêmes fonctions que prof (force blessure, retrait, tags).
+- Vidéos : gérer catalogue (liens replay/live), discipline/niveau/type, accès premium/tous, planning live.
+
+## Priorités S008
+- P0 : restriction élèves par prof + filtre discipline ; suivi niveau tricks par cours ; générateur enrichi (force/exclu) ; factures prof (PDF/envoi/statut) ; cohérence cours↔positions↔profs↔discipline ; achats crédits/abos ; légende agenda cliquable ; mini-jeux pool positions ; encart actifs facturation admin ; abo/credits/dates sur fiche élève admin ; cohérence data.
+- P1 : filtres discipline cours, vidéos premium élève/admin (liens), planning école (nom + switch), bouton « Reçu », encart actifs, type abonnement visible, partenaires métriques UI.
+- P2 : mode édition fiche prof (crayon), positions globales non éditables par prof, partenaires prof, retirer encart Note factures, légende mémorisation, bloc gating positions élève déjà retiré.
+
+## KPI indicatifs
+- Temps préparation cours (générateur) vs manuel.
+- Taux factures générées/envoyées/payées.
+- Engagement premium : mini-jeux sessions, vidéos vues, achats crédits/abos.
+- Qualité data : % cours avec positions/profs/discipline ; conformité élèves/profs.
+
+## Hypothèses / limites actuelles
+- Discipline/niveau cours en libellés libres (vocabulaire à figer plus tard).
+- Paiement non branché : achats simulés.
+- Player/hosting vidéo non intégré (liens externes pour l’instant).
+- Légende agenda : états par défaut et mémorisation à décider.
+
+## Checklist QA (haut niveau)
+- Prof : filtre discipline élèves/cours, liste restreinte, générateur badges force/exclu, niveau tricks éditable, factures PDF/envoi/statut, positions globales en lecture seule.
+- Élève : cours reliés (positions/profs/discipline), planning école (nom, switch), achats crédits/abos simulés, légende filtrante, mini-jeux débloqués dès seuil, vidéos premium verrouillées/ouvrables.
+- Admin : factures (libellé, encart actifs, note retirée), fiches élèves (abo/credits/échéance), partenaires métriques, onglet vidéos admin.
+- Data/RBAC : relations cours↔positions↔profs↔discipline correctes, prof limité à ses élèves/positions, premium gating respecté.
