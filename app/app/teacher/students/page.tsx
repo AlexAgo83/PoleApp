@@ -67,7 +67,10 @@ export default async function TeacherStudentsPage({
     ...(isTeacherOnly
       ? {
           attendances: {
-            some: { course: { teacherId: session.user.id } },
+            some: {
+              status: { in: ["CONFIRMED", "WAITLIST", "PRESENT"] },
+              course: { teacherId: session.user.id },
+            },
           },
         }
       : {}),
