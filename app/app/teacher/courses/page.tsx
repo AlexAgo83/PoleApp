@@ -32,6 +32,7 @@ export default async function TeacherCoursesPage({
     teacher?: string;
     withNotes?: string;
     studio?: string;
+    discipline?: string;
     q?: string;
   }>;
 }) {
@@ -39,6 +40,7 @@ export default async function TeacherCoursesPage({
   const rawPage = Number(resolvedParams.page ?? "1");
   const teacherFilter = typeof resolvedParams.teacher === "string" ? resolvedParams.teacher : undefined;
   const q = resolvedParams.q?.toString().trim() ?? "";
+  const disciplineFilter = resolvedParams.discipline?.toString().trim() ?? "";
   const studioFilter =
     typeof resolvedParams.studio === "string" && resolvedParams.studio.length > 0
       ? resolvedParams.studio
@@ -53,6 +55,7 @@ export default async function TeacherCoursesPage({
     validTo,
     teacherFilter,
     studioFilter,
+    disciplineFilter ? "discipline" : null,
     withNotes ? "notes" : null,
     q && q.length > 0 ? "q" : null,
   ].filter(Boolean).length;
@@ -73,6 +76,14 @@ export default async function TeacherCoursesPage({
     ...(q
       ? {
           title: { contains: q, mode: "insensitive" as const },
+        }
+      : {}),
+    ...(disciplineFilter
+      ? {
+          OR: [
+            { title: { contains: disciplineFilter, mode: "insensitive" as const } },
+            { description: { contains: disciplineFilter, mode: "insensitive" as const } },
+          ],
         }
       : {}),
   };
@@ -185,7 +196,7 @@ export default async function TeacherCoursesPage({
           userKey={userKey}
         >
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${withNotes ? "notes" : "all"}-${q || "all"}`}
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${disciplineFilter || "all"}-${withNotes ? "notes" : "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -206,7 +217,27 @@ export default async function TeacherCoursesPage({
               defaultValue={resolvedParams.to}
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
-          </label>
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline (titre/description)
+              <input
+                type="text"
+                name="discipline"
+                defaultValue={disciplineFilter}
+                placeholder="Souplesse, Exotic..."
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline (titre/description)
+              <input
+                type="text"
+                name="discipline"
+                defaultValue={disciplineFilter}
+                placeholder="Souplesse, Exotic..."
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
             <label className="text-sm text-slate-200">
               Professeur
               <select
@@ -269,12 +300,50 @@ export default async function TeacherCoursesPage({
             <Link
               href="/app/teacher/courses"
               className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Réinitialiser
-            </Link>
-          </div>
+              >
+                Réinitialiser
+              </Link>
+            </div>
           </form>
         </FilterPanel>
+
+        {activeFilters > 0 && (
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+              {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
+            </span>
+            {disciplineFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Discipline : “{disciplineFilter}”
+              </span>
+            )}
+            {teacherFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Prof : {teacherFilter}
+              </span>
+            )}
+            {studioFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Studio : {studioFilter}
+              </span>
+            )}
+            {(validFrom || validTo) && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Dates : {resolvedParams.from ?? "—"} → {resolvedParams.to ?? "—"}
+              </span>
+            )}
+            {withNotes && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Avec notes
+              </span>
+            )}
+            {q && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Recherche : “{q}”
+              </span>
+            )}
+          </div>
+        )}
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => {
             const isPast = new Date(course.date).getTime() < NOW_MS;
