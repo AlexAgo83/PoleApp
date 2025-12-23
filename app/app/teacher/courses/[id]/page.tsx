@@ -120,6 +120,9 @@ export default async function TeacherCourseDetailPage({
   const appliedBadge = new Set(
     storedRecommendations.filter((r) => r.appliedAt).map((r) => r.positionId)
   );
+  const recommendationByPosition = new Map(
+    storedRecommendations.map((r) => [r.positionId, r])
+  );
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
@@ -223,26 +226,38 @@ export default async function TeacherCourseDetailPage({
                 <span className="font-semibold text-white">
                   {cp.position.name}
                 </span>
-                {cp.position.type ? (
-                  <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {cp.position.type}
-                  </span>
-                ) : null}
-                {appliedBadge.has(cp.position.id) && (
-                  <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
-                    Appliqué
-                  </span>
-                )}
-                <form action={removeCoursePositionAction}>
-                  <input type="hidden" name="courseId" value={course.id} />
-                  <input type="hidden" name="positionId" value={cp.position.id} />
-                  <button
-                    type="submit"
-                    className="text-xs font-semibold text-rose-200 underline-offset-4 hover:text-rose-100 hover:underline"
-                  >
-                    Retirer
-                  </button>
-                </form>
+                <div className="flex flex-wrap items-center gap-2">
+                  {cp.position.type ? (
+                    <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
+                      {cp.position.type}
+                    </span>
+                  ) : null}
+                  {appliedBadge.has(cp.position.id) && (
+                    <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
+                      Appliqué
+                    </span>
+                  )}
+                  {recommendationByPosition.get(cp.position.id)?.forced && (
+                    <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                      Forcé
+                    </span>
+                  )}
+                  {recommendationByPosition.get(cp.position.id)?.excludedForInjury && (
+                    <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                      Exclu blessure
+                    </span>
+                  )}
+                  <form action={removeCoursePositionAction}>
+                    <input type="hidden" name="courseId" value={course.id} />
+                    <input type="hidden" name="positionId" value={cp.position.id} />
+                    <button
+                      type="submit"
+                      className="text-xs font-semibold text-rose-200 underline-offset-4 hover:text-rose-100 hover:underline"
+                    >
+                      Retirer
+                    </button>
+                  </form>
+                </div>
               </div>
             </li>
           ))}
