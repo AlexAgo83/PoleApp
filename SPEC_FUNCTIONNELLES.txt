@@ -58,7 +58,8 @@ App pole pour élèves, profs et écoles : cours cohérents (niveaux/blessures/e
 - Discipline/niveau cours en libellés libres (vocabulaire à figer plus tard).
 - Paiement non branché : achats simulés.
 - Player/hosting vidéo non intégré (liens externes pour l’instant).
-- Légende agenda : états par défaut et mémorisation à décider.
+- Légende agenda : tous les états cochés par défaut, mémorisation par utilisateur, badge “Filtres actifs” si décochés.
+- Achats simulés : toast + reçu minimal (horodatage/offre/montant), crédits/éligibilités appliqués immédiatement.
 
 ## Checklist QA (haut niveau)
 - Prof : filtre discipline élèves/cours, liste restreinte, générateur badges force/exclu, niveau tricks éditable, factures PDF/envoi/statut, positions globales en lecture seule.

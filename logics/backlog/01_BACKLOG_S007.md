@@ -23,8 +23,15 @@ Source : 06_QA_S007.md (tests sur v0.5.0)
 - Vue agenda/planning accessible dans École et Cours (élève), modes semaine/mensuel, états cohérents sur mobile/desktop.
 - Mini-jeux : UX identique à l’espace Teacher (6 modes, affichages, historique/leaderboard si présent côté Teacher).
 - Liste/agenda des cours élève avec légende en haut, code couleur clair pour passé / inscrit / attente (rang affiché, quota 14) / disponible.
+- Légende cliquable : tous les états cochés par défaut, mémorisation par utilisateur, badge “Filtres actifs” si un état est décoché.
+- Achats simulés : après achat crédits/abo, montrer un reçu minimal (horodatage/offre/montant) + toast ; application immédiate des crédits/éligibilités.
+- Cohérence cours↔positions↔profs/discipline auditée/corrigée.
+- Vidéos premium : accès via liens/lock (replay/live) pour premium, verrou pour non-premium.
 
 ## Tests / Vérifications
 - QA manuel élève : onglet École/Cours → agenda semaines/mois visible sur mobile/desktop ; navigation OK.
 - QA manuel élève : onglet Jeux = même fonctionnalité que Teacher (6 modes, historique/leaderboard si présent).
 - QA manuel élève : onglet Cours liste + agenda ; légende en haut ; code couleur par état ; liste d’attente affiche le rang (quota 14) sans ambiguïté. Filtres peuvent être mémorisés localement (date/prof/studio/type) côté client (localStorage, pas besoin de sync URL). Vue semaine sans reload + bouton “Semaine actuelle” OK.
+- QA légende : états cliquables/mémorisés, badge “Filtres actifs” présent.
+- QA achats simulés : crédits/abo ajoutés, reçu affiché, eligibility appliquée.
+- QA vidéos premium : premium voit les liens, non-premium voit verrou.
