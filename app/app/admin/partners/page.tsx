@@ -180,6 +180,12 @@ export default async function AdminPartnersPage({
     .map((p) => ({ id: p.id, name: p.name, ...getPartnerStats(p.id) }))
     .sort((a, b) => b.purchases - a.purchases || b.clicks - a.clicks)
     .slice(0, 3);
+  const statsByKind = partners.reduce<Map<string, { clicks: number; purchases: number }>>((acc, p) => {
+    const current = acc.get(p.kind) ?? { clicks: 0, purchases: 0 };
+    const stats = getPartnerStats(p.id);
+    acc.set(p.kind, { clicks: current.clicks + stats.clicks, purchases: current.purchases + stats.purchases });
+    return acc;
+  }, new Map());
 
   const pageHref = (page: number) => {
     const params = new URLSearchParams(commonQuery);
@@ -348,6 +354,27 @@ export default async function AdminPartnersPage({
                     </span>
                   </li>
                 ))}
+              </ul>
+            </div>
+          )}
+          {statsByKind.size > 0 && (
+            <div className="mt-3 space-y-1 text-xs text-slate-200">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">Répartition par type</p>
+              <ul className="space-y-1">
+                {Array.from(statsByKind.entries()).map(([kind, val]) => {
+                  const ctr = val.clicks > 0 ? Math.round((val.purchases / val.clicks) * 1000) / 10 : 0;
+                  return (
+                    <li
+                      key={kind}
+                      className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-1.5"
+                    >
+                      <span className="font-semibold text-white">{kind}</span>
+                      <span className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
+                        {val.purchases} achats · {val.clicks} clics · {ctr.toFixed(1)}% CTR
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
