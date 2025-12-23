@@ -96,6 +96,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     take: PAGE_SIZE,
     include: {
       media: true,
+      createdBy: { select: { id: true, name: true, email: true } },
       _count: { select: { progress: true } },
     },
   });
@@ -338,6 +339,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
                       Vu : {p._count?.progress ?? 0}
                     </span>
+                    {p.createdBy ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
+                        Créé par {p.createdBy.name ?? p.createdBy.email}
+                      </span>
+                    ) : null}
                   </div>
                   <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                   <p className="text-sm text-slate-300 line-clamp-2">
