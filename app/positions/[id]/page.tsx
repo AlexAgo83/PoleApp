@@ -83,6 +83,9 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const showVideoPlaceholder = isStudent && isPremium && !hasVideo;
   const isStaff =
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
+  const isOwner =
+    session?.user?.role === "SCHOOL_ADMIN" ||
+    (session?.user?.role === "TEACHER" && position.createdByUserId === session?.user?.id);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
@@ -280,15 +283,21 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             </div>
           )}
           {isStaff && (
-            <div className="flex justify-end">
-              <Link
-                href={`/teacher/positions/${position.id}/edit`}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/gear.svg" alt="" className="h-4 w-4" />
-                Éditer
-              </Link>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {isOwner ? (
+                <Link
+                  href={`/teacher/positions/${position.id}/edit`}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/gear.svg" alt="" className="h-4 w-4" />
+                  Éditer
+                </Link>
+              ) : (
+                <p className="text-xs font-semibold text-slate-300">
+                  Édition réservée au créateur ({position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}).
+                </p>
+              )}
             </div>
           )}
         </aside>
