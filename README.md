@@ -49,8 +49,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Liens rapides vers la liste/agenda élève et navigation mois/semaine sans scroll horizontal en mobile.
 
 ## Positions
-- `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`.
-- Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin.
+- `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`, badge “Créé par …”.
+- Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin (bloqué si prof non-propriétaire, legacy positions éditables).
 - CRUD : `/teacher/positions/new` et `/teacher/positions/[id]/edit` (Professeur/Admin).
 - Médias : image placeholder si absent, vignettes 2 colonnes sur la liste.
 
@@ -59,9 +59,9 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste.
 
 ## Cours / Facturation
-- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés.
+- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés + chips actives (discipline/prof/studio/dates/notes/recherche).
 - Facturation admin : `/app/admin/billing` (Invoice par cours, filtres date/prof/studio/statut, export CSV, actions statut/montant/note, backfill factures manquantes, panel filtres stylisé avec compteur en pied).
-- Facturation prof : `/app/teacher/billing` (lecture seule des factures de ses cours, filtres date/studio/statut).
+- Facturation prof : `/app/teacher/billing` (lecture seule des factures de ses cours, filtres date/studio/statut/recherche, export CSV, lien d’impression HTML par facture).
 - Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA ; agenda semaine/mois dédié (`/app/student/courses/agenda`) aligné mobile/desktop.
 - Détail cours correct par id; updates progression lors de la création/édition.
 
