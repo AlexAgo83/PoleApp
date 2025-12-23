@@ -162,14 +162,21 @@ function euroToCents(value: number) {
   return Math.round(value * 100);
 }
 
+function parseNumberInput(val: FormDataEntryValue | null) {
+  if (val === null || val === undefined) return undefined;
+  const str = val.toString().replace(",", ".");
+  const num = Number.parseFloat(str);
+  return Number.isNaN(num) ? undefined : num;
+}
+
 const subscriptionSchema = z.object({
   id: z.string().cuid().optional(),
   name: z.string().min(2),
-  monthly: z.coerce.number().min(0).default(0),
-  annual: z.coerce.number().min(0).default(0),
-  credits: z.coerce.number().min(0).default(0),
-  vat: z.coerce.number().min(0).max(100).default(20),
-  sortOrder: z.coerce.number().min(0).default(0),
+  monthly: z.number().min(0).default(0),
+  annual: z.number().min(0).default(0),
+  credits: z.number().min(0).default(0),
+  vat: z.number().min(0).max(100).default(20),
+  sortOrder: z.number().min(0).default(0),
   defaultTerm: z.string().optional(),
   isActive: z.string().optional(),
   isOpen: z.string().optional(),
@@ -180,11 +187,11 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
   const parsed = subscriptionSchema.safeParse({
     id: formData.get("id") ?? undefined,
     name: formData.get("name"),
-    monthly: formData.get("monthly"),
-    annual: formData.get("annual"),
-    credits: formData.get("credits"),
-    vat: formData.get("vat"),
-    sortOrder: formData.get("sortOrder"),
+    monthly: parseNumberInput(formData.get("monthly")) ?? 0,
+    annual: parseNumberInput(formData.get("annual")) ?? 0,
+    credits: parseNumberInput(formData.get("credits")) ?? 0,
+    vat: parseNumberInput(formData.get("vat")) ?? 20,
+    sortOrder: parseNumberInput(formData.get("sortOrder")) ?? 0,
     defaultTerm: formData.get("defaultTerm") || undefined,
     isActive: formData.get("isActive"),
     isOpen: formData.get("isOpen"),
@@ -223,10 +230,10 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
 const packSchema = z.object({
   id: z.string().cuid().optional(),
   name: z.string().min(2),
-  credits: z.coerce.number().min(0),
-  price: z.coerce.number().min(0),
-  vat: z.coerce.number().min(0).max(100),
-  sortOrder: z.coerce.number().min(0).default(0),
+  credits: z.number().min(0),
+  price: z.number().min(0),
+  vat: z.number().min(0).max(100),
+  sortOrder: z.number().min(0).default(0),
   isActive: z.string().optional(),
   isOpen: z.string().optional(),
 });
@@ -236,10 +243,10 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
   const parsed = packSchema.safeParse({
     id: formData.get("id") ?? undefined,
     name: formData.get("name"),
-    credits: formData.get("credits"),
-    price: formData.get("price"),
-    vat: formData.get("vat"),
-    sortOrder: formData.get("sortOrder"),
+    credits: parseNumberInput(formData.get("credits")) ?? 0,
+    price: parseNumberInput(formData.get("price")) ?? 0,
+    vat: parseNumberInput(formData.get("vat")) ?? 20,
+    sortOrder: parseNumberInput(formData.get("sortOrder")) ?? 0,
     isActive: formData.get("isActive"),
     isOpen: formData.get("isOpen"),
   });
