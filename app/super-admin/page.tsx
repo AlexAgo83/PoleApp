@@ -221,6 +221,7 @@ export default async function SuperAdminPage({
                       name="defaultTerm"
                       defaultValue={offer.defaultTerm ?? "MONTHLY"}
                       className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                      required
                     >
                       <option value="MONTHLY">Mensuel</option>
                       <option value="ANNUAL">Annuel</option>
@@ -321,11 +322,15 @@ export default async function SuperAdminPage({
                 </label>
                 <label className="space-y-1 md:col-span-2">
                   <span className="text-xs text-slate-300">Term par défaut</span>
-                  <input
+                  <select
                     name="defaultTerm"
                     defaultValue="MONTHLY"
                     className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
+                    required
+                  >
+                    <option value="MONTHLY">Mensuel</option>
+                    <option value="ANNUAL">Annuel</option>
+                  </select>
                 </label>
                 <div className="md:col-span-2">
                   <button
