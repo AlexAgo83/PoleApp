@@ -176,6 +176,10 @@ export default async function AdminPartnersPage({
     const ctr = stats.clicks > 0 ? Math.round((stats.purchases / stats.clicks) * 1000) / 10 : 0;
     return { ...stats, ctr };
   };
+  const rankedPartners = partners
+    .map((p) => ({ id: p.id, name: p.name, ...getPartnerStats(p.id) }))
+    .sort((a, b) => b.purchases - a.purchases || b.clicks - a.clicks)
+    .slice(0, 3);
 
   const pageHref = (page: number) => {
     const params = new URLSearchParams(commonQuery);
@@ -327,6 +331,26 @@ export default async function AdminPartnersPage({
               </p>
             </div>
           </div>
+          {rankedPartners.length > 0 && (
+            <div className="mt-3 space-y-1 text-xs text-slate-200">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">Top partenaires (achats)</p>
+              <ul className="space-y-1.5">
+                {rankedPartners.map((p, idx) => (
+                  <li
+                    key={p.id}
+                    className="flex flex-wrap items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                  >
+                    <span className="font-semibold text-white">
+                      #{idx + 1} {p.name}
+                    </span>
+                    <span className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
+                      {p.purchases} achats · {p.clicks} clics · {p.ctr.toFixed(1)}% CTR
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 
