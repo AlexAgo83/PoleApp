@@ -16,6 +16,7 @@ type SearchParams =
       studio?: string | string[];
       from?: string | string[];
       to?: string | string[];
+      q?: string | string[];
     }
   | undefined;
 
@@ -63,6 +64,7 @@ export default async function TeacherBillingPage({
   const studioFilter = paramValue(resolved.studio);
   const fromParam = paramValue(resolved.from);
   const toParam = paramValue(resolved.to);
+  const q = paramValue(resolved.q)?.trim() || "";
   const fromDate = dateFromParam(fromParam);
   const toDate = dateFromParam(toParam);
 
@@ -80,6 +82,14 @@ export default async function TeacherBillingPage({
       teacherId: session.user.id,
       schoolId: session.user.schoolId,
       ...(studioFilter ? { studioId: studioFilter } : {}),
+      ...(q
+        ? {
+            OR: [
+              { title: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
+            ],
+          }
+        : {}),
       ...(fromDate || toDate
         ? {
             date: {
@@ -128,9 +138,11 @@ export default async function TeacherBillingPage({
   if (studioFilter) queryParams.set("studio", studioFilter);
   if (fromParam) queryParams.set("from", fromParam);
   if (toParam) queryParams.set("to", toParam);
+  if (q) queryParams.set("q", q);
   const qs = queryParams.toString();
   const userKey = session.user.id ?? "anon";
-  const activeFilters = [statusFilter, studioFilter, fromParam, toParam].filter(Boolean).length;
+  const activeFilters = [statusFilter, studioFilter, fromParam, toParam, q && q.length > 0 ? "q" : null].filter(Boolean)
+    .length;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -208,6 +220,16 @@ export default async function TeacherBillingPage({
                 ))}
               </select>
             </label>
+            <label className="text-sm text-slate-200 md:col-span-2">
+              Recherche (titre/description cours)
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Titre ou description"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
             <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
@@ -224,6 +246,34 @@ export default async function TeacherBillingPage({
             </div>
           </form>
         </FilterPanel>
+
+        {activeFilters > 0 && (
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+              {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
+            </span>
+            {statusFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Statut : {statusLabels[statusFilter]}
+              </span>
+            )}
+            {studioFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Studio : {studioFilter}
+              </span>
+            )}
+            {(fromParam || toParam) && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Dates : {fromParam ?? "—"} → {toParam ?? "—"}
+              </span>
+            )}
+            {q && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Recherche : “{q}”
+              </span>
+            )}
+          </div>
+        )}
 
         <div className="mt-4 divide-y divide-white/10">
           {invoices.map((invoice) => {
