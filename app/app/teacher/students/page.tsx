@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { Prisma } from "@prisma/client";
+import { AttendanceStatus, Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
@@ -68,7 +68,7 @@ export default async function TeacherStudentsPage({
       ? {
           attendances: {
             some: {
-              status: { in: ["CONFIRMED", "WAITLIST", "PRESENT"] },
+              status: { in: [AttendanceStatus.CONFIRMED, AttendanceStatus.WAITLIST] },
               course: { teacherId: session.user.id },
             },
           },
