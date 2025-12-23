@@ -297,6 +297,7 @@ model Partner {
   events         PartnerEvent[]
 
   @@index([schoolId])
+  @@index([schoolId, kind])
 }
 
 model SponsoredLink {
@@ -329,6 +330,7 @@ model PartnerEvent {
   @@index([userId])
   @@index([courseId])
   @@index([studioId])
+  @@index([partnerId, createdAt])
 }
 
 model TeacherFavoritePosition {

@@ -56,6 +56,17 @@ async function requireAdmin() {
   return session.user.schoolId;
 }
 
+function logPartnerAdmin(action: string, data: Record<string, unknown>) {
+  console.info(
+    JSON.stringify({
+      event: "admin.partner",
+      action,
+      ...data,
+      ts: new Date().toISOString(),
+    })
+  );
+}
+
 export async function createPartnerAction(formData: FormData) {
   const schoolId = await requireAdmin();
   const parsed = createSchema.safeParse({
@@ -69,7 +80,7 @@ export async function createPartnerAction(formData: FormData) {
     throw new Error("Formulaire invalide");
   }
 
-  await prisma.partner.create({
+  const created = await prisma.partner.create({
     data: {
       name: parsed.data.name,
       kind: parsed.data.kind,
@@ -88,6 +99,7 @@ export async function createPartnerAction(formData: FormData) {
     },
   });
 
+  logPartnerAdmin("create", { schoolId, partnerId: created.id, kind: parsed.data.kind });
   revalidatePath(basePath);
   redirect(`${basePath}?flash=created`);
 }
@@ -134,6 +146,7 @@ export async function updatePartnerAction(formData: FormData) {
     },
   });
 
+  logPartnerAdmin("update", { schoolId, partnerId: parsed.data.id, kind: parsed.data.kind });
   revalidatePath(basePath);
   redirect(`${basePath}?flash=updated`);
 }
@@ -154,6 +167,7 @@ export async function deletePartnerAction(formData: FormData) {
   }
 
   await prisma.partner.delete({ where: { id: parsed.data.id } });
+  logPartnerAdmin("delete", { schoolId, partnerId: parsed.data.id });
   revalidatePath(basePath);
   redirect(`${basePath}?flash=deleted`);
 }
