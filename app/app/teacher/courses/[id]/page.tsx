@@ -123,6 +123,9 @@ export default async function TeacherCourseDetailPage({
   const recommendationByPosition = new Map(
     storedRecommendations.map((r) => [r.positionId, r])
   );
+  const recommendationState = new Map(
+    storedRecommendations.map((r) => [r.positionId, r])
+  );
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
@@ -331,72 +334,90 @@ export default async function TeacherCourseDetailPage({
             <input type="hidden" name="courseId" value={course.id} />
             <input type="hidden" name="suggestions" value={JSON.stringify(suggestions)} />
             <div className="grid gap-2 md:grid-cols-2">
-              {suggestions.map((s) => (
-                <label
-                  key={s.positionId}
-                  className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
-                >
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="checkbox"
-                      name="positionIds"
-                      value={s.positionId}
-                      defaultChecked={!s.excludedForInjury}
-                      className="mt-1 h-4 w-4"
-                    />
-                    {s.excludedForInjury ? (
-                      <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-rose-100">
-                        <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-3 w-3" />
-                        <span>Forcer quand même</span>
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">{s.name}</span>
-                      {s.type ? (
-                        <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{s.type}</span>
-                      ) : null}
-                      {s.favoriteCount && s.favoriteCount > 0 ? (
-                        <span className="rounded-full border border-pink-300/60 bg-pink-500/15 px-2 py-0.5 text-[11px] font-semibold text-pink-50">
-                          {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
-                        </span>
-                      ) : null}
+              {suggestions.map((s) => {
+                const persisted = recommendationState.get(s.positionId);
+                return (
+                  <label
+                    key={s.positionId}
+                    className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                  >
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="checkbox"
+                        name="positionIds"
+                        value={s.positionId}
+                        defaultChecked={!s.excludedForInjury}
+                        className="mt-1 h-4 w-4"
+                      />
                       {s.excludedForInjury ? (
-                        <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
-                          Exclu blessure
-                        </span>
+                        <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-rose-100">
+                          <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-3 w-3" />
+                          <span>Forcer quand même</span>
+                        </div>
                       ) : null}
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                          s.tag === "DISCOVERY"
-                            ? "border border-amber-300/60 bg-amber-500/15 text-amber-50"
-                            : s.tag === "REVISION"
-                              ? "border border-indigo-300/60 bg-indigo-500/15 text-indigo-50"
-                              : "border border-emerald-300/60 bg-emerald-500/15 text-emerald-50"
-                        }`}
-                      >
-                        {s.tag === "DISCOVERY" ? "Découverte" : s.tag === "REVISION" ? "Révision" : "Safe"}
-                      </span>
                     </div>
-                    <p className="text-xs text-slate-300">{s.reason}</p>
-                    {s.excludedForInjury && s.unsafeInjuries && s.unsafeInjuries.length > 0 && (
-                      <p className="text-xs text-rose-200 flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
-                          ⚠️ Exclu blessure
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold">{s.name}</span>
+                        {persisted?.appliedAt && (
+                          <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
+                            Appliqué
+                          </span>
+                        )}
+                        {persisted?.forced && (
+                          <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                            Forcé
+                          </span>
+                        )}
+                        {persisted?.excludedForInjury && !persisted?.forced && (
+                          <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                            Exclu blessure
+                          </span>
+                        )}
+                        {s.type ? (
+                          <span className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">{s.type}</span>
+                        ) : null}
+                        {s.favoriteCount && s.favoriteCount > 0 ? (
+                          <span className="rounded-full border border-pink-300/60 bg-pink-500/15 px-2 py-0.5 text-[11px] font-semibold text-pink-50">
+                            {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
+                          </span>
+                        ) : null}
+                        {s.excludedForInjury && !persisted?.forced ? (
+                          <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                            Exclu blessure
+                          </span>
+                        ) : null}
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                            s.tag === "DISCOVERY"
+                              ? "border border-amber-300/60 bg-amber-500/15 text-amber-50"
+                              : s.tag === "REVISION"
+                                ? "border border-indigo-300/60 bg-indigo-500/15 text-indigo-50"
+                                : "border border-emerald-300/60 bg-emerald-500/15 text-emerald-50"
+                          }`}
+                        >
+                          {s.tag === "DISCOVERY" ? "Découverte" : s.tag === "REVISION" ? "Révision" : "Safe"}
                         </span>
-                        Incompatible : {s.unsafeInjuries.join(", ")}
-                      </p>
-                    )}
-                    {s.excludedForInjury && (
-                      <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-amber-50">
-                        <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-4 w-4" />
-                        <span>Forcer quand même</span>
                       </div>
-                    )}
-                  </div>
-                </label>
-              ))}
+                      <p className="text-xs text-slate-300">{s.reason}</p>
+                      {s.excludedForInjury && s.unsafeInjuries && s.unsafeInjuries.length > 0 && (
+                        <p className="text-xs text-rose-200 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                            ⚠️ Exclu blessure
+                          </span>
+                          Incompatible : {s.unsafeInjuries.join(", ")}
+                        </p>
+                      )}
+                      {s.excludedForInjury && (
+                        <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-amber-50">
+                          <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-4 w-4" />
+                          <span>Forcer quand même</span>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                );
+              })}
             </div>
             <div className="flex flex-wrap justify-end gap-2">
               <button
