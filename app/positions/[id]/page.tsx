@@ -53,6 +53,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     include: {
       media: true,
       createdBy: true,
+      _count: { select: { progress: true } },
     },
   });
 
@@ -196,11 +197,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           )}
         </div>
         <aside className="panel space-y-4 p-6">
-          <div>
+          <div className="flex items-center justify-between">
             <p className="text-sm text-slate-300">Type</p>
             <p className="text-base font-semibold text-white">
               {typeLabels[position.type]}
             </p>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold text-slate-200">
+              Vu : {position._count?.progress ?? 0}
+            </span>
           </div>
           <div>
             <p className="text-sm text-slate-300">Niveau requis</p>
