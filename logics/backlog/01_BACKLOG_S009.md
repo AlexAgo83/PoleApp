@@ -13,6 +13,7 @@
 - Config catalogue packs crédits : packs globaux (EUR, TVA 20% par défaut), champs : nom, crédits inclus, prix TTC, TVA %, ordre, actif/ouvert à la vente ; valeurs de départ suggérées : Pack 500 (9,99€), Pack 1000 (14,99€), Pack 2500 (29,99€). (P1)
 - Super admin existant : seed idempotent qui crée un SUPER_ADMIN par défaut si aucun présent (env `SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD`), sinon no-op. Prévoir un script/route de promotion d’un user existant en SUPER_ADMIN en secours.
 - Promotion/dégraduation : ajouter un bouton/route protégée super-admin pour promouvoir/dégrader un user existant en SUPER_ADMIN (recovery).
+- Portée : le rôle SUPER_ADMIN reste cantonné au backoffice global (pas d’impersonation admin d’école pour l’instant).
 
 ## 2) Professeurs / Positions
 - Professeur autorisé à créer des positions (si non existant) et à éditer uniquement ses positions. (P0)
