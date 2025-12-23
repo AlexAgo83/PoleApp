@@ -191,8 +191,8 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
   });
   if (!parsed.success) {
     const err = parsed.error.errors
-      .map((e) => `${e.path.join(".") || "champ"}: ${e.message}`)
-      .join("; ");
+      ?.map((e) => `${e.path?.join?.(".") || "champ"}: ${e.message}`)
+      .join("; ") || "Données invalides";
     const qs = new URLSearchParams({ flash: "invalid-offer", error: err });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
@@ -245,8 +245,8 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
   });
   if (!parsed.success) {
     const err = parsed.error.errors
-      .map((e) => `${e.path.join(".") || "champ"}: ${e.message}`)
-      .join("; ");
+      ?.map((e) => `${e.path?.join?.(".") || "champ"}: ${e.message}`)
+      .join("; ") || "Données invalides";
     const qs = new URLSearchParams({ flash: "invalid-pack", error: err });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
