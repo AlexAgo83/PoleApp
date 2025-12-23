@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { execSync } = require("child_process");
 
-const MIGRATION_NAME = "20251223010000_add_course_recommendation";
+const MIGRATIONS_TO_RESOLVE = [
+  "20251223010000_add_course_recommendation",
+  "20251224103000_recommendation_forced_flags",
+];
 
 function run(cmd) {
   console.log(`$ ${cmd}`);
@@ -9,10 +12,12 @@ function run(cmd) {
 }
 
 function tryResolve() {
-  try {
-    run(`npx prisma migrate resolve --schema prisma/schema.prisma --applied ${MIGRATION_NAME}`);
-  } catch (err) {
-    console.warn(`skip resolve (${MIGRATION_NAME}): ${err?.message || err}`);
+  for (const name of MIGRATIONS_TO_RESOLVE) {
+    try {
+      run(`npx prisma migrate resolve --schema prisma/schema.prisma --applied ${name}`);
+    } catch (err) {
+      console.warn(`skip resolve (${name}): ${err?.message || err}`);
+    }
   }
 }
 
