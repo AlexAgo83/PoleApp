@@ -23,9 +23,10 @@ export async function GET(request: Request) {
   const toParam = param(searchParams.getAll("to"));
   const q = param(searchParams.getAll("q"))?.trim() || "";
 
-  const statusFilter = statusParam && Object.values(InvoiceStatus).includes(statusParam as InvoiceStatus)
-    ? (statusParam as InvoiceStatus)
-    : undefined;
+  const statusFilter =
+    statusParam && Object.values(InvoiceStatus).includes(statusParam as InvoiceStatus)
+      ? (statusParam as InvoiceStatus)
+      : undefined;
 
   const where: Prisma.InvoiceWhereInput = {
     status: statusFilter,
@@ -35,10 +36,7 @@ export async function GET(request: Request) {
       ...(studioParam ? { studioId: studioParam } : {}),
       ...(q
         ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { description: { contains: q, mode: "insensitive" } },
-            ],
+            title: { contains: q, mode: "insensitive" },
           }
         : {}),
       ...(fromParam || toParam
