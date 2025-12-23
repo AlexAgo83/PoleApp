@@ -96,6 +96,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     take: PAGE_SIZE,
     include: {
       media: true,
+      _count: { select: { progress: true } },
     },
   });
   const studentProgress = isStudent
@@ -306,8 +307,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     fallbackSrc={POSITION_PLACEHOLDER}
                   />
                 )}
-                <div className="flex flex-1 flex-col gap-2 p-4">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-1 flex-col gap-2 p-4">
+                    <div className="flex items-center justify-between gap-2">
                     <p className="text-base font-semibold text-white">{p.name}</p>
                     <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
                       {levelLabels[p.levelRequired]}
@@ -324,16 +325,19 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         🎥 Vidéo
                       </span>
                     )}
-                    {progressText && (
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                          progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
-                          "border border-white/15 bg-white/5 text-slate-200"
-                        }`}
-                      >
-                        Niveau élève : {progressText}
-                      </span>
-                    )}
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        progressText
+                          ? progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
+                            "border border-white/15 bg-white/5 text-slate-200"
+                          : "border border-white/10 bg-white/5 text-slate-200"
+                      }`}
+                    >
+                      {progressText ? `Niveau élève : ${progressText}` : "Découverte"}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
+                      Vu : {p._count?.progress ?? 0}
+                    </span>
                   </div>
                   <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                   <p className="text-sm text-slate-300 line-clamp-2">
