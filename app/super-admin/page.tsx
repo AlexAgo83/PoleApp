@@ -25,11 +25,13 @@ function formatAmount(cents: number, currency: string) {
   }).format((cents ?? 0) / 100);
 }
 
-export default async function SuperAdminPage() {
+export default async function SuperAdminPage({ searchParams }: { searchParams?: Promise<{ flash?: string }> } = {}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     redirect("/access-denied");
   }
+  const resolvedParams = (await searchParams) ?? {};
+  const flash = resolvedParams.flash;
 
   const [settings, schools, subscriptions, packs, audits] = await Promise.all([
     prisma.globalSetting.upsert({
@@ -60,6 +62,13 @@ export default async function SuperAdminPage() {
 
   return (
     <div className="grid gap-4 md:gap-6">
+      {flash?.startsWith("invalid-") && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm font-semibold text-amber-50 shadow-lg shadow-amber-900/30">
+          {flash === "invalid-offer"
+            ? "Offre abonnement invalide : vérifie le nom et les montants."
+            : "Pack de crédits invalide : vérifie le nom et les montants."}
+        </div>
+      )}
       <section className="panel border-cyan-300/25 p-5 shadow-cyan-900/30">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
