@@ -41,6 +41,7 @@ export default async function CoursesAgendaPage({
     q?: string;
     discipline?: string;
     level?: string;
+    q?: string;
   }>;
 }) {
   const session = await getServerSession(authOptions);
@@ -74,6 +75,7 @@ export default async function CoursesAgendaPage({
     typeof resolved.level === "string" && resolved.level.length > 0
       ? resolved.level
       : undefined;
+  const q = resolved.q?.toString().trim() ?? "";
   const viewParam = resolved.view;
   const view: "month" | "week" = viewParam === "week" ? "week" : "month";
   const weekParam = typeof resolved.week === "string" && resolved.week ? resolved.week : undefined;
@@ -176,6 +178,15 @@ export default async function CoursesAgendaPage({
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
+  const activeFilters = [
+    studioFilter,
+    teacherFilter,
+    disciplineFilter,
+    levelFilter,
+    fromParam,
+    toParam,
+    q && q.length > 0 ? "q" : null,
+  ].filter(Boolean).length;
 
   // Vue semaine avec navigation
   const today = new Date();
