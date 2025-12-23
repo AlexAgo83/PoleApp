@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execSync, spawnSync } from "node:child_process";
 import { PrismaClient } from "@prisma/client";
 import fs from "node:fs";
 import path from "node:path";
@@ -25,6 +25,23 @@ function pickDumpPath() {
   return fs.existsSync(fallback) ? fallback : null;
 }
 
+function runPsqlDump(dumpPath) {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.warn("DATABASE_URL manquant, skip dump psql.");
+    return false;
+  }
+  const result = spawnSync("psql", [databaseUrl, "-f", dumpPath], {
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (result.error || result.status !== 0) {
+    console.warn("Seed via dump a échoué (psql)", result.error?.message ?? result.status);
+    return false;
+  }
+  return true;
+}
+
 async function seedIfEmpty() {
   const prisma = new PrismaClient();
   try {
@@ -34,13 +51,10 @@ async function seedIfEmpty() {
     }
     const dumpPath = pickDumpPath();
     if (dumpPath) {
-      try {
-        console.log(`Seed via dump : ${dumpPath}`);
-        run(`psql "${process.env.DATABASE_URL}" -f ${dumpPath}`);
-        return;
-      } catch (err) {
-        console.warn("Seed via dump a échoué, on tente le seed Prisma classique.", err?.message);
-      }
+      console.log(`Seed via dump : ${dumpPath}`);
+      const ok = runPsqlDump(dumpPath);
+      if (ok) return;
+      console.warn("Seed via dump a échoué, on tente le seed Prisma classique.");
     }
     run("npm run db:seed");
   } finally {
