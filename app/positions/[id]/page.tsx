@@ -85,7 +85,8 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
   const isOwner =
     session?.user?.role === "SCHOOL_ADMIN" ||
-    (session?.user?.role === "TEACHER" && position.createdByUserId === session?.user?.id);
+    (session?.user?.role === "TEACHER" &&
+      (!position.createdByUserId || position.createdByUserId === session?.user?.id));
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">

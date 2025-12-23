@@ -330,6 +330,14 @@ export default async function TeacherBillingPage({
                   >
                     Voir le cours
                   </Link>
+                  <Link
+                    href={`/api/teacher/invoices/${invoice.id}/print`}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Imprimer
+                  </Link>
                 </div>
               </article>
             );
