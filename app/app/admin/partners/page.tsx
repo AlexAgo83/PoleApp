@@ -297,6 +297,9 @@ export default async function AdminPartnersPage({
             )}
           </p>
           <p className="text-xs text-slate-400">
+            Résultat : {totalCount} partenaire{totalCount > 1 ? "s" : ""} filtré{totalCount > 1 ? "s" : ""}.
+          </p>
+          <p className="text-xs text-slate-400">
             Les compteurs ci-dessous respectent les filtres (recherche, type, dates).
           </p>
           <div className="mt-3 grid gap-2 text-xs text-slate-200 md:grid-cols-2">
