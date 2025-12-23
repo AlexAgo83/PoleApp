@@ -178,6 +178,11 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
               Action invalide ou droits insuffisants.
             </div>
           )}
+          {flash === "filter" && (
+            <div className="rounded-xl border border-cyan-300/60 bg-cyan-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-900/40">
+              Filtres appliqués.
+            </div>
+          )}
         </div>
       )}
 
@@ -202,7 +207,7 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                 const v = fd.get(k)?.toString() ?? "";
                 if (v) clone.set(k, v);
               });
-              setFlash(null);
+              setFlash("filter");
               setSearchParams(clone);
             }}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
