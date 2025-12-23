@@ -120,10 +120,7 @@ export default async function CoursesAgendaPage({
         : {}),
       ...(levelFilter
         ? {
-            OR: [
-              { title: { contains: levelFilter, mode: "insensitive" } },
-              { description: { contains: levelFilter, mode: "insensitive" } },
-            ],
+            title: { contains: levelFilter, mode: "insensitive" },
           }
         : {}),
     },
