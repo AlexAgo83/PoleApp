@@ -200,6 +200,9 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
     const err = parsed.error.errors
       ?.map((e) => `${e.path?.join?.(".") || "champ"}: ${e.message}`)
       .join("; ") || "Données invalides";
+    // Log pour debug console
+    // eslint-disable-next-line no-console
+    console.error("super-admin invalid offer", err, { form: Object.fromEntries(formData.entries()) });
     const qs = new URLSearchParams({ flash: "invalid-offer", error: err });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
@@ -254,6 +257,8 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
     const err = parsed.error.errors
       ?.map((e) => `${e.path?.join?.(".") || "champ"}: ${e.message}`)
       .join("; ") || "Données invalides";
+    // eslint-disable-next-line no-console
+    console.error("super-admin invalid pack", err, { form: Object.fromEntries(formData.entries()) });
     const qs = new URLSearchParams({ flash: "invalid-pack", error: err });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
