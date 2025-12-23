@@ -14,6 +14,7 @@ type PresetUser = {
 };
 
 const presets: PresetUser[] = [
+  { label: "Super Admin", email: "superadmin@poleapp.test" },
   { label: "Admin", email: "admin@poleapp.test" },
   { label: "Teacher", email: "teacher@poleapp.test" },
   { label: "Student", email: "student1@poleapp.test" },
