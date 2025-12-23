@@ -288,16 +288,7 @@ export default async function CoursesAgendaPage({
         <FilterPanel
           storageKey="filters:teacher-agenda"
           title="Filtres"
-          activeCount={
-            (hasMonthFilter ? 1 : 0) +
-            (studioFilter ? 1 : 0) +
-            (teacherFilter ? 1 : 0) +
-            (fromParam ? 1 : 0) +
-            (toParam ? 1 : 0) +
-            (q ? 1 : 0) +
-            (disciplineFilter ? 1 : 0) +
-            (levelFilter ? 1 : 0)
-          }
+          activeCount={activeFilters}
           userKey={userKey}
         >
           <form
@@ -429,6 +420,14 @@ export default async function CoursesAgendaPage({
           >
             Mensuelle
           </Link>
+          {view === "week" && (
+            <Link
+              href={buildViewHref("week", formatWeekKey(new Date()))}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-slate-200 transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Semaine actuelle
+            </Link>
+          )}
         </div>
       </section>
 
