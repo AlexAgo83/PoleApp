@@ -124,6 +124,8 @@ export default async function AdminPartnersPage({
   }
 
   const partnerIds = partners.map((p) => p.id);
+  const timelineFrom = from ? new Date(`${from}T00:00:00`) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const timelineTo = to ? new Date(`${to}T23:59:59`) : new Date();
   const eventCounts = partnerIds.length
     ? await prisma.partnerEvent
         .groupBy({
@@ -155,6 +157,31 @@ export default async function AdminPartnersPage({
           return map;
     })
     : new Map<string, { clicks: number; purchases: number }>();
+  const timelineEvents =
+    partnerIds.length > 0
+      ? await prisma.partnerEvent.findMany({
+          where: {
+            partnerId: { in: partnerIds },
+            createdAt: { gte: timelineFrom, lte: timelineTo },
+          },
+          select: { createdAt: true, type: true },
+        })
+      : [];
+  const timelineMap = new Map<string, { clicks: number; purchases: number }>();
+  timelineEvents.forEach((ev) => {
+    const dayKey = ev.createdAt.toISOString().slice(0, 10);
+    const current = timelineMap.get(dayKey) ?? { clicks: 0, purchases: 0 };
+    if (ev.type === "PURCHASE") {
+      current.purchases += 1;
+    } else {
+      current.clicks += 1;
+    }
+    timelineMap.set(dayKey, current);
+  });
+  const timeline = Array.from(timelineMap.entries())
+    .map(([day, val]) => ({ day, ...val }))
+    .sort((a, b) => (a.day < b.day ? 1 : -1))
+    .slice(0, 14); // dernières 2 semaines
   const totalClicks = Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0);
   const totalPurchases = Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0);
   const totalCtr = totalClicks > 0 ? Math.round((totalPurchases / totalClicks) * 1000) / 10 : 0;
@@ -684,7 +711,30 @@ export default async function AdminPartnersPage({
                 )
               )}
             </div>
-          </div>
+            </div>
+          {timeline.length > 0 && (
+            <div className="mt-3 space-y-1 text-xs text-slate-200">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">
+                Évolution récente ({from || to ? "plage filtrée" : "14 derniers jours"})
+              </p>
+              <ul className="space-y-1">
+                {timeline.map((row) => {
+                  const ctr = row.clicks > 0 ? Math.round((row.purchases / row.clicks) * 1000) / 10 : 0;
+                  return (
+                    <li
+                      key={row.day}
+                      className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-1.5"
+                    >
+                      <span className="font-semibold text-white">{row.day}</span>
+                      <span className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
+                        {row.purchases} achats · {row.clicks} clics · {ctr.toFixed(1)}% CTR
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
     </main>
