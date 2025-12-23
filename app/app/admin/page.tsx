@@ -12,6 +12,7 @@ type RoleCounts = {
   STUDENT: number;
   TEACHER: number;
   SCHOOL_ADMIN: number;
+  SUPER_ADMIN: number;
 };
 
 export const dynamic = "force-dynamic";
@@ -83,7 +84,7 @@ export default async function AdminDashboard({
       if (user.isPremium) acc.premium += 1;
       return acc;
     },
-    { total: 0, STUDENT: 0, TEACHER: 0, SCHOOL_ADMIN: 0, premium: 0 } as RoleCounts
+    { total: 0, STUDENT: 0, TEACHER: 0, SCHOOL_ADMIN: 0, SUPER_ADMIN: 0, premium: 0 } as RoleCounts
   ) satisfies RoleCounts;
 
   const resolved = (await searchParams) ?? {};
