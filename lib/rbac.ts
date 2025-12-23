@@ -12,6 +12,7 @@ const rules: Rule[] = [
   { prefix: "/admin", allowed: ["SCHOOL_ADMIN"] },
   { prefix: "/teacher", allowed: ["TEACHER", "SCHOOL_ADMIN"] },
   { prefix: "/student", allowed: ["STUDENT", "SCHOOL_ADMIN", "TEACHER"] },
+  { prefix: "/super-admin", allowed: ["SUPER_ADMIN"] },
 ];
 
 function normalizePath(pathname: string) {
@@ -38,6 +39,7 @@ export function hasAccess(pathname: string, role?: Role | null): boolean {
 
 export function defaultHomeForRole(role?: Role | null): string {
   if (!role) return "/login";
+  if (role === "SUPER_ADMIN") return "/super-admin";
   if (role === "SCHOOL_ADMIN") return "/app/admin";
   if (role === "TEACHER") return "/app/teacher";
   return "/app/student";

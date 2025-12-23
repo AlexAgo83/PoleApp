@@ -12,6 +12,14 @@ const billingStatus = `Livré (${appVersion})`;
 
 const moduleSections = [
   {
+    title: "Super Admin",
+    href: "/super-admin",
+    description: "Backoffice global : écoles, admins, TVA/devise, offres abonnements/packs, audit.",
+    status: "Nouveau",
+    role: "Super Admin",
+    icon: "🛡️",
+  },
+  {
     title: "Positions",
     href: "/positions",
     description:
@@ -123,6 +131,7 @@ const roleLabels: Record<string, string> = {
   STUDENT: "Élève",
   TEACHER: "Professeur",
   SCHOOL_ADMIN: "Admin école",
+  SUPER_ADMIN: "Super Admin",
 };
 
 export default async function Home() {

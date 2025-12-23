@@ -26,7 +26,7 @@
 
 **Critères d’acceptation**
 - Login/Logout + reset password.
-- Rôles: `STUDENT`, `TEACHER`, `SCHOOL_ADMIN`.
+- Rôles: `STUDENT`, `TEACHER`, `SCHOOL_ADMIN`, `SUPER_ADMIN` (backoffice global, hors écoles).
 - Permissions: un prof ne voit que les élèves associés à son école.
 - Un school admin peut créer/associer des profs et élèves.
 

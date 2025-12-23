@@ -1,6 +1,6 @@
 # 05 — Seed content (v0.7.x)
 
-> Seed dev actuelle : 2 écoles, comptes fixes (admin/teacher/student1/2, mdp `poleapp123`), studios avec photos, 1 cours démo/école, progression/blessures, favoris et invoices/backfill pour facturation.
+> Seed dev actuelle : 2 écoles, comptes fixes (super admin global + admin/teacher/student1/2, mdp `poleapp123`), studios avec photos, 1 cours démo/école, progression/blessures, favoris et invoices/backfill pour facturation, offres/packs globaux EUR/TVA20.
 
 ## Taxonomies
 
@@ -70,10 +70,16 @@ Exemple (format libre):
 - 20 cours de démo créé par école (alterner le professeur, alterner les élèves + entre 2 et 5 par cours, alterner les positions + entre 2 et 5) + il doit y'avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, ne peut pas se chevaucher si même studio et/ou même professeur.
 
 ## Comptes seed (mot de passe `poleapp123`) (à affecter à la première école)
+- superadmin@poleapp.test — SUPER_ADMIN (global, sans école)
 - admin@poleapp.test — SCHOOL_ADMIN (premium) - admin admin 40ans Homme
 - teacher@poleapp.test — TEACHER (Professeur) - Elza Martinez 32ans Femme
 - student1@poleapp.test — STUDENT (free) - Anna Douchez 31ans Femme
 - student2@poleapp.test — STUDENT (premium) - Carlo Mendes 35ans Homme
+
+## Offres globales seed (Super Admin)
+- TVA par défaut : 20%, devise : EUR.
+- Abonnement : « Abonnement mensuel 1000 » — 9,99 €/mois TTC (59,90 €/an TTC), 1000 crédits mensuels, actif/ouvert.
+- Packs crédits : Pack 500 (9,99€), Pack 1000 (14,99€), Pack 2500 (29,99€), actifs/ouvert.
 
 ## (à utiliser pour le seed) Liens images à utiliser pour les "Position" (ne peut être utiliser qu'une fois)
 - https://i.postimg.cc/W4Mwp4Zr/Gemini-Generated-Image-6bpiby6bpiby6bpi.png
