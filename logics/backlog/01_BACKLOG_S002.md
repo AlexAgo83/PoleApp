@@ -76,14 +76,15 @@
 11. Admin > Cours > Agenda > Mode mobile > Je vois toujours les jours sans Cours dans l'agenda. **(DONE)**
 12. Dans la fiche de l'école > Remplacer le "Mon école" par le titre de l'école (et du coup retirer le titre qui était en petit, en dessous). **(DONE)**
 
-## Tâches restantes à prioriser (P0/P1/P2/P3 à définir)
-- Mini-jeux (6) accessibles en illimité pour prof + élève, gating premium strict (pas de démo/lecture seule), tuiles visibles non-premium avec cadenas + CTA “Débloquer avec Premium”. Bouton d’accès sur dashboards admin/prof/élève. (P1)
-- Mini-jeux premium : feedback immédiat (vert/rouge) + récap final conservé. (P1)
+## Tâches restantes à prioriser (focus S002, le reste est couvert en S004/S005/S006/S008/S009)
+- Mini-jeux (6) accessibles en illimité pour prof + élève, gating premium strict (pas de démo/lecture seule), tuiles visibles non-premium avec cadenas + CTA “Débloquer avec Premium”, feedback immédiat + récap final. Bouton d’accès sur dashboards admin/prof/élève. (P1)
 - Progression positions : finaliser code couleur homogène (élève + tableau prof + détail position), appliquer palette solid par défaut + outline sur tableaux/lists claires, et compteur “Vu : X” généralisé. (P2)
 - Prof > Élèves : tri/filtre par cours suivis/école/niveau ; affichage âge sur fiche. (P1)
 - Admin > Studios : page studio avec infos (pas de vue semaine pour l’instant). (P1)
-- Prof/Admin > Cours : suivi pédagogique (tableau élève×positions), notes internes cours, suivi de facturation (facture envoyée/paiement reçu). (P1)
-- Admin : planning/réservation, achats/abonnements, VOD (encore manquants). (P2)
+
+## Références croisées
+- Générateur cours, suivi pédagogique, facturation prof/admin : voir S004/S005/S006.
+- Planning/réservation, achats/abonnements, VOD : repris dans S008/S009.
 
 ## Mises à jour récentes
 - Page infos studio accessible à tous via `/app/school/[id]` (retour contextualisé) + liens depuis les listes de studios élèves/profs/admin. **(DONE)**
