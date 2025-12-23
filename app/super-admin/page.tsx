@@ -25,13 +25,18 @@ function formatAmount(cents: number, currency: string) {
   }).format((cents ?? 0) / 100);
 }
 
-export default async function SuperAdminPage({ searchParams }: { searchParams?: Promise<{ flash?: string }> } = {}) {
+export default async function SuperAdminPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ flash?: string; error?: string }>;
+} = {}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     redirect("/access-denied");
   }
   const resolvedParams = (await searchParams) ?? {};
   const flash = resolvedParams.flash;
+  const flashError = resolvedParams.error;
 
   const [settings, schools, subscriptions, packs, audits] = await Promise.all([
     prisma.globalSetting.upsert({
@@ -67,6 +72,9 @@ export default async function SuperAdminPage({ searchParams }: { searchParams?: 
           {flash === "invalid-offer"
             ? "Offre abonnement invalide : vérifie le nom et les montants."
             : "Pack de crédits invalide : vérifie le nom et les montants."}
+          {flashError && (
+            <span className="ml-2 font-normal text-amber-100/80">({flashError})</span>
+          )}
         </div>
       )}
       <section className="panel border-cyan-300/25 p-5 shadow-cyan-900/30">
