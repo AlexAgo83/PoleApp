@@ -79,6 +79,7 @@ export default async function AdminPartnersPage({
   const to = resolved.to?.toString();
   const flash = resolved.flash?.toString();
   const editId = resolved.edit?.toString();
+  const activeFilters = [q, kindFilter, from, to].filter(Boolean).length;
 
   const whereClause = {
     schoolId: session.user.schoolId,
@@ -417,6 +418,7 @@ export default async function AdminPartnersPage({
             className="group w-full"
             contentClassName="mt-3"
             userKey={userKey}
+            activeCount={activeFilters}
           >
             <form
               method="get"
@@ -476,6 +478,28 @@ export default async function AdminPartnersPage({
               </div>
             </form>
           </FilterPanel>
+          {activeFilters > 0 && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+              <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+                {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
+              </span>
+              {q && (
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                  Recherche : “{q}”
+                </span>
+              )}
+              {kindFilter && (
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                  Type : {kindFilter}
+                </span>
+              )}
+              {(from || to) && (
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                  Dates : {from ?? "—"} → {to ?? "—"}
+                </span>
+              )}
+            </div>
+          )}
         </div>
         {partners.length === 0 && (
           <p className="text-slate-200">Aucun partenaire pour le moment.</p>
