@@ -92,7 +92,7 @@ export default async function TeacherStudentsPage({
       injuries: {
         include: { injuryType: true },
       },
-      progress: true,
+      progress: { select: { id: true } },
     },
     orderBy: sort === "name_desc" ? { name: "desc" } : { name: "asc" },
     skip,
@@ -231,10 +231,19 @@ export default async function TeacherStudentsPage({
                     {student.email} · {student.isPremium ? "Premium" : "Free"} · Âge :{" "}
                     {student.age ? `${student.age} ans` : "Non renseigné"}
                   </p>
-                  <p className="text-sm text-slate-200">
-                    Blessures actives :{" "}
-                    {student.injuries.filter((inj) => inj.isActive).length}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-200">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-semibold">
+                      Vu : {student.progress.length}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-semibold">
+                      Blessures actives : {student.injuries.filter((inj) => inj.isActive).length}
+                    </span>
+                    {student.isPremium && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-2.5 py-1 font-semibold text-amber-50">
+                        Premium
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <Link
