@@ -105,6 +105,11 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           <p className="text-sm text-slate-200">
             Catalogue des positions avec filtres et détail. Visible selon tes droits.
           </p>
+          {position.createdBy ? (
+            <p className="text-xs text-slate-300 mt-1">
+              Créé par {position.createdBy.name ?? position.createdBy.email}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {session?.user ? (
