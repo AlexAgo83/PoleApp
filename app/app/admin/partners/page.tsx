@@ -157,6 +157,7 @@ export default async function AdminPartnersPage({
     : new Map<string, { clicks: number; purchases: number }>();
   const totalClicks = Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0);
   const totalPurchases = Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0);
+  const totalCtr = totalClicks > 0 ? Math.round((totalPurchases / totalClicks) * 1000) / 10 : 0;
   const partnerName = (id: string) => partners.find((p) => p.id === id)?.name ?? "Inconnu";
   const topClicks = Array.from(eventCounts.entries())
     .map(([id, val]) => ({ id, clicks: val.clicks }))
@@ -170,6 +171,11 @@ export default async function AdminPartnersPage({
   if (kindFilter) commonQuery.set("kind", kindFilter);
   if (from) commonQuery.set("from", from);
   if (to) commonQuery.set("to", to);
+  const getPartnerStats = (partnerId: string) => {
+    const stats = eventCounts.get(partnerId) ?? { clicks: 0, purchases: 0 };
+    const ctr = stats.clicks > 0 ? Math.round((stats.purchases / stats.clicks) * 1000) / 10 : 0;
+    return { ...stats, ctr };
+  };
 
   const pageHref = (page: number) => {
     const params = new URLSearchParams(commonQuery);
@@ -288,6 +294,9 @@ export default async function AdminPartnersPage({
           </div>
           <p className="text-2xl font-semibold text-white">
             {totalClicks} clics · {totalPurchases} achats
+          </p>
+          <p className="text-sm text-cyan-100">
+            Taux de conversion global : {totalCtr.toFixed(1)}%
           </p>
           <p className="text-xs text-slate-400">
             {from || to ? (
@@ -452,7 +461,7 @@ export default async function AdminPartnersPage({
                         )}
                         {eventCounts.get(partner.id) ? (
                           <p className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
-                            {eventCounts.get(partner.id)!.clicks} clics · {eventCounts.get(partner.id)!.purchases} achats
+                            {getPartnerStats(partner.id).clicks} clics · {getPartnerStats(partner.id).purchases} achats · {getPartnerStats(partner.id).ctr.toFixed(1)}% CTR
                           </p>
                         ) : null}
                         {supportsSponsored && "sponsoredLinks" in partner && partner.sponsoredLinks ? (
