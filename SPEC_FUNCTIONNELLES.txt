@@ -15,7 +15,7 @@ App pole pour élèves, profs et écoles : cours cohérents (niveaux/blessures/e
 - Progression : statuts Découverte/Tenté/Passé/Fluide + compteur “Vu : X” (cours suivis) ; palette cohérente (solid élève, contour prof/tableaux).
 - Facturation :
   - Admin : 1 invoice par cours, statuts Générée/Envoyée/Payée/En retard/Annulée, export/tri/filtres, logs structurés, encart “élèves actifs” (abos/forfaits valides), bouton « Reçu ».
-  - Prof : PDF avec logo + adresse école + titre/date/prof/studio/montant, envoi email à l’école, switch payé/non payé (filtrable).
+  - Prof : PDF avec logo + adresse école + titre/date/prof/studio/montant, TVA (%) + total TTC, envoi email à l’école, switch payé/non payé (filtrable).
 - Partenaires : tracking clic/achat (partner events) ; admin voit métriques ; prof peut ajouter ses partenaires et les rattacher à sa fiche.
 - Premium & achats : élèves premium ont crédits élevés par défaut ; page école permet achat de crédits/abos (forfait/mensuel/annuel) — simulation sans paiement pour l’instant, formules à préciser.
 - Planning : agenda semaine/mois, jours vides masqués en mobile ; légende cliquable (Passé/Inscrit/Attente rang quota 14/Disponible) à mémoriser, valeurs par défaut à décider ; nom d’école visible, switch école rafraîchit le planning.

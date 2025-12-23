@@ -23,7 +23,7 @@
 - Mini-jeux : corriger le message “pas assez de positions” quand le seuil est atteint (vérifier pool) (P1).
 
 ## 3) Vue Admin École (résultat : factures et actifs clairs, catalogue vidéos maîtrisé)
-- Factures : bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1).
+- Factures : bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%.
 - Fiches Élèves : afficher type d’abonnement (Annuel/Mensuel/Forfait), crédits restants, date butoir (fin abo / expiration crédits), visible et à jour (P1).
 - Vidéos streaming admin : onglet “Vidéos” pour gérer vidéos live/replay (liens/URLs, player plus tard), classer (discipline/niveau/type), définir accès premium vs tous, planning live (P2).
 
@@ -35,3 +35,8 @@
 - QA Élève : affichage cours reliés (positions/profs/disciplines), planning par école (switch + nom), achats crédits/abonnements (simulation), légende filtrante (états par défaut à décider), onglet vidéos premium (liens/lock), mini-jeux débloqués dès seuil (message corrigé).
 - QA Admin : factures (libellé, encart actifs, note retirée), fiches élèves (abonnement/crédits/échéance), onglet vidéos admin, métriques partenaires (clics/achats).
 - Cross-check relations en base (cours/positions/profs/discipline/école) et affichage conforme.
+
+## Références croisées
+- Générateur et pondération (cœurs/exclu/force) : cf. S004/S005.
+- Facturation TVA 20%, achats crédits/abos, factures prof PDF/email : cf. S008 (présent) + S009 (config globale super-admin).
+- Partenaires métriques UI : cf. S006.

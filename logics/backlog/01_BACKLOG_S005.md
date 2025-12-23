@@ -12,6 +12,11 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
 - Facturation/partners : prioriser en parallèle la robustesse (validations zod, logs structurés, indexes) et l’UX (toasts, filtres persistés, tri/pagination stables).
 - Agenda (teacher école) : rester sur la pagination/scroll actuelle pour couvrir passé/à venir, limites temporelles à décider plus tard si besoin.
 - UI : toasts et filtres persistés réutilisent le design existant de la facturation admin (pas de style dédié).
+- Agenda : mémoriser tous les filtres (discipline/niveau/date/studio/prof/recherche) par utilisateur.
+- Générateur : badges cœur/exclu/force seulement (pas de badge propriétaire côté prof) ; pondération cœurs > rareté > découverte/révision > recence ; force blessure prévaut sur exclusion.
+- Suivi pédagogique : niveau élève×trick inline uniquement en UI (pas d’export/PDF pour l’itération).
+- Factures prof : après génération/envoi, garder l’état “Envoyée” (statut), pas d’historique des envois mail pour l’instant.
+- Partenaires prof : visibles uniquement pour le prof (non partagés école) si/when traité ici.
 
 ## Tâches
 - [ ] Teacher > École : vue agenda (semaine + mensuel) par studio, états mobile/desktop, incluant cours passés et à venir. Filtres multiples : niveau, prof, date, discipline (types de cours ex. souplesse/pole exotic/pole gym), studio. Pagination ou scroll infini. **(Vue semaine sans reload + bouton semaine actuelle en place)** 
@@ -42,3 +47,7 @@ Source: 06_QA_S005.md (tests faits sur v0.5.0)
 - UI Positions Teacher : encadré gating absent. **(OK)**
 - QA Facturation : invoices backfillées (statut Générée) visibles, montants cohérents avec la règle choisie, filtres date/prof/studio/statut/tri OK, pagination 10 ; changement de statut côté admin fonctionne ; toasts affichés (pas de popin), filtres persistés ; aucun crash. **(OK v0.6.8 hors toasts)**
 - Tests unitaires/éventuels e2e : validations zod (inputs facturation/partners), logs structurés émis sur actions statut/export, indexes Prisma présents sur colonnes filtrées.
+
+## Références croisées
+- Générateur : voir S004 (pondération cœurs, force blessure, flags appliqué/exclu/forcé).
+- Facturation prof (PDF/email/TVA) et achats crédits/abos : voir S008 pour les règles produit.
