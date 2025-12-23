@@ -25,12 +25,14 @@ function main() {
   tryResolve();
   try {
     run("npx prisma migrate deploy --schema prisma/schema.prisma");
+    run("node scripts/ensure-super-admin.js");
     return;
   } catch (err) {
     console.warn("migrate deploy failed, attempting db push as fallback");
     console.warn(err?.message || err);
   }
   run("npx prisma db push --schema prisma/schema.prisma");
+  run("node scripts/ensure-super-admin.js");
 }
 
 main();
