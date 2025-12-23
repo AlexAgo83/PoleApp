@@ -84,10 +84,7 @@ export default async function TeacherBillingPage({
       ...(studioFilter ? { studioId: studioFilter } : {}),
       ...(q
         ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { description: { contains: q, mode: "insensitive" } },
-            ],
+            title: { contains: q, mode: "insensitive" },
           }
         : {}),
       ...(fromDate || toDate
@@ -234,7 +231,7 @@ export default async function TeacherBillingPage({
                 type="text"
                 name="q"
                 defaultValue={q}
-                placeholder="Titre ou description"
+                placeholder="Titre"
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
