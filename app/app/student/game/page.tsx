@@ -221,6 +221,8 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     redirect("/login");
   }
 
+  const notEnoughPositions = eligible.length < 4;
+
   const userSessions = await prisma.gameSession.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
@@ -382,8 +384,6 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
       </main>
     );
   }
-
-  const notEnoughPositions = eligible.length < 4;
 
   const eligibleMeta = eligible.map((p) => ({
     id: p.id,
