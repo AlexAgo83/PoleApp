@@ -38,7 +38,6 @@ export default async function CoursesAgendaPage({
     week?: string;
     from?: string;
     to?: string;
-    q?: string;
     discipline?: string;
     level?: string;
     q?: string;
