@@ -13,6 +13,8 @@ export type CourseSuggestion = {
   favoriteCount?: number;
   excludedForInjury?: boolean;
   unsafeInjuries?: string[];
+  forced?: boolean;
+  excluded?: boolean;
 };
 
 type CandidateInput = {
@@ -50,7 +52,7 @@ function summarizeCandidate(candidate: CandidateInput): {
 
   const recencyPenalty = candidate.recentOccurrences * 1.2;
   const injuryPenalty = candidate.unsafeForStudents.length > 0 ? 6 : 0;
-  const favoritesBonus = Math.min(3, candidate.favoriteCount) * 1.5;
+  const favoritesBonus = Math.min(3, candidate.favoriteCount) * 2; // pondération cœur
   const totalScore =
     discoveryScore * 3 + revisionScore * 2 + safeScore + favoritesBonus - recencyPenalty - injuryPenalty;
 
@@ -132,6 +134,8 @@ function selectTopSuggestions(
     favoriteCount: item.candidate.favoriteCount,
     excludedForInjury: item.candidate.excludedForInjury,
     unsafeInjuries: item.candidate.unsafeForStudents,
+    excluded: item.candidate.excludedForInjury,
+    forced: false,
   }));
 }
 

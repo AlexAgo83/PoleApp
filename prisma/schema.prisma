@@ -361,6 +361,8 @@ model CourseRecommendation {
   positionId String
   tag        SuggestionTag
   reason     String?
+  excludedForInjury Boolean @default(false)
+  forced     Boolean   @default(false)
   appliedAt  DateTime?
   createdAt  DateTime      @default(now())
   course     Course        @relation(fields: [courseId], references: [id])

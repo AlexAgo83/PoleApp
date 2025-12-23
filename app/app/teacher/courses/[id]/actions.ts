@@ -483,6 +483,8 @@ export async function applySuggestedPositionsAction(formData: FormData) {
             tag: s.tag,
             reason: buildReasonWithFlags(s, forcedSet.has(s.positionId)),
             appliedAt: toInsert.includes(s.positionId) ? new Date() : null,
+            excludedForInjury: s.excludedForInjury ?? false,
+            forced: forcedSet.has(s.positionId),
           })),
           skipDuplicates: true,
         });
