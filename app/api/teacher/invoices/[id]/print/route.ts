@@ -1,16 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { InvoiceStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "TEACHER" || !session.user.schoolId) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
-  const invoiceId = params.id;
+  const invoiceId = id;
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
     include: {
