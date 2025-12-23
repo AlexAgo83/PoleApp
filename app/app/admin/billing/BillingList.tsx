@@ -328,6 +328,46 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
           </form>
         </FilterPanel>
 
+        {activeCount > 0 && (
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+              {activeCount} filtre{activeCount > 1 ? "s" : ""} actif{activeCount > 1 ? "s" : ""}
+            </span>
+            {searchParams.get("status") && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Statut :{" "}
+                {statusLabels[searchParams.get("status") as keyof typeof statusLabels] ??
+                  searchParams.get("status")}
+              </span>
+            )}
+            {searchParams.get("teacher") && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Prof : {teachers.find((t) => t.id === searchParams.get("teacher"))?.name ?? searchParams.get("teacher")}
+              </span>
+            )}
+            {searchParams.get("studio") && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Studio : {studios.find((s) => s.id === searchParams.get("studio"))?.name ?? searchParams.get("studio")}
+              </span>
+            )}
+            {(searchParams.get("from") || searchParams.get("to")) && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Dates : {searchParams.get("from") ?? "—"} → {searchParams.get("to") ?? "—"}
+              </span>
+            )}
+            {searchParams.get("threshold") && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Montant ≥ {searchParams.get("threshold")} €
+              </span>
+            )}
+            {searchParams.get("sort") && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Tri : {searchParams.get("sort")}
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex w-full justify-end">
           <p className="text-sm text-slate-300">{loading ? "Chargement..." : `${data?.totalCount ?? 0} facture(s)`}</p>
         </div>
