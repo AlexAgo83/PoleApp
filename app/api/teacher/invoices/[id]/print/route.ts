@@ -24,7 +24,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
-  const school = await prisma.school.findUnique({ where: { id: session.user.schoolId } });
+  const school = await prisma.school.findUnique({
+    where: { id: session.user.schoolId },
+    select: { name: true },
+  });
   const amount = (invoice.amountCents ?? 0) / 100;
   const issuedAt = invoice.issuedAt?.toLocaleDateString("fr-FR") ?? "";
   const courseDate = invoice.course.date.toLocaleString("fr-FR", {
@@ -58,7 +61,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     </head>
     <body>
       <h1>Facture cours</h1>
-      <div class="meta">École : ${school?.name ?? "École"} — ${school?.address ?? "Adresse non renseignée"}</div>
+      <div class="meta">École : ${school?.name ?? "École"}</div>
       <div class="card">
         <div class="row"><span class="label">N°</span><span>${invoice.id}</span></div>
         <div class="row"><span class="label">Statut</span><span>${statusLabel[invoice.status]}</span></div>
