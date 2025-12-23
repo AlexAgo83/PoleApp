@@ -366,9 +366,18 @@ export default async function TeacherCourseDetailPage({
                     </div>
                     <p className="text-xs text-slate-300">{s.reason}</p>
                     {s.excludedForInjury && s.unsafeInjuries && s.unsafeInjuries.length > 0 && (
-                      <p className="text-xs text-rose-200">
-                        Incompatible blessure(s) : {s.unsafeInjuries.join(", ")}
+                      <p className="text-xs text-rose-200 flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                          ⚠️ Exclu blessure
+                        </span>
+                        Incompatible : {s.unsafeInjuries.join(", ")}
                       </p>
+                    )}
+                    {s.excludedForInjury && (
+                      <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-amber-50">
+                        <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-4 w-4" />
+                        <span>Forcer quand même</span>
+                      </div>
                     )}
                   </div>
                 </label>
