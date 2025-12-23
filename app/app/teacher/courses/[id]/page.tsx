@@ -21,7 +21,7 @@ function formatDuration(minutes: number) {
 
 type PageProps = {
   params: { id: string } | Promise<{ id?: string }>;
-  searchParams?: Promise<{ from?: string; applied?: string }>;
+  searchParams?: Promise<{ from?: string; applied?: string; forceDiscovery?: string }>;
 };
 
 export const dynamic = "force-dynamic";
