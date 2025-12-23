@@ -16,7 +16,7 @@ Automatiser la construction d’un cours en tenant compte du niveau réel des é
 - Pondération : priorité forte aux positions “cœur” (bonus > rareté/recence), mix découverte/révision/safe ensuite.
 - Justification : afficher une ligne courte sous chaque suggestion (ex. “2/5 jamais tentée · 1 blessure exclue · 3 cœurs”).
 - Flags : appliqué/exclu/forcé visibles sur fiche cours et écran d’édition pour éviter re-suggestions.
-- Volume : rester sur 4 propositions (mix découverte/révision/safe), paramétrable plus tard.
+- Volume : figé à 4 propositions (mix découverte/révision/safe) pour ce cycle, paramétrable plus tard.
 
 ## Données / Modèle
 - Étendre le modèle :

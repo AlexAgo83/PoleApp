@@ -32,7 +32,7 @@
 
 ## Tests / QA
 - QA Prof : filtres discipline élèves/cours, restriction élèves vus, édition niveaux tricks par cours, droits édition positions, génération/envoi/statut facture prof, générateur (niveaux/blessures/rare/safe), partenaires prof visibles pour lui.
-- QA Élève : affichage cours reliés (positions/profs/disciplines), planning par école (switch + nom), achats crédits/abonnements (simulation), légende filtrante (états par défaut à décider), onglet vidéos premium (liens/lock), mini-jeux débloqués dès seuil (message corrigé).
+- QA Élève : affichage cours reliés (positions/profs/disciplines), planning par école (switch + nom), achats crédits/abonnements (simulation), légende filtrante (tous états cochés par défaut, mémorisés, badge “Filtres actifs”), onglet vidéos premium (liens/lock), mini-jeux débloqués dès seuil (message corrigé).
 - QA Admin : factures (libellé, encart actifs, note retirée), fiches élèves (abonnement/crédits/échéance), onglet vidéos admin, métriques partenaires (clics/achats).
 - Cross-check relations en base (cours/positions/profs/discipline/école) et affichage conforme.
 
