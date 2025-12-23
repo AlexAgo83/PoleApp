@@ -11,7 +11,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 type PageProps =
-  | { searchParams?: { page?: string | string[]; q?: string | string[]; edit?: string | string[] } }
+  | { searchParams?: { page?: string | string[]; q?: string | string[]; edit?: string | string[]; flash?: string | string[] } }
   | {
       searchParams?: Promise<{
         page?: string | string[];
