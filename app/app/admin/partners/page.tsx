@@ -222,6 +222,10 @@ export default async function AdminPartnersPage({
     const qs = params.toString();
     return `/app/admin/partners${qs ? `?${qs}` : ""}`;
   };
+  const exportHref = (() => {
+    const params = new URLSearchParams(commonQuery);
+    return `/api/admin/partners/export${params.toString() ? `?${params.toString()}` : ""}`;
+  })();
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -256,6 +260,12 @@ export default async function AdminPartnersPage({
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             ← Retour dashboard
+          </Link>
+          <Link
+            href={exportHref}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Export CSV
           </Link>
         </div>
       </header>
