@@ -14,11 +14,11 @@ type PresetUser = {
 };
 
 const presets: PresetUser[] = [
-  { label: "Super Admin", email: "superadmin@poleapp.test" },
-  { label: "Admin", email: "admin@poleapp.test" },
-  { label: "Teacher", email: "teacher@poleapp.test" },
   { label: "Student", email: "student1@poleapp.test" },
   { label: "Student premium", email: "student2@poleapp.test" },
+  { label: "Teacher", email: "teacher@poleapp.test" },
+  { label: "Admin (École)", email: "admin@poleapp.test" },
+  { label: "Super Admin (App)", email: "superadmin@poleapp.test" },
 ];
 
 function LoginContent() {
@@ -91,17 +91,31 @@ function LoginContent() {
         <p className="mt-2 text-slate-300">
           Utilisez les comptes seed pour tester les rôles et l’accès protégé.
         </p>
-        <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-200">
-          {presets.map((preset) => (
-            <button
-              key={preset.email}
-              onClick={() => setEmail(preset.email)}
-              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
-              type="button"
-            >
-              {preset.label}
-            </button>
-          ))}
+        <div className="mt-4 space-y-2 text-sm text-slate-200">
+          <div className="flex flex-wrap gap-2">
+            {presets.slice(0, 3).map((preset) => (
+              <button
+                key={preset.email}
+                onClick={() => setEmail(preset.email)}
+                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
+                type="button"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {presets.slice(3).map((preset) => (
+              <button
+                key={preset.email}
+                onClick={() => setEmail(preset.email)}
+                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
+                type="button"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
         </div>
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
