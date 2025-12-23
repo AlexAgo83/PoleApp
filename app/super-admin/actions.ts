@@ -189,7 +189,10 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
     isActive: formData.get("isActive"),
     isOpen: formData.get("isOpen"),
   });
-  if (!parsed.success) throw new Error("Offre invalide");
+  if (!parsed.success) {
+    revalidatePath(basePath);
+    redirect(`${basePath}?flash=invalid-offer`);
+  }
 
   const payload = {
     name: parsed.data.name.trim(),
@@ -236,7 +239,10 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
     isActive: formData.get("isActive"),
     isOpen: formData.get("isOpen"),
   });
-  if (!parsed.success) throw new Error("Pack invalide");
+  if (!parsed.success) {
+    revalidatePath(basePath);
+    redirect(`${basePath}?flash=invalid-pack`);
+  }
 
   const payload = {
     name: parsed.data.name.trim(),
