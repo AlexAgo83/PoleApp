@@ -3,7 +3,7 @@
 
 ## Principes
 - Provider Prisma : **PostgreSQL** (`DATABASE_URL` requis).
-- Rôles (enum `Role`) : STUDENT | TEACHER | SCHOOL_ADMIN.
+- Rôles (enum `Role`) : STUDENT | TEACHER | SCHOOL_ADMIN | SUPER_ADMIN (backoffice global).
 - Périmètre école : Users, Studios, Cours, Partenaires rattachés à une School.
 - Progression = relation Student ↔ Position (`StudentPositionProgress`).
 - Générateur : suggestions pondérées par cœurs élèves (`StudentFavoritePosition`) et stockables via `CourseRecommendation` (optionnel).
@@ -42,8 +42,11 @@
 - CourseNote : courseId, studentId, positionId, masteryLevel, comment?, createdAt
 - CourseRecommendation (optionnel) : courseId, positionId, tag (SuggestionTag), reason?, appliedAt?, createdAt
 
-### Billing
+### Billing & offres
 - Invoice : id, courseId (unique FK Course), amountCents, currency (EUR), status (InvoiceStatus: GENERATED | SENT | PAID | LATE | CANCELLED), issuedAt, paidAt?, note?, createdAt/updatedAt
+- SubscriptionOffer (global) : nom, prix mensuel/annuel TTC, crédits mensuels (1000 par défaut), TVA %, actif/ouvert, ordre, defaultTerm (libre).
+- CreditPackOffer (global) : nom, crédits, prix TTC, TVA %, actif/ouvert, ordre.
+- GlobalSetting : TVA par défaut (20%), devise (EUR), timestamps.
 
 ### Studios / Partenaires
 - Studio : id, name, address?, photoUrl?, schoolId, createdAt/updatedAt

@@ -233,7 +233,7 @@ export default async function TeacherCourseDetailPage({
                     Appliqué
                   </span>
                 )}
-                <form action={removeCoursePositionAction} method="post">
+                <form action={removeCoursePositionAction}>
                   <input type="hidden" name="courseId" value={course.id} />
                   <input type="hidden" name="positionId" value={cp.position.id} />
                   <button

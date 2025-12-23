@@ -149,6 +149,24 @@ const STUDIO_IMAGES = [
   "https://i.postimg.cc/jjNNz6zB/Gemini-Generated-Image-vbzhjgvbzhjgvbzh.png",
 ];
 
+const defaultSubscriptionOffers = [
+  {
+    name: "Abonnement mensuel 1000",
+    monthlyPriceCents: 999,
+    annualPriceCents: 5990,
+    monthlyCredits: 1000,
+    vatPercent: 20,
+    sortOrder: 1,
+    defaultTerm: "MONTHLY",
+  },
+];
+
+const defaultCreditPacks = [
+  { name: "Pack 500", credits: 500, priceCents: 999, vatPercent: 20, sortOrder: 1 },
+  { name: "Pack 1000", credits: 1000, priceCents: 1499, vatPercent: 20, sortOrder: 2 },
+  { name: "Pack 2500", credits: 2500, priceCents: 2999, vatPercent: 20, sortOrder: 3 },
+];
+
 const courseNames = [
   "Flow Débutant",
   "Spin & Transitions",
@@ -225,6 +243,10 @@ async function resetAll() {
     "TeacherFavoritePosition",
     "PositionMedia",
     "Position",
+    "AuditLog",
+    "CreditPackOffer",
+    "SubscriptionOffer",
+    "GlobalSetting",
     "SponsoredLink",
     "Partner",
     "Studio",
@@ -552,8 +574,64 @@ async function seedGameSessions(students: { id: string; schoolId: string }[]) {
   }
 }
 
+async function seedGlobalSettingsAndOffers() {
+  await prisma.globalSetting.upsert({
+    where: { id: "global" },
+    update: {},
+    create: {
+      id: "global",
+      defaultVatPercent: 20,
+      currency: "EUR",
+    },
+  });
+
+  const subCount = await prisma.subscriptionOffer.count();
+  if (subCount === 0) {
+    await prisma.subscriptionOffer.createMany({
+      data: defaultSubscriptionOffers.map((offer) => ({
+        ...offer,
+        isActive: true,
+        isOpen: true,
+      })),
+    });
+  }
+
+  const packCount = await prisma.creditPackOffer.count();
+  if (packCount === 0) {
+    await prisma.creditPackOffer.createMany({
+      data: defaultCreditPacks.map((pack) => ({
+        ...pack,
+        isActive: true,
+        isOpen: true,
+      })),
+    });
+  }
+}
+
+async function seedSuperAdmin() {
+  const existing = await prisma.user.findFirst({ where: { role: Role.SUPER_ADMIN } });
+  if (existing) return existing;
+
+  const email = process.env.SUPER_ADMIN_EMAIL || "superadmin@poleapp.test";
+  const password = process.env.SUPER_ADMIN_PASSWORD || PASSWORD;
+  const name = "Super Admin";
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  return prisma.user.create({
+    data: {
+      email,
+      passwordHash,
+      role: Role.SUPER_ADMIN,
+      isPremium: true,
+      name,
+    },
+  });
+}
+
 async function main() {
   await resetAll();
+  await seedSuperAdmin();
+  await seedGlobalSettingsAndOffers();
   const positions = await seedTaxonomies();
   const { schools, teachers, students } = await seedSchoolsAndUsers();
   await seedCourses({ schools, teachers, students, positions });

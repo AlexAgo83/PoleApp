@@ -1,5 +1,5 @@
 # Backlog — Retours QA S009 (session 2025-12-23 02:13)
-[Compréhension: 95% / Avancement: 0%]
+[Compréhension: 95% / Avancement: 50%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -7,6 +7,7 @@
 > (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
 
 ## 1) Espace Super Admin (global)
+- (DONE) RBAC + dashboard super-admin livré : page `/super-admin` (TVA/devise, écoles actives/archivées, assignation admin, audit), seed super-admin par défaut + promo/dégrado par email, offres globales (abos/packs) CRUD avec valeurs par défaut EUR/TVA 20%.
 - Créer un espace Super Admin (hors école) pour la configuration globale de l’app. Compte super-admin seed par défaut, expérience séparée de l’admin école (ce rôle couvre ce que l’admin ne peut pas faire). Accès protégé comme l’admin (RBAC/redirect). (P0)
 - Gestion écoles : créer des écoles et attribuer un ou plusieurs admins à chaque école. (P0)
 - Config abonnements : offres globales (EUR, TVA appliquée 20% par défaut), champs min : nom, prix mensuel/annuel TTC, crédits mensuels (1000 par défaut), TVA %, engagement (mensuel/annuel), actif/ouvert à la vente, ordre. Proposer des valeurs de départ et éditer tout via l’écran super-admin. (P1)

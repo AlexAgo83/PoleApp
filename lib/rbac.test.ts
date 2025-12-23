@@ -11,6 +11,9 @@ describe("rbac", () => {
     expect(allowedRolesForPath("/student/progress")?.includes("STUDENT")).toBe(
       true
     );
+    expect(allowedRolesForPath("/super-admin")?.includes("SUPER_ADMIN")).toBe(
+      true
+    );
   });
 
   it("denies when role missing or mismatch", () => {
@@ -22,5 +25,6 @@ describe("rbac", () => {
     expect(defaultHomeForRole("SCHOOL_ADMIN")).toBe("/app/admin");
     expect(defaultHomeForRole("TEACHER")).toBe("/app/teacher");
     expect(defaultHomeForRole("STUDENT")).toBe("/app/student");
+    expect(defaultHomeForRole("SUPER_ADMIN")).toBe("/super-admin");
   });
 });

@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   STUDENT
   TEACHER
+  SUPER_ADMIN
   SCHOOL_ADMIN
 }
 
@@ -69,6 +70,7 @@ model School {
   website   String?
   photoUrl  String?
   createdAt DateTime @default(now())
+  archivedAt DateTime?
 
   users    User[]
   courses  Course[]
@@ -106,6 +108,7 @@ model User {
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
+  auditLogs          AuditLog[]
 
   @@index([role, isPremium])
   @@index([email])
@@ -400,4 +403,59 @@ model Invoice {
 
   @@index([status])
   @@index([issuedAt])
+}
+
+model GlobalSetting {
+  id               String   @id @default("global")
+  defaultVatPercent Int     @default(20)
+  currency          String  @default("EUR")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model SubscriptionOffer {
+  id                 String   @id @default(cuid())
+  name               String
+  monthlyPriceCents  Int
+  annualPriceCents   Int
+  monthlyCredits     Int      @default(1000)
+  vatPercent         Int      @default(20)
+  isActive           Boolean  @default(true)
+  isOpen             Boolean  @default(true)
+  sortOrder          Int      @default(0)
+  defaultTerm        String?  // ex: MONTHLY | ANNUAL (souple pour itérations)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([isActive, isOpen])
+  @@index([sortOrder])
+}
+
+model CreditPackOffer {
+  id           String   @id @default(cuid())
+  name         String
+  credits      Int
+  priceCents   Int
+  vatPercent   Int      @default(20)
+  isActive     Boolean  @default(true)
+  isOpen       Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive, isOpen])
+  @@index([sortOrder])
+}
+
+model AuditLog {
+  id        String    @id @default(cuid())
+  actorId   String?
+  action    String
+  target    String?
+  details   Json?
+  createdAt DateTime  @default(now())
+  actor     User?     @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([actorId])
 }

@@ -148,21 +148,22 @@ export function GameClient({ questions, mode }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-300">
+      <div className="flex items-center justify-between text-sm text-slate-300 min-h-[32px]">
         <p>
           Question {current + 1} / {prepared.length}
         </p>
-        {reveal && selected && (
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              selected === question.correctOptionId
-                ? "border border-emerald-400/60 bg-emerald-500/15 text-emerald-50"
-                : "border border-red-400/60 bg-red-500/15 text-red-50"
-            }`}
-          >
-            {selected === question.correctOptionId ? "Bonne réponse" : "Mauvaise réponse"}
-          </span>
-        )}
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-opacity ${
+            reveal && selected
+              ? selected === question.correctOptionId
+                ? "border border-emerald-400/60 bg-emerald-500/15 text-emerald-50 opacity-100"
+                : "border border-red-400/60 bg-red-500/15 text-red-50 opacity-100"
+              : "opacity-0"
+          }`}
+          aria-hidden={!reveal || !selected}
+        >
+          {selected === question.correctOptionId ? "Bonne réponse" : "Mauvaise réponse"}
+        </span>
       </div>
 
       {question.image && (

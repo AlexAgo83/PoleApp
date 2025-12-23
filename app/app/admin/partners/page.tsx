@@ -156,6 +156,20 @@ export default async function AdminPartnersPage({
         })
     : new Map<string, { clicks: number; purchases: number }>();
 
+  const commonQuery = new URLSearchParams();
+  if (q) commonQuery.set("q", q);
+  if (kindFilter) commonQuery.set("kind", kindFilter);
+  if (from) commonQuery.set("from", from);
+  if (to) commonQuery.set("to", to);
+
+  const pageHref = (page: number) => {
+    const params = new URLSearchParams(commonQuery);
+    if (page > 1) params.set("page", page.toString());
+    else params.delete("page");
+    const qs = params.toString();
+    return `/app/admin/partners${qs ? `?${qs}` : ""}`;
+  };
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
       {flash && (
@@ -194,91 +208,6 @@ export default async function AdminPartnersPage({
       </header>
 
       <section className="panel p-4 md:p-6">
-        <div className="mb-4 grid gap-3 md:grid-cols-3">
-          <FilterPanel
-            storageKey="filters:admin-partners"
-            title="Filtres"
-            userKey={userKey}
-            className="md:col-span-2"
-            contentClassName="mt-3"
-            titleClassName="text-sm font-semibold text-white"
-          >
-            <form
-              className="grid gap-3 md:grid-cols-4 md:items-end"
-              action="/app/admin/partners"
-              method="get"
-            >
-              <label className="text-sm text-slate-200">
-                Recherche
-                <input
-                  type="text"
-                  name="q"
-                  defaultValue={q}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
-              </label>
-              <label className="text-sm text-slate-200">
-                Type
-                <input
-                  type="text"
-                  name="kind"
-                  defaultValue={kindFilter}
-                  placeholder="SERVICE / REVENDEUR"
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
-              </label>
-              <label className="text-sm text-slate-200">
-                Date min (événements)
-                <input
-                  type="date"
-                  name="from"
-                  defaultValue={from ?? ""}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
-              </label>
-              <label className="text-sm text-slate-200">
-                Date max (événements)
-                <input
-                  type="date"
-                  name="to"
-                  defaultValue={to ?? ""}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                />
-              </label>
-              <div className="md:col-span-4 flex flex-wrap justify-end gap-2">
-                <button
-                  type="submit"
-                  className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-                >
-                  Filtrer
-                </button>
-                <Link
-                  href="/app/admin/partners"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Réinitialiser
-                </Link>
-              </div>
-            </form>
-          </FilterPanel>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-              Stats filtrées
-            </p>
-            <p className="mt-1 text-lg font-semibold text-white">
-              {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0)} clics ·{" "}
-              {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0)} achats
-            </p>
-            {(from || to) && (
-              <p className="text-xs text-slate-400">
-                Plage : {from ?? "—"} → {to ?? "—"}
-              </p>
-            )}
-            <p className="mt-2 text-xs text-slate-400">
-              Les compteurs ci-dessous respectent la plage de dates (si définie).
-            </p>
-          </div>
-        </div>
         <PersistedPanel
           storageKey="panel:admin-partners-create"
           title="Ajouter un partenaire"
@@ -342,6 +271,29 @@ export default async function AdminPartnersPage({
         </PersistedPanel>
       </section>
 
+      <section className="panel relative overflow-hidden p-4 md:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-indigo-500/10 to-transparent blur-3xl" />
+        <div className="relative flex flex-col gap-2 text-sm text-slate-200">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-50 shadow-inner shadow-cyan-900/30">
+            Stats filtrées
+          </div>
+          <p className="text-2xl font-semibold text-white">
+            {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0)} clics ·{" "}
+            {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0)} achats
+          </p>
+          <p className="text-xs text-slate-400">
+            {from || to ? (
+              <>Plage appliquée : {from ?? "—"} → {to ?? "—"}</>
+            ) : (
+              "Aucune plage de dates, stats sur la période complète."
+            )}
+          </p>
+          <p className="text-xs text-slate-400">
+            Les compteurs ci-dessous respectent les filtres (recherche, type, dates).
+          </p>
+        </div>
+      </section>
+
       <section className="panel space-y-4 p-6">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-white">Partenaires existants</h2>
@@ -376,6 +328,24 @@ export default async function AdminPartnersPage({
                   className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
               </label>
+              <label className="text-sm text-slate-200">
+                Date min (événements)
+                <input
+                  type="date"
+                  name="from"
+                  defaultValue={from ?? ""}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="text-sm text-slate-200">
+                Date max (événements)
+                <input
+                  type="date"
+                  name="to"
+                  defaultValue={to ?? ""}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
               <div className="md:col-span-2 flex flex-wrap items-center justify-end gap-2">
                 <button
                   type="submit"
@@ -403,9 +373,7 @@ export default async function AdminPartnersPage({
               className="flex flex-col gap-4 py-4"
             >
               {(() => {
-                const baseParams = new URLSearchParams();
-                if (q) baseParams.set("q", q);
-                if (kindFilter) baseParams.set("kind", kindFilter);
+                const baseParams = new URLSearchParams(commonQuery);
                 if (currentPage > 1) baseParams.set("page", currentPage.toString());
                 const editParams = new URLSearchParams(baseParams);
                 editParams.set("edit", partner.id);
@@ -587,7 +555,7 @@ export default async function AdminPartnersPage({
           </span>
           <div className="flex items-center gap-2">
             <Link
-              href={`/app/admin/partners?page=${Math.max(1, safePage - 1)}`}
+              href={pageHref(Math.max(1, safePage - 1))}
               aria-disabled={safePage === 1}
               className={`rounded-full border border-white/10 px-3 py-2 ${
                 safePage === 1
@@ -598,7 +566,7 @@ export default async function AdminPartnersPage({
               Précédent
             </Link>
             <Link
-              href={`/app/admin/partners?page=${Math.min(totalPages, safePage + 1)}`}
+              href={pageHref(Math.min(totalPages, safePage + 1))}
               aria-disabled={safePage === totalPages}
               className={`rounded-full border border-white/10 px-3 py-2 ${
                 safePage === totalPages
@@ -617,7 +585,7 @@ export default async function AdminPartnersPage({
                 ) : (
                   <Link
                     key={item}
-                    href={`/app/admin/partners?page=${item}`}
+                    href={pageHref(item)}
                     className={`rounded-md px-2.5 py-1 text-sm ${
                       item === safePage
                         ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
