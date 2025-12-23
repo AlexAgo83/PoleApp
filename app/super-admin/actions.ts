@@ -3,8 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { z } from "zod";
-
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -162,60 +160,50 @@ function euroToCents(value: number) {
   return Math.round(value * 100);
 }
 
-const subscriptionSchema = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string().min(2),
-  monthly: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  annual: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  credits: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  vat: z.preprocess((val) => toNumberOrZero(val, 20), z.number().min(0).max(100)),
-  sortOrder: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  defaultTerm: z.enum(["MONTHLY", "ANNUAL"]).optional(),
-  isActive: z.string().optional(),
-  isOpen: z.string().optional(),
-});
-
 export async function upsertSubscriptionOfferAction(formData: FormData) {
   await requireSuperAdmin();
-  const parsed = subscriptionSchema.safeParse({
-    id: formData.get("id") ?? undefined,
-    name: formData.get("name"),
-    monthly: formData.get("monthly"),
-    annual: formData.get("annual"),
-    credits: formData.get("credits"),
-    vat: formData.get("vat"),
-    sortOrder: formData.get("sortOrder"),
-    defaultTerm: (formData.get("defaultTerm") || undefined) as "MONTHLY" | "ANNUAL" | undefined,
-    isActive: formData.get("isActive"),
-    isOpen: formData.get("isOpen"),
-  });
-  if (!parsed.success) {
-    const err = parsed.error.errors
-      ?.map((e) => `${e.path?.join?.(".") || "champ"}: ${e.message}`)
-      .join("; ") || "Données invalides";
-    // Log pour debug console
+  const name = formData.get("name")?.toString().trim() ?? "";
+  const monthly = toNumberOrZero(formData.get("monthly"));
+  const annual = toNumberOrZero(formData.get("annual"));
+  const credits = toNumberOrZero(formData.get("credits"));
+  const vat = toNumberOrZero(formData.get("vat"), 20);
+  const sortOrder = toNumberOrZero(formData.get("sortOrder"));
+  const defaultTerm = (formData.get("defaultTerm") || "MONTHLY").toString().toUpperCase();
+  const isActive = Boolean(formData.get("isActive"));
+  const isOpen = Boolean(formData.get("isOpen"));
+
+  const errors: string[] = [];
+  if (name.length < 2) errors.push("Nom requis (min 2)");
+  if (monthly < 0 || Number.isNaN(monthly)) errors.push("Prix mensuel invalide");
+  if (annual < 0 || Number.isNaN(annual)) errors.push("Prix annuel invalide");
+  if (credits < 0 || Number.isNaN(credits)) errors.push("Crédits mensuels invalides");
+  if (vat < 0 || vat > 100 || Number.isNaN(vat)) errors.push("TVA invalide");
+  if (!["MONTHLY", "ANNUAL"].includes(defaultTerm)) errors.push("Term par défaut invalide");
+
+  if (errors.length > 0) {
+    const qs = new URLSearchParams({ flash: "invalid-offer", error: errors.join("; ") });
     // eslint-disable-next-line no-console
-    console.error("super-admin invalid offer", err, { form: Object.fromEntries(formData.entries()) });
-    const qs = new URLSearchParams({ flash: "invalid-offer", error: err });
+    console.error("super-admin invalid offer", errors.join("; "), { form: Object.fromEntries(formData.entries()) });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
   }
 
   const payload = {
-    name: parsed.data.name.trim(),
-    monthlyPriceCents: euroToCents(parsed.data.monthly),
-    annualPriceCents: euroToCents(parsed.data.annual),
-    monthlyCredits: parsed.data.credits,
-    vatPercent: parsed.data.vat,
-    sortOrder: parsed.data.sortOrder,
-    defaultTerm: parsed.data.defaultTerm?.trim() || null,
-    isActive: Boolean(parsed.data.isActive),
-    isOpen: Boolean(parsed.data.isOpen),
+    name,
+    monthlyPriceCents: euroToCents(monthly),
+    annualPriceCents: euroToCents(annual),
+    monthlyCredits: credits,
+    vatPercent: vat,
+    sortOrder,
+    defaultTerm,
+    isActive,
+    isOpen,
   };
 
-  if (parsed.data.id) {
-    await prisma.subscriptionOffer.update({ where: { id: parsed.data.id }, data: payload });
-    await logAudit("offer:subscription:update", parsed.data.id, payload);
+  const id = formData.get("id")?.toString();
+  if (id) {
+    await prisma.subscriptionOffer.update({ where: { id }, data: payload });
+    await logAudit("offer:subscription:update", id, payload);
   } else {
     const created = await prisma.subscriptionOffer.create({ data: payload });
     await logAudit("offer:subscription:create", created.id, payload);
@@ -223,53 +211,44 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
   revalidatePath(basePath);
 }
 
-const packSchema = z.object({
-  id: z.string().cuid().optional(),
-  name: z.string().min(2),
-  credits: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  price: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  vat: z.preprocess((val) => toNumberOrZero(val, 20), z.number().min(0).max(100)),
-  sortOrder: z.preprocess((val) => toNumberOrZero(val), z.number().min(0)),
-  isActive: z.string().optional(),
-  isOpen: z.string().optional(),
-});
-
 export async function upsertCreditPackOfferAction(formData: FormData) {
   await requireSuperAdmin();
-  const parsed = packSchema.safeParse({
-    id: formData.get("id") ?? undefined,
-    name: formData.get("name"),
-    credits: formData.get("credits"),
-    price: formData.get("price"),
-    vat: formData.get("vat"),
-    sortOrder: formData.get("sortOrder"),
-    isActive: formData.get("isActive"),
-    isOpen: formData.get("isOpen"),
-  });
-  if (!parsed.success) {
-    const err = parsed.error.errors
-      ?.map((e) => `${e.path?.join?.(".") || "champ"}: ${e.message}`)
-      .join("; ") || "Données invalides";
+  const name = formData.get("name")?.toString().trim() ?? "";
+  const credits = toNumberOrZero(formData.get("credits"));
+  const price = toNumberOrZero(formData.get("price"));
+  const vat = toNumberOrZero(formData.get("vat"), 20);
+  const sortOrder = toNumberOrZero(formData.get("sortOrder"));
+  const isActive = Boolean(formData.get("isActive"));
+  const isOpen = Boolean(formData.get("isOpen"));
+
+  const errors: string[] = [];
+  if (name.length < 2) errors.push("Nom requis (min 2)");
+  if (credits < 0 || Number.isNaN(credits)) errors.push("Crédits invalides");
+  if (price < 0 || Number.isNaN(price)) errors.push("Prix invalide");
+  if (vat < 0 || vat > 100 || Number.isNaN(vat)) errors.push("TVA invalide");
+
+  if (errors.length > 0) {
+    const qs = new URLSearchParams({ flash: "invalid-pack", error: errors.join("; ") });
     // eslint-disable-next-line no-console
-    console.error("super-admin invalid pack", err, { form: Object.fromEntries(formData.entries()) });
-    const qs = new URLSearchParams({ flash: "invalid-pack", error: err });
+    console.error("super-admin invalid pack", errors.join("; "), { form: Object.fromEntries(formData.entries()) });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
   }
 
   const payload = {
-    name: parsed.data.name.trim(),
-    credits: parsed.data.credits,
-    priceCents: euroToCents(parsed.data.price),
-    vatPercent: parsed.data.vat,
-    sortOrder: parsed.data.sortOrder,
-    isActive: Boolean(parsed.data.isActive),
-    isOpen: Boolean(parsed.data.isOpen),
+    name,
+    credits,
+    priceCents: euroToCents(price),
+    vatPercent: vat,
+    sortOrder,
+    isActive,
+    isOpen,
   };
 
-  if (parsed.data.id) {
-    await prisma.creditPackOffer.update({ where: { id: parsed.data.id }, data: payload });
-    await logAudit("offer:pack:update", parsed.data.id, payload);
+  const id = formData.get("id")?.toString();
+  if (id) {
+    await prisma.creditPackOffer.update({ where: { id }, data: payload });
+    await logAudit("offer:pack:update", id, payload);
   } else {
     const created = await prisma.creditPackOffer.create({ data: payload });
     await logAudit("offer:pack:create", created.id, payload);
