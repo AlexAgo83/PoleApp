@@ -28,7 +28,7 @@ Source : 06_QA_S006.md (tests sur v0.5.0)
   - Navigation semaine → semaine sans rechargement complet (même pattern que Facturation admin), conservation des filtres actifs, sans modifier visuellement l’agencement des panels. **(OK dashboard admin)** 
   - Ajouter un bouton “Semaine actuelle” pour revenir rapidement à la semaine en cours depuis la vue semaine. **(OK)** 
 - [x] Admin > Studios (lecture seule) : retirer l’URL brute “Photo : XXX” (la photo est visible ailleurs), laisser la cellule propre/compacte (ou masquer la ligne en lecture seule).
-- [ ] Partenaires : exposer les métriques clics/achats dans l’UI admin (tableau ou cartes), filtres de base (date/type), logs structurés, Top 10 + vue complète.
+- [ ] Partenaires : exposer les métriques clics/achats dans l’UI admin (tableau ou cartes), filtres de base (date/type), logs structurés, Top 10 + vue complète + export CSV.
 - [ ] Facturation admin : remplacer définitivement la popin statut/montant par toast cohérent (si non livré), vérifier persist/refresh des filtres, encart Note retiré.
 
 ## Definition of Done (DoD)
