@@ -209,11 +209,14 @@ export default async function SuperAdminPage({ searchParams }: { searchParams?: 
                   </label>
                   <label className="space-y-1 md:col-span-2">
                     <span className="text-xs font-semibold text-slate-300">Term par défaut</span>
-                    <input
+                    <select
                       name="defaultTerm"
                       defaultValue={offer.defaultTerm ?? "MONTHLY"}
                       className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                    />
+                    >
+                      <option value="MONTHLY">Mensuel</option>
+                      <option value="ANNUAL">Annuel</option>
+                    </select>
                   </label>
                   <div className="flex flex-wrap items-center gap-2 md:col-span-2">
                     <button
@@ -247,6 +250,8 @@ export default async function SuperAdminPage({ searchParams }: { searchParams?: 
                   <input
                     name="name"
                     placeholder="Nom"
+                    required
+                    minLength={2}
                     className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
                   />
                 </label>
@@ -256,6 +261,7 @@ export default async function SuperAdminPage({ searchParams }: { searchParams?: 
                     name="credits"
                     type="number"
                     min={0}
+                    step="1"
                     defaultValue={1000}
                     className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
                   />
@@ -289,6 +295,7 @@ export default async function SuperAdminPage({ searchParams }: { searchParams?: 
                     type="number"
                     min={0}
                     max={100}
+                    step="0.1"
                     defaultValue={settings.defaultVatPercent}
                     className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
                   />
@@ -299,6 +306,7 @@ export default async function SuperAdminPage({ searchParams }: { searchParams?: 
                     name="sortOrder"
                     type="number"
                     min={0}
+                    step="1"
                     defaultValue={subscriptions.length + 1}
                     className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
                   />
