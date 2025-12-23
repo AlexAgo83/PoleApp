@@ -15,8 +15,12 @@ function main() {
     console.warn("migrate deploy failed, attempting db push as fallback");
     console.warn(err?.message || err);
   }
-  run("npx prisma db push --schema prisma/schema.prisma");
-  run("node scripts/ensure-super-admin.js");
+  if (process.env.ALLOW_DB_PUSH_FALLBACK === "true") {
+    run("npx prisma db push --schema prisma/schema.prisma");
+    run("node scripts/ensure-super-admin.js");
+    return;
+  }
+  throw new Error("migrate deploy failed and fallback disabled (set ALLOW_DB_PUSH_FALLBACK=true to allow).");
 }
 
 main();

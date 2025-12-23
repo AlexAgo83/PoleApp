@@ -87,9 +87,9 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 
 ## Déploiement Render
 - Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).
-- Start : `npm run start:render` (start-auto : migrate deploy → fallback db push → seed si base vide → start). Identifiants seed : `admin@poleapp.test / poleapp123`.
-- Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`.
-- Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`).
+- Start : `npm run start:render` (start-auto : migrate deploy → seed super-admin si absent → start). Le fallback `db push` est **désactivé** sauf si `ALLOW_DB_PUSH_FALLBACK=true` (éviter les dérives de migrations en prod).
+- Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_PASSWORD` (obligatoires en prod), `SUPER_ADMIN_NAME` (optionnel).
+- Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`, mais le seed destructif nécessite `SEED_ALLOW_PROD=true` ou `NODE_ENV` hors prod).
 - Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds. Si warning “middleware” : migrer vers `proxy` à terme.
 
 ## Quick wins (perf/UX)

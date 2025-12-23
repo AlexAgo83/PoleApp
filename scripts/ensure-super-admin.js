@@ -4,14 +4,21 @@ const bcrypt = require("bcryptjs");
 
 async function main() {
   const prisma = new PrismaClient();
-  const email = process.env.SUPER_ADMIN_EMAIL || "superadmin@poleapp.test";
-  const password = process.env.SUPER_ADMIN_PASSWORD || "poleapp123";
+  const isProd = process.env.NODE_ENV === "production";
+  const email = process.env.SUPER_ADMIN_EMAIL || (isProd ? undefined : "superadmin@poleapp.test");
+  const password = process.env.SUPER_ADMIN_PASSWORD || (isProd ? undefined : "poleapp123");
   const name = process.env.SUPER_ADMIN_NAME || "Super Admin";
+
+  if (!email || !password) {
+    console.warn("ensure-super-admin skipped: SUPER_ADMIN_EMAIL/PASSWORD required in production.");
+    await prisma.$disconnect();
+    return;
+  }
 
   try {
     const existing = await prisma.user.findFirst({ where: { role: Role.SUPER_ADMIN } });
     if (existing) {
-      console.log(`Super admin already exists (${existing.email}).`);
+      console.log("Super admin already exists.");
       return;
     }
     const passwordHash = await bcrypt.hash(password, 10);
@@ -24,7 +31,7 @@ async function main() {
         name,
       },
     });
-    console.log(`Super admin created with email ${email}.`);
+    console.log("Super admin created/ensured.");
   } finally {
     await prisma.$disconnect();
   }
