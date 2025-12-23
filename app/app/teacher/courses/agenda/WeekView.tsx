@@ -48,6 +48,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
   const [week, setWeek] = useState(initialWeek);
   const [prev, setPrev] = useState(initialPrev);
   const [next, setNext] = useState(initialNext);
+  const [showEmptyDays, setShowEmptyDays] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const currentWeekKey = useMemo(() => {
@@ -88,14 +89,20 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     fetchWeek(currentWeekKey);
   };
 
+  const totalCourses = useMemo(
+    () => days.reduce((acc, day) => acc + day.courses.length, 0),
+    [days]
+  );
+
   return (
     <section className="panel p-6">
-      <div className="flex items-center justify-between text-lg font-semibold text-white">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-lg font-semibold text-white">
         <span>Vue semaine</span>
+        <span className="text-sm font-normal text-cyan-100">{totalCourses} cours sur la semaine affichée</span>
       </div>
       <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
         {days.map((day) => {
-          const hideOnMobile = day.courses.length === 0 ? "hidden md:block" : "";
+          const hideOnMobile = !showEmptyDays && day.courses.length === 0 ? "hidden md:block" : "";
           return (
             <div
               key={day.isoDate}
@@ -185,6 +192,15 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
             Semaine suivante →
           </button>
         </form>
+      </div>
+      <div className="mt-2 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setShowEmptyDays((v) => !v)}
+          className="text-xs text-cyan-100 underline underline-offset-4 hover:text-cyan-50"
+        >
+          {showEmptyDays ? "Masquer les jours sans cours sur mobile" : "Afficher aussi les jours vides sur mobile"}
+        </button>
       </div>
       {isPending && (
         <div className="mt-2 text-center text-xs text-slate-300">Chargement…</div>
