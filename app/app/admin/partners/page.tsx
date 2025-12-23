@@ -153,8 +153,17 @@ export default async function AdminPartnersPage({
             map.set(row.partnerId, current);
           });
           return map;
-        })
+    })
     : new Map<string, { clicks: number; purchases: number }>();
+  const totalClicks = Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0);
+  const totalPurchases = Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0);
+  const partnerName = (id: string) => partners.find((p) => p.id === id)?.name ?? "Inconnu";
+  const topClicks = Array.from(eventCounts.entries())
+    .map(([id, val]) => ({ id, clicks: val.clicks }))
+    .sort((a, b) => b.clicks - a.clicks)[0];
+  const topPurchases = Array.from(eventCounts.entries())
+    .map(([id, val]) => ({ id, purchases: val.purchases }))
+    .sort((a, b) => b.purchases - a.purchases)[0];
 
   const commonQuery = new URLSearchParams();
   if (q) commonQuery.set("q", q);
@@ -278,8 +287,7 @@ export default async function AdminPartnersPage({
             Stats filtrées
           </div>
           <p className="text-2xl font-semibold text-white">
-            {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.clicks, 0)} clics ·{" "}
-            {Array.from(eventCounts.values()).reduce((acc, v) => acc + v.purchases, 0)} achats
+            {totalClicks} clics · {totalPurchases} achats
           </p>
           <p className="text-xs text-slate-400">
             {from || to ? (
@@ -291,6 +299,22 @@ export default async function AdminPartnersPage({
           <p className="text-xs text-slate-400">
             Les compteurs ci-dessous respectent les filtres (recherche, type, dates).
           </p>
+          <div className="mt-3 grid gap-2 text-xs text-slate-200 md:grid-cols-2">
+            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">Top clics</p>
+              <p className="font-semibold text-white">
+                {topClicks && topClicks.clicks > 0 ? `${partnerName(topClicks.id)} (${topClicks.clicks})` : "—"}
+              </p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">Top achats</p>
+              <p className="font-semibold text-white">
+                {topPurchases && topPurchases.purchases > 0
+                  ? `${partnerName(topPurchases.id)} (${topPurchases.purchases})`
+                  : "—"}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
