@@ -14,6 +14,9 @@
 - Super admin existant : seed idempotent qui crée un SUPER_ADMIN par défaut si aucun présent (env `SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD`), sinon no-op. Prévoir un script/route de promotion d’un user existant en SUPER_ADMIN en secours.
 - Promotion/dégraduation : ajouter un bouton/route protégée super-admin pour promouvoir/dégrader un user existant en SUPER_ADMIN (recovery).
 - Portée : le rôle SUPER_ADMIN reste cantonné au backoffice global (pas d’impersonation admin d’école pour l’instant).
+- Permissions super-admin : création/suppression d’écoles, gestion TVA par défaut et devise globale (EUR), gestion offres packs/abos, reset/assignation admin d’école, archivage école ; pas d’édition fine du contenu (cours/positions).
+- Sécurité : audit log dédié des actions super-admin (création/suppression école, changements d’offres, promo/dégrado). 2FA recommandé (champ/flag à prévoir, activation ultérieure).
+- Promo/dégrado UI : écran protégé avec recherche par email + bouton “Promouvoir/Dégrader en SUPER_ADMIN”, warning et log ; pas de liste complète des users (exposition limitée).
 
 ## 2) Professeurs / Positions
 - Professeur autorisé à créer des positions (si non existant) et à éditer uniquement ses positions. (P0)
