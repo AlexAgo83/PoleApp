@@ -58,7 +58,6 @@ export default async function CoursesAgendaPage({
   const monthParam = resolved.month;
   const fromParam = resolved.from && typeof resolved.from === "string" ? resolved.from : undefined;
   const toParam = resolved.to && typeof resolved.to === "string" ? resolved.to : undefined;
-  const q = resolved.q?.toString().trim() ?? "";
   const teacherFilter =
     typeof resolved.teacher === "string" && resolved.teacher.length > 0
       ? resolved.teacher

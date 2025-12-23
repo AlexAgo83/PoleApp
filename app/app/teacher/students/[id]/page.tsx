@@ -209,7 +209,20 @@ export default async function TeacherStudentDetailPage({
             </button>
           </form>
         </div>
-        <div className="mt-4 flex w-full justify-end">
+        <div className="mt-4 flex w-full flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
+              Vu : {student.progress.length}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
+              Blessures actives : {student.injuries.filter((inj) => inj.isActive).length}
+            </span>
+            {student.isPremium && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-50">
+                Premium
+              </span>
+            )}
+          </div>
           <Link
             href={backHref}
             className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300 hover:text-cyan-200"
@@ -281,6 +294,9 @@ export default async function TeacherStudentDetailPage({
 
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Progression</h2>
+        <p className="text-sm text-slate-300">
+          Positions enseignées : {filteredPositions.length}
+        </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {filteredPositions.map((position) => {
             const progress = progressMap.get(position.id);
@@ -294,17 +310,15 @@ export default async function TeacherStudentDetailPage({
                   <p className="text-xs text-slate-300">{position.type}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  {progress ? (
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full border bg-transparent px-3 py-1 text-[11px] font-semibold ${statusStyles[progress.learningStatus].outline}`}
-                    >
-                      {statusLabel[progress.learningStatus]}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold text-white/90">
-                      Non commencé
-                    </span>
-                  )}
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${
+                      progress
+                        ? statusStyles[progress.learningStatus].solid
+                        : statusStyles.NOT_STARTED.solid
+                    }`}
+                  >
+                    {progress ? statusLabel[progress.learningStatus] : "Découverte"}
+                  </span>
                   {progress?.masteryLevel && (
                     <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white/90">
                       {progress.masteryLevel}
