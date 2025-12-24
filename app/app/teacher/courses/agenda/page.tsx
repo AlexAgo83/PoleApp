@@ -108,26 +108,17 @@ export default async function CoursesAgendaPage({
       date: { gte: rangeStart, lte: rangeEnd },
       ...(q
         ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { description: { contains: q, mode: "insensitive" } },
-            ],
+            OR: [{ title: { contains: q, mode: "insensitive" } }],
           }
         : {}),
       ...(disciplineFilter
         ? {
-            OR: [
-              { title: { contains: disciplineFilter, mode: "insensitive" } },
-              { description: { contains: disciplineFilter, mode: "insensitive" } },
-            ],
+            OR: [{ title: { contains: disciplineFilter, mode: "insensitive" } }],
           }
         : {}),
       ...(levelFilter
         ? {
-            OR: [
-              { title: { contains: levelFilter, mode: "insensitive" } },
-              { description: { contains: levelFilter, mode: "insensitive" } },
-            ],
+            OR: [{ title: { contains: levelFilter, mode: "insensitive" } }],
           }
         : {}),
     },
