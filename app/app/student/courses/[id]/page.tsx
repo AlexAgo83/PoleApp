@@ -54,7 +54,15 @@ export default async function StudentCourseDetailPage({
         id,
         schoolId: user.schoolId,
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        date: true,
+        durationMinutes: true,
+        maxSeats: true,
+        costCredits: true,
+        waitlistQuota: true,
+        photoUrl: true,
         school: { select: { name: true } },
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { name: true, address: true } },
@@ -78,21 +86,21 @@ export default async function StudentCourseDetailPage({
         return prisma.course.findUnique({
           where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
-            school: { select: { name: true } },
-            teacher: { select: { id: true, name: true, email: true } },
-            studio: { select: { name: true, address: true } },
-            positions: { include: { position: true } },
-            notes: {
-              where: { studentId: session.user.id },
-              include: { position: true },
-            },
-            attendances: {
-              where: { studentId: session.user.id },
-              select: { id: true, status: true, waitlistRank: true },
-            },
-            _count: { select: { attendances: true } },
-          },
-        });
+        school: { select: { name: true } },
+        teacher: { select: { id: true, name: true, email: true } },
+        studio: { select: { name: true, address: true } },
+        positions: { include: { position: true } },
+        notes: {
+          where: { studentId: session.user.id },
+          include: { position: true },
+        },
+        attendances: {
+          where: { studentId: session.user.id },
+          select: { id: true, status: true, waitlistRank: true },
+        },
+        _count: { select: { attendances: true } },
+      },
+    });
       }
       throw error;
     });
@@ -116,8 +124,13 @@ export default async function StudentCourseDetailPage({
   const confirmedSeats = await prisma.courseAttendance.count({
     where: { courseId: course.id, status: "CONFIRMED" },
   });
+  const waitlistCount = await prisma.courseAttendance.count({
+    where: { courseId: course.id, status: "WAITLIST" },
+  });
   const remainingSeats = (course.maxSeats ?? 30) - confirmedSeats;
   const cost = course.costCredits ?? 100;
+  const waitlistQuota = course.waitlistQuota ?? 0;
+  const waitlistFull = waitlistQuota > 0 && waitlistCount >= waitlistQuota;
   const coursePhoto = course.photoUrl?.trim() || COURSE_PLACEHOLDER;
   const myAttendance = course.attendances[0];
   const isWaitlist = myAttendance?.status === "WAITLIST";
@@ -179,6 +192,13 @@ export default async function StudentCourseDetailPage({
                       {typeof myAttendance.waitlistRank === "number"
                         ? ` · rang #${myAttendance.waitlistRank}`
                         : ""}
+                      {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
+                    </span>
+                  )}
+                  {!isWaitlist && remainingSeats <= 0 && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
+                      Liste d’attente
+                      {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
                     </span>
                   )}
               </p>
@@ -202,9 +222,9 @@ export default async function StudentCourseDetailPage({
                 <input type="hidden" name="courseId" value={course.id} />
                 <button
                   type="submit"
-                  disabled={!canBuy}
+                  disabled={!canBuy || (remainingSeats <= 0 && waitlistFull)}
                   className={`rounded-full px-3 py-2 text-sm font-semibold transition ${
-                    canBuy
+                    canBuy && !(remainingSeats <= 0 && waitlistFull)
                       ? "border border-cyan-400/70 bg-cyan-500/20 text-white hover:bg-cyan-400/30"
                       : "border border-white/10 bg-white/5 text-slate-400 cursor-not-allowed"
                   }`}
@@ -212,6 +232,8 @@ export default async function StudentCourseDetailPage({
                     canBuy
                       ? remainingSeats > 0
                         ? "S'inscrire"
+                        : waitlistFull
+                        ? "Liste d'attente complète"
                         : "Rejoindre la liste d’attente"
                       : endTime <= NOW_MS
                       ? "Cours passé"
@@ -220,7 +242,12 @@ export default async function StudentCourseDetailPage({
                       : "Non disponible"
                   }
                 >
-                  {remainingSeats > 0 ? "S'inscrire" : "Liste d’attente"} ({cost} crédits)
+                  {remainingSeats > 0
+                    ? "S'inscrire"
+                    : waitlistFull
+                    ? "Liste d’attente complète"
+                    : "Liste d’attente"}{" "}
+                  ({cost} crédits)
                 </button>
               </form>
             )}
