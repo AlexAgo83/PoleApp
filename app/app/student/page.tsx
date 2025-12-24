@@ -55,6 +55,13 @@ export default async function StudentDashboard() {
     )
     .slice(0, 12);
 
+  const purchases = await prisma.auditLog.findMany({
+    where: { actorId: session.user.id, action: "demo_purchase" },
+    select: { id: true, createdAt: true, target: true, details: true },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
+
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
@@ -195,6 +202,40 @@ export default async function StudentDashboard() {
               Photo→nom + variantes (type/niveau/grips/tips) sur tes positions débloquées ({isPremium ? "ou toutes si premium" : "libérées via cours"}).
             </p>
           </Link>
+        </div>
+      </section>
+
+      <section className="panel p-6">
+        <h3 className="text-lg font-semibold text-white">Historique achats (démo)</h3>
+        <p className="text-sm text-slate-300">
+          Derniers ajouts de crédits/packs simulés. Données internes (audit), paiement réel à venir.
+        </p>
+        <div className="mt-3 space-y-2">
+          {purchases.length === 0 && (
+            <p className="text-sm text-slate-400">Aucun achat simulé pour l’instant.</p>
+          )}
+          {purchases.map((p) => {
+            const created = new Date(p.createdAt).toLocaleString("fr-FR", { hour12: false });
+            const details = (p.details as Record<string, unknown>) ?? {};
+            const credits = (details.credits as number | string | undefined) ?? "—";
+            const pack =
+              (details.packName as string | undefined) ??
+              (details.packId as string | undefined) ??
+              p.target ??
+              "Pack";
+            return (
+              <div
+                key={p.id}
+                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100"
+              >
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-white">{pack}</p>
+                  <p className="text-xs text-slate-300">Crédits ajoutés : {credits}</p>
+                </div>
+                <span className="text-[12px] text-cyan-100">{created}</span>
+              </div>
+            );
+          })}
         </div>
       </section>
 

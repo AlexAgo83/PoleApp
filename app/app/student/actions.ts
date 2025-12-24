@@ -35,6 +35,24 @@ export async function demoAddCreditsAction(formData: FormData) {
     data: { credits: { increment: parsed.data.credits } },
   });
 
+  try {
+    await prisma.auditLog.create({
+      data: {
+        actorId: session.user.id,
+        action: "demo_purchase",
+        target: parsed.data.packId ?? parsed.data.packName ?? "credits_pack",
+        details: {
+          credits: parsed.data.credits,
+          packId: parsed.data.packId,
+          packName: parsed.data.packName,
+          ts: new Date().toISOString(),
+        },
+      },
+    });
+  } catch (err) {
+    console.warn("audit demo_purchase failed", err);
+  }
+
   revalidatePath("/app/student");
   revalidatePath("/app/student/courses");
   revalidatePath("/app/student/courses/agenda");

@@ -67,6 +67,7 @@ export default async function StudentCoursesPage({
     studio?: string;
     withNotes?: string;
     sort?: string;
+    statuses?: string | string[];
   }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
@@ -92,6 +93,14 @@ export default async function StudentCoursesPage({
     paramValue(resolvedParams.studio)?.length
       ? paramValue(resolvedParams.studio)
       : undefined;
+  const statusParam = paramValue(resolvedParams.statuses);
+  const selectedStatuses =
+    typeof statusParam === "string" && statusParam.length > 0
+      ? statusParam
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+      : ["past", "attending", "waitlist", "open"];
   const fromStr = paramValue(resolvedParams.from);
   const toStr = paramValue(resolvedParams.to);
   const fromDate = fromStr ? new Date(fromStr) : undefined;
@@ -108,6 +117,7 @@ export default async function StudentCoursesPage({
     withNotes ? "notes" : null,
     sort === "date_asc" ? "sort" : null,
     onlyMine ? "mine" : null,
+    selectedStatuses.length !== 4 ? "statuses" : null,
   ].filter(Boolean).length;
 
   const courseFilters = {
@@ -235,14 +245,25 @@ export default async function StudentCoursesPage({
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
   const coursesList: { key: string; course: CourseRow; myAttendance: CourseRow["attendances"][number] | undefined }[] =
-    (items as CourseRow[]).map((course) => {
-      const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
-      return {
-        key: course.id,
-        course,
-        myAttendance,
-      };
-    });
+    (items as CourseRow[])
+      .map((course) => {
+        const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
+        return {
+          key: course.id,
+          course,
+          myAttendance,
+        };
+      })
+      .filter(({ course, myAttendance }) => {
+        const nowStatus = (() => {
+          const isPast = new Date(course.date).getTime() < NOW_MS;
+          if (isPast) return "past";
+          if (myAttendance?.status === "WAITLIST") return "waitlist";
+          if (myAttendance?.status === "CONFIRMED") return "attending";
+          return "open";
+        })();
+        return selectedStatuses.includes(nowStatus);
+      });
 
   const queryParams = new URLSearchParams();
   if (resolvedParams.from) queryParams.set("from", resolvedParams.from);
@@ -328,7 +349,7 @@ export default async function StudentCoursesPage({
           <form
             key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}`}
             method="get"
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Date min
@@ -412,7 +433,29 @@ export default async function StudentCoursesPage({
               />
               Mes cours
             </div>
-            <div className="md:col-span-5 flex flex-wrap items-center justify-end gap-2">
+            <fieldset className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+              <legend className="px-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Statuts affichés</legend>
+              <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-200">
+                {[
+                  { key: "past", label: "Passé" },
+                  { key: "attending", label: "Inscrit (à venir)" },
+                  { key: "waitlist", label: "Attente" },
+                  { key: "open", label: "Disponible" },
+                ].map((s) => (
+                  <label key={s.key} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1">
+                    <input
+                      type="checkbox"
+                      name="statuses"
+                      value={s.key}
+                      defaultChecked={selectedStatuses.includes(s.key)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {s.label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
