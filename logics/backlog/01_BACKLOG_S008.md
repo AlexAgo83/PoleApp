@@ -13,6 +13,7 @@
 - Positions : un prof ne peut modifier que ses fiches créées ; fiches globales en lecture seule (crayon absent/inactif) (P1).
 - Partenaires prof : permettre au prof d’ajouter ses partenaires (visibles pour lui) et de les rattacher à sa fiche (réutilisables cours/positions) (P2).
 - Factures prof : bouton Générer facture → PDF (logo + adresse école + titre/date/prof/studio/montant) numéroté par période, état “Générée” puis téléchargement ; bouton Envoyer à l’école (email) + indicateur “Facture envoyée” ; switch Non payée → Réglée (persistant, filtrable) (P0).
+- Disciplines : liste dynamique à maintenir côté école (CRUD admin), utiliser pour filtres prof/élève ; par défaut liste existante (Pole/Exotic/Souplesse/Pilates) mais extensible.
 
 ## 2) Vue Élève (résultat : parcours clair, premium valorisé)
 - Cours/Contenus : corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet, multi-prof si besoin) (P0).
@@ -22,6 +23,7 @@
 - Positions élève : supprimer le bloc de gating ; accès selon statut standard/premium sans encart (P2).
 - Mini-jeux : corriger le message “pas assez de positions” quand le seuil est atteint (vérifier pool) (P1).
 - Achats simulés : historique minimal des achats (date, offre, montant) + toast/confirmation ; application immédiate des crédits/éligibilités. Devise EUR, TVA 20% par défaut.
+- Paiements simulés : persistance réelle, statut payé simulé (cadre à préciser si autre statut souhaité).
 
 ## 3) Vue Admin École (résultat : factures et actifs clairs, catalogue vidéos maîtrisé)
 - Factures : bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%.
