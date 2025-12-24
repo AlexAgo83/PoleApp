@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -12,6 +13,7 @@ import {
   upsertCreditPackOfferAction,
   upsertSubscriptionOfferAction,
 } from "./actions";
+import { PersistedPanel } from "@/components/PersistedPanel";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -28,15 +30,34 @@ function formatAmount(cents: number, currency: string) {
 export default async function SuperAdminPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ flash?: string; error?: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 } = {}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     redirect("/access-denied");
   }
   const resolvedParams = (await searchParams) ?? {};
-  const flash = resolvedParams.flash;
-  const flashError = resolvedParams.error;
+  const getValue = (value?: string | string[]) =>
+    Array.isArray(value) ? value[0] : value;
+  const flash = getValue(resolvedParams.flash);
+  const flashError = getValue(resolvedParams.error);
+
+  const getPage = (key: string) => {
+    const raw = getValue(resolvedParams[key]);
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  };
+
+  const buildPageHref = (key: string, value: number) => {
+    const params = new URLSearchParams();
+    Object.entries(resolvedParams).forEach(([k, v]) => {
+      if (k === key) return;
+      const val = getValue(v);
+      if (val) params.set(k, val);
+    });
+    params.set(key, String(value));
+    return `?${params.toString()}`;
+  };
 
   const [settings, schools, subscriptions, packs, audits] = await Promise.all([
     prisma.globalSetting.upsert({
@@ -64,6 +85,70 @@ export default async function SuperAdminPage({
 
   const currency = settings.currency || "EUR";
   const activeSchools = schools.filter((s) => !s.archivedAt).length;
+  const clampPage = (page: number, total: number) =>
+    Math.min(Math.max(page, 1), Math.max(total, 1));
+
+  const schoolsPerPage = 6;
+  const subscriptionsPerPage = 5;
+  const packsPerPage = 5;
+
+  const schoolsTotalPages = Math.max(1, Math.ceil(schools.length / schoolsPerPage));
+  const subscriptionsTotalPages = Math.max(
+    1,
+    Math.ceil(subscriptions.length / subscriptionsPerPage),
+  );
+  const packsTotalPages = Math.max(1, Math.ceil(packs.length / packsPerPage));
+
+  const schoolsPage = clampPage(getPage("schoolsPage"), schoolsTotalPages);
+  const subscriptionsPage = clampPage(getPage("subsPage"), subscriptionsTotalPages);
+  const packsPage = clampPage(getPage("packsPage"), packsTotalPages);
+
+  const paginatedSchools = schools.slice(
+    (schoolsPage - 1) * schoolsPerPage,
+    schoolsPage * schoolsPerPage,
+  );
+  const paginatedSubscriptions = subscriptions.slice(
+    (subscriptionsPage - 1) * subscriptionsPerPage,
+    subscriptionsPage * subscriptionsPerPage,
+  );
+  const paginatedPacks = packs.slice((packsPage - 1) * packsPerPage, packsPage * packsPerPage);
+
+  const renderPager = (page: number, total: number, key: string) => {
+    const disablePrev = page <= 1;
+    const disableNext = page >= total;
+
+    const baseButton =
+      "inline-flex items-center justify-center rounded-full border border-white/10 px-3 py-1 text-sm font-semibold transition";
+    const enabled =
+      " text-white hover:border-cyan-300/70 hover:bg-cyan-500/20 hover:text-white";
+    const disabled = " cursor-not-allowed opacity-40";
+
+    return (
+      <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
+        <span>
+          Page {page} / {total}
+        </span>
+        <div className="flex gap-2">
+          <Link
+            href={buildPageHref(key, Math.max(1, page - 1))}
+            aria-disabled={disablePrev}
+            tabIndex={disablePrev ? -1 : undefined}
+            className={`${baseButton}${disablePrev ? disabled : enabled}`}
+          >
+            Précédent
+          </Link>
+          <Link
+            href={buildPageHref(key, Math.min(total, page + 1))}
+            aria-disabled={disableNext}
+            tabIndex={disableNext ? -1 : undefined}
+            className={`${baseButton}${disableNext ? disabled : enabled}`}
+          >
+            Suivant
+          </Link>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="grid gap-4 md:gap-6">
@@ -87,17 +172,20 @@ export default async function SuperAdminPage({
               nouveaux items.
             </p>
           </div>
-          <div className="flex gap-3 text-sm text-slate-200">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-              Écoles actives : <strong className="text-white">{activeSchools}</strong>
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-              Admins d&apos;écoles :{" "}
-              <strong className="text-white">
+          <dl className="grid gap-2 text-sm text-slate-200 md:grid-cols-2">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+              <dt className="sr-only">Écoles actives</dt>
+              <span>Écoles actives</span>
+              <dd className="text-white font-semibold">{activeSchools}</dd>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
+              <dt className="sr-only">Admins d&apos;écoles</dt>
+              <span>Admins d&apos;écoles</span>
+              <dd className="text-white font-semibold">
                 {schools.reduce((acc, s) => acc + s.users.length, 0)}
-              </strong>
-            </span>
-          </div>
+              </dd>
+            </div>
+          </dl>
         </div>
 
         <form action={updateSettingsAction} className="mt-4 grid gap-3 md:grid-cols-3">
@@ -132,6 +220,103 @@ export default async function SuperAdminPage({
       </section>
 
       <section className="space-y-4">
+        <PersistedPanel
+          storageKey="superadmin:new-subscription-offer"
+          title="Nouvelle offre abonnement"
+          defaultOpen={false}
+          className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20"
+          contentClassName="mt-3"
+        >
+          <form action={upsertSubscriptionOfferAction} className="grid gap-2 md:grid-cols-2">
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Nom</span>
+              <input
+                name="name"
+                placeholder="Nom"
+                required
+                minLength={2}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Crédits mensuels</span>
+              <input
+                name="credits"
+                type="number"
+                min={0}
+                step="1"
+                defaultValue={1000}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Prix mensuel TTC</span>
+              <input
+                name="monthly"
+                type="number"
+                step="0.01"
+                min={0}
+                defaultValue={(settings.defaultVatPercent ?? 0) ? 9.99 : 0}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Prix annuel TTC</span>
+              <input
+                name="annual"
+                type="number"
+                step="0.01"
+                min={0}
+                defaultValue={59.9}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">TVA %</span>
+              <input
+                name="vat"
+                type="number"
+                min={0}
+                max={100}
+                step="0.1"
+                defaultValue={settings.defaultVatPercent}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Ordre</span>
+              <input
+                name="sortOrder"
+                type="number"
+                min={0}
+                step="1"
+                defaultValue={subscriptions.length + 1}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1 md:col-span-2">
+              <span className="text-xs text-slate-300">Term par défaut</span>
+              <select
+                name="defaultTerm"
+                defaultValue="MONTHLY"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                required
+              >
+                <option value="MONTHLY">Mensuel</option>
+                <option value="ANNUAL">Annuel</option>
+              </select>
+            </label>
+            <div className="md:col-span-2">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+              >
+                Ajouter l&apos;offre
+              </button>
+            </div>
+          </form>
+        </PersistedPanel>
+
         <div className="panel space-y-3 p-5">
           <div className="flex items-center justify-between">
             <div>
@@ -144,7 +329,12 @@ export default async function SuperAdminPage({
           </div>
 
           <div className="space-y-3">
-            {subscriptions.map((offer) => (
+            {subscriptions.length === 0 && (
+              <p className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
+                Aucune offre pour le moment.
+              </p>
+            )}
+            {paginatedSubscriptions.map((offer) => (
               <div key={offer.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
                 <form action={upsertSubscriptionOfferAction} className="grid gap-3 md:grid-cols-2">
                   <input type="hidden" name="id" value={offer.id} />
@@ -250,100 +440,78 @@ export default async function SuperAdminPage({
                 </form>
               </div>
             ))}
-
-            <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20">
-              <p className="text-sm font-semibold text-white">Nouvelle offre abonnement</p>
-              <form action={upsertSubscriptionOfferAction} className="mt-3 grid gap-2 md:grid-cols-2">
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Nom</span>
-                  <input
-                    name="name"
-                    placeholder="Nom"
-                    required
-                    minLength={2}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Crédits mensuels</span>
-                  <input
-                    name="credits"
-                    type="number"
-                    min={0}
-                    step="1"
-                    defaultValue={1000}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Prix mensuel TTC</span>
-                  <input
-                    name="monthly"
-                    type="number"
-                    step="0.01"
-                    min={0}
-                    defaultValue={(settings.defaultVatPercent ?? 0) ? 9.99 : 0}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Prix annuel TTC</span>
-                  <input
-                    name="annual"
-                    type="number"
-                    step="0.01"
-                    min={0}
-                    defaultValue={59.9}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">TVA %</span>
-                  <input
-                    name="vat"
-                    type="number"
-                    min={0}
-                    max={100}
-                    step="0.1"
-                    defaultValue={settings.defaultVatPercent}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Ordre</span>
-                  <input
-                    name="sortOrder"
-                    type="number"
-                    min={0}
-                    step="1"
-                    defaultValue={subscriptions.length + 1}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1 md:col-span-2">
-                  <span className="text-xs text-slate-300">Term par défaut</span>
-                  <select
-                    name="defaultTerm"
-                    defaultValue="MONTHLY"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                    required
-                  >
-                    <option value="MONTHLY">Mensuel</option>
-                    <option value="ANNUAL">Annuel</option>
-                  </select>
-                </label>
-                <div className="md:col-span-2">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-                  >
-                    Ajouter l&apos;offre
-                  </button>
-                </div>
-              </form>
-            </div>
+            {subscriptionsTotalPages > 1 && renderPager(subscriptionsPage, subscriptionsTotalPages, "subsPage")}
           </div>
         </div>
+
+        <PersistedPanel
+          storageKey="superadmin:new-credit-pack"
+          title="Nouveau pack crédits"
+          defaultOpen={false}
+          className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20"
+          contentClassName="mt-3"
+        >
+          <form action={upsertCreditPackOfferAction} className="grid gap-2 md:grid-cols-2">
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Nom</span>
+              <input
+                name="name"
+                placeholder="Pack 500"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Crédits</span>
+              <input
+                name="credits"
+                type="number"
+                min={0}
+                defaultValue={500}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Prix TTC</span>
+              <input
+                name="price"
+                type="number"
+                min={0}
+                step="0.01"
+                defaultValue={9.99}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">TVA %</span>
+              <input
+                name="vat"
+                type="number"
+                min={0}
+                max={100}
+                defaultValue={settings.defaultVatPercent}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Ordre</span>
+              <input
+                name="sortOrder"
+                type="number"
+                min={0}
+                defaultValue={packs.length + 1}
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <div className="md:col-span-2">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+              >
+                Ajouter le pack
+              </button>
+            </div>
+          </form>
+        </PersistedPanel>
 
         <div className="panel space-y-3 p-5">
           <div className="flex items-center justify-between">
@@ -355,7 +523,12 @@ export default async function SuperAdminPage({
           </div>
 
           <div className="space-y-3">
-            {packs.map((pack) => (
+            {packs.length === 0 && (
+              <p className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
+                Aucun pack crédit pour le moment.
+              </p>
+            )}
+            {paginatedPacks.map((pack) => (
               <div key={pack.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
                 <form action={upsertCreditPackOfferAction} className="grid gap-3 md:grid-cols-2">
                   <input type="hidden" name="id" value={pack.id} />
@@ -438,70 +611,7 @@ export default async function SuperAdminPage({
                 </form>
               </div>
             ))}
-
-            <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20">
-              <p className="text-sm font-semibold text-white">Nouveau pack</p>
-              <form action={upsertCreditPackOfferAction} className="mt-3 grid gap-2 md:grid-cols-2">
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Nom</span>
-                  <input
-                    name="name"
-                    placeholder="Pack 500"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Crédits</span>
-                  <input
-                    name="credits"
-                    type="number"
-                    min={0}
-                    defaultValue={500}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Prix TTC</span>
-                  <input
-                    name="price"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    defaultValue={9.99}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">TVA %</span>
-                  <input
-                    name="vat"
-                    type="number"
-                    min={0}
-                    max={100}
-                    defaultValue={settings.defaultVatPercent}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-xs text-slate-300">Ordre</span>
-                  <input
-                    name="sortOrder"
-                    type="number"
-                    min={0}
-                    defaultValue={packs.length + 1}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  />
-                </label>
-                <div className="md:col-span-2">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-                  >
-                    Ajouter le pack
-                  </button>
-                </div>
-              </form>
-            </div>
+            {packsTotalPages > 1 && renderPager(packsPage, packsTotalPages, "packsPage")}
           </div>
         </div>
       </section>
@@ -518,74 +628,85 @@ export default async function SuperAdminPage({
         </div>
 
         <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4">
-            <p className="text-sm font-semibold text-white">Créer une école</p>
-            <form action={createSchoolAction} className="mt-3 space-y-2">
-              <label className="space-y-1">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
+            <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Créer une école</p>
+            <form action={createSchoolAction} className="mt-2 space-y-2">
+              <label className="space-y-1 block">
                 <span className="text-xs text-slate-300">Nom</span>
                 <input
                   name="name"
-                  placeholder="Nouvelle école"
+                  required
+                  minLength={2}
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                  placeholder="Nom de l'école"
                 />
               </label>
-              <label className="space-y-1">
+              <label className="space-y-1 block">
                 <span className="text-xs text-slate-300">Site web (optionnel)</span>
                 <input
                   name="website"
-                  placeholder="https://"
+                  type="url"
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                  placeholder="https://…"
                 />
               </label>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/30"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
               >
                 Créer
               </button>
             </form>
           </div>
-
-          <div className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4">
-            <p className="text-sm font-semibold text-white">Assigner un admin à une école</p>
-            <form action={assignSchoolAdminAction} className="mt-3 grid gap-2 md:grid-cols-2">
-              <label className="space-y-1">
-                <span className="text-xs text-slate-300">Email user</span>
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="admin@exemple.com"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                />
-              </label>
-              <label className="space-y-1">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
+            <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Assigner un admin à une école</p>
+            <form action={assignSchoolAdminAction} className="mt-2 space-y-2">
+              <label className="space-y-1 block">
                 <span className="text-xs text-slate-300">École</span>
                 <select
                   name="schoolId"
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  defaultValue={schools[0]?.id}
+                  defaultValue={schools[0]?.id ?? ""}
+                  disabled={schools.length === 0}
                 >
-                  {schools.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
+                  {schools.length === 0 ? (
+                    <option value="">Aucune école</option>
+                  ) : (
+                    schools.map((school) => (
+                      <option key={school.id} value={school.id}>
+                        {school.name}
+                      </option>
+                    ))
+                  )}
                 </select>
               </label>
-              <div className="md:col-span-2">
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/30"
-                >
-                  Assigner comme admin
-                </button>
-              </div>
+              <label className="space-y-1 block">
+                <span className="text-xs text-slate-300">Email de l&apos;utilisateur</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                  placeholder="admin@ecole.fr"
+                />
+              </label>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+              >
+                Assigner
+              </button>
             </form>
           </div>
         </div>
 
         <div className="grid gap-3 md:grid-cols-2">
-          {schools.map((school) => (
+          {paginatedSchools.length === 0 && (
+            <p className="md:col-span-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
+              Aucune école trouvée.
+            </p>
+          )}
+          {paginatedSchools.map((school) => (
             <div key={school.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
               <div className="flex items-center justify-between gap-2">
                 <div>
@@ -635,81 +756,84 @@ export default async function SuperAdminPage({
             </div>
           ))}
         </div>
+        {schoolsTotalPages > 1 && renderPager(schoolsPage, schoolsTotalPages, "schoolsPage")}
       </section>
 
-      <section className="panel space-y-4 border-red-300/20 p-5 shadow-red-900/30">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-red-200">Super Admin</p>
-            <h3 className="text-lg font-semibold text-white">Promotion / Dégradation</h3>
-            <p className="text-sm text-slate-300">
-              Promouvoir ou retirer le rôle SUPER_ADMIN via email (sécurité recovery). Audit log automatique.
-            </p>
-          </div>
-        </div>
-        <form action={promoteSuperAdminAction} className="grid gap-2 md:grid-cols-[2fr_1fr_1fr]">
-          <label className="space-y-1">
-            <span className="text-xs text-slate-300">Email</span>
-            <input
-              name="email"
-              type="email"
-              placeholder="user@poleapp.test"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-            />
-          </label>
-          <label className="space-y-1">
-            <span className="text-xs text-slate-300">Action</span>
-            <select
-              name="action"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-              defaultValue="promote"
-            >
-              <option value="promote">Promouvoir en SUPER_ADMIN</option>
-              <option value="demote">Retirer (SCHOOL_ADMIN ou STUDENT)</option>
-            </select>
-          </label>
-          <div className="flex items-end">
-            <button
-              type="submit"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-400/60 bg-red-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/30"
-            >
-              Valider
-            </button>
-          </div>
-        </form>
-      </section>
+        <PersistedPanel
+          storageKey="superadmin:superadmin-promotion"
+          title="Super Admin"
+          subtitle="Promotion / Dégradation"
+          defaultOpen={false}
+          className="panel space-y-4 border-red-300/20 p-5 shadow-red-900/30"
+          contentClassName="space-y-4"
+        >
+          <p className="text-sm text-slate-300">
+            Promouvoir ou retirer le rôle SUPER_ADMIN via email (sécurité recovery). Audit log automatique.
+          </p>
+          <form action={promoteSuperAdminAction} className="grid gap-2 md:grid-cols-[2fr_1fr_1fr]">
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Email</span>
+              <input
+                name="email"
+                type="email"
+                placeholder="user@poleapp.test"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="text-xs text-slate-300">Action</span>
+              <select
+                name="action"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+                defaultValue="promote"
+              >
+                <option value="promote">Promouvoir en SUPER_ADMIN</option>
+                <option value="demote">Retirer (SCHOOL_ADMIN ou STUDENT)</option>
+              </select>
+            </label>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-400/60 bg-red-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/30"
+              >
+                Valider
+              </button>
+            </div>
+          </form>
+        </PersistedPanel>
 
-      <section className="panel space-y-3 p-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-slate-200">Audit</p>
-            <h3 className="text-lg font-semibold text-white">10 dernières actions</h3>
-          </div>
-        </div>
-        <div className="space-y-2">
-          {audits.length === 0 && <p className="text-sm text-slate-400">Aucune action super-admin enregistrée.</p>}
-          {audits.map((log) => (
-            <div
-              key={log.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-            >
-              <div>
-                <p className="font-semibold text-white">{log.action}</p>
+        <PersistedPanel
+          storageKey="superadmin:audit-log"
+          title="Audit"
+          subtitle="10 dernières actions"
+          defaultOpen={false}
+          className="panel space-y-3 p-5"
+          contentClassName="space-y-2"
+        >
+          <div className="space-y-2">
+            {audits.length === 0 && <p className="text-sm text-slate-400">Aucune action super-admin enregistrée.</p>}
+            {audits.map((log) => (
+              <div
+                key={log.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >
+                <div>
+                  <p className="font-semibold text-white">{log.action}</p>
+                  <p className="text-xs text-slate-400">
+                    {log.target ? `Cible: ${log.target} — ` : ""}
+                    {log.actor?.email || "N/A"}
+                  </p>
+                </div>
                 <p className="text-xs text-slate-400">
-                  {log.target ? `Cible: ${log.target} — ` : ""}
-                  {log.actor?.email || "N/A"}
+                  {new Date(log.createdAt).toLocaleString("fr-FR", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
                 </p>
               </div>
-              <p className="text-xs text-slate-400">
-                {new Date(log.createdAt).toLocaleString("fr-FR", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
+            ))}
+          </div>
+        </PersistedPanel>
+      </div>
+    );
+  }
