@@ -11,7 +11,6 @@ type InvoiceDTO = {
   amountCents: number;
   currency: string;
   status: InvoiceStatus;
-  note: string | null;
   paidAt: string | null;
   issuedAt: string | null;
   course: {
@@ -43,6 +42,7 @@ type ApiResponse = {
   totalCredits: number;
   lowCredits: { id: string; name: string | null; email: string | null; credits: number | null }[];
   lowCreditsCount: number;
+  vatPercent: number;
   error?: string;
 };
 
@@ -64,7 +64,18 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
       const url = `/api/admin/billing/list${qs ? `?${qs}` : ""}`;
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) {
-        setData({ invoices: [], totalCount: 0, totalPages: 1, currentPage: 1, creditThreshold: 200, totalCredits: 0, lowCredits: [], lowCreditsCount: 0, error: "fail" });
+        setData({
+          invoices: [],
+          totalCount: 0,
+          totalPages: 1,
+          currentPage: 1,
+          creditThreshold: 200,
+          totalCredits: 0,
+          lowCredits: [],
+          lowCreditsCount: 0,
+          vatPercent: 20,
+          error: "fail",
+        });
         setFlash("error");
         return;
       }
@@ -94,7 +105,7 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
 
   const filteredQs = qs ? `?${qs}` : "";
 
-  const applyUpdate = async (payload: { invoiceId: string; status: InvoiceStatus; amount?: string; note?: string }) => {
+  const applyUpdate = async (payload: { invoiceId: string; status: InvoiceStatus; amount?: string }) => {
     setMutatingId(payload.invoiceId);
     setFlash(null);
     try {
@@ -381,6 +392,9 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
             const badgeClass = statusClasses[invoice.status];
             const badgeLabel = statusLabels[invoice.status];
             const attendees = invoice.course._count.attendances;
+            const vatPercent = data.vatPercent ?? 20;
+            const vatAmountCents = Math.round(invoice.amountCents * vatPercent * 0.01);
+            const totalTtcCents = invoice.amountCents + vatAmountCents;
             const formattedDate = new Date(invoice.course.date).toLocaleString("fr-FR", {
               year: "numeric",
               month: "2-digit",
@@ -410,6 +424,12 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                     <div className="text-lg font-semibold text-white">
                       {(invoice.amountCents / 100).toFixed(2)} {invoice.currency}
                     </div>
+                    <div className="text-[12px] text-slate-200">
+                      TVA {vatPercent}% : {(vatAmountCents / 100).toFixed(2)} {invoice.currency}
+                    </div>
+                    <div className="text-sm font-semibold text-cyan-100">
+                      TTC : {(totalTtcCents / 100).toFixed(2)} {invoice.currency}
+                    </div>
                     {formattedPaidAt && (
                       <span className="inline-flex items-center rounded-full border border-emerald-400/40 bg-emerald-500/15 px-2 py-0.5 text-[12px] text-emerald-50">
                         Payée le {formattedPaidAt}
@@ -430,11 +450,6 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                   <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
                     Présences : {attendees}
                   </span>
-                  {invoice.note && (
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
-                      Note : {invoice.note}
-                    </span>
-                  )}
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-indigo-900/20">
@@ -464,7 +479,6 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                           invoiceId: invoice.id,
                           status: invoice.status,
                           amount: fd.get("amount")?.toString(),
-                          note: fd.get("note")?.toString(),
                         });
                       }}
                     >
@@ -477,16 +491,6 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                           step="0.01"
                           defaultValue={(invoice.amountCents / 100).toFixed(2)}
                           className="ml-2 w-28 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
-                        />
-                      </label>
-                      <label className="text-xs text-slate-300">
-                        Note
-                        <input
-                          type="text"
-                          name="note"
-                          defaultValue={invoice.note ?? ""}
-                          placeholder="Note"
-                          className="ml-2 w-40 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
                         />
                       </label>
                       <button
@@ -510,7 +514,6 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                               invoiceId: invoice.id,
                               status: target,
                               amount: (invoice.amountCents / 100).toFixed(2),
-                              note: invoice.note ?? "",
                             })
                           }
                           className={`rounded-full border px-2 py-1 font-semibold text-white transition shadow-sm ${

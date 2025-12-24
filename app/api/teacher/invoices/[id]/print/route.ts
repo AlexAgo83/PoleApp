@@ -34,12 +34,16 @@ export async function GET(
   if (!invoice) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
+  const settings = await prisma.globalSetting.findUnique({ where: { id: "global" } });
+  const vatPercent = settings?.defaultVatPercent ?? 20;
 
   const course = invoice.course;
   const issued = invoice.issuedAt?.toLocaleDateString("fr-FR") ?? "—";
   const paid = invoice.paidAt?.toLocaleDateString("fr-FR") ?? "—";
   const amount = (invoice.amountCents ?? 0) / 100;
   const currency = invoice.currency || "EUR";
+  const vatAmount = amount * (vatPercent / 100);
+  const totalTtc = amount + vatAmount;
 
   const html = `<!doctype html>
   <html lang="fr">
@@ -65,6 +69,8 @@ export async function GET(
         <div class="row"><span>Date d'émission</span><span>${issued}</span></div>
         <div class="row"><span>Statut</span><span class="badge status">${invoice.status}</span></div>
         <div class="row"><span>Montant</span><span class="amount">${amount.toFixed(2)} ${currency}</span></div>
+        <div class="row"><span>TVA</span><span>${vatPercent}% (${vatAmount.toFixed(2)} ${currency})</span></div>
+        <div class="row"><span>Total TTC</span><span class="amount">${totalTtc.toFixed(2)} ${currency}</span></div>
         <div class="row"><span>Payée le</span><span>${paid}</span></div>
         <h2>Cours</h2>
         <div class="row"><span>Titre</span><span>${course?.title ?? "Cours"}</span></div>

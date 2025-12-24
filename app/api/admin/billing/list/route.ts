@@ -95,7 +95,7 @@ export async function GET(request: Request) {
     },
   };
 
-  const [totalCount, invoices, students] = await Promise.all([
+  const [totalCount, invoices, students, settings] = await Promise.all([
     prisma.invoice.count({ where }),
     prisma.invoice.findMany({
       where,
@@ -117,6 +117,7 @@ export async function GET(request: Request) {
       select: { id: true, name: true, email: true, credits: true },
       orderBy: { credits: "asc" },
     }),
+    prisma.globalSetting.findUnique({ where: { id: "global" } }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / 10));
@@ -124,6 +125,7 @@ export async function GET(request: Request) {
   const totalCredits = students.reduce((acc, s) => acc + (s.credits ?? 0), 0);
   const lowCredits = students.filter((s) => (s.credits ?? 0) < creditThreshold).slice(0, 5);
   const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < creditThreshold).length;
+  const vatPercent = settings?.defaultVatPercent ?? 20;
 
   return NextResponse.json({
     invoices,
@@ -134,5 +136,6 @@ export async function GET(request: Request) {
     totalCredits,
     lowCredits,
     lowCreditsCount,
+    vatPercent,
   });
 }
