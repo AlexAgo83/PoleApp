@@ -223,40 +223,73 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  const parsed = updateNotesSchema.safeParse({
+  const directParsed = updateNotesSchema.safeParse({
     courseId: formData.get("courseId"),
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
 
-  if (!parsed.success) {
-    throw new Error("Form invalid");
+  let parsedNotes: z.infer<typeof updateNotesSchema>["notes"] = [];
+  let courseId: string | undefined;
+
+  if (directParsed.success) {
+    parsedNotes = directParsed.data.notes;
+    courseId = directParsed.data.courseId;
+  } else {
+    courseId = formData.get("courseId")?.toString();
+    if (!courseId) {
+      throw new Error("Form invalid");
+    }
+    const notes: {
+      studentId: string;
+      positionId: string;
+      masteryLevel?: MasteryLevel;
+      comment?: string;
+    }[] = [];
+
+    for (const [key, value] of formData.entries()) {
+      if (!key.startsWith("note:")) continue;
+      const [, studentId, positionId] = key.split(":");
+      if (!studentId || !positionId) continue;
+      const mastery = value?.toString() ?? "";
+      if (!mastery) continue;
+      if (!Object.values(MasteryLevel).includes(mastery as MasteryLevel)) continue;
+      notes.push({
+        studentId,
+        positionId,
+        masteryLevel: mastery as MasteryLevel,
+      });
+    }
+    parsedNotes = notes;
   }
 
   const course = await prisma.course.findFirst({
-    where: { id: parsed.data.courseId, schoolId: session.user.schoolId },
-    select: { id: true },
+    where: { id: courseId, schoolId: session.user.schoolId },
+    select: { id: true, teacherId: true },
   });
   if (!course) {
     redirect("/access-denied");
   }
+  if (session.user.role === "TEACHER" && course.teacherId !== session.user.id) {
+    redirect("/access-denied");
+  }
 
   await prisma.$transaction(async (tx) => {
-    await tx.courseNote.deleteMany({ where: { courseId: parsed.data.courseId } });
-    if (parsed.data.notes.length > 0) {
+    await tx.courseNote.deleteMany({ where: { courseId } });
+    if (parsedNotes.length > 0) {
       await tx.courseNote.createMany({
-        data: parsed.data.notes.map((n) => ({
-          courseId: parsed.data.courseId,
+        data: parsedNotes.map((n) => ({
+          courseId,
           studentId: n.studentId,
           positionId: n.positionId,
           masteryLevel: n.masteryLevel ?? MasteryLevel.INITIATED,
           comment: n.comment || null,
         })),
       });
-      await upsertProgressFromNotes(tx, parsed.data.notes, session.user.id);
+      await upsertProgressFromNotes(tx, parsedNotes, session.user.id);
     }
   });
 
-  revalidatePath(`/app/teacher/courses/${parsed.data.courseId}`);
+  revalidatePath(`/app/teacher/courses/${courseId}`);
 }
 
 async function upsertProgressFromNotes(
