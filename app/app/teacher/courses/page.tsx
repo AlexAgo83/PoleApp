@@ -140,6 +140,25 @@ export default async function TeacherCoursesPage({
       }
       throw error;
     });
+  const recommendationStats =
+    courses.length > 0
+      ? await prisma.courseRecommendation
+          .findMany({
+            where: { courseId: { in: courses.map((c) => c.id) } },
+            select: { courseId: true, appliedAt: true, forced: true, excludedForInjury: true },
+          })
+          .then((rows) => {
+            const map = new Map<string, { applied: number; forced: number; excluded: number }>();
+            rows.forEach((r) => {
+              const current = map.get(r.courseId) ?? { applied: 0, forced: 0, excluded: 0 };
+              if (r.appliedAt) current.applied += 1;
+              if (r.forced) current.forced += 1;
+              if (r.excludedForInjury && !r.forced) current.excluded += 1;
+              map.set(r.courseId, current);
+            });
+            return map;
+          })
+      : new Map<string, { applied: number; forced: number; excluded: number }>();
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -355,6 +374,7 @@ export default async function TeacherCoursesPage({
             const detailHref = `/app/teacher/courses/${course.id}?from=${encodeURIComponent(
               `/app/teacher/courses?page=${currentPage}`
             )}`;
+            const recStats = recommendationStats.get(course.id);
             return (
               <div
                 key={course.id}
@@ -408,6 +428,19 @@ export default async function TeacherCoursesPage({
                       <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
                         Notes : {course._count.notes}
                       </span>
+                      {recStats && (
+                        <>
+                          <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
+                            {recStats.applied} appliquée{recStats.applied > 1 ? "s" : ""}
+                          </span>
+                          <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                            {recStats.forced} forcée{recStats.forced > 1 ? "s" : ""}
+                          </span>
+                          <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                            {recStats.excluded} exclue{recStats.excluded > 1 ? "s" : ""} blessure
+                          </span>
+                        </>
+                      )}
                     </div>
                     <Link
                       href={detailHref}
