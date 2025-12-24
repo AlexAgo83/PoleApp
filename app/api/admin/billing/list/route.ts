@@ -114,7 +114,7 @@ export async function GET(request: Request) {
     }),
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId, role: "STUDENT" },
-      select: { id: true, name: true, email: true, credits: true },
+      select: { id: true, name: true, email: true, credits: true, isPremium: true },
       orderBy: { credits: "asc" },
     }),
     prisma.globalSetting.findUnique({ where: { id: "global" } }),
@@ -125,6 +125,9 @@ export async function GET(request: Request) {
   const totalCredits = students.reduce((acc, s) => acc + (s.credits ?? 0), 0);
   const lowCredits = students.filter((s) => (s.credits ?? 0) < creditThreshold).slice(0, 5);
   const lowCreditsCount = students.filter((s) => (s.credits ?? 0) < creditThreshold).length;
+  const premiumCount = students.filter((s) => s.isPremium).length;
+  const creditUsersCount = students.filter((s) => (s.credits ?? 0) > 0).length;
+  const activeCount = students.filter((s) => s.isPremium || (s.credits ?? 0) > 0).length;
   const vatPercent = settings?.defaultVatPercent ?? 20;
 
   return NextResponse.json({
@@ -136,6 +139,9 @@ export async function GET(request: Request) {
     totalCredits,
     lowCredits,
     lowCreditsCount,
+    activeCount,
+    premiumCount,
+    creditUsersCount,
     vatPercent,
   });
 }

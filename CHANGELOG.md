@@ -5,8 +5,8 @@
 ## Unreleased — Planning école élève + responsive agenda
 - Page école élève : agenda semaine/mois avec filtres (studio/prof/date/recherche/«mes cours»), légende code couleur, prochains cours, liens vers agenda/liste.
 - Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
-- Facturation : modèle `Invoice` (statuts Générée/Envoyée/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant/note + export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
-- Facturation admin : polish UI (filtres regroupés en panel stylisé, actions header alignées à droite, compteur sous les filtres, titre/date dissociés).
+- Facturation : modèle `Invoice` (statuts Générée/Reçue/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant, export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
+- Facturation admin : polish UI (filtres regroupés en panel stylisé, actions header alignées à droite, compteur sous les filtres, titre/date dissociés) + cartes synthèse actives/premium/crédits, label “Reçue”.
 - Partenaires : filtres date/recherche/type appliqués aux stats clic/achat, toasts CRUD.
 - Studios : toasts CRUD.
 - Profil : toast de confirmation “Profil mis à jour”.

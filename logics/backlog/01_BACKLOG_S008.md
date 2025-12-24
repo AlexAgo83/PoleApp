@@ -26,7 +26,7 @@
 - Paiements simulés : persistance réelle, statut payé simulé (cadre à préciser si autre statut souhaité).
 
 ## 3) Vue Admin École (résultat : factures et actifs clairs, catalogue vidéos maîtrisé)
-- Factures : **(PARTIEL)** bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%. → TVA/TTC affichés (liste + PDF) et note retirée sur liste ; reste à gérer “Reçu” et encart actifs.
+- Factures : **(PARTIEL)** bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%. → TVA/TTC affichés (liste + PDF), note retirée, label statut “Reçue”, cartes synthèse actives/premium/crédits ; reste à gérer “Reçu” côté flux et encart actifs/abo complet.
 - Fiches Élèves : afficher type d’abonnement (Annuel/Mensuel/Forfait), crédits restants, date butoir (fin abo / expiration crédits), visible et à jour (P1).
 - Vidéos streaming admin : onglet “Vidéos” pour gérer vidéos live/replay (liens/URLs, player plus tard), classer (discipline/niveau/type), définir accès premium vs tous, planning live (P2).
 
