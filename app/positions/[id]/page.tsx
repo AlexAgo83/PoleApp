@@ -84,7 +84,11 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const hasUnlocked = isStudent
     ? Boolean(
         await prisma.studentPositionProgress.findFirst({
-          where: { studentId: session.user.id, positionId: position.id },
+          where: {
+            studentId: session.user.id,
+            positionId: position.id,
+            learningStatus: { not: "NOT_STARTED" },
+          },
         }),
       )
     : false;
