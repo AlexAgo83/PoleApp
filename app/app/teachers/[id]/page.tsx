@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateTeacherProfileAction } from "./actions";
+import { TeacherEditPanel } from "./TeacherEditPanel";
 
 const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
@@ -163,88 +164,18 @@ export default async function TeacherPublicProfilePage({
       </section>
 
       {canEdit && (
-        <section className="panel border-indigo-400/15 p-6">
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin / Prof</p>
-          <h2 className="text-lg font-semibold text-white">Éditer le profil professeur</h2>
-          <form action={updateTeacherProfileAction} className="mt-4 grid gap-4 md:grid-cols-2">
-            <input type="hidden" name="teacherId" value={teacher.id} />
-            <label className="space-y-2 text-sm text-slate-200">
-              Prénom
-              <input
-                type="text"
-                name="firstName"
-                defaultValue={firstNameDefault}
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="space-y-2 text-sm text-slate-200">
-              Nom
-              <input
-                type="text"
-                name="lastName"
-                defaultValue={lastNameDefault}
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="space-y-2 text-sm text-slate-200">
-              Âge (optionnel)
-              <input
-                type="number"
-                name="age"
-                inputMode="numeric"
-                min={1}
-                max={120}
-                defaultValue={teacher.age ?? ""}
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="space-y-2 text-sm text-slate-200">
-              Photo (URL)
-              <input
-                type="url"
-                name="avatarUrl"
-                defaultValue={teacher.avatarUrl ?? ""}
-                placeholder="https://…"
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="md:col-span-2 space-y-2 text-sm text-slate-200">
-              Diplômes (texte libre)
-              <textarea
-                name="diplomas"
-                defaultValue={teacher.diplomas ?? ""}
-                rows={3}
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="md:col-span-2 space-y-2 text-sm text-slate-200">
-              Positions préférées
-              <select
-                name="favoritePositions"
-                multiple
-                defaultValue={favoritePositionIds}
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              >
-                {positions.map((position) => (
-                  <option key={position.id} value={position.id}>
-                    {position.name} ({position.type})
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-slate-400">
-                Maintiens Ctrl/Cmd (ou Maj) pour sélectionner plusieurs positions.
-              </p>
-            </label>
-            <div className="md:col-span-2 flex justify-end">
-              <button
-                type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-              >
-                Enregistrer
-              </button>
-            </div>
-          </form>
-        </section>
+        <TeacherEditPanel
+          teacherId={teacher.id}
+          defaults={{
+            firstName: firstNameDefault,
+            lastName: lastNameDefault,
+            age: teacher.age,
+            avatarUrl: teacher.avatarUrl,
+            diplomas: teacher.diplomas,
+            favoritePositionIds,
+          }}
+          positions={positions}
+        />
       )}
     </main>
   );
