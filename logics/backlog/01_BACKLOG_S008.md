@@ -16,13 +16,13 @@
 - Disciplines : liste dynamique à maintenir côté école (CRUD admin), utiliser pour filtres prof/élève ; par défaut liste existante (Pole/Exotic/Souplesse/Pilates) mais extensible.
 
 ## 2) Vue Élève (résultat : parcours clair, premium valorisé)
-- Cours/Contenus : **(PARTIEL)** corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet, multi-prof si besoin) (P0). Positions des cours désormais affichées côté élève (liste + planning) ; multi-prof et discipline encore à couvrir si besoin.
+- Cours/Contenus : **(PARTIEL)** corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet). Positions des cours désormais affichées côté élève (liste + planning) ; pas de multi-prof (modèle 1 prof par cours) ; disciplines à exposer si dispo.
 - Planning studio/école : nom d’école visible et mise en avant ; changer d’école rafraîchit le planning (P1). Ajouter achat crédits/abonnements (forfait, mensuel, annuel) sur la page école pour permettre l’inscription (P0).
 - Légende interactive : états cliquables et cumulables (Passé, Inscrit, Attente avec rang/quota 14, Disponible) (P1).
 - Vidéos streaming (premium) : onglet “Vidéos” (replay/live) pour premium ; non-premium masqué ou verrouillé. Source = liens/URLs existants pour l’instant, player/hosting plus tard ; live = lien externe avec planning à gérer (P1).
 - Positions élève : supprimer le bloc de gating ; accès selon statut standard/premium sans encart (P2).
 - Mini-jeux : corriger le message “pas assez de positions” quand le seuil est atteint (vérifier pool) (P1).
-- Achats simulés : historique minimal des achats (date, offre, montant) + toast/confirmation ; application immédiate des crédits/éligibilités. Devise EUR, TVA 20% par défaut.
+- Achats simulés : **(PARTIEL)** historique minimal des achats (date, offre, montant) + toast/confirmation ; application immédiate des crédits/éligibilités. Devise EUR, TVA 20% par défaut. _(Historique démo visible tableau de bord élève, crédits appliqués)_
 - Paiements simulés : persistance réelle, statut payé simulé (cadre à préciser si autre statut souhaité).
 
 ## 3) Vue Admin École (résultat : factures et actifs clairs, catalogue vidéos maîtrisé)
