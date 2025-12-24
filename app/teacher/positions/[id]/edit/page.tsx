@@ -33,6 +33,12 @@ export default async function EditPositionPage({ params }: Props) {
   if (!position) {
     notFound();
   }
+  if (
+    role === "TEACHER" &&
+    (!position.createdByUserId || position.createdByUserId !== session.user.id)
+  ) {
+    redirect("/access-denied");
+  }
 
   const types = Object.values(PositionType);
   const levels = Object.values(PositionLevel);

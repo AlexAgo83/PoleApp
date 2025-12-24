@@ -32,7 +32,7 @@ export default async function TeacherCoursesPage({
     teacher?: string;
     withNotes?: string;
     studio?: string;
-    discipline?: string;
+    discipline?: string | string[];
     q?: string;
   }>;
 }) {
@@ -40,7 +40,15 @@ export default async function TeacherCoursesPage({
   const rawPage = Number(resolvedParams.page ?? "1");
   const teacherFilter = typeof resolvedParams.teacher === "string" ? resolvedParams.teacher : undefined;
   const q = resolvedParams.q?.toString().trim() ?? "";
-  const disciplineFilter = resolvedParams.discipline?.toString().trim() ?? "";
+  const disciplineFilters =
+    typeof resolvedParams.discipline === "string"
+      ? resolvedParams.discipline
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+      : Array.isArray(resolvedParams.discipline)
+      ? resolvedParams.discipline.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean)
+      : [];
   const studioFilter =
     typeof resolvedParams.studio === "string" && resolvedParams.studio.length > 0
       ? resolvedParams.studio
@@ -55,7 +63,7 @@ export default async function TeacherCoursesPage({
     validTo,
     teacherFilter,
     studioFilter,
-    disciplineFilter ? "discipline" : null,
+    disciplineFilters.length > 0 ? "discipline" : null,
     withNotes ? "notes" : null,
     q && q.length > 0 ? "q" : null,
   ].filter(Boolean).length;
@@ -78,12 +86,11 @@ export default async function TeacherCoursesPage({
           title: { contains: q, mode: "insensitive" as const },
         }
       : {}),
-    ...(disciplineFilter
+    ...(disciplineFilters.length > 0
       ? {
-          OR: [
-            { title: { contains: disciplineFilter, mode: "insensitive" as const } },
-            { description: { contains: disciplineFilter, mode: "insensitive" as const } },
-          ],
+          OR: disciplineFilters.map((d) => ({
+            title: { contains: d, mode: "insensitive" as const },
+          })),
         }
       : {}),
   };
@@ -215,7 +222,7 @@ export default async function TeacherCoursesPage({
           userKey={userKey}
         >
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${disciplineFilter || "all"}-${withNotes ? "notes" : "all"}-${q || "all"}`}
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${disciplineFilters.join("|") || "all"}-${withNotes ? "notes" : "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -237,26 +244,26 @@ export default async function TeacherCoursesPage({
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
             </label>
-            <label className="text-sm text-slate-200">
-              Discipline (titre/description)
-              <input
-                type="text"
-                name="discipline"
-                defaultValue={disciplineFilter}
-                placeholder="Souplesse, Exotic..."
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="text-sm text-slate-200">
-              Discipline (titre/description)
-              <input
-                type="text"
-                name="discipline"
-                defaultValue={disciplineFilter}
-                placeholder="Souplesse, Exotic..."
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
+            <fieldset className="text-sm text-slate-200 md:col-span-2">
+              <legend className="mb-1">Discipline</legend>
+              <div className="flex flex-wrap gap-2">
+                {["Pole", "Exotic", "Souplesse", "Pilates"].map((d) => (
+                  <label
+                    key={d}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="discipline"
+                      value={d}
+                      defaultChecked={disciplineFilters.includes(d)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {d}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Professeur
               <select
@@ -331,11 +338,15 @@ export default async function TeacherCoursesPage({
             <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
               {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
             </span>
-            {disciplineFilter && (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
-                Discipline : “{disciplineFilter}”
-              </span>
-            )}
+            {disciplineFilters.length > 0 &&
+              disciplineFilters.map((d) => (
+                <span
+                  key={d}
+                  className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200"
+                >
+                  Discipline : “{d}”
+                </span>
+              ))}
             {teacherFilter && (
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
                 Prof : {teacherFilter}

@@ -47,6 +47,16 @@ export async function updatePositionAction(formData: FormData) {
   }
 
   const data = parsed.data;
+  const existing = await prisma.position.findUnique({
+    where: { id: data.id },
+    select: { id: true, createdByUserId: true },
+  });
+  if (!existing) {
+    redirect("/positions");
+  }
+  if (role === "TEACHER" && (!existing.createdByUserId || existing.createdByUserId !== session.user.id)) {
+    redirect("/access-denied");
+  }
 
   await prisma.position.update({
     where: { id: data.id },
@@ -98,11 +108,14 @@ export async function deletePositionAction(formData: FormData) {
 
   const existing = await prisma.position.findUnique({
     where: { id: parsed.data.positionId },
-    select: { id: true },
+    select: { id: true, createdByUserId: true },
   });
 
   if (!existing) {
     redirect("/positions");
+  }
+  if (role === "TEACHER" && (!existing.createdByUserId || existing.createdByUserId !== session.user.id)) {
+    redirect("/access-denied");
   }
 
   await prisma.$transaction(async (tx) => {

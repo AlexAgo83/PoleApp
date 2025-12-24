@@ -38,7 +38,7 @@ export default async function CoursesAgendaPage({
     week?: string;
     from?: string;
     to?: string;
-    discipline?: string;
+    discipline?: string | string[];
     level?: string;
     q?: string;
   }>;
@@ -65,10 +65,15 @@ export default async function CoursesAgendaPage({
     typeof resolved.studio === "string" && resolved.studio.length > 0
       ? resolved.studio
       : undefined;
-  const disciplineFilter =
-    typeof resolved.discipline === "string" && resolved.discipline.length > 0
+  const disciplineFilters =
+    typeof resolved.discipline === "string"
       ? resolved.discipline
-      : undefined;
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+      : Array.isArray(resolved.discipline)
+      ? resolved.discipline.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean)
+      : [];
   const levelFilter =
     typeof resolved.level === "string" && resolved.level.length > 0
       ? resolved.level
@@ -94,7 +99,7 @@ export default async function CoursesAgendaPage({
     if (toParam) params.set("to", toParam);
     if (studioFilter) params.set("studio", studioFilter);
     if (teacherFilter) params.set("teacher", teacherFilter);
-    if (disciplineFilter) params.set("discipline", disciplineFilter);
+    if (disciplineFilters.length > 0) params.set("discipline", disciplineFilters.join(","));
     if (levelFilter) params.set("level", levelFilter);
     if (q) params.set("q", q);
     return `/app/teacher/courses/agenda${params.toString() ? `?${params}` : ""}`;
@@ -111,9 +116,9 @@ export default async function CoursesAgendaPage({
             OR: [{ title: { contains: q, mode: "insensitive" } }],
           }
         : {}),
-      ...(disciplineFilter
+      ...(disciplineFilters.length > 0
         ? {
-            OR: [{ title: { contains: disciplineFilter, mode: "insensitive" } }],
+            OR: disciplineFilters.map((d) => ({ title: { contains: d, mode: "insensitive" as const } })),
           }
         : {}),
       ...(levelFilter
@@ -160,7 +165,7 @@ export default async function CoursesAgendaPage({
   const baseParams = new URLSearchParams();
   if (teacherParamForNav) baseParams.set("teacher", teacherParamForNav);
   if (studioFilter) baseParams.set("studio", studioFilter);
-  if (disciplineFilter) baseParams.set("discipline", disciplineFilter);
+  if (disciplineFilters.length > 0) baseParams.set("discipline", disciplineFilters.join(","));
   if (levelFilter) baseParams.set("level", levelFilter);
   const prevMonth = new Date(monthStart);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
@@ -171,7 +176,7 @@ export default async function CoursesAgendaPage({
   const activeFilters = [
     studioFilter,
     teacherFilter,
-    disciplineFilter,
+    disciplineFilters.length > 0 ? "discipline" : null,
     levelFilter,
     fromParam,
     toParam,
@@ -328,16 +333,26 @@ export default async function CoursesAgendaPage({
                 ))}
               </select>
             </label>
-            <label className="text-sm text-slate-200">
-              Discipline (titre/description)
-              <input
-                type="text"
-                name="discipline"
-                defaultValue={disciplineFilter ?? ""}
-                placeholder="Souplesse, Exotic..."
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1">Discipline</legend>
+              <div className="flex flex-wrap gap-2">
+                {["Pole", "Exotic", "Souplesse", "Pilates"].map((d) => (
+                  <label
+                    key={d}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="discipline"
+                      value={d}
+                      defaultChecked={disciplineFilters.includes(d)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {d}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Niveau (libellé)
               <input
@@ -349,12 +364,12 @@ export default async function CoursesAgendaPage({
               />
             </label>
             <label className="text-sm text-slate-200 md:col-span-2">
-              Recherche (titre/description)
+              Recherche (titre)
               <input
                 type="text"
                 name="q"
                 defaultValue={q}
-                placeholder="Titre ou description"
+                placeholder="Titre du cours"
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
@@ -404,11 +419,15 @@ export default async function CoursesAgendaPage({
                 Studio : {studios.find((s) => s.id === studioFilter)?.name ?? studioFilter}
               </span>
             )}
-            {disciplineFilter && (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
-                Discipline : “{disciplineFilter}”
-              </span>
-            )}
+            {disciplineFilters.length > 0 &&
+              disciplineFilters.map((d) => (
+                <span
+                  key={d}
+                  className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200"
+                >
+                  Discipline : “{d}”
+                </span>
+              ))}
             {levelFilter && (
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
                 Niveau : “{levelFilter}”
