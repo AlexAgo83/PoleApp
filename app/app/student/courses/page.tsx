@@ -502,6 +502,17 @@ export default async function StudentCoursesPage({
                             Studio · {course.studio.name}
                           </span>
                         )}
+                        {course.positions.length > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                            Tricks :{" "}
+                            {course.positions
+                              .map((p) => p.position?.name)
+                              .filter(Boolean)
+                              .slice(0, 3)
+                              .join(", ")}
+                            {course.positions.length > 3 ? ` +${course.positions.length - 3}` : ""}
+                          </span>
+                        )}
                       </p>
                       <div className="text-sm text-slate-300 space-y-1">
                         <p>
