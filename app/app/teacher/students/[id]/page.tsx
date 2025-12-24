@@ -168,46 +168,50 @@ export default async function TeacherStudentDetailPage({
               Photo définie par l&apos;élève (ou placeholder).
             </p>
           </div>
-          <form action={updateStudentProfileAction} className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-200">
-            <input type="hidden" name="studentId" value={student.id} />
-            <input
-              name="firstName"
-              placeholder="Prénom"
-              defaultValue={student.name?.split(" ")[0] ?? ""}
-              className="w-28 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
-            />
-            <input
-              name="lastName"
-              placeholder="Nom"
-              defaultValue={
-                student.name?.split(" ").slice(1).join(" ") ?? ""
-              }
-              className="w-32 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
-            />
-            <input
-              name="avatarUrl"
-              type="url"
-              placeholder="Photo (URL)"
-              defaultValue={student.avatarUrl ?? ""}
-              className="w-52 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
-            />
-            <input
-              name="age"
-              type="number"
-              inputMode="numeric"
-              placeholder="Âge"
-              defaultValue={student.age ?? ""}
-              min={1}
-              max={120}
-              className="w-20 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
-            />
-            <button
-              type="submit"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-            >
-              Sauvegarder
-            </button>
-          </form>
+          <details className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+            <summary className="flex cursor-pointer items-center justify-between gap-2 text-white">
+              <span className="font-semibold">Éditer nom / photo / âge</span>
+              <span className="text-xs text-indigo-200">Afficher / masquer</span>
+            </summary>
+            <form action={updateStudentProfileAction} className="mt-3 flex flex-wrap items-center gap-2">
+              <input type="hidden" name="studentId" value={student.id} />
+              <input
+                name="firstName"
+                placeholder="Prénom"
+                defaultValue={student.name?.split(" ")[0] ?? ""}
+                className="w-28 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              />
+              <input
+                name="lastName"
+                placeholder="Nom"
+                defaultValue={student.name?.split(" ").slice(1).join(" ") ?? ""}
+                className="w-32 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              />
+              <input
+                name="avatarUrl"
+                type="url"
+                placeholder="Photo (URL)"
+                defaultValue={student.avatarUrl ?? ""}
+                className="w-52 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              />
+              <input
+                name="age"
+                type="number"
+                inputMode="numeric"
+                placeholder="Âge"
+                defaultValue={student.age ?? ""}
+                min={1}
+                max={120}
+                className="w-20 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              />
+              <button
+                type="submit"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+              >
+                Sauvegarder
+              </button>
+            </form>
+          </details>
         </div>
         <div className="mt-4 flex w-full flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
