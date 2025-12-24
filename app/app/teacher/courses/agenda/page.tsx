@@ -162,10 +162,11 @@ export default async function CoursesAgendaPage({
     return end < NOW_MS;
   };
   const teacherParamForNav = teacherFilter ?? (isTeacher ? session.user.id : undefined);
+  const disciplineParam = disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined;
   const baseParams = new URLSearchParams();
   if (teacherParamForNav) baseParams.set("teacher", teacherParamForNav);
   if (studioFilter) baseParams.set("studio", studioFilter);
-  if (disciplineFilters.length > 0) baseParams.set("discipline", disciplineFilters.join(","));
+  if (disciplineParam) baseParams.set("discipline", disciplineParam);
   if (levelFilter) baseParams.set("level", levelFilter);
   const prevMonth = new Date(monthStart);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
@@ -565,7 +566,7 @@ export default async function CoursesAgendaPage({
               {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
               {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
               {q ? <input type="hidden" name="q" value={q} /> : null}
-              {disciplineFilter ? <input type="hidden" name="discipline" value={disciplineFilter} /> : null}
+              {disciplineParam ? <input type="hidden" name="discipline" value={disciplineParam} /> : null}
               {levelFilter ? <input type="hidden" name="level" value={levelFilter} /> : null}
               <button
                 type="submit"
@@ -581,7 +582,7 @@ export default async function CoursesAgendaPage({
               {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
               {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
               {q ? <input type="hidden" name="q" value={q} /> : null}
-              {disciplineFilter ? <input type="hidden" name="discipline" value={disciplineFilter} /> : null}
+              {disciplineParam ? <input type="hidden" name="discipline" value={disciplineParam} /> : null}
               {levelFilter ? <input type="hidden" name="level" value={levelFilter} /> : null}
               <button
                 type="submit"
@@ -609,7 +610,7 @@ export default async function CoursesAgendaPage({
             teacher: teacherParamForNav,
             studio: studioFilter,
             q,
-            discipline: disciplineFilter ?? undefined,
+            discipline: disciplineParam,
             level: levelFilter ?? undefined,
           }}
           baseFrom="/app/teacher/courses/agenda"

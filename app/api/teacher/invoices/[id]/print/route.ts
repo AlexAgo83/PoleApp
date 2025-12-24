@@ -65,7 +65,6 @@ export async function GET(
         <div class="row"><span>Date d'émission</span><span>${issued}</span></div>
         <div class="row"><span>Statut</span><span class="badge status">${invoice.status}</span></div>
         <div class="row"><span>Montant</span><span class="amount">${amount.toFixed(2)} ${currency}</span></div>
-        ${invoice.vatPercent ? `<div class="row"><span>TVA</span><span>${invoice.vatPercent}% incluse</span></div>` : ""}
         <div class="row"><span>Payée le</span><span>${paid}</span></div>
         <h2>Cours</h2>
         <div class="row"><span>Titre</span><span>${course?.title ?? "Cours"}</span></div>
