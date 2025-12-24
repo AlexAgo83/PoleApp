@@ -39,3 +39,27 @@ export async function updateInvoiceStatusAction(formData: FormData) {
 
   revalidatePath("/app/teacher/billing");
 }
+
+export async function sendInvoiceAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId || session.user.role !== "TEACHER") {
+    redirect("/access-denied");
+  }
+  const invoiceId = formData.get("invoiceId")?.toString();
+  if (!invoiceId) throw new Error("Paramètres invalides");
+
+  const invoice = await prisma.invoice.findFirst({
+    where: { id: invoiceId, course: { teacherId: session.user.id, schoolId: session.user.schoolId } },
+    select: { id: true },
+  });
+  if (!invoice) {
+    redirect("/access-denied");
+  }
+
+  await prisma.invoice.update({
+    where: { id: invoiceId },
+    data: { status: "SENT" },
+  });
+
+  revalidatePath("/app/teacher/billing");
+}
