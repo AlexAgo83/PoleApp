@@ -42,6 +42,9 @@ type ApiResponse = {
   totalCredits: number;
   lowCredits: { id: string; name: string | null; email: string | null; credits: number | null }[];
   lowCreditsCount: number;
+  activeCount: number;
+  premiumCount: number;
+  creditUsersCount: number;
   vatPercent: number;
   error?: string;
 };
@@ -73,6 +76,9 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
           totalCredits: 0,
           lowCredits: [],
           lowCreditsCount: 0,
+          activeCount: 0,
+          premiumCount: 0,
+          creditUsersCount: 0,
           vatPercent: 20,
           error: "fail",
         });
@@ -146,28 +152,26 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
             <p className="text-sm text-slate-300">Somme totale sur les élèves de l’école.</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-amber-200">Crédits faibles (&lt;{data.creditThreshold})</p>
-            <p className="text-2xl font-semibold text-white">{data.lowCreditsCount}</p>
-            <p className="text-sm text-slate-300">Seuil : {data.creditThreshold} crédits.</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Élèves actifs</p>
+            <p className="text-2xl font-semibold text-white">{data.activeCount}</p>
+            <p className="text-sm text-slate-300">Actifs = premium ou crédits &gt; 0.</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Top alertes</p>
-            <ul className="mt-2 space-y-1 text-sm text-slate-200">
-              {data.lowCredits.length === 0 && <li className="text-slate-400">Aucune alerte</li>}
-              {data.lowCredits.map((s) => (
-                <li key={s.id} className="flex items-center justify-between">
-                  <Link
-                    href={`/app/teacher/students/${s.id}`}
-                    className="truncate text-cyan-100 underline underline-offset-2"
-                  >
-                    {s.name ?? s.email ?? "Élève"}
-                  </Link>
-                  <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-2 py-0.5 text-[12px] text-amber-50">
-                    {s.credits} cr
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-200">Répartition</p>
+            <div className="mt-2 space-y-2 text-sm text-slate-200">
+              <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <span>Premium</span>
+                <span className="rounded-full border border-emerald-400/60 bg-emerald-500/20 px-2 py-0.5 text-[12px] text-emerald-50">
+                  {data.premiumCount}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <span>Crédits &gt; 0</span>
+                <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5 text-[12px] text-cyan-50">
+                  {data.creditUsersCount}
+                </span>
+              </div>
+            </div>
           </div>
         </section>
       )}

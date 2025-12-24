@@ -26,7 +26,7 @@ type SearchParams =
 
 const statusLabels: Record<InvoiceStatus, string> = {
   GENERATED: "Générée",
-  SENT: "Envoyée",
+  SENT: "Reçue",
   PAID: "Payée",
   LATE: "En retard",
   CANCELLED: "Annulée",
