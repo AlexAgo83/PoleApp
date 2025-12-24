@@ -57,6 +57,22 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
           existingPositionIds: course.positions.map((p) => p.position.id),
         })
       : [];
+  const storedRecommendations =
+    (await prisma.courseRecommendation
+      .findMany({
+        where: { courseId: course.id },
+      })
+      .catch((error: unknown) => {
+        const message = (error as Error)?.message ?? "";
+        if (message.includes("CourseRecommendation") || message.includes("does not exist")) {
+          return [];
+        }
+        throw error;
+      })) ?? [];
+  const recommendationByPosition = new Map(storedRecommendations.map((r) => [r.positionId, r]));
+  const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
+  const forcedCount = storedRecommendations.filter((r) => r.forced).length;
+  const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
 
   const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
@@ -121,6 +137,19 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
         <p className="text-sm text-slate-300">
           Basées sur la progression des élèves présents, en excluant les positions déjà planifiées ou trop récentes.
         </p>
+        {storedRecommendations.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">
+              {appliedCount} appliquée{appliedCount > 1 ? "s" : ""}
+            </span>
+            <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">
+              {forcedCount} forcée{forcedCount > 1 ? "s" : ""}
+            </span>
+            <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5">
+              {excludedCount} exclue{excludedCount > 1 ? "s" : ""} blessure
+            </span>
+          </div>
+        )}
         {suggestions.length === 0 ? (
           <p className="mt-2 text-slate-300">Aucune suggestion disponible.</p>
         ) : (
@@ -135,12 +164,26 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                   {s.type ? (
                     <span className="text-[11px] uppercase tracking-[0.12em] text-emerald-100">{s.type}</span>
                   ) : null}
+                  {recommendationByPosition.get(s.positionId)?.appliedAt && (
+                    <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
+                      Appliqué
+                    </span>
+                  )}
+                  {recommendationByPosition.get(s.positionId)?.forced && (
+                    <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                      Forcé
+                    </span>
+                  )}
                   {s.favoriteCount && s.favoriteCount > 0 ? (
                     <span className="rounded-full border border-pink-300/60 bg-pink-500/15 px-2 py-0.5 text-[11px] font-semibold text-pink-50">
                       {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
                     </span>
                   ) : null}
-                  {s.excludedForInjury ? (
+                  {recommendationByPosition.get(s.positionId)?.excludedForInjury && !recommendationByPosition.get(s.positionId)?.forced ? (
+                    <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                      Exclu blessure
+                    </span>
+                  ) : s.excludedForInjury ? (
                     <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
                       Exclu blessure
                     </span>
