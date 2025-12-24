@@ -34,6 +34,7 @@ type Props = {
   defaultStudioId?: string | null;
   defaultDurationMinutes?: number;
   defaultMaxSeats?: number;
+  defaultWaitlistQuota?: number;
   defaultCostCredits?: number;
   defaultPhotoUrl?: string | null;
   progressByStudent?: ProgressRecord[];
@@ -64,6 +65,7 @@ export function CourseForm({
   defaultStudioId,
   defaultDurationMinutes = 60,
   defaultMaxSeats = 30,
+  defaultWaitlistQuota = 0,
   defaultCostCredits = 100,
   defaultPhotoUrl = "",
   progressByStudent = [],
@@ -181,6 +183,17 @@ export function CourseForm({
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
           <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
+        </label>
+        <label className="text-sm text-slate-200">
+          Quota liste d&apos;attente
+          <input
+            type="number"
+            name="waitlistQuota"
+            min={0}
+            defaultValue={defaultWaitlistQuota ?? 0}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
+          <p className="mt-1 text-xs text-slate-400">0 = illimité. Si plein et quota atteint, inscription refusée.</p>
         </label>
         <label className="text-sm text-slate-200">
           Coût en crédits

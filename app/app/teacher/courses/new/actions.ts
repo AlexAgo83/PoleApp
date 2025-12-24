@@ -23,6 +23,7 @@ const courseSchema = z.object({
     .min(30)
     .refine((n) => n % 15 === 0, { message: "La durée doit être un multiple de 15 minutes" }),
   maxSeats: z.coerce.number().min(1).default(30),
+  waitlistQuota: z.coerce.number().min(0).default(0),
   costCredits: z.coerce.number().min(0).default(100),
   notes: z
     .array(
@@ -55,6 +56,7 @@ export async function createCourseAction(formData: FormData) {
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
+    waitlistQuota: formData.get("waitlistQuota") ?? 0,
     costCredits: formData.get("costCredits") ?? 100,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
@@ -107,6 +109,7 @@ export async function createCourseAction(formData: FormData) {
           studioId: parsed.data.studioId ?? null,
           durationMinutes: parsed.data.durationMinutes,
           maxSeats: parsed.data.maxSeats ?? 30,
+          waitlistQuota: parsed.data.waitlistQuota ?? 0,
           costCredits: parsed.data.costCredits ?? 100,
           photoUrl: parsed.data.photoUrl ?? null,
         },
@@ -124,6 +127,7 @@ export async function createCourseAction(formData: FormData) {
           teacherId: teacherId ?? session.user.id,
           studioId: parsed.data.studioId ?? null,
           durationMinutes: parsed.data.durationMinutes,
+          waitlistQuota: parsed.data.waitlistQuota ?? 0,
           photoUrl: parsed.data.photoUrl ?? null,
         },
       });
