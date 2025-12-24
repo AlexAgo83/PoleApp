@@ -42,6 +42,7 @@ export default async function StudentCoursesAgendaPage({
     from?: string;
     to?: string;
     q?: string;
+    statuses?: string | string[];
   }>;
 }) {
   const session = await getServerSession(authOptions);
@@ -74,6 +75,13 @@ export default async function StudentCoursesAgendaPage({
   const fromParam = typeof resolved.from === "string" ? resolved.from : undefined;
   const toParam = typeof resolved.to === "string" ? resolved.to : undefined;
   const q = resolved.q?.toString().trim() ?? "";
+  const statusesParam = resolved.statuses;
+  const selectedStatuses =
+    typeof statusesParam === "string"
+      ? statusesParam.split(",").map((s) => s.trim()).filter(Boolean)
+      : Array.isArray(statusesParam)
+      ? statusesParam.flatMap((s) => s.split(",").map((v) => v.trim()).filter(Boolean))
+      : ["past", "attending", "waitlist", "open"];
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(baseDate);
   const monthEnd = endOfMonth(baseDate);
@@ -201,6 +209,9 @@ export default async function StudentCoursesAgendaPage({
                   title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
                 }
               : {}),
+            ...(selectedStatuses.includes("past")
+              ? {}
+              : { date: { gte: new Date() } }),
           },
           include: {
             teacher: { select: { name: true, email: true } },
@@ -330,6 +341,7 @@ export default async function StudentCoursesAgendaPage({
     (onlyMine ? 1 : 0) +
     (fromParam ? 1 : 0) +
     (toParam ? 1 : 0) +
+    (selectedStatuses.length !== 4 ? 1 : 0) +
     (q ? 1 : 0);
 
   const monthParams = new URLSearchParams();
@@ -340,6 +352,7 @@ export default async function StudentCoursesAgendaPage({
   if (fromParam) monthParams.set("from", fromParam);
   if (toParam) monthParams.set("to", toParam);
   if (q) monthParams.set("q", q);
+  if (selectedStatuses.length !== 4) monthParams.set("statuses", selectedStatuses.join(","));
   const prevMonth = new Date(monthStart);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
   const nextMonth = new Date(monthStart);

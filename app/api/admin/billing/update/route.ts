@@ -18,7 +18,6 @@ const bodySchema = z.object({
       return Number.isNaN(parsed) ? undefined : Math.round(parsed * 100);
     })
     .refine((v) => v === undefined || v >= 0, "Montant invalide"),
-  note: z.string().optional(),
 });
 
 export async function PATCH(req: Request) {
@@ -32,7 +31,7 @@ export async function PATCH(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Payload invalide" }, { status: 400 });
     }
-    const { invoiceId, status, amount, note } = parsed.data;
+    const { invoiceId, status, amount } = parsed.data;
 
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
@@ -49,14 +48,12 @@ export async function PATCH(req: Request) {
         status,
         ...(paidAt ? { paidAt } : { paidAt: null }),
         ...(amount !== undefined ? { amountCents: amount } : {}),
-        note: note ?? undefined,
       },
       select: {
         id: true,
         status: true,
         amountCents: true,
         currency: true,
-        note: true,
         paidAt: true,
       },
     });
