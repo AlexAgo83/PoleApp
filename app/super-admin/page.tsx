@@ -616,6 +616,47 @@ export default async function SuperAdminPage({
         </div>
       </section>
 
+      <PersistedPanel
+        storageKey="superadmin:create-school"
+        title="Créer une école"
+        defaultOpen={false}
+        className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20 space-y-4"
+        contentClassName="space-y-4"
+      >
+        <div>
+          <p className="text-sm text-slate-300">Ajoute une nouvelle école avec son site web (optionnel).</p>
+        </div>
+        <form action={createSchoolAction} className="grid gap-3 md:grid-cols-[2fr_2fr_1fr]">
+          <label className="space-y-1 block">
+            <span className="text-xs text-slate-300">Nom</span>
+            <input
+              name="name"
+              required
+              minLength={2}
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              placeholder="Nom de l'école"
+            />
+          </label>
+          <label className="space-y-1 block">
+            <span className="text-xs text-slate-300">Site web (optionnel)</span>
+            <input
+              name="website"
+              type="url"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              placeholder="https://…"
+            />
+          </label>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+            >
+              Créer
+            </button>
+          </div>
+        </form>
+      </PersistedPanel>
+
       <section className="panel space-y-4 border-indigo-300/20 p-5 shadow-indigo-900/30">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
@@ -624,79 +665,6 @@ export default async function SuperAdminPage({
             <p className="text-sm text-slate-300">
               Créer/archiver des écoles, assigner un admin par email (le compte bascule en SCHOOL_ADMIN).
             </p>
-          </div>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
-            <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Créer une école</p>
-            <form action={createSchoolAction} className="mt-2 space-y-2">
-              <label className="space-y-1 block">
-                <span className="text-xs text-slate-300">Nom</span>
-                <input
-                  name="name"
-                  required
-                  minLength={2}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  placeholder="Nom de l'école"
-                />
-              </label>
-              <label className="space-y-1 block">
-                <span className="text-xs text-slate-300">Site web (optionnel)</span>
-                <input
-                  name="website"
-                  type="url"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  placeholder="https://…"
-                />
-              </label>
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-              >
-                Créer
-              </button>
-            </form>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/20">
-            <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Assigner un admin à une école</p>
-            <form action={assignSchoolAdminAction} className="mt-2 space-y-2">
-              <label className="space-y-1 block">
-                <span className="text-xs text-slate-300">École</span>
-                <select
-                  name="schoolId"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  defaultValue={schools[0]?.id ?? ""}
-                  disabled={schools.length === 0}
-                >
-                  {schools.length === 0 ? (
-                    <option value="">Aucune école</option>
-                  ) : (
-                    schools.map((school) => (
-                      <option key={school.id} value={school.id}>
-                        {school.name}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </label>
-              <label className="space-y-1 block">
-                <span className="text-xs text-slate-300">Email de l&apos;utilisateur</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                  placeholder="admin@ecole.fr"
-                />
-              </label>
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-              >
-                Assigner
-              </button>
-            </form>
           </div>
         </div>
 
@@ -759,81 +727,125 @@ export default async function SuperAdminPage({
         {schoolsTotalPages > 1 && renderPager(schoolsPage, schoolsTotalPages, "schoolsPage")}
       </section>
 
-        <PersistedPanel
-          storageKey="superadmin:superadmin-promotion"
-          title="Super Admin"
-          subtitle="Promotion / Dégradation"
-          defaultOpen={false}
-          className="panel space-y-4 border-red-300/20 p-5 shadow-red-900/30"
-          contentClassName="space-y-4"
-        >
-          <p className="text-sm text-slate-300">
-            Promouvoir ou retirer le rôle SUPER_ADMIN via email (sécurité recovery). Audit log automatique.
-          </p>
-          <form action={promoteSuperAdminAction} className="grid gap-2 md:grid-cols-[2fr_1fr_1fr]">
-            <label className="space-y-1">
-              <span className="text-xs text-slate-300">Email</span>
-              <input
-                name="email"
-                type="email"
-                placeholder="user@poleapp.test"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-              />
-            </label>
-            <label className="space-y-1">
-              <span className="text-xs text-slate-300">Action</span>
-              <select
-                name="action"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
-                defaultValue="promote"
-              >
-                <option value="promote">Promouvoir en SUPER_ADMIN</option>
-                <option value="demote">Retirer (SCHOOL_ADMIN ou STUDENT)</option>
-              </select>
-            </label>
-            <div className="flex items-end">
-              <button
-                type="submit"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-400/60 bg-red-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/30"
-              >
-                Valider
-              </button>
-            </div>
-          </form>
-        </PersistedPanel>
+      <section className="panel space-y-4 border-indigo-300/20 p-5 shadow-indigo-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Écoles</p>
+          <h3 className="text-lg font-semibold text-white">Assigner un admin à une école</h3>
+          <p className="text-sm text-slate-300">Bascule l&apos;utilisateur ciblé en SCHOOL_ADMIN pour l&apos;école choisie.</p>
+        </div>
+        <form action={assignSchoolAdminAction} className="grid gap-3 md:grid-cols-[2fr_2fr_1fr]">
+          <label className="space-y-1 block">
+            <span className="text-xs text-slate-300">École</span>
+            <select
+              name="schoolId"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              defaultValue={schools[0]?.id ?? ""}
+              disabled={schools.length === 0}
+            >
+              {schools.length === 0 ? (
+                <option value="">Aucune école</option>
+              ) : (
+                schools.map((school) => (
+                  <option key={school.id} value={school.id}>
+                    {school.name}
+                  </option>
+                ))
+              )}
+            </select>
+          </label>
+          <label className="space-y-1 block">
+            <span className="text-xs text-slate-300">Email de l&apos;utilisateur</span>
+            <input
+              name="email"
+              type="email"
+              required
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              placeholder="admin@ecole.fr"
+            />
+          </label>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+            >
+              Assigner
+            </button>
+          </div>
+        </form>
+      </section>
 
-        <PersistedPanel
-          storageKey="superadmin:audit-log"
-          title="Audit"
-          subtitle="10 dernières actions"
-          defaultOpen={false}
-          className="panel space-y-3 p-5"
-          contentClassName="space-y-2"
-        >
-          <div className="space-y-2">
-            {audits.length === 0 && <p className="text-sm text-slate-400">Aucune action super-admin enregistrée.</p>}
-            {audits.map((log) => (
-              <div
-                key={log.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-              >
-                <div>
-                  <p className="font-semibold text-white">{log.action}</p>
-                  <p className="text-xs text-slate-400">
-                    {log.target ? `Cible: ${log.target} — ` : ""}
-                    {log.actor?.email || "N/A"}
-                  </p>
-                </div>
+      <section className="panel space-y-4 border-red-300/20 p-5 shadow-red-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Super Admin</p>
+          <h3 className="text-lg font-semibold text-white">Promotion / Dégradation</h3>
+        </div>
+        <p className="text-sm text-slate-300">
+          Promouvoir ou retirer le rôle SUPER_ADMIN via email (sécurité recovery). Audit log automatique.
+        </p>
+        <form action={promoteSuperAdminAction} className="grid gap-2 md:grid-cols-[2fr_1fr_1fr]">
+          <label className="space-y-1">
+            <span className="text-xs text-slate-300">Email</span>
+            <input
+              name="email"
+              type="email"
+              placeholder="user@poleapp.test"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+            />
+          </label>
+          <label className="space-y-1">
+            <span className="text-xs text-slate-300">Action</span>
+            <select
+              name="action"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+              defaultValue="promote"
+            >
+              <option value="promote">Promouvoir en SUPER_ADMIN</option>
+              <option value="demote">Retirer (SCHOOL_ADMIN ou STUDENT)</option>
+            </select>
+          </label>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-400/60 bg-red-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/30"
+            >
+              Valider
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <PersistedPanel
+        storageKey="superadmin:audit-log"
+        title="Audit"
+        subtitle="10 dernières actions"
+        defaultOpen={false}
+        className="panel space-y-3 p-5"
+        contentClassName="space-y-2"
+      >
+        <div className="space-y-2">
+          {audits.length === 0 && <p className="text-sm text-slate-400">Aucune action super-admin enregistrée.</p>}
+          {audits.map((log) => (
+            <div
+              key={log.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+            >
+              <div>
+                <p className="font-semibold text-white">{log.action}</p>
                 <p className="text-xs text-slate-400">
-                  {new Date(log.createdAt).toLocaleString("fr-FR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
+                  {log.target ? `Cible: ${log.target} — ` : ""}
+                  {log.actor?.email || "N/A"}
                 </p>
               </div>
-            ))}
-          </div>
-        </PersistedPanel>
-      </div>
-    );
-  }
+              <p className="text-xs text-slate-400">
+                {new Date(log.createdAt).toLocaleString("fr-FR", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}
+              </p>
+            </div>
+          ))}
+        </div>
+      </PersistedPanel>
+    </div>
+  );
+}
