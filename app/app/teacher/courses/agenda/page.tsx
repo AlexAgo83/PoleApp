@@ -110,17 +110,24 @@ export default async function CoursesAgendaPage({
         ? {
             OR: [
               { title: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
             ],
           }
         : {}),
       ...(disciplineFilter
         ? {
-            title: { contains: disciplineFilter, mode: "insensitive" },
+            OR: [
+              { title: { contains: disciplineFilter, mode: "insensitive" } },
+              { description: { contains: disciplineFilter, mode: "insensitive" } },
+            ],
           }
         : {}),
       ...(levelFilter
         ? {
-            title: { contains: levelFilter, mode: "insensitive" },
+            OR: [
+              { title: { contains: levelFilter, mode: "insensitive" } },
+              { description: { contains: levelFilter, mode: "insensitive" } },
+            ],
           }
         : {}),
     },
@@ -548,6 +555,8 @@ export default async function CoursesAgendaPage({
               {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
               {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
               {q ? <input type="hidden" name="q" value={q} /> : null}
+              {disciplineFilter ? <input type="hidden" name="discipline" value={disciplineFilter} /> : null}
+              {levelFilter ? <input type="hidden" name="level" value={levelFilter} /> : null}
               <button
                 type="submit"
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -562,6 +571,8 @@ export default async function CoursesAgendaPage({
               {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
               {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
               {q ? <input type="hidden" name="q" value={q} /> : null}
+              {disciplineFilter ? <input type="hidden" name="discipline" value={disciplineFilter} /> : null}
+              {levelFilter ? <input type="hidden" name="level" value={levelFilter} /> : null}
               <button
                 type="submit"
                 className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -588,6 +599,8 @@ export default async function CoursesAgendaPage({
             teacher: teacherParamForNav,
             studio: studioFilter,
             q,
+            discipline: disciplineFilter ?? undefined,
+            level: levelFilter ?? undefined,
           }}
           baseFrom="/app/teacher/courses/agenda"
         />
