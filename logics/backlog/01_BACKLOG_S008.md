@@ -1,5 +1,5 @@
 # Backlog — Retours QA S008 (session 2025-12-22 23:14)
-[Compréhension: 92% / Avancement: 25%]
+[Compréhension: 94% / Avancement: 40%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -8,7 +8,7 @@
 
 ## 1) Vue Professeur (résultat : le prof ne voit que ses élèves/cours pertinents et facture proprement)
 - Élèves : **(DONE)** filtre Discipline multi (Pole/Exotic/Souplesse/Pilates) appliqué (P1) ; restriction aux élèves ayant eu au moins un cours avec le prof connecté (via présences) maintenue (P0).
-- Fiche professeur : lecture seule par défaut, icône crayon pour passer en édition, actions Enregistrer/Annuler ; retirer l’état modifiable permanent (P2).
+- Fiche professeur : **(DONE)** lecture seule par défaut, bouton pour passer en édition, actions Enregistrer/Annuler ; état modifiable permanent retiré (P2).
 - Cours : **(DONE)** filtre avancé Discipline (mêmes valeurs, multi) (P1). Par cours, afficher pour chaque élève les tricks enseignés + niveau atteint (Non tenté / En cours / Acquis / Maîtrisé), éditable inline, écrase la valeur précédente (P0). Générateur : prendre en compte niveaux, blessures, positions peu vues/très maîtrisées, exclure auto les positions incompatibles, proposer structure de cours + sélection de tricks (P0).
 - Positions : **(DONE)** un prof ne peut modifier/supprimer que ses fiches créées ; fiches globales en lecture seule (crayon absent/inactif) (P1).
 - Partenaires prof : permettre au prof d’ajouter ses partenaires (visibles pour lui) et de les rattacher à sa fiche (réutilisables cours/positions) (P2).
@@ -16,7 +16,7 @@
 - Disciplines : liste dynamique à maintenir côté école (CRUD admin), utiliser pour filtres prof/élève ; par défaut liste existante (Pole/Exotic/Souplesse/Pilates) mais extensible.
 
 ## 2) Vue Élève (résultat : parcours clair, premium valorisé)
-- Cours/Contenus : corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet, multi-prof si besoin) (P0).
+- Cours/Contenus : **(PARTIEL)** corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet, multi-prof si besoin) (P0). Positions des cours désormais affichées côté élève (liste + planning) ; multi-prof et discipline encore à couvrir si besoin.
 - Planning studio/école : nom d’école visible et mise en avant ; changer d’école rafraîchit le planning (P1). Ajouter achat crédits/abonnements (forfait, mensuel, annuel) sur la page école pour permettre l’inscription (P0).
 - Légende interactive : états cliquables et cumulables (Passé, Inscrit, Attente avec rang/quota 14, Disponible) (P1).
 - Vidéos streaming (premium) : onglet “Vidéos” (replay/live) pour premium ; non-premium masqué ou verrouillé. Source = liens/URLs existants pour l’instant, player/hosting plus tard ; live = lien externe avec planning à gérer (P1).
@@ -26,7 +26,7 @@
 - Paiements simulés : persistance réelle, statut payé simulé (cadre à préciser si autre statut souhaité).
 
 ## 3) Vue Admin École (résultat : factures et actifs clairs, catalogue vidéos maîtrisé)
-- Factures : bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%.
+- Factures : **(PARTIEL)** bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%. → TVA/TTC affichés (liste + PDF) et note retirée sur liste ; reste à gérer “Reçu” et encart actifs.
 - Fiches Élèves : afficher type d’abonnement (Annuel/Mensuel/Forfait), crédits restants, date butoir (fin abo / expiration crédits), visible et à jour (P1).
 - Vidéos streaming admin : onglet “Vidéos” pour gérer vidéos live/replay (liens/URLs, player plus tard), classer (discipline/niveau/type), définir accès premium vs tous, planning live (P2).
 
