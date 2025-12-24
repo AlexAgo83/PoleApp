@@ -67,8 +67,8 @@ export function PersistedPanel({
         <div className="flex flex-col">
           {hasSubtitle ? (
             <>
-              <span className="text-[11px] uppercase tracking-[0.16em] text-slate-200">{title}</span>
-              <span className="text-lg font-semibold leading-tight text-white">{subtitle}</span>
+              <span className="text-lg font-semibold leading-tight text-white">{title}</span>
+              <span className="text-[12px] text-slate-200">{subtitle}</span>
             </>
           ) : (
             <span className="text-xl font-semibold">{title}</span>

@@ -43,6 +43,7 @@ type SchoolCourse = {
   photoUrl: string | null;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { id: string; name: string } | null;
+  positions: { position: { id: string; name: string; type: string } | null }[];
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
 };
 
@@ -243,6 +244,7 @@ export default async function StudentSchoolPage({
         photoUrl: true,
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { id: true, name: true } },
+        positions: { include: { position: { select: { id: true, name: true, type: true } } } },
         attendances: {
           where: { studentId: session.user.id },
           select: { id: true, status: true, waitlistRank: true },
@@ -676,6 +678,17 @@ export default async function StudentSchoolPage({
                                 <p className="truncate text-[10px] text-slate-200">
                                   {a.course.studio?.name ?? "Studio non renseigné"}
                                 </p>
+                                {a.course.positions?.length ? (
+                                  <p className="truncate text-[10px] text-cyan-100">
+                                    Tricks :{" "}
+                                    {a.course.positions
+                                      .map((p) => p.position?.name)
+                                      .filter(Boolean)
+                                      .slice(0, 3)
+                                      .join(", ")}
+                                    {a.course.positions.length > 3 ? ` +${a.course.positions.length - 3}` : ""}
+                                  </p>
+                                ) : null}
                               </div>
                               <span
                                 className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
@@ -825,6 +838,17 @@ export default async function StudentSchoolPage({
                                 <p className="truncate text-[10px] text-slate-200">
                                   {a.course.studio?.name ?? "Studio non renseigné"}
                                 </p>
+                                {a.course.positions?.length ? (
+                                  <p className="truncate text-[10px] text-cyan-100">
+                                    Tricks :{" "}
+                                    {a.course.positions
+                                      .map((p) => p.position?.name)
+                                      .filter(Boolean)
+                                      .slice(0, 3)
+                                      .join(", ")}
+                                    {a.course.positions.length > 3 ? ` +${a.course.positions.length - 3}` : ""}
+                                  </p>
+                                ) : null}
                               </div>
                               <span
                                 className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
