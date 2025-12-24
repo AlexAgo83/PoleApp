@@ -10,6 +10,8 @@
 - Partenaires : filtres date/recherche/type appliqués aux stats clic/achat, toasts CRUD.
 - Studios : toasts CRUD.
 - Profil : toast de confirmation “Profil mis à jour”.
+- Super admin : panels “Créer une école” (collapsable mémorisé), “Assigner un admin” dédié au-dessus de Promotion/Dégradation non-collapsible, pagination écoles/offres/packs, formulaires “Nouvelles offres” repliés par défaut, titres harmonisés.
+- Positions : pages `/positions` protégées (login requis), header UI alignée sur le reste, contenu accessible aux élèves gratuits dès qu’une position est débloquée via cours (pas de bannière premium), message vidéo adapté.
 
 ## 2025-12-22 — Release v0.7.0 (cœurs élèves, exclusions blessures, partenaires)
 - Version bump 0.7.0.

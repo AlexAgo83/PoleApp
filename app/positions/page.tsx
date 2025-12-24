@@ -121,12 +121,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <section className="panel flex flex-wrap items-center justify-between gap-3 p-6">
+      <section className="panel flex flex-wrap items-center justify-between gap-3 p-6 border-indigo-400/25 shadow-indigo-900/30">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
           </p>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm md:text-base text-slate-200 leading-6">
             Accès aux positions et navigation retour selon ton rôle.
           </p>
         </div>
