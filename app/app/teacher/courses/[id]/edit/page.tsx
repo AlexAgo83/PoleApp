@@ -39,6 +39,23 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
     notFound();
   }
 
+  const storedRecommendations =
+    (await prisma.courseRecommendation
+      .findMany({
+        where: { courseId: course.id },
+      })
+      .catch((error: unknown) => {
+        const message = (error as Error)?.message ?? "";
+        if (message.includes("CourseRecommendation") || message.includes("does not exist")) {
+          return [];
+        }
+        throw error;
+      })) ?? [];
+  const recommendationByPosition = new Map(storedRecommendations.map((r) => [r.positionId, r]));
+  const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
+  const forcedCount = storedRecommendations.filter((r) => r.forced).length;
+  const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
+
   const [students, positions, teachers, studios, progresses] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
@@ -114,6 +131,57 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           Mets à jour la date, les élèves, les positions et les notes pour ce cours.
         </p>
       </header>
+
+      {storedRecommendations.length > 0 && (
+        <section className="panel border-indigo-400/15 p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold text-white">État générateur (suggestions)</h2>
+              <p className="text-sm text-slate-300">Récap des suggestions appliquées/forcées/exclues pour ce cours.</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+                <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">
+                  {appliedCount} appliquée{appliedCount > 1 ? "s" : ""}
+                </span>
+                <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">
+                  {forcedCount} forcée{forcedCount > 1 ? "s" : ""}
+                </span>
+                <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5">
+                  {excludedCount} exclue{excludedCount > 1 ? "s" : ""} blessure
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 grid gap-2 md:grid-cols-2">
+            {course.positions.map((p) => {
+              const rec = recommendationByPosition.get(p.positionId);
+              if (!rec) return null;
+              return (
+                <div
+                  key={p.positionId}
+                  className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                >
+                  <span className="font-semibold">{p.position.name}</span>
+                  {rec.appliedAt && (
+                    <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-50">
+                      Appliqué
+                    </span>
+                  )}
+                  {rec.forced && (
+                    <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                      Forcé
+                    </span>
+                  )}
+                  {rec.excludedForInjury && !rec.forced && (
+                    <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
+                      Exclu blessure
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="panel p-6">
         <CourseForm
