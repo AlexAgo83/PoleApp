@@ -1,4 +1,5 @@
 import { PositionLevel, PositionType, Prisma } from "@prisma/client";
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
@@ -78,7 +79,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
 
   const session = await getServerSession(authOptions);
   if (!session?.user) {
-    return null;
+    redirect("/login");
   }
   const userKey = session.user.id ?? "anon";
   const homeForRole = defaultHomeForRole(session.user.role);

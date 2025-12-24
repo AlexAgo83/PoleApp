@@ -1,6 +1,6 @@
 import { MediaKind, PositionLevel, PositionType } from "@prisma/client";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
@@ -46,6 +46,9 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const backHref = safeFrom ?? "/positions";
 
   const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect("/login");
+  }
   const homeForRole = defaultHomeForRole(session?.user?.role);
 
   const position = await prisma.position.findUnique({
