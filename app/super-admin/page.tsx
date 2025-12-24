@@ -131,7 +131,7 @@ export default async function SuperAdminPage({
         </form>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="space-y-4">
         <div className="panel space-y-3 p-5">
           <div className="flex items-center justify-between">
             <div>
