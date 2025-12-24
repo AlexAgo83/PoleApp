@@ -221,7 +221,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     redirect("/login");
   }
 
-  const notEnoughPositions = eligible.length < 4;
+  const notEnoughPositions = eligible.length === 0;
 
   const userSessions = await prisma.gameSession.findMany({
     where: { userId: session.user.id },
@@ -259,7 +259,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
           <section className="panel w-full max-w-3xl self-center p-6 text-center text-slate-200">
             <p className="text-lg font-semibold text-white">Pas assez de positions pour générer un jeu.</p>
             <p className="text-sm text-slate-300">
-              Ajoute des positions vues (ou passe premium) pour débloquer plus de questions.
+              Aucun trick disponible pour toi. Ajoute/enregistre au moins une position vue en cours ou passe premium pour débloquer le jeu.
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <Link
