@@ -19,6 +19,8 @@ export async function GET(req: Request) {
   const teacherParam = searchParams.get("teacher") || undefined;
   const studioParam = searchParams.get("studio") || undefined;
   const q = searchParams.get("q")?.trim() || undefined;
+  const disciplineParam = searchParams.get("discipline")?.trim() || undefined;
+  const levelParam = searchParams.get("level")?.trim() || undefined;
 
   const isTeacher = session.user.role === "TEACHER";
   const effectiveTeacher =
@@ -54,7 +56,26 @@ export async function GET(req: Request) {
       ...(studioParam ? { studioId: studioParam } : {}),
       ...(q
         ? {
-            OR: [{ title: { contains: q, mode: "insensitive" } }],
+            OR: [
+              { title: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(disciplineParam
+        ? {
+            OR: [
+              { title: { contains: disciplineParam, mode: "insensitive" } },
+              { description: { contains: disciplineParam, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(levelParam
+        ? {
+            OR: [
+              { title: { contains: levelParam, mode: "insensitive" } },
+              { description: { contains: levelParam, mode: "insensitive" } },
+            ],
           }
         : {}),
     },
