@@ -14,7 +14,14 @@ const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 export default async function TeacherStudentsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; premium?: string; injury?: string; q?: string; sort?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    premium?: string;
+    injury?: string;
+    q?: string;
+    sort?: string;
+    discipline?: string | string[];
+  }>;
 }) {
   const resolvedParams = (await searchParams) ?? {};
   const rawPage = Number(resolvedParams.page ?? "1");
@@ -27,9 +34,19 @@ export default async function TeacherStudentsPage({
       : undefined;
   const q = resolvedParams.q?.toString().trim() || "";
   const sort = resolvedParams.sort === "name_desc" ? "name_desc" : "name_asc";
+  const disciplineFilters =
+    typeof resolvedParams.discipline === "string"
+      ? resolvedParams.discipline
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+      : Array.isArray(resolvedParams.discipline)
+      ? resolvedParams.discipline.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean)
+      : [];
   const activeFilters = [
     premiumOnly ? "premium" : null,
     injuryFilter,
+    disciplineFilters.length > 0 ? "discipline" : null,
     q && q.length > 0 ? "q" : null,
     sort === "name_desc" ? "sort" : null,
   ].filter(Boolean).length;
@@ -45,7 +62,17 @@ export default async function TeacherStudentsPage({
   if (injuryFilter) queryParams.set("injury", injuryFilter);
   if (q) queryParams.set("q", q);
   if (sort === "name_desc") queryParams.set("sort", "name_desc");
+  if (disciplineFilters.length > 0) queryParams.set("discipline", disciplineFilters.join(","));
   const qs = queryParams.toString();
+
+  const courseFilter: Prisma.CourseWhereInput = {
+    ...(disciplineFilters.length > 0
+      ? { OR: disciplineFilters.map((d) => ({ title: { contains: d, mode: "insensitive" as const } })) }
+      : {}),
+  };
+  if (session.user.role === "TEACHER") {
+    courseFilter.teacherId = session.user.id;
+  }
 
   const whereClause: Prisma.UserWhereInput = {
     role: "STUDENT" as const,
@@ -64,16 +91,12 @@ export default async function TeacherStudentsPage({
       : injuryFilter === "none"
       ? { injuries: { none: { isActive: true } } }
       : {}),
-    ...(isTeacherOnly
-      ? {
-          attendances: {
-            some: {
-              status: { in: [AttendanceStatus.CONFIRMED, AttendanceStatus.WAITLIST] },
-              course: { teacherId: session.user.id },
-            },
-          },
-        }
-      : {}),
+    attendances: {
+      some: {
+        status: { in: [AttendanceStatus.CONFIRMED, AttendanceStatus.WAITLIST] },
+        ...(Object.keys(courseFilter).length > 0 ? { course: courseFilter } : {}),
+      },
+    },
   };
 
   const totalCount = await prisma.user.count({
@@ -147,7 +170,9 @@ export default async function TeacherStudentsPage({
           userKey={userKey}
         >
           <form
-            key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}-${sort}`}
+            key={`filters-${q || "all"}-${injuryFilter || "all"}-${premiumOnly ? "premium" : "all"}-${sort}-${
+              disciplineFilters.join("|") || "all"
+            }`}
             method="get"
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
@@ -184,6 +209,26 @@ export default async function TeacherStudentsPage({
               />
               Premium
             </label>
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1">Discipline</legend>
+              <div className="flex flex-wrap gap-2">
+                {["Pole", "Exotic", "Souplesse", "Pilates"].map((d) => (
+                  <label
+                    key={d}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="discipline"
+                      value={d}
+                      defaultChecked={disciplineFilters.includes(d)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {d}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Tri
               <select

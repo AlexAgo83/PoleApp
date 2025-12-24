@@ -65,12 +65,12 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     startTransition(async () => {
       const params = new URLSearchParams();
       params.set("week", target);
-      if (filters.teacher) params.set("teacher", filters.teacher);
-      if (filters.studio) params.set("studio", filters.studio);
-      if (filters.q) params.set("q", filters.q);
-      if (filters.discipline) params.set("discipline", filters.discipline);
-      if (filters.level) params.set("level", filters.level);
-      const res = await fetch(`/api/teacher/week-courses?${params.toString()}`, { cache: "no-store" });
+    if (filters.teacher) params.set("teacher", filters.teacher);
+    if (filters.studio) params.set("studio", filters.studio);
+    if (filters.q) params.set("q", filters.q);
+    if (filters.discipline) params.set("discipline", filters.discipline);
+    if (filters.level) params.set("level", filters.level);
+    const res = await fetch(`/api/teacher/week-courses?${params.toString()}`, { cache: "no-store" });
       if (!res.ok) return;
       const json = (await res.json()) as { prevWeek: string; nextWeek: string; days: Day[] };
       setWeek(target);
