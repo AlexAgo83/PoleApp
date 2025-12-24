@@ -56,7 +56,7 @@ export async function GET(req: Request) {
         : {}),
       ...(disciplineParam
         ? {
-            OR: [{ title: { contains: disciplineParam, mode: "insensitive" } }],
+            discipline: { contains: disciplineParam, mode: "insensitive" },
           }
         : {}),
       ...(levelParam

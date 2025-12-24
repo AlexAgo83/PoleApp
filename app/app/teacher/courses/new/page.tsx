@@ -91,6 +91,7 @@ export default async function NewCoursePage() {
           defaultTeacherId={session.user.role === "TEACHER" ? teacherId : teachers[0]?.id}
           studios={studios}
           defaultPhotoUrl=""
+          defaultDiscipline="Danse"
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,

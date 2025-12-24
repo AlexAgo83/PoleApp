@@ -91,7 +91,7 @@ export default async function TeacherCoursesPage({
     ...(disciplineFilters.length > 0
       ? {
           OR: disciplineFilters.map((d) => ({
-            title: { contains: d, mode: "insensitive" as const },
+            discipline: { contains: d, mode: "insensitive" as const },
           })),
         }
       : {}),

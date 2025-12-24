@@ -205,6 +205,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultWaitlistQuota={course.waitlistQuota ?? 0}
           defaultCostCredits={course.costCredits ?? 100}
           defaultPhotoUrl={course.photoUrl ?? ""}
+          defaultDiscipline={course.discipline ?? "Danse"}
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,
