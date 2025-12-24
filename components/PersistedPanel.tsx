@@ -55,16 +55,24 @@ export function PersistedPanel({
 
   const resolvedOpen = open ?? undefined;
 
+  const hasSubtitle = Boolean(subtitle);
+
   return (
     <details
       className={className ? `group ${className}` : "group"}
       open={resolvedOpen}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >
-      <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white">
+      <summary className="flex cursor-pointer items-center justify-between text-white">
         <div className="flex flex-col">
-          <span>{title}</span>
-          {subtitle && <span className="text-xs font-normal text-slate-300">{subtitle}</span>}
+          {hasSubtitle ? (
+            <>
+              <span className="text-[11px] uppercase tracking-[0.16em] text-slate-200">{title}</span>
+              <span className="text-lg font-semibold leading-tight text-white">{subtitle}</span>
+            </>
+          ) : (
+            <span className="text-xl font-semibold">{title}</span>
+          )}
         </div>
         <span className="text-xs text-slate-300 transition-transform group-open:rotate-180">▼</span>
       </summary>
