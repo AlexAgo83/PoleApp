@@ -82,6 +82,7 @@ export default async function StudentCoursesAgendaPage({
       : Array.isArray(statusesParam)
       ? statusesParam.flatMap((s) => s.split(",").map((v) => v.trim()).filter(Boolean))
       : ["past", "attending", "waitlist", "open"];
+  const statusesSet = new Set(selectedStatuses);
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(baseDate);
   const monthEnd = endOfMonth(baseDate);
@@ -164,6 +165,9 @@ export default async function StudentCoursesAgendaPage({
                   title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
                 }
               : {}),
+            ...(selectedStatuses.includes("past")
+              ? {}
+              : { date: { gte: new Date() } }),
             ...(allowedSchoolIds && allowedSchoolIds.length > 0
               ? { schoolId: { in: allowedSchoolIds } }
               : session.user.schoolId
@@ -359,12 +363,12 @@ export default async function StudentCoursesAgendaPage({
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
-  const legendItems = [
-    { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
-    { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
-    { label: "Liste d’attente (rang, quota 14)", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
-    { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
-  ];
+const legendItems = [
+  { key: "past", label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
+  { key: "attending", label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
+  { key: "waitlist", label: "Liste d’attente (rang, quota 14)", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+  { key: "open", label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
+];
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -397,16 +401,41 @@ export default async function StudentCoursesAgendaPage({
       </header>
       <section className="panel border-white/10 bg-white/5 p-4 text-sm text-slate-200">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <form method="get" className="mt-2 flex flex-wrap items-center gap-2">
+          <input type="hidden" name="view" value={view} />
+          {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
+          {weekParam ? <input type="hidden" name="week" value={weekParam} /> : null}
+          {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+          {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
+          {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
+          {schoolsParam ? <input type="hidden" name="schools" value="all" /> : null}
+          {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
+          {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
+          {q ? <input type="hidden" name="q" value={q} /> : null}
           {legendItems.map((item) => (
-            <span
-              key={item.label}
-              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
+            <label
+              key={item.key}
+              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${
+                statusesSet.has(item.key) ? item.className : "border border-white/20 bg-white/10 text-slate-400"
+              }`}
             >
+              <input
+                type="checkbox"
+                name="statuses"
+                value={item.key}
+                defaultChecked={statusesSet.has(item.key)}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
               ● {item.label}
-            </span>
+            </label>
           ))}
-        </div>
+          <button
+            type="submit"
+            className="ml-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Mettre à jour
+          </button>
+        </form>
         <p className="mt-2 text-xs text-slate-300">
           Le rang s’affiche si fourni (quota 14 élèves, statut WAITLIST requis).
         </p>
@@ -511,6 +540,30 @@ export default async function StudentCoursesAgendaPage({
               />
               Cours des écoles fréquentées
             </label>
+            <fieldset className="md:col-span-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+              <legend className="px-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Statuts affichés</legend>
+              <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-200 sm:grid-cols-4">
+                {legendItems.map((item) => (
+                  <label
+                    key={item.key}
+                    className={`inline-flex items-center gap-2 rounded-full border px-2 py-1 ${
+                      statusesSet.has(item.key)
+                        ? `${item.className} border-white/15`
+                        : "border-white/15 bg-white/5 text-slate-400"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      name="statuses"
+                      value={item.key}
+                      defaultChecked={statusesSet.has(item.key)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {item.label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
                 type="submit"

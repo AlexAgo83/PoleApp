@@ -25,15 +25,16 @@ export async function purchaseCourseAction(formData: FormData) {
     throw new Error("Formulaire invalide");
   }
 
-  type CourseWithCounts = {
-    id: string;
-    date: Date;
-    durationMinutes: number | null;
-    maxSeats?: number | null;
-    costCredits?: number | null;
-    _count: { attendances: number };
-    attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
-  };
+type CourseWithCounts = {
+  id: string;
+  date: Date;
+  durationMinutes: number | null;
+  maxSeats?: number | null;
+  costCredits?: number | null;
+  waitlistQuota?: number | null;
+  _count: { attendances: number };
+  attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
+};
 
   let course: CourseWithCounts | null = null;
   try {
@@ -45,6 +46,7 @@ export async function purchaseCourseAction(formData: FormData) {
         durationMinutes: true,
         maxSeats: true,
         costCredits: true,
+        waitlistQuota: true,
         _count: { select: { attendances: true } },
         attendances: {
           where: { studentId: session.user.id },
@@ -63,6 +65,7 @@ export async function purchaseCourseAction(formData: FormData) {
           id: true,
           date: true,
           durationMinutes: true,
+          waitlistQuota: true,
           _count: { select: { attendances: true } },
           attendances: {
             where: { studentId: session.user.id },
@@ -151,6 +154,11 @@ export async function purchaseCourseAction(formData: FormData) {
     });
     const capacity = latest.maxSeats ?? 30;
     const isFull = confirmedCount >= capacity;
+    const quota = typeof course.waitlistQuota === "number" ? course.waitlistQuota : 0;
+    const waitlistAvailable = !quota || waitlistCount < quota;
+    if (isFull && !waitlistAvailable) {
+      throw new Error("Liste d'attente complète pour ce cours");
+    }
     const status: "CONFIRMED" | "WAITLIST" = isFull ? "WAITLIST" : "CONFIRMED";
     const waitlistRank = status === "WAITLIST" ? waitlistCount + 1 : null;
 
