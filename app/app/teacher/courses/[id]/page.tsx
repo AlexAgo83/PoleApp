@@ -6,7 +6,12 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCourseSuggestions } from "@/lib/courseGenerator";
-import { applySuggestedPositionsAction, removeCoursePositionAction } from "./actions";
+import {
+  applySuggestedPositionsAction,
+  removeCoursePositionAction,
+  updateCourseNotesOnlyAction,
+} from "./actions";
+import { MasteryLevel } from "@prisma/client";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -90,6 +95,9 @@ export default async function TeacherCourseDetailPage({
   if (!course) {
     return notFound();
   }
+  if (session.user.role === "TEACHER" && course.teacherId !== session.user.id) {
+    return notFound();
+  }
 
   const resolvedSearch = (await searchParams) ?? {};
   const forceDiscovery = resolvedSearch.forceDiscovery === "1";
@@ -129,6 +137,15 @@ export default async function TeacherCourseDetailPage({
   const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
+  const masteryOptions: { value: MasteryLevel; label: string }[] = [
+    { value: MasteryLevel.INITIATED, label: "Non tenté" },
+    { value: MasteryLevel.PASSED, label: "Acquis" },
+    { value: MasteryLevel.FLUID, label: "Fluide" },
+    { value: MasteryLevel.CHOREO, label: "Maîtrisé" },
+  ];
+  const masteryMap = new Map(
+    course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.masteryLevel ?? MasteryLevel.INITIATED]),
+  );
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
@@ -297,6 +314,78 @@ export default async function TeacherCourseDetailPage({
             <li className="text-slate-300">Aucun élève rattaché.</li>
           )}
         </ul>
+      </section>
+
+      <section className="panel space-y-4 border-indigo-300/20 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Niveaux par élève</p>
+            <h2 className="text-lg font-semibold text-white">Tricks et niveaux atteints</h2>
+            <p className="text-sm text-slate-300">
+              Pour chaque élève inscrit, renseigne le niveau atteint sur les positions du cours.
+            </p>
+          </div>
+        </div>
+        {course.attendances.length === 0 || course.positions.length === 0 ? (
+          <p className="text-sm text-slate-300">
+            Ajoute des élèves et des positions au cours pour renseigner les niveaux.
+          </p>
+        ) : (
+          <form action={updateCourseNotesOnlyAction} className="space-y-4">
+            <input type="hidden" name="courseId" value={course.id} />
+            <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/5">
+              <table className="min-w-full text-sm text-slate-200">
+                <thead>
+                  <tr className="border-b border-white/10 text-left text-xs uppercase tracking-[0.12em] text-indigo-100">
+                    <th className="px-3 py-2">Élève</th>
+                    {course.positions.map((p) => (
+                      <th key={p.position.id} className="px-3 py-2">
+                        {p.position.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {course.attendances.map((att) => (
+                    <tr key={att.id} className="border-b border-white/5">
+                      <td className="px-3 py-3 font-semibold text-white">
+                        {att.student?.name ?? att.student?.email ?? "Élève"}
+                      </td>
+                      {course.positions.map((p) => {
+                        const key = `${att.studentId}-${p.position.id}`;
+                        const current = masteryMap.get(key) ?? MasteryLevel.INITIATED;
+                        return (
+                          <td key={p.position.id} className="px-3 py-2">
+                            <select
+                              name={`note:${att.studentId}:${p.position.id}`}
+                              defaultValue={current}
+                              className="w-full rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
+                            >
+                              <option value="">—</option>
+                              {masteryOptions.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+              >
+                Sauvegarder les niveaux
+              </button>
+            </div>
+          </form>
+        )}
       </section>
 
       <section className="panel border-indigo-400/15 p-6">
