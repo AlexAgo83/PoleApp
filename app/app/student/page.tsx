@@ -4,6 +4,7 @@ import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { BuyCreditsButton } from "./BuyCreditsButton";
+import { PartnerProductsCarousel } from "./PartnerProductsCarousel";
 
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
@@ -28,11 +29,30 @@ export default async function StudentDashboard() {
     user?.schoolId
       ? await prisma.partner.findMany({
           where: { schoolId: user.schoolId },
-          select: { id: true, name: true, kind: true, website: true, description: true },
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            website: true,
+            description: true,
+            sponsoredLinks: { select: { id: true, category: true, label: true, url: true } },
+          },
           orderBy: { name: "asc" },
           take: 4,
         })
       : [];
+  const partnerProducts = partners
+    .flatMap((partner) =>
+      partner.sponsoredLinks.map((link) => ({
+        id: link.id,
+        partnerName: partner.name,
+        partnerKind: partner.kind,
+        category: link.category,
+        label: link.label,
+        url: link.url,
+      }))
+    )
+    .slice(0, 12);
 
   return (
     <main className="grid gap-6">
@@ -178,7 +198,7 @@ export default async function StudentDashboard() {
       </section>
 
       {partners.length > 0 && (
-        <section className="panel p-6">
+        <section className="panel p-6 overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-lg font-semibold text-white">Partenaires de ton école</h3>
             <Link
@@ -188,11 +208,11 @@ export default async function StudentDashboard() {
               Voir la fiche école
             </Link>
           </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {partners.map((partner) => (
               <div
                 key={partner.id}
-                className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200"
+                className="flex min-w-0 flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 transition hover:border-cyan-300/70 hover:bg-white/10"
               >
                 <p className="text-base font-semibold text-white">{partner.name}</p>
                 {partner.kind && <p className="text-xs uppercase tracking-[0.12em] text-cyan-200">{partner.kind}</p>}
@@ -210,6 +230,7 @@ export default async function StudentDashboard() {
               </div>
             ))}
           </div>
+          {partnerProducts.length > 0 && <PartnerProductsCarousel items={partnerProducts} />}
         </section>
       )}
     </main>
