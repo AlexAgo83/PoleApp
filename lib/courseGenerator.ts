@@ -50,9 +50,10 @@ function summarizeCandidate(candidate: CandidateInput): {
         ? "REVISION"
         : "SAFE";
 
-  const recencyPenalty = candidate.recentOccurrences * 1.2;
-  const injuryPenalty = candidate.unsafeForStudents.length > 0 ? 6 : 0;
-  const favoritesBonus = Math.min(3, candidate.favoriteCount) * 2; // pondération cœur
+  // Pondérations ajustées : pénaliser plus la répétition récente et les blessures, valoriser un peu plus les coups de cœur.
+  const recencyPenalty = candidate.recentOccurrences * 2;
+  const injuryPenalty = candidate.unsafeForStudents.length > 0 ? 8 : 0;
+  const favoritesBonus = Math.min(3, candidate.favoriteCount) * 3; // 0 → 0, max 9
   const totalScore =
     discoveryScore * 3 + revisionScore * 2 + safeScore + favoritesBonus - recencyPenalty - injuryPenalty;
 
@@ -113,6 +114,16 @@ function selectTopSuggestions(
     while (selection.length < limit && remaining.length > 0) {
       selection.push(remaining.shift()!);
     }
+  }
+
+  // Assurer au moins une révision si disponible (et non prise) pour équilibrer le plan.
+  if (!selection.some((s) => s.tag === "REVISION") && byTag.REVISION.length > 0) {
+    const bestRevision = byTag.REVISION[0];
+    const lowestIdx = selection.reduce(
+      (acc, curr, idx) => (curr.score < selection[acc].score ? idx : acc),
+      0
+    );
+    selection[lowestIdx] = bestRevision;
   }
 
   if (options?.forceDiscoverySlot && !selection.some((s) => s.tag === "DISCOVERY")) {
