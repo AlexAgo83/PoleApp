@@ -72,11 +72,13 @@ export default async function TeacherCoursesPage({
   if (!session?.user?.schoolId) {
     return null;
   }
+  const isTeacher = session.user.role === "TEACHER";
+  const effectiveTeacherFilter = isTeacher ? session.user.id : teacherFilter;
   const userKey = session.user.id ?? "anon";
 
   const whereClause = {
     schoolId: session.user.schoolId,
-    ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+    ...(effectiveTeacherFilter ? { teacherId: effectiveTeacherFilter } : {}),
     ...(studioFilter ? { studioId: studioFilter } : {}),
     ...(validFrom ? { date: { gte: validFrom } } : {}),
     ...(validTo ? { date: { lte: validTo } } : {}),
@@ -222,7 +224,7 @@ export default async function TeacherCoursesPage({
           userKey={userKey}
         >
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? ""}-${studioFilter ?? ""}-${disciplineFilters.join("|") || "all"}-${withNotes ? "notes" : "all"}-${q || "all"}`}
+            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${effectiveTeacherFilter ?? ""}-${studioFilter ?? ""}-${disciplineFilters.join("|") || "all"}-${withNotes ? "notes" : "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -264,22 +266,26 @@ export default async function TeacherCoursesPage({
                 ))}
               </div>
             </fieldset>
-            <label className="text-sm text-slate-200">
-              Professeur
-              <select
-                key={teacherFilter ?? "all-teachers"}
-                name="teacher"
-              defaultValue={teacherFilter ?? ""}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Tous les professeurs</option>
-              {teachers.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name ?? t.email}
-                </option>
-                ))}
-              </select>
-            </label>
+            {isTeacher ? (
+              <input type="hidden" name="teacher" value={session.user.id} />
+            ) : (
+              <label className="text-sm text-slate-200">
+                Professeur
+                <select
+                  key={effectiveTeacherFilter ?? "all-teachers"}
+                  name="teacher"
+                  defaultValue={effectiveTeacherFilter ?? ""}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                >
+                  <option value="">Tous les professeurs</option>
+                  {teachers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name ?? t.email}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (titre)
               <input

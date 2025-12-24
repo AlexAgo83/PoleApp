@@ -6,6 +6,7 @@ import { InvoiceStatus, Prisma } from "@prisma/client";
 import { FilterPanel } from "@/components/FilterPanel";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { updateInvoiceStatusAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -335,6 +336,23 @@ export default async function TeacherBillingPage({
                   >
                     Voir le cours
                   </Link>
+                  <form action={updateInvoiceStatusAction} className="inline-flex items-center gap-2 text-xs text-slate-200">
+                    <input type="hidden" name="invoiceId" value={invoice.id} />
+                    <select
+                      name="status"
+                      defaultValue={invoice.status}
+                      className="rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-cyan-400"
+                    >
+                      <option value="SENT">Envoyée</option>
+                      <option value="PAID">Payée</option>
+                    </select>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-1 font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+                    >
+                      Mettre à jour
+                    </button>
+                  </form>
                   <Link
                     href={`/api/teacher/invoices/${invoice.id}/print`}
                     className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
