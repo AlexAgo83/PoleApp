@@ -18,6 +18,7 @@ const courseSchema = z.object({
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
+  discipline: z.string().trim().min(1).default("Danse"),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -54,6 +55,7 @@ export async function createCourseAction(formData: FormData) {
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
+    discipline: formData.get("discipline")?.toString().trim() || "Danse",
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
     waitlistQuota: formData.get("waitlistQuota") ?? 0,
@@ -107,6 +109,7 @@ export async function createCourseAction(formData: FormData) {
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
           studioId: parsed.data.studioId ?? null,
+          discipline: parsed.data.discipline || "Danse",
           durationMinutes: parsed.data.durationMinutes,
           maxSeats: parsed.data.maxSeats ?? 30,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
@@ -126,6 +129,7 @@ export async function createCourseAction(formData: FormData) {
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
           studioId: parsed.data.studioId ?? null,
+          discipline: parsed.data.discipline || "Danse",
           durationMinutes: parsed.data.durationMinutes,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
           photoUrl: parsed.data.photoUrl ?? null,

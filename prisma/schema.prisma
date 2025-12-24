@@ -192,6 +192,7 @@ model Course {
   teacherId       String
   studioId        String?
   title           String?
+  discipline      String   @default("Danse")
   photoUrl        String?
   date            DateTime
   durationMinutes Int      @default(60)

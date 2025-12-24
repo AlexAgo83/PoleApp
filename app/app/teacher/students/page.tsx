@@ -67,7 +67,7 @@ export default async function TeacherStudentsPage({
 
   const courseFilter: Prisma.CourseWhereInput = {
     ...(disciplineFilters.length > 0
-      ? { OR: disciplineFilters.map((d) => ({ title: { contains: d, mode: "insensitive" as const } })) }
+      ? { OR: disciplineFilters.map((d) => ({ discipline: { contains: d, mode: "insensitive" as const } })) }
       : {}),
   };
   if (session.user.role === "TEACHER") {

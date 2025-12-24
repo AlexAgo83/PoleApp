@@ -118,7 +118,7 @@ export default async function CoursesAgendaPage({
         : {}),
       ...(disciplineFilters.length > 0
         ? {
-            OR: disciplineFilters.map((d) => ({ title: { contains: d, mode: "insensitive" as const } })),
+            OR: disciplineFilters.map((d) => ({ discipline: { contains: d, mode: "insensitive" as const } })),
           }
         : {}),
       ...(levelFilter

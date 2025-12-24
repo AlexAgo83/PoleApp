@@ -19,6 +19,7 @@ const updateSchema = z.object({
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid().optional().nullable(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
+  discipline: z.string().trim().min(1).default("Danse"),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -70,6 +71,7 @@ export async function updateCourseAction(formData: FormData) {
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId") || null,
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
+    discipline: formData.get("discipline")?.toString().trim() || "Danse",
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
     waitlistQuota: formData.get("waitlistQuota") ?? 0,
@@ -142,6 +144,7 @@ export async function updateCourseAction(formData: FormData) {
           date: data.date,
           teacherId: teacherToConnect,
           studioId: data.studioId ?? null,
+          discipline: data.discipline || "Danse",
           durationMinutes: data.durationMinutes,
           maxSeats: data.maxSeats ?? 30,
           waitlistQuota: data.waitlistQuota ?? 0,
@@ -165,6 +168,7 @@ export async function updateCourseAction(formData: FormData) {
           date: data.date,
           teacherId: teacherToConnect,
           studioId: data.studioId ?? null,
+          discipline: data.discipline || "Danse",
           durationMinutes: data.durationMinutes,
           waitlistQuota: data.waitlistQuota ?? 0,
           photoUrl: data.photoUrl ?? null,
