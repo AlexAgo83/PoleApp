@@ -24,6 +24,7 @@ const updateSchema = z.object({
     .min(30)
     .refine((n) => n % 15 === 0, { message: "La durée doit être un multiple de 15 minutes" }),
   maxSeats: z.coerce.number().min(1).default(30),
+  waitlistQuota: z.coerce.number().min(0).default(0),
   costCredits: z.coerce.number().min(0).default(100),
   notes: z
     .array(
@@ -71,6 +72,7 @@ export async function updateCourseAction(formData: FormData) {
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
+    waitlistQuota: formData.get("waitlistQuota") ?? 0,
     costCredits: formData.get("costCredits") ?? 100,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
   });
@@ -142,6 +144,7 @@ export async function updateCourseAction(formData: FormData) {
           studioId: data.studioId ?? null,
           durationMinutes: data.durationMinutes,
           maxSeats: data.maxSeats ?? 30,
+          waitlistQuota: data.waitlistQuota ?? 0,
           costCredits: data.costCredits ?? 100,
           photoUrl: data.photoUrl ?? null,
         },
@@ -163,6 +166,7 @@ export async function updateCourseAction(formData: FormData) {
           teacherId: teacherToConnect,
           studioId: data.studioId ?? null,
           durationMinutes: data.durationMinutes,
+          waitlistQuota: data.waitlistQuota ?? 0,
           photoUrl: data.photoUrl ?? null,
         },
       });

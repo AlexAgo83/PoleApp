@@ -59,20 +59,22 @@ type CourseWithCounts = {
       error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2022";
     const isValidation = error instanceof Prisma.PrismaClientValidationError;
     if (isMissingColumn || isValidation) {
-      course = (await prisma.course.findUnique({
+      const fallback = await prisma.course.findUnique({
         where: { id: parsed.data.courseId, schoolId: session.user.schoolId ?? undefined },
         select: {
           id: true,
           date: true,
           durationMinutes: true,
-          waitlistQuota: true,
+          maxSeats: true,
+          costCredits: true,
           _count: { select: { attendances: true } },
           attendances: {
             where: { studentId: session.user.id },
             select: { id: true, status: true, waitlistRank: true },
           },
         },
-      })) as CourseWithCounts | null;
+      });
+      course = fallback ? { ...fallback, waitlistQuota: 0 } : null;
     } else {
       throw error;
     }
