@@ -126,6 +126,9 @@ export default async function TeacherCourseDetailPage({
   const recommendationState = new Map(
     storedRecommendations.map((r) => [r.positionId, r])
   );
+  const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
+  const forcedCount = storedRecommendations.filter((r) => r.forced).length;
+  const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
 
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
@@ -303,6 +306,17 @@ export default async function TeacherCourseDetailPage({
             <p className="text-sm text-slate-300">
               Propositions basées sur la progression des élèves présents, en évitant les positions déjà planifiées et récentes.
             </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+              <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">
+                {appliedCount} appliquée{appliedCount > 1 ? "s" : ""}
+              </span>
+              <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">
+                {forcedCount} forcée{forcedCount > 1 ? "s" : ""}
+              </span>
+              <span className="rounded-full border border-red-300/60 bg-red-500/15 px-2 py-0.5">
+                {excludedCount} exclue{excludedCount > 1 ? "s" : ""} blessure
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <form action={currentPath} method="get" className="inline-flex items-center gap-2">
