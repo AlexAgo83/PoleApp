@@ -416,6 +416,33 @@ export default async function AdminPartnersPage({
               </ul>
             </div>
           )}
+          {timeline.length > 0 && (
+            <div className="mt-3 space-y-1 text-xs text-slate-200">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">
+                Évolution récente ({from || to ? "plage filtrée" : "14 derniers jours"})
+              </p>
+              <ul className="space-y-1">
+                {timeline.map((row) => {
+                  const ctr = row.clicks > 0 ? Math.round((row.purchases / row.clicks) * 1000) / 10 : 0;
+                  const day = (() => {
+                    const [y, m, d] = row.day.split("-");
+                    return `${y}-${m}-${d}`;
+                  })();
+                  return (
+                    <li
+                      key={row.day}
+                      className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-1.5"
+                    >
+                      <span className="font-semibold text-white">{day}</span>
+                      <span className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
+                        {row.purchases} achats · {row.clicks} clics · {ctr.toFixed(1)}% CTR
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 
@@ -745,30 +772,7 @@ export default async function AdminPartnersPage({
                 )
               )}
             </div>
-            </div>
-          {timeline.length > 0 && (
-            <div className="mt-3 space-y-1 text-xs text-slate-200">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-cyan-100">
-                Évolution récente ({from || to ? "plage filtrée" : "14 derniers jours"})
-              </p>
-              <ul className="space-y-1">
-                {timeline.map((row) => {
-                  const ctr = row.clicks > 0 ? Math.round((row.purchases / row.clicks) * 1000) / 10 : 0;
-                  return (
-                    <li
-                      key={row.day}
-                      className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-1.5"
-                    >
-                      <span className="font-semibold text-white">{row.day}</span>
-                      <span className="text-[11px] uppercase tracking-[0.12em] text-slate-400">
-                        {row.purchases} achats · {row.clicks} clics · {ctr.toFixed(1)}% CTR
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+          </div>
         </div>
       </section>
     </main>

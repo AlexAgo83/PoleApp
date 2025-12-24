@@ -45,6 +45,7 @@ export default async function StudentDashboard() {
     .flatMap((partner) =>
       partner.sponsoredLinks.map((link) => ({
         id: link.id,
+        partnerId: partner.id,
         partnerName: partner.name,
         partnerKind: partner.kind,
         category: link.category,
@@ -219,7 +220,7 @@ export default async function StudentDashboard() {
                 {partner.description && <p className="text-sm text-slate-300">{partner.description}</p>}
                 {partner.website && (
                   <a
-                    href={partner.website}
+                    href={`/api/partners/redirect?partnerId=${partner.id}&url=${encodeURIComponent(partner.website)}&type=click`}
                     target="_blank"
                     rel="noreferrer"
                     className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100"
