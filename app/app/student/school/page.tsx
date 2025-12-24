@@ -43,6 +43,7 @@ type SchoolCourse = {
   photoUrl: string | null;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { id: string; name: string } | null;
+  waitlistQuota?: number | null;
   positions: { position: { id: string; name: string; type: string } | null }[];
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
 };
@@ -242,12 +243,12 @@ export default async function StudentSchoolPage({
         durationMinutes: true,
         maxSeats: true,
         photoUrl: true,
+        waitlistQuota: true,
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { id: true, name: true } },
         positions: { include: { position: { select: { id: true, name: true, type: true } } } },
         attendances: {
-          where: { studentId: session.user.id },
-          select: { id: true, status: true, waitlistRank: true },
+          select: { id: true, status: true, waitlistRank: true, studentId: true },
         },
       },
       orderBy: { date: "asc" },
@@ -627,29 +628,37 @@ export default async function StudentSchoolPage({
                           {(cell.attendances?.length ?? 0)} cours
                         </span>
                       </div>
-                      {cell.attendances &&
-                        cell.attendances.slice(0, 3).map((a) => {
-                          const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                          const isMineConfirmed = Boolean(a.myAttendance?.status === "CONFIRMED");
-                          const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
-                          const badgeClass = isWaitlist
-                            ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
-                            : isMineConfirmed
-                            ? past
-                              ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
+                    {cell.attendances &&
+                      cell.attendances.slice(0, 3).map((a) => {
+                        const past = isPastCourse(a.course.date, a.course.durationMinutes);
+                        const isMineConfirmed = Boolean(a.myAttendance?.status === "CONFIRMED");
+                        const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
+                        const confirmedCount = a.course.attendances.filter((att) => att.status === "CONFIRMED").length;
+                        const waitlistCount = a.course.attendances.filter((att) => att.status === "WAITLIST").length;
+                        const waitlistQuota = a.course.waitlistQuota ?? 0;
+                        const waitlistFull = waitlistQuota > 0 && waitlistCount >= waitlistQuota;
+                        const badgeClass = isWaitlist
+                          ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
+                          : isMineConfirmed
+                          ? past
+                            ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
                               : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
                             : "border border-white/20 bg-white/10 text-slate-300";
-                          const statusLabel = past
-                            ? "Passé"
-                            : isWaitlist
-                            ? "Attente"
-                            : isMineConfirmed
-                            ? "À venir"
-                            : "Ouvert";
-                          const rankLabel =
-                            isWaitlist && a.myAttendance?.waitlistRank
-                              ? `#${a.myAttendance.waitlistRank}`
-                              : null;
+                        const statusLabel = past
+                          ? "Passé"
+                          : isWaitlist
+                          ? "Attente"
+                          : waitlistFull
+                          ? "Attente complète"
+                          : isMineConfirmed
+                          ? "À venir"
+                          : "Ouvert";
+                        const quotaLabel =
+                          waitlistQuota > 0 ? `Liste d’attente : ${waitlistCount}/${waitlistQuota}` : null;
+                        const rankLabel =
+                          isWaitlist && a.myAttendance?.waitlistRank
+                            ? `#${a.myAttendance.waitlistRank}`
+                            : null;
                           return (
                             <Link
                               key={a.id}
@@ -678,6 +687,9 @@ export default async function StudentSchoolPage({
                                 <p className="truncate text-[10px] text-slate-200">
                                   {a.course.studio?.name ?? "Studio non renseigné"}
                                 </p>
+                                {quotaLabel ? (
+                                  <p className="truncate text-[10px] text-purple-200">{quotaLabel}</p>
+                                ) : null}
                                 {a.course.positions?.length ? (
                                   <p className="truncate text-[10px] text-cyan-100">
                                     Tricks :{" "}
