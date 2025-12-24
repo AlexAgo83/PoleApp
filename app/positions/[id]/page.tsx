@@ -81,7 +81,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
-  const canViewPremium = !isStudent || isPremium;
+  const hasUnlocked = isStudent
+    ? Boolean(
+        await prisma.studentPositionProgress.findFirst({
+          where: { studentId: session.user.id, positionId: position.id },
+        }),
+      )
+    : false;
+  const canViewContent = !isStudent || isPremium || hasUnlocked;
   const hasVideo = Boolean(video);
   const showVideoPlaceholder = isStudent && isPremium && !hasVideo;
   const isStaff =
@@ -178,7 +185,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               fallbackSrc={POSITION_PLACEHOLDER}
             />
           )}
-          {canViewPremium ? (
+          {canViewContent ? (
             <div className="space-y-2 text-slate-200">
               <p className="text-sm text-cyan-200">Description</p>
               <p className="text-sm text-slate-100">
@@ -244,14 +251,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                   <span className="rounded-full border border-cyan-400/40 bg-cyan-500/15 px-2 py-0.5 text-[11px] font-semibold text-cyan-50">
                     🎥 Vidéo
                   </span>
-                  {isStudent && !isPremium && (
+                  {isStudent && !canViewContent && (
                     <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
                       🔒 Premium
                     </span>
                   )}
                 </div>
               </div>
-              {canViewPremium ? (
+              {canViewContent ? (
                 video ? (
                   <a
                     href={video.url}
@@ -269,7 +276,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 )
               ) : (
                 <p className="mt-2 text-xs text-amber-100">
-                  Connecte-toi en Premium pour accéder à la vidéo.
+                  Débloque cette position via un cours ou passe en Premium pour accéder à la vidéo.
                 </p>
               )}
             </div>
@@ -278,15 +285,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
               <p className="font-semibold text-white">Gating élève</p>
               <p className="mt-2">
-                Élève gratuit : accès aux positions “débloquées” via cours (stub
-                pour MVP).
+                Élève gratuit : accès aux positions “débloquées” via cours (stub pour MVP).
               </p>
               <p className="mt-2">
                 Élève premium : accès complet.
                 <br />
                 Statut actuel :{" "}
                 <span className="font-semibold">
-                  {isPremium ? "Premium" : "Gratuit / inconnu"}
+                  {isPremium ? "Premium" : hasUnlocked ? "Gratuit (débloqué)" : "Gratuit / non débloqué"}
                 </span>
               </p>
             </div>
