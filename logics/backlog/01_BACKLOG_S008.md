@@ -1,5 +1,5 @@
 # Backlog — Retours QA S008 (session 2025-12-22 23:14)
-[Compréhension: 94% / Avancement: 40%]
+[Compréhension: 94% / Avancement: 45%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -21,7 +21,7 @@
 - Légende interactive : états cliquables et cumulables (Passé, Inscrit, Attente avec rang/quota 14, Disponible) (P1).
 - Vidéos streaming (premium) : onglet “Vidéos” (replay/live) pour premium ; non-premium masqué ou verrouillé. Source = liens/URLs existants pour l’instant, player/hosting plus tard ; live = lien externe avec planning à gérer (P1).
 - Positions élève : supprimer le bloc de gating ; accès selon statut standard/premium sans encart (P2).
-- Mini-jeux : corriger le message “pas assez de positions” quand le seuil est atteint (vérifier pool) (P1).
+- Mini-jeux : **(DONE)** corriger le message “pas assez de positions” quand le seuil est atteint (vérifier pool) (P1). _(Seuil déclenché seulement si aucune position dispo ; message ajusté.)_
 - Achats simulés : **(PARTIEL)** historique minimal des achats (date, offre, montant) + toast/confirmation ; application immédiate des crédits/éligibilités. Devise EUR, TVA 20% par défaut. _(Historique démo visible tableau de bord élève, crédits appliqués)_
 - Paiements simulés : persistance réelle, statut payé simulé (cadre à préciser si autre statut souhaité).
 
