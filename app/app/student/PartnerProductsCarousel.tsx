@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 type PartnerProduct = {
   id: string;
+  partnerId: string;
   partnerName: string;
   partnerKind?: string | null;
   category?: string | null;
@@ -22,24 +23,6 @@ export function PartnerProductsCarousel({ items }: { items: PartnerProduct[] }) 
     const delta = (firstCard?.clientWidth ?? 240) + 16; // include gap
     scroller.scrollBy({ left: delta * direction, behavior: "smooth" });
   };
-
-  useEffect(() => {
-    if (items.length <= 1) return undefined;
-    const id = window.setInterval(() => {
-      const scroller = scrollerRef.current;
-      if (!scroller) return;
-      const firstCard = scroller.querySelector<HTMLElement>("[data-product-card]");
-      const delta = (firstCard?.clientWidth ?? 240) + 16;
-      const maxScroll = scroller.scrollWidth - scroller.clientWidth;
-      const nextLeft = scroller.scrollLeft + delta;
-      if (nextLeft >= maxScroll - 4) {
-        scroller.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        scroller.scrollBy({ left: delta, behavior: "smooth" });
-      }
-    }, 3800);
-    return () => window.clearInterval(id);
-  }, [items.length]);
 
   return (
     <div className="relative mt-5 w-full overflow-hidden">
@@ -75,7 +58,7 @@ export function PartnerProductsCarousel({ items }: { items: PartnerProduct[] }) 
           {items.map((item) => (
             <a
               key={item.id}
-              href={item.url}
+              href={`/api/partners/redirect?partnerId=${encodeURIComponent(item.partnerId)}&url=${encodeURIComponent(item.url)}&type=click`}
               target="_blank"
               rel="noreferrer"
               role="listitem"
