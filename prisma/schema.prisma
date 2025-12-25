@@ -118,6 +118,7 @@ model User {
   studentFavoritePositions StudentFavoritePosition[]
   gameSessions     GameSession[]
   partnerEvents    PartnerEvent[]
+  purchases        Purchase[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
