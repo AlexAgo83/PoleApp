@@ -32,6 +32,7 @@ type Props = {
   filters: {
     teacher?: string;
     studio?: string;
+    discipline?: string;
     mine?: boolean;
     schools?: boolean;
     q?: string;
@@ -69,6 +70,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
       params.set("week", target);
       if (filters.teacher) params.set("teacher", filters.teacher);
       if (filters.studio) params.set("studio", filters.studio);
+      if (filters.discipline) params.set("discipline", filters.discipline);
       if (filters.mine) params.set("mine", "true");
       if (filters.schools) params.set("schools", "all");
       if (filters.q) params.set("q", filters.q);
