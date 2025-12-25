@@ -289,9 +289,7 @@ export default async function StudentCoursesAgendaPage({
       course: { select: { date: true, durationMinutes: true } },
     },
   });
-  const attendingCourseIds = new Set(
-    myAttendancesForMonth.filter((a) => a.status === "CONFIRMED").map((a) => a.courseId)
-  );
+  // Note: attendingCourseIds disponible si besoin de stats plus tard.
   const waitlistCourseMap = new Map<string, number | null>();
   myAttendancesForMonth
     .filter((a) => a.status === "WAITLIST")
@@ -359,18 +357,18 @@ export default async function StudentCoursesAgendaPage({
   ]);
 
   const disciplines = (() => {
-    const rows = (disciplineRows ?? []).map((d) => ({ ...d }));
+    const rows = (disciplineRows ?? []).map((d) => ({ ...d })) as { id?: string; name: string; color?: string | null }[];
     const legacy = courseDisciplines
       .map((c) => c.discipline)
       .filter((d): d is string => Boolean(d && d.trim().length > 0))
       .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string; id?: string }[] = [...rows];
+    const merged: { name: string; color?: string | null; id?: string }[] = [...rows];
     legacy.forEach((d) => {
       if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
         merged.push(d);
       }
     });
-    return merged.length > 0 ? merged : (FALLBACK_DISCIPLINES as { name: string; color?: string }[]);
+    return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
   })();
 
   const initialWeekDays = weekDays.map((d, idx) => {
@@ -592,7 +590,7 @@ const legendItems = [
               <div className="flex flex-wrap gap-2">
                 {disciplines.map((d, idx) => (
                   <label
-                    key={`${(d as any).id ?? d.name}-${idx}`}
+                    key={`${d.id ?? d.name}-${idx}`}
                     className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
                   >
                     <input
@@ -604,7 +602,7 @@ const legendItems = [
                     />
                     <span
                       className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                      style={{ backgroundColor: (d as any).color ?? undefined }}
+                      style={{ backgroundColor: d.color ?? undefined }}
                     />
                     {d.name}
                   </label>

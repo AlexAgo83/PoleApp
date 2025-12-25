@@ -633,7 +633,6 @@ export default async function StudentSchoolPage({
                         const past = isPastCourse(a.course.date, a.course.durationMinutes);
                         const isMineConfirmed = Boolean(a.myAttendance?.status === "CONFIRMED");
                         const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
-                        const confirmedCount = a.course.attendances.filter((att) => att.status === "CONFIRMED").length;
                         const waitlistCount = a.course.attendances.filter((att) => att.status === "WAITLIST").length;
                         const waitlistQuota = a.course.waitlistQuota ?? 0;
                         const waitlistFull = waitlistQuota > 0 && waitlistCount >= waitlistQuota;

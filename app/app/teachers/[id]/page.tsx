@@ -4,7 +4,6 @@ import { notFound, redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateTeacherProfileAction } from "./actions";
 import { TeacherEditPanel } from "./TeacherEditPanel";
 
 const TEACHER_AVATAR_PLACEHOLDER =

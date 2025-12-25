@@ -125,8 +125,9 @@ export default async function AdminPartnersPage({
   }
 
   const partnerIds = partners.map((p) => p.id);
-  const timelineFrom = from ? new Date(`${from}T00:00:00`) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const timelineTo = to ? new Date(`${to}T23:59:59`) : new Date();
+  const now = new Date();
+  const timelineFrom = from ? new Date(`${from}T00:00:00`) : new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const timelineTo = to ? new Date(`${to}T23:59:59`) : now;
   const eventCounts = partnerIds.length
     ? await prisma.partnerEvent
         .groupBy({

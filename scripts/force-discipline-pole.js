@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * Force all courses and positions to use a single discipline (default: "Pole").
  * - Upserts the discipline for every school to avoid foreign mismatches in UI.

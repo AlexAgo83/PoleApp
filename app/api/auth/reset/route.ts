@@ -54,7 +54,6 @@ Connecte-toi avec cet email et change-le dès ta connexion.`;
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error("reset api error", error);
     return NextResponse.json({ ok: true }, { status: 200 });
   }

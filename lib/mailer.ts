@@ -36,7 +36,6 @@ export async function sendMail(options: MailOptions): Promise<{ sent: boolean; i
     });
     return { sent: true, info };
   } catch (error: unknown) {
-    // eslint-disable-next-line no-console
     console.error("[mailer] send error", error);
     return { sent: false, reason: "send failed" };
   }

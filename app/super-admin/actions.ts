@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -21,7 +22,7 @@ async function requireSuperAdmin() {
   return session.user;
 }
 
-async function logAudit(action: string, target?: string, details?: unknown) {
+async function logAudit(action: string, target?: string, details?: Prisma.JsonValue) {
   const session = await getServerSession(authOptions);
   const actorId = session?.user?.id;
   await prisma.auditLog.create({
@@ -29,7 +30,7 @@ async function logAudit(action: string, target?: string, details?: unknown) {
       actorId: actorId ?? undefined,
       action,
       target,
-      details: details as any,
+      details: details ?? null,
     },
   });
 }
@@ -43,11 +44,23 @@ const defaultDisciplines = [
 ];
 
 export async function forceDisciplinePoleAction(formData: FormData) {
-  const admin = await requireSuperAdmin();
+  await requireSuperAdmin();
   const name = formData.get("name")?.toString().trim() || defaultForcedDiscipline.name;
   const color = formData.get("color")?.toString().trim() || defaultForcedDiscipline.color;
+  const confirm = formData.get("confirm")?.toString().trim().toUpperCase();
+  const schoolId = formData.get("schoolId")?.toString().trim();
 
-  const schools = await prisma.school.findMany({ select: { id: true } });
+  if (confirm !== "FORCE") {
+    redirect(`${basePath}?flash=force-invalid`);
+  }
+
+  const schools = await prisma.school.findMany({
+    select: { id: true },
+    where: schoolId ? { id: schoolId } : undefined,
+  });
+  if (schools.length === 0) {
+    redirect(`${basePath}?flash=force-invalid`);
+  }
 
   await prisma.$transaction(async (tx) => {
     await Promise.all(
@@ -63,19 +76,19 @@ export async function forceDisciplinePoleAction(formData: FormData) {
     await tx.position.updateMany({ data: { discipline: name } });
   });
 
-  await logAudit("discipline:force", undefined, { name, color, schools: schools.length });
+  await logAudit("discipline:force", undefined, { name, color, schools: schools.length, scoped: Boolean(schoolId) });
   revalidatePath(basePath);
   revalidatePath("/app");
   revalidatePath("/positions");
   revalidatePath("/app/teacher/courses");
   revalidatePath("/app/student/courses");
+  redirect(`${basePath}?flash=force-ok`);
 }
 
 export async function backfillDisciplinesAction() {
   await requireSuperAdmin();
   const schools = await prisma.school.findMany({ select: { id: true, name: true } });
   for (const school of schools) {
-    // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       defaultDisciplines.map((disc) =>
         prisma.discipline.upsert({
@@ -267,7 +280,6 @@ Connecte-toi et change-le dès que possible.`;
     });
     redirect(`${basePath}?${qs.toString()}`);
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error("resetUserPasswordAction", error);
     redirect(`${basePath}?flash=reset-invalid`);
   }
@@ -300,7 +312,6 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
 
   if (errors.length > 0) {
     const qs = new URLSearchParams({ flash: "invalid-offer", error: errors.join("; ") });
-    // eslint-disable-next-line no-console
     console.error("super-admin invalid offer", errors.join("; "), { form: Object.fromEntries(formData.entries()) });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
@@ -347,7 +358,6 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
 
   if (errors.length > 0) {
     const qs = new URLSearchParams({ flash: "invalid-pack", error: errors.join("; ") });
-    // eslint-disable-next-line no-console
     console.error("super-admin invalid pack", errors.join("; "), { form: Object.fromEntries(formData.entries()) });
     revalidatePath(basePath);
     redirect(`${basePath}?${qs.toString()}`);
