@@ -46,6 +46,8 @@ type ApiResponse = {
   premiumCount: number;
   creditUsersCount: number;
   vatPercent: number;
+  subsMonthCount: number;
+  packsMonthCount: number;
   error?: string;
 };
 
@@ -157,7 +159,7 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
             <p className="text-sm text-slate-300">Actifs = Premium ou crédits &gt; 0.</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-200">Répartition</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-200">Répartition (mois)</p>
             <div className="mt-2 space-y-2 text-sm text-slate-200">
               <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
                 <span>Premium</span>
@@ -169,6 +171,18 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                 <span>Crédits &gt; 0 (forfait/pack)</span>
                 <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5 text-[12px] text-cyan-50">
                   {data.creditUsersCount}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <span>Abos achetés (mois)</span>
+                <span className="rounded-full border border-indigo-300/60 bg-indigo-500/20 px-2 py-0.5 text-[12px] text-indigo-50">
+                  {data.subsMonthCount}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <span>Packs achetés (mois)</span>
+                <span className="rounded-full border border-amber-300/60 bg-amber-500/20 px-2 py-0.5 text-[12px] text-amber-50">
+                  {data.packsMonthCount}
                 </span>
               </div>
             </div>

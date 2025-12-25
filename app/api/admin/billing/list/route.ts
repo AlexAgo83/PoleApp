@@ -129,6 +129,18 @@ export async function GET(request: Request) {
   const creditUsersCount = students.filter((s) => (s.credits ?? 0) > 0).length;
   const activeCount = students.filter((s) => s.isPremium || (s.credits ?? 0) > 0).length;
   const vatPercent = settings?.defaultVatPercent ?? 20;
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const monthPurchases = await prisma.purchase.findMany({
+    where: {
+      createdAt: { gte: monthStart },
+      user: { schoolId: session.user.schoolId },
+    },
+    select: { kind: true },
+  });
+  const subsMonthCount = monthPurchases.filter((p) => p.kind === "SUBSCRIPTION").length;
+  const packsMonthCount = monthPurchases.filter((p) => p.kind === "PACK").length;
 
   return NextResponse.json({
     invoices,
@@ -143,5 +155,7 @@ export async function GET(request: Request) {
     premiumCount,
     creditUsersCount,
     vatPercent,
+    subsMonthCount,
+    packsMonthCount,
   });
 }
