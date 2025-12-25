@@ -17,12 +17,19 @@ const schema = z.object({
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  discipline: z.string().min(1),
   muscles: z.array(z.string()).optional(),
 });
 
 type Muscle = { id: string; name: string; kind: string | null };
 
-export function NewPositionForm({ muscles }: { muscles: Muscle[] }) {
+export function NewPositionForm({
+  muscles,
+  disciplines,
+}: {
+  muscles: Muscle[];
+  disciplines: { name: string; color?: string }[];
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +52,7 @@ export function NewPositionForm({ muscles }: { muscles: Muscle[] }) {
       contraindications: formData.get("contraindications") || undefined,
       imageUrl: formData.get("imageUrl") || undefined,
       videoUrl: formData.get("videoUrl") || undefined,
+      discipline: formData.get("discipline"),
       muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
     });
 
@@ -67,6 +75,12 @@ export function NewPositionForm({ muscles }: { muscles: Muscle[] }) {
         <Field label="Nom" name="name" required />
         <SelectField label="Type" name="type" options={types} />
         <SelectField label="Niveau requis" name="levelRequired" options={levels} />
+        <SelectField
+          label="Discipline"
+          name="discipline"
+          options={disciplines.map((d) => d.name)}
+          defaultValue={disciplines[0]?.name ?? "Danse"}
+        />
         <Field label="Grips (séparés par virgule)" name="grips" placeholder="TRUE, CUP" />
       </div>
       <Field label="Description" name="description" textarea />
@@ -190,16 +204,19 @@ function SelectField({
   label,
   name,
   options,
+  defaultValue,
 }: {
   label: string;
   name: string;
   options: string[];
+  defaultValue?: string;
 }) {
   return (
     <label className="block text-sm text-slate-200">
       {label}
       <select
         name={name}
+        defaultValue={defaultValue}
         className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
       >
         {options.map((opt) => (

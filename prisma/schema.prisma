@@ -135,6 +135,7 @@ model Position {
   description       String?
   levelRequired     PositionLevel
   type              PositionType
+  discipline        String        @default("Danse")
   grips             String?
   tips              String?
   contraindications String?

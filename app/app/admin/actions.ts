@@ -86,8 +86,8 @@ export async function createDisciplineAction(formData: FormData) {
   if (!parsed.success) {
     return redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
-  const name = parsed.data.name.trim();
-  const color = parsed.data.color.trim();
+  const name = parsed.data!.name.trim();
+  const color = parsed.data!.color.trim();
   try {
     await prisma.discipline.create({
       data: {

@@ -257,9 +257,20 @@ export async function generateCourseSuggestions(params: {
   const { courseId, schoolId, studentIds, existingPositionIds = [], limit = 4, forceDiscoverySlot = false } = params;
   if (studentIds.length === 0) return [];
 
-  const [positions, progress, injuries, recentCourses, favorites] = await Promise.all([
+  const [course, positions, progress, injuries, recentCourses, favorites] = await Promise.all([
+    prisma.course.findUnique({
+      where: { id: courseId, schoolId },
+      select: { discipline: true },
+    }),
     prisma.position.findMany({
-      select: { id: true, name: true, type: true, contraindications: true, muscles: { include: { muscle: true } } },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        discipline: true,
+        contraindications: true,
+        muscles: { include: { muscle: true } },
+      },
       orderBy: { name: "asc" },
     }),
     prisma.studentPositionProgress.findMany({
@@ -293,6 +304,11 @@ export async function generateCourseSuggestions(params: {
     }),
   ]);
 
+  if (!course) {
+    return [];
+  }
+  const courseDiscipline = course.discipline?.trim().toLowerCase() || null;
+
   const existingSet = new Set(existingPositionIds);
   const progressByStudent = new Map<string, Map<string, { learningStatus: LearningStatus | null; masteryLevel: MasteryLevel | null }>>();
   progress.forEach((p) => {
@@ -325,7 +341,12 @@ export async function generateCourseSuggestions(params: {
   });
 
   const candidates: CandidateInput[] = positions
-    .filter((p) => !existingSet.has(p.id))
+    .filter((p) => {
+      if (existingSet.has(p.id)) return false;
+      if (!courseDiscipline) return true;
+      const positionDiscipline = p.discipline?.trim().toLowerCase() || "";
+      return positionDiscipline === courseDiscipline;
+    })
     .map((position) => {
       const perStudentStatus = studentIds.map((studentId) => {
         const record = progressByStudent.get(studentId)?.get(position.id);

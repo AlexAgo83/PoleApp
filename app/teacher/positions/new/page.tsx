@@ -15,10 +15,44 @@ export default async function NewPositionPage() {
     redirect("/access-denied");
   }
 
-  const muscles = await prisma.muscle.findMany({
-    orderBy: { name: "asc" },
-    select: { id: true, name: true, kind: true },
-  });
+  const [muscles, disciplinesRaw, courseDisciplines] = await Promise.all([
+    prisma.muscle.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, kind: true },
+    }),
+    prisma.discipline.findMany({
+      where: { schoolId: session.user.schoolId ?? undefined },
+      select: { name: true, color: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.course.findMany({
+      where: { schoolId: session.user.schoolId ?? undefined },
+      select: { discipline: true },
+      distinct: ["discipline"],
+    }),
+  ]);
+
+  const fallbackDisciplines = [
+    { name: "Danse" },
+    { name: "Pole" },
+    { name: "Exotic" },
+    { name: "Souplesse" },
+    { name: "Pilates" },
+  ];
+  const disciplines = (() => {
+    const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
+    const legacy = courseDisciplines
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged: { name: string; color?: string; id?: string }[] = [...rows];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d);
+      }
+    });
+    return merged.length > 0 ? merged : fallbackDisciplines;
+  })();
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-6 md:py-10">
@@ -59,7 +93,7 @@ export default async function NewPositionPage() {
       </header>
 
       <section className="panel p-4 md:p-6">
-        <NewPositionForm muscles={muscles} />
+        <NewPositionForm muscles={muscles} disciplines={disciplines} />
       </section>
     </main>
   );

@@ -78,12 +78,12 @@ export default async function NewCoursePage() {
     { name: "Pilates" },
   ];
   const mergedDisciplines = (() => {
-    const rows = disciplinesRaw ?? [];
+    const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
     const legacy = courseDisciplines
       .map((c) => c.discipline)
       .filter((d): d is string => Boolean(d && d.trim().length > 0))
       .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged = [...rows];
+    const merged: { name: string; color?: string; id?: string }[] = [...rows];
     legacy.forEach((d) => {
       if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
         merged.push(d);
