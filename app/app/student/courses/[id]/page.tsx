@@ -62,6 +62,7 @@ export default async function StudentCourseDetailPage({
         maxSeats: true,
         costCredits: true,
         waitlistQuota: true,
+        discipline: true,
         photoUrl: true,
         school: { select: { name: true } },
         teacher: { select: { id: true, name: true, email: true } },
@@ -184,6 +185,11 @@ export default async function StudentCourseDetailPage({
                 <p>
                   {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
                 </p>
+                {course.discipline && (
+                  <p className="text-sm text-cyan-100">
+                    Discipline · {course.discipline}
+                  </p>
+                )}
                 <p className="flex flex-wrap items-center gap-2">
                   {remainingSeats} place(s) restante(s) · {cost} crédits
                   {isWaitlist && (

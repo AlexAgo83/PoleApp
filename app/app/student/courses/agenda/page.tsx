@@ -184,6 +184,7 @@ export default async function StudentCoursesAgendaPage({
             select: {
               id: true,
               title: true,
+              discipline: true,
               date: true,
               durationMinutes: true,
               maxSeats: true,
@@ -309,6 +310,7 @@ export default async function StudentCoursesAgendaPage({
         return {
           id: a.course.id,
           title: a.course.title,
+          discipline: a.course.discipline,
           date: a.course.date.toISOString(),
           durationMinutes: a.course.durationMinutes,
           teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",

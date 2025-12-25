@@ -10,6 +10,7 @@ type DayCourse = {
   durationMinutes: number | null;
   teacherName: string;
   studioName: string;
+  discipline?: string | null;
   past: boolean;
   myStatus: "CONFIRMED" | "WAITLIST" | null;
   waitlistRank: number | null;
@@ -167,6 +168,11 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                           <p className="truncate text-[10px] text-slate-200">
                             {course.studioName}
                           </p>
+                          {course.discipline && (
+                            <p className="truncate text-[10px] text-cyan-50/90">
+                              Discipline · {course.discipline}
+                            </p>
+                          )}
                         </div>
                         <span
                           className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}

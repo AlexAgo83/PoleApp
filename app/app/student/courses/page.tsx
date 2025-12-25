@@ -24,6 +24,7 @@ type CourseRow = {
   maxSeats: number;
   costCredits: number;
   photoUrl?: string | null;
+  discipline?: string | null;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { name: string } | null;
   positions: { position: { id: string; name: string } }[];
@@ -543,6 +544,11 @@ export default async function StudentCoursesPage({
                         {course.studio?.name && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
                             Studio · {course.studio.name}
+                          </span>
+                        )}
+                        {course.discipline && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                            Discipline · {course.discipline}
                           </span>
                         )}
                         {course.positions.length > 0 && (

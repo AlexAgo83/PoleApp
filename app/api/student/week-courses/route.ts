@@ -86,6 +86,7 @@ export async function GET(req: Request) {
             select: {
               id: true,
               title: true,
+              discipline: true,
               date: true,
               durationMinutes: true,
               teacher: { select: { name: true, email: true } },
@@ -143,6 +144,7 @@ export async function GET(req: Request) {
       courses: dayCourses.map((a) => ({
         id: a.course.id,
         title: a.course.title,
+        discipline: a.course.discipline,
         date: a.course.date.toISOString(),
         durationMinutes: a.course.durationMinutes,
         teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
