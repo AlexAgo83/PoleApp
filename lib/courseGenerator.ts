@@ -9,6 +9,7 @@ export type CourseSuggestion = {
   name: string;
   type?: Position["type"] | null;
   tag: SuggestionTag;
+  category?: "NOVELTY" | "INITIATED" | "PASSED" | "CHOREO";
   reason: string;
   favoriteCount?: number;
   excludedForInjury?: boolean;
@@ -32,6 +33,7 @@ type CandidateInput = {
 function summarizeCandidate(candidate: CandidateInput): {
   score: number;
   tag: SuggestionTag;
+  category: "NOVELTY" | "INITIATED" | "PASSED" | "CHOREO";
   reason: string;
 } {
   const total = Math.max(1, candidate.perStudentStatus.length);
@@ -39,6 +41,10 @@ function summarizeCandidate(candidate: CandidateInput): {
   const inProgress = candidate.perStudentStatus.filter((s) => s === "IN_PROGRESS").length;
   const passed = candidate.perStudentStatus.filter((s) => s === "PASSED").length;
   const mastered = candidate.perStudentStatus.filter((s) => s === "MASTERED").length;
+  const ratioNotStarted = notStarted / total;
+  const ratioMastered = mastered / total;
+  const ratioPassed = passed / total;
+  const ratioInProgress = inProgress / total;
 
   const discoveryScore = (notStarted * 3 + inProgress) / total;
   const revisionScore = (inProgress * 2 + notStarted) / total;
@@ -50,6 +56,17 @@ function summarizeCandidate(candidate: CandidateInput): {
       : revisionScore >= safeScore
         ? "REVISION"
         : "SAFE";
+
+  const category: "NOVELTY" | "INITIATED" | "PASSED" | "CHOREO" =
+    ratioMastered >= 0.2
+      ? "CHOREO"
+      : ratioNotStarted >= 0.8
+        ? "NOVELTY"
+        : ratioPassed >= 0.6
+          ? "PASSED"
+          : ratioInProgress >= 0.4
+            ? "INITIATED"
+            : "PASSED";
 
   // Pondérations ajustées : pénaliser plus la répétition récente et les blessures, valoriser un peu plus les coups de cœur.
   const recencyPenalty = candidate.recentOccurrences * 2;
@@ -79,60 +96,50 @@ function summarizeCandidate(candidate: CandidateInput): {
   return {
     score: totalScore,
     tag,
+    category,
     reason: parts.join(" · "),
   };
 }
 
 function selectTopSuggestions(
   candidates: CandidateInput[],
-  limit = 4,
+  limit = 7,
   options?: { forceDiscoverySlot?: boolean }
 ): CourseSuggestion[] {
   const scored = candidates.map((c) => ({ ...summarizeCandidate(c), candidate: c }));
   const safe = scored.filter((s) => !s.candidate.excludedForInjury);
   const excluded = scored.filter((s) => s.candidate.excludedForInjury);
-  const byTag: Record<SuggestionTag, typeof scored> = {
-    DISCOVERY: safe.filter((s) => s.tag === "DISCOVERY").sort((a, b) => b.score - a.score),
-    REVISION: safe.filter((s) => s.tag === "REVISION").sort((a, b) => b.score - a.score),
-    SAFE: safe.filter((s) => s.tag === "SAFE").sort((a, b) => b.score - a.score),
+  const byCategory: Record<"NOVELTY" | "INITIATED" | "PASSED" | "CHOREO", typeof scored> = {
+    NOVELTY: safe.filter((s) => s.category === "NOVELTY").sort((a, b) => b.score - a.score),
+    INITIATED: safe.filter((s) => s.category === "INITIATED").sort((a, b) => b.score - a.score),
+    PASSED: safe.filter((s) => s.category === "PASSED").sort((a, b) => b.score - a.score),
+    CHOREO: safe.filter((s) => s.category === "CHOREO").sort((a, b) => b.score - a.score),
   };
 
   const selection: typeof scored = [];
-  const take = (tag: SuggestionTag) => {
-    const next = byTag[tag].shift();
+  const take = (cat: "NOVELTY" | "INITIATED" | "PASSED" | "CHOREO") => {
+    const next = byCategory[cat].shift();
     if (next) selection.push(next);
   };
 
-  take("DISCOVERY");
-  take("REVISION");
-  take("SAFE");
-  take("SAFE");
+  take("NOVELTY");
+  take("INITIATED");
+  take("INITIATED");
+  take("PASSED");
+  take("PASSED");
+  take("PASSED");
+  take("CHOREO");
 
-  if (selection.length < limit) {
-    const remaining = safe
-      .filter((s) => !selection.includes(s))
-      .sort((a, b) => b.score - a.score);
-    while (selection.length < limit && remaining.length > 0) {
-      selection.push(remaining.shift()!);
-    }
+  const remainingSafe = safe
+    .filter((s) => !selection.includes(s))
+    .sort((a, b) => b.score - a.score);
+  while (selection.length < limit && remainingSafe.length > 0) {
+    selection.push(remainingSafe.shift()!);
   }
 
-  // Assurer au moins une révision si disponible (et non prise) pour équilibrer le plan.
-  if (!selection.some((s) => s.tag === "REVISION") && byTag.REVISION.length > 0) {
-    const bestRevision = byTag.REVISION[0];
-    const lowestIdx = selection.reduce(
-      (acc, curr, idx) => (curr.score < selection[acc].score ? idx : acc),
-      0
-    );
-    selection[lowestIdx] = bestRevision;
-  }
-
-  // Fallback : si pas assez de safe et qu'il reste des exclus (blessures), on en ajoute avec pénalité.
-  if (selection.length < limit && excluded.length > 0) {
-    const excludedSorted = excluded.sort((a, b) => b.score - a.score);
-    while (selection.length < limit && excludedSorted.length > 0) {
-      selection.push(excludedSorted.shift()!);
-    }
+  const remainingExcluded = excluded.sort((a, b) => b.score - a.score);
+  while (selection.length < limit && remainingExcluded.length > 0) {
+    selection.push(remainingExcluded.shift()!);
   }
 
   if (options?.forceDiscoverySlot && !selection.some((s) => s.tag === "DISCOVERY")) {
@@ -145,18 +152,60 @@ function selectTopSuggestions(
     }
   }
 
-  return selection.slice(0, limit).map((item) => ({
+  const categoryLabel: Record<"NOVELTY" | "INITIATED" | "PASSED" | "CHOREO", string> = {
+    NOVELTY: "Nouveauté",
+    INITIATED: "Initié",
+    PASSED: "Passé/Maîtrisé",
+    CHOREO: "Fluide chorégraphié",
+  };
+
+  // Réordonner pour éviter deux transitions de suite et insérer une transition après Trick↔Spin si possible.
+  const transitionsPool = candidates.filter(
+    (c) => c.type === "TRANSITION" && !selection.some((s) => s.candidate.positionId === c.positionId)
+  );
+  const reordered: typeof selection = [];
+  const maybeTakeTransition = () => {
+    const next = transitionsPool.shift();
+    if (next) {
+      reordered.push({ ...summarizeCandidate(next), candidate: next });
+    }
+  };
+  selection.slice(0, limit).forEach((item, idx) => {
+    const prev = reordered[reordered.length - 1];
+    const isTransition = item.candidate.type === "TRANSITION";
+    if (isTransition && prev && prev.candidate.type === "TRANSITION") {
+      // skip duplicate transitions
+      return;
+    }
+    reordered.push(item);
+    const next = selection[idx + 1];
+    const needTransition =
+      !isTransition &&
+      next &&
+      next.candidate.type &&
+      item.candidate.type &&
+      ((item.candidate.type === "TRICK" && next.candidate.type === "SPIN") ||
+        (item.candidate.type === "SPIN" && next.candidate.type === "TRICK"));
+    if (needTransition) {
+      maybeTakeTransition();
+    }
+  });
+
+  const finalList = reordered.slice(0, limit).map((item) => ({
     positionId: item.candidate.positionId,
     name: item.candidate.name,
     type: item.candidate.type,
     tag: item.tag,
-    reason: item.reason,
+    category: item.category,
+    reason: `${categoryLabel[item.category]} · ${item.reason}`,
     favoriteCount: item.candidate.favoriteCount,
     excludedForInjury: item.candidate.excludedForInjury,
     unsafeInjuries: item.candidate.unsafeForStudents,
     excluded: item.candidate.excludedForInjury,
     forced: false,
   }));
+
+  return finalList;
 }
 
 function deriveLearningState(

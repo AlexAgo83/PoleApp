@@ -10,17 +10,17 @@ import { prisma } from "@/lib/prisma";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 
 const statusLabels: Record<LearningStatus, string> = {
-  NOT_STARTED: "Découverte",
-  IN_PROGRESS: "Tenté",
+  NOT_STARTED: "Nouveauté",
+  IN_PROGRESS: "Initié",
   PASSED: "Passé",
-  MASTERED: "Fluide",
+  MASTERED: "Fluide chorégraphié",
 };
 
 const masteryLabels: Record<MasteryLevel, string> = {
-  INITIATED: "Initiation",
+  INITIATED: "Initié",
   PASSED: "Passé",
-  FLUID: "Fluide",
-  CHOREO: "Choréo",
+  FLUID: "Fluide chorégraphié",
+  CHOREO: "Fluide chorégraphié",
 };
 
 const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {
