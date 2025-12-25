@@ -132,6 +132,13 @@ export default async function TeacherCoursesPage({
         return FALLBACK_DISCIPLINES;
       }
     })()) ?? FALLBACK_DISCIPLINES;
+  const teacherChip =
+    teacherFilter
+      ? teachers.find((t) => t.id === teacherFilter) ??
+        (await prisma.user
+          .findUnique({ where: { id: teacherFilter }, select: { name: true, email: true } })
+          .catch(() => null))
+      : null;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
@@ -381,7 +388,8 @@ export default async function TeacherCoursesPage({
               ))}
             {teacherFilter && (
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
-                Prof : {teacherFilter}
+                Prof :{" "}
+                {teacherChip?.name ?? teacherChip?.email ?? teacherFilter}
               </span>
             )}
             {studioFilter && (
