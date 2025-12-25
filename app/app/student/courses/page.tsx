@@ -68,6 +68,7 @@ export default async function StudentCoursesPage({
     studio?: string;
     withNotes?: string;
     sort?: string;
+    discipline?: string | string[];
     statuses?: string | string[];
   }>;
 }) {
@@ -110,6 +111,13 @@ export default async function StudentCoursesPage({
   const validTo = toDate && !Number.isNaN(toDate.getTime()) ? toDate : undefined;
   const withNotes = paramValue(resolvedParams.withNotes) === "true";
   const sort = paramValue(resolvedParams.sort) === "date_asc" ? "date_asc" : "date_desc";
+  const disciplineParam = resolvedParams.discipline;
+  const disciplineFilters =
+    typeof disciplineParam === "string"
+      ? disciplineParam.split(",").map((v) => v.trim()).filter(Boolean)
+      : Array.isArray(disciplineParam)
+      ? disciplineParam.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean)
+      : [];
   const activeFilters = [
     validFrom,
     validTo,
@@ -118,6 +126,7 @@ export default async function StudentCoursesPage({
     withNotes ? "notes" : null,
     sort === "date_asc" ? "sort" : null,
     onlyMine ? "mine" : null,
+    disciplineFilters.length > 0 ? "discipline" : null,
     selectedStatuses.length !== 4 ? "statuses" : null,
   ].filter(Boolean).length;
 
@@ -126,6 +135,13 @@ export default async function StudentCoursesPage({
     ...(validTo ? { date: { lte: validTo } } : {}),
     ...(teacherFilter ? { teacherId: teacherFilter } : {}),
     ...(studioFilter ? { studioId: studioFilter } : {}),
+    ...(disciplineFilters.length > 0
+      ? {
+          OR: disciplineFilters.map((d) => ({
+            discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+          })),
+        }
+      : {}),
     ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
   };
 
@@ -274,6 +290,7 @@ export default async function StudentCoursesPage({
   if (withNotes) queryParams.set("withNotes", "true");
   if (sort === "date_asc") queryParams.set("sort", "date_asc");
   if (onlyMine) queryParams.set("mine", "true");
+  if (disciplineFilters.length > 0) queryParams.set("discipline", disciplineFilters.join(","));
   const qs = queryParams.toString();
   const legendItems = [
     {
@@ -348,10 +365,10 @@ export default async function StudentCoursesPage({
           userKey={userKey}
         >
           <form
-            key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}`}
-            method="get"
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
-          >
+          key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}-${disciplineFilters.join("|") || "all"}`}
+          method="get"
+          className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
+        >
             <label className="text-sm text-slate-200">
               Date min
               <input
@@ -401,6 +418,26 @@ export default async function StudentCoursesPage({
                 ))}
               </select>
             </label>
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Discipline</legend>
+              <div className="flex flex-wrap gap-2">
+                {["Pole", "Exotic", "Souplesse", "Pilates"].map((d) => (
+                  <label
+                    key={d}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="discipline"
+                      value={d}
+                      defaultChecked={disciplineFilters.includes(d)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {d}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Tri
               <select

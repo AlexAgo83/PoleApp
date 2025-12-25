@@ -20,6 +20,13 @@ export async function GET(req: Request) {
   const teacherFilter = searchParams.get("teacher") || undefined;
   const studioFilter = searchParams.get("studio") || undefined;
   const q = searchParams.get("q")?.trim() || undefined;
+  const disciplineParam = searchParams.get("discipline") || undefined;
+  const disciplineFilters = disciplineParam
+    ? disciplineParam
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+    : [];
   const mine = searchParams.get("mine") === "true" || searchParams.get("mine") === "1" || searchParams.get("mine") === "on";
   const schoolsParam = searchParams.get("schools") === "all";
 
@@ -62,6 +69,13 @@ export async function GET(req: Request) {
     ...(q
       ? {
           title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
+        }
+      : {}),
+    ...(disciplineFilters.length > 0
+      ? {
+          OR: disciplineFilters.map((d) => ({
+            discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+          })),
         }
       : {}),
     ...(allowedSchoolIds && allowedSchoolIds.length > 0

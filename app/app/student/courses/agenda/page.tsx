@@ -42,6 +42,7 @@ export default async function StudentCoursesAgendaPage({
     from?: string;
     to?: string;
     q?: string;
+    discipline?: string | string[];
     statuses?: string | string[];
   }>;
 }) {
@@ -76,6 +77,13 @@ export default async function StudentCoursesAgendaPage({
   const toParam = typeof resolved.to === "string" ? resolved.to : undefined;
   const q = resolved.q?.toString().trim() ?? "";
   const statusesParam = resolved.statuses;
+  const disciplineParam = resolved.discipline;
+  const disciplineFilters =
+    typeof disciplineParam === "string"
+      ? disciplineParam.split(",").map((v) => v.trim()).filter(Boolean)
+      : Array.isArray(disciplineParam)
+      ? disciplineParam.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean)
+      : [];
   const selectedStatuses =
     typeof statusesParam === "string"
       ? statusesParam.split(",").map((s) => s.trim()).filter(Boolean)
@@ -146,6 +154,7 @@ export default async function StudentCoursesAgendaPage({
     if (toParam) params.set("to", toParam);
     if (studioFilter) params.set("studio", studioFilter);
     if (teacherFilter) params.set("teacher", teacherFilter);
+    if (disciplineFilters.length > 0) params.set("discipline", disciplineFilters.join(","));
     if (onlyMine) params.set("mine", "true");
     if (schoolsParam) params.set("schools", "all");
     if (q) params.set("q", q);
@@ -160,14 +169,21 @@ export default async function StudentCoursesAgendaPage({
             date: { gte: rangeStart, lte: rangeEnd },
             ...(teacherFilter ? { teacherId: teacherFilter } : {}),
             ...(studioFilter ? { studioId: studioFilter } : {}),
-            ...(q
-              ? {
-                  title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
-                }
-              : {}),
-            ...(selectedStatuses.includes("past")
-              ? {}
-              : { date: { gte: new Date() } }),
+    ...(q
+      ? {
+          title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
+        }
+      : {}),
+    ...(disciplineFilters.length > 0
+      ? {
+          OR: disciplineFilters.map((d) => ({
+            discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+          })),
+        }
+      : {}),
+    ...(selectedStatuses.includes("past")
+      ? {}
+      : { date: { gte: new Date() } }),
             ...(allowedSchoolIds && allowedSchoolIds.length > 0
               ? { schoolId: { in: allowedSchoolIds } }
               : session.user.schoolId
@@ -214,6 +230,13 @@ export default async function StudentCoursesAgendaPage({
                   title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
                 }
               : {}),
+            ...(disciplineFilters.length > 0
+              ? {
+                  OR: disciplineFilters.map((d) => ({
+                    discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+                  })),
+                }
+              : {}),
             ...(selectedStatuses.includes("past")
               ? {}
               : { date: { gte: new Date() } }),
@@ -238,6 +261,13 @@ export default async function StudentCoursesAgendaPage({
         date: { gte: rangeStart, lte: rangeEnd },
         ...(teacherFilter ? { teacherId: teacherFilter } : {}),
         ...(studioFilter ? { studioId: studioFilter } : {}),
+        ...(disciplineFilters.length > 0
+          ? {
+              OR: disciplineFilters.map((d) => ({
+                discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+              })),
+            }
+          : {}),
         ...(allowedSchoolIds && allowedSchoolIds.length > 0
           ? { schoolId: { in: allowedSchoolIds } }
           : session.user.schoolId
@@ -347,6 +377,7 @@ export default async function StudentCoursesAgendaPage({
     (onlyMine ? 1 : 0) +
     (fromParam ? 1 : 0) +
     (toParam ? 1 : 0) +
+    (disciplineFilters.length > 0 ? 1 : 0) +
     (selectedStatuses.length !== 4 ? 1 : 0) +
     (q ? 1 : 0);
 
@@ -355,6 +386,7 @@ export default async function StudentCoursesAgendaPage({
   if (teacherFilter) monthParams.set("teacher", teacherFilter);
   if (onlyMine) monthParams.set("mine", "true");
   if (schoolsParam) monthParams.set("schools", "all");
+  if (disciplineFilters.length > 0) monthParams.set("discipline", disciplineFilters.join(","));
   if (fromParam) monthParams.set("from", fromParam);
   if (toParam) monthParams.set("to", toParam);
   if (q) monthParams.set("q", q);
@@ -411,6 +443,9 @@ const legendItems = [
           {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
           {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
           {schoolsParam ? <input type="hidden" name="schools" value="all" /> : null}
+          {disciplineFilters.length > 0 ? (
+            <input type="hidden" name="discipline" value={disciplineFilters.join(",")} />
+          ) : null}
           {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
           {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
           {q ? <input type="hidden" name="q" value={q} /> : null}
@@ -507,6 +542,26 @@ const legendItems = [
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Discipline</legend>
+              <div className="flex flex-wrap gap-2">
+                {["Pole", "Exotic", "Souplesse", "Pilates"].map((d) => (
+                  <label
+                    key={d}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="discipline"
+                      value={d}
+                      defaultChecked={disciplineFilters.includes(d)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
+                    {d}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Professeur
               <select
@@ -778,6 +833,7 @@ const legendItems = [
           filters={{
             teacher: teacherFilter,
             studio: studioFilter,
+            discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
             mine: onlyMine,
             schools: schoolsParam,
             q,
