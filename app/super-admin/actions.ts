@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/mailer";
 
 const basePath = "/super-admin";
 
@@ -214,6 +215,18 @@ export async function resetUserPasswordAction(formData: FormData) {
   await logAudit("user:reset-password", user.id, {
     email: user.email,
     by: admin.email,
+  });
+
+  const bodyText = `Bonjour,
+
+Ton mot de passe a été réinitialisé par un super admin.
+Nouveau mot de passe temporaire : ${tempPassword}
+Connecte-toi et change-le dès que possible.`;
+
+  void sendMail({
+    to: user.email,
+    subject: "Mot de passe temporaire",
+    text: bodyText,
   });
 
   const qs = new URLSearchParams({
