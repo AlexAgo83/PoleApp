@@ -30,6 +30,33 @@ async function logAudit(action: string, target?: string, details?: unknown) {
   });
 }
 
+const defaultDisciplines = [
+  { name: "Pole", color: "#0ea5e9" },
+  { name: "Exotic", color: "#ec4899" },
+  { name: "Souplesse", color: "#a855f7" },
+  { name: "Pilates", color: "#10b981" },
+  { name: "Danse", color: "#7c3aed" },
+];
+
+export async function backfillDisciplinesAction() {
+  await requireSuperAdmin();
+  const schools = await prisma.school.findMany({ select: { id: true, name: true } });
+  for (const school of schools) {
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      defaultDisciplines.map((disc) =>
+        prisma.discipline.upsert({
+          where: { schoolId_name: { schoolId: school.id, name: disc.name } },
+          update: { color: disc.color },
+          create: { schoolId: school.id, name: disc.name, color: disc.color },
+        })
+      )
+    );
+  }
+  await logAudit("discipline:backfill", undefined, { schools: schools.length, items: defaultDisciplines.length });
+  revalidatePath(basePath);
+}
+
 const settingsSchema = z.object({
   vatPercent: z.coerce.number().min(0).max(100),
   currency: z.string().min(1).max(8),

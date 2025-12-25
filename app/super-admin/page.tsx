@@ -7,6 +7,7 @@ import {
   createSchoolAction,
   deleteCreditPackOfferAction,
   deleteSubscriptionOfferAction,
+  backfillDisciplinesAction,
   promoteSuperAdminAction,
   toggleArchiveSchoolAction,
   updateSettingsAction,
@@ -186,6 +187,17 @@ export default async function SuperAdminPage({
               </dd>
             </div>
           </dl>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <form action={backfillDisciplinesAction}>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-500/15 px-3 py-2 text-sm font-semibold text-amber-50 transition hover:border-amber-200/80 hover:bg-amber-500/25"
+            >
+              Backfill disciplines (Pole/Exotic/Souplesse/Pilates/Danse)
+            </button>
+          </form>
         </div>
 
         <form action={updateSettingsAction} className="mt-4 grid gap-3 md:grid-cols-3">
