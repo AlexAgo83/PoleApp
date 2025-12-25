@@ -83,7 +83,7 @@ export async function createDisciplineAction(formData: FormData) {
     name: formData.get("name"),
     color: formData.get("color") ?? "#7c3aed",
   });
-  if (!parsed.success) {
+  if (!parsed.success || !parsed.data) {
     redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
   const name = parsed.data.name.trim();
@@ -119,7 +119,7 @@ export async function updateDisciplineAction(formData: FormData) {
       name: formData.get("name"),
       color: formData.get("color") ?? "#7c3aed",
     });
-  if (!parsed.success) {
+  if (!parsed.success || !parsed.data) {
     redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
   const { disciplineId, name, color } = parsed.data;
