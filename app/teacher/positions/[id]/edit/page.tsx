@@ -232,35 +232,7 @@ function MuscleSelect({
   return (
     <div className="space-y-2 md:col-span-2">
       <p className="text-sm font-semibold text-slate-100">Muscles / articulations sollicités</p>
-      <p className="text-xs text-slate-400">Multi-sélection (référentiel). Boutons tout/aucun disponibles.</p>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          onClick={() => {
-            const form = document.querySelector<HTMLFormElement>("form");
-            if (!form) return;
-            form.querySelectorAll<HTMLInputElement>("input[name='muscles']").forEach((input) => {
-              input.checked = true;
-            });
-          }}
-        >
-          Tout
-        </button>
-        <button
-          type="button"
-          className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          onClick={() => {
-            const form = document.querySelector<HTMLFormElement>("form");
-            if (!form) return;
-            form.querySelectorAll<HTMLInputElement>("input[name='muscles']").forEach((input) => {
-              input.checked = false;
-            });
-          }}
-        >
-          Aucun
-        </button>
-      </div>
+      <p className="text-xs text-slate-400">Multi-sélection (référentiel).</p>
       <div className="flex flex-wrap gap-2">
         {visible.map((m) => (
           <label
