@@ -33,9 +33,9 @@ const progressLabels: Record<string, string> = {
   IN_PROGRESS: "Initié",
   PASSED: "Passé",
   MASTERED: "Fluide chorégraphié",
+  NOVELTY: "Nouveauté",
   INITIATED: "Initié",
-  FLUID: "Fluide chorégraphié",
-  CHOREO: "Fluide chorégraphié",
+  FLUID_CHOREO: "Fluide chorégraphié",
 };
 
 type SearchParams =
@@ -113,9 +113,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     IN_PROGRESS: "border-[#f59e0b] bg-[#f59e0b] text-white",
     PASSED: "border-[#10b981] bg-[#10b981] text-white",
     MASTERED: "border-[#7c3aed] bg-[#7c3aed] text-white",
+    NOVELTY: "border-[#2563eb] bg-[#2563eb] text-white",
     INITIATED: "border-[#2563eb] bg-[#2563eb] text-white",
-    FLUID: "border-[#7c3aed] bg-[#7c3aed] text-white",
-    CHOREO: "border-[#7c3aed] bg-[#7c3aed] text-white",
+    FLUID_CHOREO: "border-[#7c3aed] bg-[#7c3aed] text-white",
   };
   const canManage = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
 

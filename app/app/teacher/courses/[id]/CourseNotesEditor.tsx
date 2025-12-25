@@ -28,10 +28,10 @@ export function CourseNotesEditor({ students, positions, existingNotes, courseId
   const masteryOptions = useMemo(
     () => [
       { value: "", label: "(non renseigné)" },
+      { value: MasteryLevel.NOVELTY, label: "Nouveauté" },
       { value: MasteryLevel.INITIATED, label: "Initié" },
       { value: MasteryLevel.PASSED, label: "Passé" },
-      { value: MasteryLevel.FLUID, label: "Fluide chorégraphié" },
-      { value: MasteryLevel.CHOREO, label: "Fluide chorégraphié" },
+      { value: MasteryLevel.FLUID_CHOREO, label: "Fluide chorégraphié" },
     ],
     []
   );
@@ -77,16 +77,18 @@ export function CourseNotesEditor({ students, positions, existingNotes, courseId
                       <label className="block">
                         Niveau
                         <select
-                          value={current?.masteryLevel ?? ""}
-                          onChange={(e) =>
+                        value={current?.masteryLevel ?? ""}
+                          onChange={(e) => {
+                            const raw = e.target.value as MasteryLevel | "";
+                            const nextValue = raw === "" ? undefined : (raw as MasteryLevel);
                             setNotes((prev) => ({
                               ...prev,
                               [key]: {
                                 ...(prev[key] ?? { studentId: student.id, positionId: pos.id }),
-                                masteryLevel: e.target.value as MasteryLevel,
+                                masteryLevel: nextValue,
                               },
-                            }))
-                          }
+                            }));
+                          }}
                           className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
                         >
                           {masteryOptions.map((opt) => (

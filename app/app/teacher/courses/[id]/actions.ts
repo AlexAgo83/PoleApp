@@ -312,11 +312,11 @@ async function upsertProgressFromNotes(
 ) {
   for (const note of notes) {
     const learningStatus =
-      note.masteryLevel === MasteryLevel.PASSED ||
-      note.masteryLevel === MasteryLevel.FLUID ||
-      note.masteryLevel === MasteryLevel.CHOREO
+      note.masteryLevel === MasteryLevel.PASSED || note.masteryLevel === MasteryLevel.FLUID_CHOREO
         ? LearningStatus.PASSED
-        : LearningStatus.IN_PROGRESS;
+        : note.masteryLevel === MasteryLevel.INITIATED
+          ? LearningStatus.IN_PROGRESS
+          : LearningStatus.NOT_STARTED;
 
     await tx.studentPositionProgress.upsert({
       where: {

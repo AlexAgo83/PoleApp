@@ -353,10 +353,10 @@ export default async function TeacherStudentDetailPage({
                       className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                     >
                       <option value="">(non renseigné)</option>
+                      <option value="NOVELTY">Nouveauté</option>
                       <option value="INITIATED">Initié</option>
                       <option value="PASSED">Passé</option>
-                      <option value="FLUID">Fluide chorégraphié</option>
-                      <option value="CHOREO">Fluide chorégraphié</option>
+                      <option value="FLUID_CHOREO">Fluide chorégraphié</option>
                     </select>
                   </label>
                   <label className="block">
