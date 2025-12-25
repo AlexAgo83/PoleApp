@@ -192,49 +192,55 @@ const resetSchema = z.object({
 
 export async function resetUserPasswordAction(formData: FormData) {
   const admin = await requireSuperAdmin();
-  const parsed = resetSchema.safeParse({
-    email: formData.get("email"),
-  });
-  if (!parsed.success) {
-    redirect(`${basePath}?flash=reset-invalid`);
-  }
+  try {
+    const parsed = resetSchema.safeParse({
+      email: formData.get("email"),
+    });
+    if (!parsed.success) {
+      redirect(`${basePath}?flash=reset-invalid`);
+    }
 
-  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
-  if (!user) {
-    redirect(`${basePath}?flash=reset-not-found`);
-  }
+    const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+    if (!user) {
+      redirect(`${basePath}?flash=reset-not-found`);
+    }
 
-  const tempPassword = crypto.randomBytes(9).toString("base64url").slice(0, 12);
-  const passwordHash = await bcrypt.hash(tempPassword, 10);
+    const tempPassword = crypto.randomBytes(9).toString("base64url").slice(0, 12);
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
 
-  await prisma.user.update({
-    where: { email: parsed.data.email },
-    data: { passwordHash },
-  });
+    await prisma.user.update({
+      where: { email: parsed.data.email },
+      data: { passwordHash },
+    });
 
-  await logAudit("user:reset-password", user.id, {
-    email: user.email,
-    by: admin.email,
-  });
+    await logAudit("user:reset-password", user.id, {
+      email: user.email,
+      by: admin.email,
+    });
 
-  const bodyText = `Bonjour,
+    const bodyText = `Bonjour,
 
 Ton mot de passe a été réinitialisé par un super admin.
 Nouveau mot de passe temporaire : ${tempPassword}
 Connecte-toi et change-le dès que possible.`;
 
-  void sendMail({
-    to: user.email,
-    subject: "Mot de passe temporaire",
-    text: bodyText,
-  });
+    void sendMail({
+      to: user.email,
+      subject: "Mot de passe temporaire",
+      text: bodyText,
+    });
 
-  const qs = new URLSearchParams({
-    flash: "reset-ok",
-    temp: tempPassword,
-    email: user.email,
-  });
-  redirect(`${basePath}?${qs.toString()}`);
+    const qs = new URLSearchParams({
+      flash: "reset-ok",
+      temp: tempPassword,
+      email: user.email,
+    });
+    redirect(`${basePath}?${qs.toString()}`);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("resetUserPasswordAction", error);
+    redirect(`${basePath}?flash=reset-invalid`);
+  }
 }
 
 function euroToCents(value: number) {
