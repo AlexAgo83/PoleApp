@@ -13,7 +13,7 @@
 - Positions : **(DONE)** un prof ne peut modifier/supprimer que ses fiches créées ; fiches globales en lecture seule (crayon absent/inactif) (P1).
 - Partenaires prof : permettre au prof d’ajouter ses partenaires (visibles pour lui) et de les rattacher à sa fiche (réutilisables cours/positions) (P2).
 - Factures prof : bouton Générer facture → PDF (logo + adresse école + titre/date/prof/studio/montant) numéroté par période, état “Générée” puis téléchargement ; bouton Envoyer à l’école (email) + indicateur “Facture envoyée” ; switch Non payée → Réglée (persistant, filtrable) (P0).
-- Disciplines : liste dynamique à maintenir côté école (CRUD admin), utiliser pour filtres prof/élève ; par défaut liste existante (Pole/Exotic/Souplesse/Pilates) mais extensible.
+- Disciplines : liste dynamique à maintenir côté école (CRUD admin, nom+couleur), utiliser pour filtres prof/élève ; seed Pole/Exotic/Souplesse/Pilates par école ; backfill “Danse” pour cours existants ; suppression bloquée si utilisée.
 
 ## 2) Vue Élève (résultat : parcours clair, premium valorisé)
 - Cours/Contenus : **(PARTIEL)** corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet). Positions des cours désormais affichées côté élève (liste + planning) ; pas de multi-prof (modèle 1 prof par cours) ; disciplines exposées (agenda semaine + liste + détail).
@@ -23,7 +23,7 @@
 - Positions élève : supprimer le bloc de gating ; accès selon statut standard/premium sans encart (P2).
 - Mini-jeux : **(DONE)** corriger le message “pas assez de positions” quand le seuil est atteint (vérifier pool) (P1). _(Seuil déclenché seulement si aucune position dispo ; message ajusté.)_
 - Achats simulés : **(PARTIEL)** historique minimal des achats (date, offre, montant) + toast/confirmation ; application immédiate des crédits/éligibilités. Devise EUR, TVA 20% par défaut. _(Historique démo visible tableau de bord élève, crédits appliqués)_
-- Paiements simulés : persistance réelle, statut payé simulé (cadre à préciser si autre statut souhaité).
+- Paiements simulés : persistance réelle, statut PAYÉ simulé (achat déclenche crédits + passage `isPremium`=true).
 
 ## 3) Vue Admin École (résultat : factures et actifs clairs, catalogue vidéos maîtrisé)
 - Factures : **(PARTIEL)** bouton “Envoyé” → “Reçu” (P1) ; supprimer l’encart Note liste/fiches (P2) ; remplacer “Crédits faibles” par encart “Élèves actifs (mois en cours)” avec total actifs + répartition annuel/mensuel/forfait (actif = abo valide ou crédits utilisables) (P1). Ajouter TVA (%) + total TTC sur facture (écran + PDF), valeur par défaut 20%. → TVA/TTC affichés (liste + PDF), note retirée, label statut “Reçue”, cartes synthèse actives/premium/crédits ; reste à gérer “Reçu” côté flux et encart actifs/abo complet.
