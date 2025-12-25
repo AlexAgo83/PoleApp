@@ -157,9 +157,16 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             Position
           </p>
           <h1 className="text-3xl font-semibold text-white">{position.name}</h1>
-          <p className="text-sm text-slate-300">
-            {typeLabels[position.type]} · {levelLabels[position.levelRequired]}
-          </p>
+          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
+            <span>
+              {typeLabels[position.type]} · {levelLabels[position.levelRequired]}
+            </span>
+            {position.discipline ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-semibold text-white">
+                {position.discipline}
+              </span>
+            ) : null}
+          </div>
         </div>
         <Link
           href={backHref}

@@ -346,7 +346,14 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
+                    {p.discipline ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-semibold text-white">
+                        {p.discipline}
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-sm text-slate-300 line-clamp-2">
                     {canViewPremium
                       ? p.tips ?? p.description ?? "Aucun détail"
