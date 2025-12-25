@@ -322,26 +322,56 @@ export default async function TeacherCoursesPage({
             </label>
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1">Discipline</legend>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
-            {disciplines.map((d: { name: string; color?: string }, idx: number) => (
-              <label
-                key={`${d.name}-${idx}`}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
-              >
-                    <input
-                      type="checkbox"
-                      name="discipline"
-                      value={d.name}
-                      defaultChecked={disciplineFilters.includes(d.name)}
-                      className="h-4 w-4 rounded border-white/20 bg-white/5"
-                    />
-                    <span
-                      className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                      style={{ backgroundColor: (d as any).color ?? undefined }}
-                    />
-                    {d.name}
-                  </label>
-                ))}
+              <div className="rounded-xl border border-white/10 bg-white/5 p-2">
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                  {disciplines.slice(0, 6).map((d: { name: string; color?: string }, idx: number) => (
+                    <label
+                      key={`${d.name}-primary-${idx}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                    >
+                      <input
+                        type="checkbox"
+                        name="discipline"
+                        value={d.name}
+                        defaultChecked={disciplineFilters.includes(d.name)}
+                        className="h-4 w-4 rounded border-white/20 bg-white/5"
+                      />
+                      <span
+                        className="inline-flex h-3 w-3 rounded-full border border-white/20"
+                        style={{ backgroundColor: (d as any).color ?? undefined }}
+                      />
+                      {d.name}
+                    </label>
+                  ))}
+                </div>
+                {disciplines.length > 6 && (
+                  <details className="mt-2 space-y-2">
+                    <summary className="cursor-pointer text-xs text-slate-300 hover:text-white">
+                      Voir plus ({disciplines.length - 6})
+                    </summary>
+                    <div className="grid max-h-40 grid-cols-2 gap-2 overflow-auto pr-1 md:grid-cols-3">
+                      {disciplines.slice(6).map((d: { name: string; color?: string }, idx: number) => (
+                        <label
+                          key={`${d.name}-extra-${idx}`}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                        >
+                          <input
+                            type="checkbox"
+                            name="discipline"
+                            value={d.name}
+                            defaultChecked={disciplineFilters.includes(d.name)}
+                            className="h-4 w-4 rounded border-white/20 bg-white/5"
+                          />
+                          <span
+                            className="inline-flex h-3 w-3 rounded-full border border-white/20"
+                            style={{ backgroundColor: (d as any).color ?? undefined }}
+                          />
+                          {d.name}
+                        </label>
+                      ))}
+                    </div>
+                  </details>
+                )}
               </div>
             </fieldset>
           <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 md:col-span-2">
