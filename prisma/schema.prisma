@@ -466,6 +466,26 @@ model CreditPackOffer {
   @@index([sortOrder])
 }
 
+model Purchase {
+  id               String   @id @default(cuid())
+  userId           String
+  offerId          String
+  offerName        String
+  kind             String   // PACK | SUBSCRIPTION
+  amountCents      Int
+  vatPercent       Int      @default(20)
+  currency         String   @default("EUR")
+  creditsGranted   Int      @default(0)
+  isPremiumGranted Boolean  @default(false)
+  status           String   @default("PAID")
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([kind, status])
+}
+
 model AuditLog {
   id        String    @id @default(cuid())
   actorId   String?
