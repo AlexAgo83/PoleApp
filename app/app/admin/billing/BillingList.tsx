@@ -152,9 +152,9 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
             <p className="text-sm text-slate-300">Somme totale sur les élèves de l’école.</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Élèves actifs</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Élèves actifs (mois en cours)</p>
             <p className="text-2xl font-semibold text-white">{data.activeCount}</p>
-            <p className="text-sm text-slate-300">Actifs = premium ou crédits &gt; 0.</p>
+            <p className="text-sm text-slate-300">Actifs = Premium ou crédits &gt; 0.</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-indigo-200">Répartition</p>
@@ -166,7 +166,7 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                 </span>
               </div>
               <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                <span>Crédits &gt; 0</span>
+                <span>Crédits &gt; 0 (forfait/pack)</span>
                 <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5 text-[12px] text-cyan-50">
                   {data.creditUsersCount}
                 </span>

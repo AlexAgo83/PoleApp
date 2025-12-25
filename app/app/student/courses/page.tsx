@@ -266,13 +266,19 @@ export default async function StudentCoursesPage({
         })
       : Promise.resolve([]),
     session.user.schoolId
-      ? prisma.discipline
-          .findMany({
-            where: { schoolId: session.user.schoolId },
-            select: { id: true, name: true, color: true },
-            orderBy: { name: "asc" },
-          })
-          .catch(() => [])
+      ? (async () => {
+          try {
+            const client: any = prisma as any;
+            if (!client.discipline?.findMany) return [];
+            return await client.discipline.findMany({
+              where: { schoolId: session.user.schoolId },
+              select: { id: true, name: true, color: true },
+              orderBy: { name: "asc" },
+            });
+          } catch {
+            return [];
+          }
+        })()
       : Promise.resolve([]),
   ]);
   const disciplines = (disciplinesRaw.length > 0 ? disciplinesRaw : FALLBACK_DISCIPLINES) as {

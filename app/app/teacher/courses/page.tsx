@@ -118,13 +118,20 @@ export default async function TeacherCoursesPage({
     }),
   ]);
   const disciplines =
-    (await prisma.discipline
-      .findMany({
-        where: { schoolId: session.user.schoolId },
-        select: { id: true, name: true, color: true },
-        orderBy: { name: "asc" },
-      })
-      .catch(() => FALLBACK_DISCIPLINES)) || FALLBACK_DISCIPLINES;
+    (await (async () => {
+      try {
+        const client: any = prisma as any;
+        if (!client.discipline?.findMany) return FALLBACK_DISCIPLINES;
+        const rows = await client.discipline.findMany({
+          where: { schoolId: session.user.schoolId },
+          select: { id: true, name: true, color: true },
+          orderBy: { name: "asc" },
+        });
+        return rows.length > 0 ? rows : FALLBACK_DISCIPLINES;
+      } catch {
+        return FALLBACK_DISCIPLINES;
+      }
+    })()) ?? FALLBACK_DISCIPLINES;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
