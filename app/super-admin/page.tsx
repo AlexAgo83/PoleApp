@@ -47,6 +47,8 @@ export default async function SuperAdminPage({
   const flashError = getValue(resolvedParams.error);
   const flashTemp = getValue(resolvedParams.temp);
   const flashEmail = getValue(resolvedParams.email);
+  const flashForceOk = flash === "force-ok";
+  const flashForceInvalid = flash === "force-invalid";
 
   const getPage = (key: string) => {
     const raw = getValue(resolvedParams[key]);
@@ -200,6 +202,16 @@ export default async function SuperAdminPage({
           Formulaire de réinitialisation invalide.
         </div>
       )}
+      {flashForceOk && (
+        <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
+          Discipline forcée appliquée.
+        </div>
+      )}
+      {flashForceInvalid && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Confirmation manquante ou école invalide.
+        </div>
+      )}
       <section className="panel border-cyan-300/25 p-5 shadow-cyan-900/30">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
@@ -235,14 +247,33 @@ export default async function SuperAdminPage({
               Backfill disciplines (Pole/Exotic/Souplesse/Pilates/Danse)
             </button>
           </form>
-          <form action={forceDisciplinePoleAction} className="flex items-center gap-2">
+          <form action={forceDisciplinePoleAction} className="flex flex-wrap items-center gap-2 text-sm">
             <input type="hidden" name="name" value="Pole" />
             <input type="hidden" name="color" value="#0ea5e9" />
+            <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
+              <span>École</span>
+              <select name="schoolId" className="rounded-lg border border-white/10 bg-slate-900/60 px-2 py-1 text-sm text-white">
+                <option value="">Toutes</option>
+                {schools.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
+              <span>Confirmer</span>
+              <input
+                name="confirm"
+                placeholder="Tape FORCE"
+                className="w-28 rounded-lg border border-white/10 bg-slate-900/60 px-2 py-1 text-sm text-white"
+              />
+            </label>
             <button
               type="submit"
               className="inline-flex items-center gap-2 rounded-full border border-red-300/70 bg-red-500/15 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-200/80 hover:bg-red-500/25"
             >
-              Forcer toutes les disciplines en “Pole”
+              Forcer les disciplines → Pole
             </button>
           </form>
         </div>

@@ -89,7 +89,6 @@ export default async function CoursesAgendaPage({
   const viewParam = resolved.view;
   const view: "month" | "week" = viewParam === "week" ? "week" : "month";
   const weekParam = typeof resolved.week === "string" && resolved.week ? resolved.week : undefined;
-  const hasMonthFilter = Boolean(monthParam);
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(baseDate);
   const monthEnd = endOfMonth(baseDate);
@@ -152,30 +151,27 @@ export default async function CoursesAgendaPage({
     select: { id: true, name: true, email: true },
     orderBy: { name: "asc" },
   });
-  const disciplines = (await (async () => {
-    try {
-      const client: any = prisma as any;
-      if (!client.discipline?.findMany) return FALLBACK_DISCIPLINES;
-      const rows = await client.discipline.findMany({
+  const disciplineRows =
+    (await prisma.discipline
+      .findMany({
         where: { schoolId: session.user.schoolId },
         select: { id: true, name: true, color: true },
         orderBy: { name: "asc" },
-      });
-      const legacy = courseDistinctDisciplines
-        .map((c) => c.discipline)
-        .filter((d): d is string => Boolean(d && d.trim().length > 0))
-        .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-      const merged = [...rows];
-      legacy.forEach((d) => {
-        if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-          merged.push(d);
-        }
-      });
-      return (merged.length > 0 ? merged : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
-    } catch {
-      return FALLBACK_DISCIPLINES as { name: string; color?: string }[];
-    }
-  })()) as { name: string; color?: string }[];
+      })
+      .catch(() => [])) ?? [];
+  const disciplines = (() => {
+    const legacy = courseDistinctDisciplines
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged: { id?: string; name: string; color?: string | null }[] = [...disciplineRows];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d);
+      }
+    });
+    return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
+  })();
 
   const daysInMonth = monthEnd.getDate();
   const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
@@ -385,10 +381,10 @@ export default async function CoursesAgendaPage({
                       defaultChecked={disciplineFilters.includes(d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
-                    <span
-                      className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                      style={{ backgroundColor: (d as any).color ?? undefined }}
-                    />
+                  <span
+                    className="inline-flex h-3 w-3 rounded-full border border-white/20"
+                    style={{ backgroundColor: d.color ?? undefined }}
+                  />
                     {d.name}
                   </label>
                 ))}

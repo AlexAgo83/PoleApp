@@ -273,19 +273,13 @@ export default async function StudentCoursesPage({
         })
       : Promise.resolve([]),
     session.user.schoolId
-      ? (async () => {
-          try {
-            const client: any = prisma as any;
-            if (!client.discipline?.findMany) return [];
-            return await client.discipline.findMany({
-              where: { schoolId: session.user.schoolId },
-              select: { id: true, name: true, color: true },
-              orderBy: { name: "asc" },
-            });
-          } catch {
-            return [];
-          }
-        })()
+      ? prisma.discipline
+          .findMany({
+            where: { schoolId: session.user.schoolId },
+            select: { id: true, name: true, color: true },
+            orderBy: { name: "asc" },
+          })
+          .catch(() => [])
       : Promise.resolve([]),
   ]);
   const disciplines = (() => {
@@ -293,13 +287,13 @@ export default async function StudentCoursesPage({
       .map((c) => c.discipline)
       .filter((d): d is string => Boolean(d && d.trim().length > 0))
       .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged = [...disciplinesRaw];
+    const merged: { name: string; color?: string | null }[] = [...disciplinesRaw];
     legacy.forEach((d) => {
       if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d as any);
+        merged.push(d);
       }
     });
-    return (merged.length > 0 ? merged : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
+    return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
   })();
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
@@ -476,8 +470,8 @@ export default async function StudentCoursesPage({
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
                     <span
-                      className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                      style={{ backgroundColor: (d as any).color ?? undefined }}
+                    className="inline-flex h-3 w-3 rounded-full border border-white/20"
+                      style={{ backgroundColor: d.color ?? undefined }}
                     />
                     {d.name}
                   </label>

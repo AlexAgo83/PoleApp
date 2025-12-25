@@ -122,31 +122,28 @@ export default async function TeacherCoursesPage({
       distinct: ["discipline"],
     }),
   ]);
-  const disciplines =
-    (await (async () => {
-      try {
-        const client: any = prisma as any;
-        if (!client.discipline?.findMany) return FALLBACK_DISCIPLINES;
-        const rows = await client.discipline.findMany({
-          where: { schoolId: session.user.schoolId },
-          select: { id: true, name: true, color: true },
-          orderBy: { name: "asc" },
-        });
-        const legacy = courseDistinctDisciplines
-          .map((c) => c.discipline)
-          .filter((d): d is string => Boolean(d && d.trim().length > 0))
-          .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-        const merged = [...rows];
-        legacy.forEach((d) => {
-          if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-            merged.push(d);
-          }
-        });
-        return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
-      } catch {
-        return FALLBACK_DISCIPLINES;
+  const disciplineRows =
+    (await prisma.discipline
+      .findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { id: true, name: true, color: true },
+        orderBy: { name: "asc" },
+      })
+      .catch(() => [])) ?? [];
+
+  const disciplines = (() => {
+    const legacy = courseDistinctDisciplines
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged: { id?: string; name: string; color?: string | null }[] = [...disciplineRows];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d);
       }
-    })()) ?? FALLBACK_DISCIPLINES;
+    });
+    return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
+  })();
   const teacherChip =
     teacherFilter
       ? teachers.find((t) => t.id === teacherFilter) ??
@@ -353,7 +350,7 @@ export default async function TeacherCoursesPage({
                       />
                       <span
                         className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                        style={{ backgroundColor: (d as any).color ?? undefined }}
+                        style={{ backgroundColor: d.color ?? undefined }}
                       />
                       {d.name}
                     </label>
@@ -379,7 +376,7 @@ export default async function TeacherCoursesPage({
                           />
                           <span
                             className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                            style={{ backgroundColor: (d as any).color ?? undefined }}
+                            style={{ backgroundColor: d.color ?? undefined }}
                           />
                           {d.name}
                         </label>

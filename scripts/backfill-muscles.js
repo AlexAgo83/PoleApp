@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -28,7 +28,6 @@ const CATALOG = [
 async function run() {
   console.log(`Upserting ${CATALOG.length} muscles/articulations...`);
   for (const item of CATALOG) {
-    // eslint-disable-next-line no-await-in-loop
     const upserted = await prisma.muscle.upsert({
       where: { name: item.name },
       update: { kind: item.kind },
