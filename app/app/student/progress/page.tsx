@@ -17,10 +17,10 @@ const statusLabels: Record<LearningStatus, string> = {
 };
 
 const masteryLabels: Record<MasteryLevel, string> = {
+  NOVELTY: "Nouveauté",
   INITIATED: "Initié",
   PASSED: "Passé",
-  FLUID: "Fluide chorégraphié",
-  CHOREO: "Fluide chorégraphié",
+  FLUID_CHOREO: "Fluide chorégraphié",
 };
 
 const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {

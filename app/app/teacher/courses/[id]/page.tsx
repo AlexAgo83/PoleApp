@@ -138,10 +138,10 @@ export default async function TeacherCourseDetailPage({
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
   const masteryOptions: { value: MasteryLevel; label: string }[] = [
+    { value: MasteryLevel.NOVELTY, label: "Nouveauté" },
     { value: MasteryLevel.INITIATED, label: "Initié" },
     { value: MasteryLevel.PASSED, label: "Passé" },
-    { value: MasteryLevel.FLUID, label: "Fluide chorégraphié" },
-    { value: MasteryLevel.CHOREO, label: "Fluide chorégraphié" },
+    { value: MasteryLevel.FLUID_CHOREO, label: "Fluide chorégraphié" },
   ];
   const masteryMap = new Map(
     course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.masteryLevel ?? MasteryLevel.INITIATED]),

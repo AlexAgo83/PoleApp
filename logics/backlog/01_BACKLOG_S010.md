@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010")
-[Compréhension: 94% / Avancement: 0%]
+[Compréhension: 94% / Avancement: 60%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -23,7 +23,8 @@
   - AC: Plan proposé respecte ces règles.
 - **Niveaux progression : libellés unifiés**  
   - US: En tant qu’utilisateur, je vois et peux saisir les niveaux “Nouveauté (pas commencé), Initié, Passé, Fluide chorégraphié”.  
-  - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé), dernière valeur prévaut ; migration/affichage cohérents et utilisés par les règles du générateur (même vocabulaire partout).
+  - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé), dernière valeur prévaut ; migration/affichage cohérents et utilisés par les règles du générateur (même vocabulaire partout).  
+  - État: enum Prisma recréée + migration 20251226100000_mastery_enum_cleanup + UI alignée (reste QA global).
 
 ## P1 (prochaine itération)
 - **CRUD disciplines (QA/ergonomie)**  

@@ -212,7 +212,7 @@ function deriveLearningState(
   learningStatus?: LearningStatus | null,
   masteryLevel?: MasteryLevel | null
 ): "NOT_STARTED" | "IN_PROGRESS" | "PASSED" | "MASTERED" {
-  if (masteryLevel === MasteryLevel.CHOREO || masteryLevel === MasteryLevel.FLUID) {
+  if (masteryLevel === MasteryLevel.FLUID_CHOREO) {
     return "MASTERED";
   }
   if (masteryLevel === MasteryLevel.PASSED || learningStatus === LearningStatus.PASSED) {

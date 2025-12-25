@@ -83,10 +83,10 @@ export function CourseForm({
   const masteryOptions = useMemo(
     () => [
       { value: "", label: "(non renseigné)" },
+      { value: MasteryLevel.NOVELTY, label: "Nouveauté" },
       { value: MasteryLevel.INITIATED, label: "Initié" },
       { value: MasteryLevel.PASSED, label: "Passé" },
-      { value: MasteryLevel.FLUID, label: "Fluide chorégraphié" },
-      { value: MasteryLevel.CHOREO, label: "Fluide chorégraphié" },
+      { value: MasteryLevel.FLUID_CHOREO, label: "Fluide chorégraphié" },
     ],
     []
   );
@@ -286,8 +286,7 @@ export function CourseForm({
                   const base =
                     weights[r.learningStatus ?? "IN_PROGRESS"] ?? 1;
                   const masteryPenalty =
-                    r.masteryLevel === MasteryLevel.FLUID ||
-                    r.masteryLevel === MasteryLevel.CHOREO
+                    r.masteryLevel === MasteryLevel.FLUID_CHOREO
                       ? -1
                       : 0;
                   const score = base + masteryPenalty;
@@ -448,7 +447,9 @@ function NotesMatrix({
                       Niveau
                       <select
                         value={current?.masteryLevel ?? ""}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const raw = e.target.value as MasteryLevel | "";
+                          const nextValue = raw === "" ? undefined : (raw as MasteryLevel);
                           setNotes((prev) => ({
                             ...prev,
                             [key]: {
@@ -456,10 +457,10 @@ function NotesMatrix({
                                 studentId: student.id,
                                 positionId: pos.id,
                               }),
-                              masteryLevel: e.target.value,
+                              masteryLevel: nextValue,
                             },
-                          }))
-                        }
+                          }));
+                        }}
                         className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
                       >
                         {masteryOptions.map((opt) => (
