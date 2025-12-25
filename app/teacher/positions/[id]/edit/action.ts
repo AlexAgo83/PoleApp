@@ -20,6 +20,7 @@ const schema = z.object({
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  muscles: z.array(z.string()).optional(),
 });
 
 export async function updatePositionAction(formData: FormData) {
@@ -40,6 +41,7 @@ export async function updatePositionAction(formData: FormData) {
     contraindications: formData.get("contraindications") || undefined,
     imageUrl: formData.get("imageUrl") || undefined,
     videoUrl: formData.get("videoUrl") || undefined,
+    muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
   });
 
   if (!parsed.success) {
@@ -80,6 +82,14 @@ export async function updatePositionAction(formData: FormData) {
               ],
             }
           : undefined,
+      ...(data.muscles
+        ? {
+            muscles: {
+              deleteMany: { positionId: data.id },
+              create: data.muscles.map((id) => ({ muscleId: id })),
+            },
+          }
+        : {}),
     },
   });
 

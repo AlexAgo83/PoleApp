@@ -56,6 +56,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     include: {
       media: true,
       createdBy: true,
+      muscles: { include: { muscle: true } },
       _count: { select: { progress: true } },
     },
   });
@@ -195,6 +196,26 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               <p className="text-sm text-slate-100">
                 {position.description ?? "Aucune description"}
               </p>
+              {position.muscles.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-sm text-cyan-200">Muscles / articulations sollicités</p>
+                  <div className="flex flex-wrap gap-2">
+                    {position.muscles.map((m) => (
+                      <span
+                        key={m.muscleId}
+                        className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px] text-slate-100"
+                      >
+                        {m.muscle.name}
+                        {m.muscle.kind ? (
+                          <span className="ml-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
+                            {m.muscle.kind.toLowerCase()}
+                          </span>
+                        ) : null}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               {position.tips && (
                 <div>
                   <p className="text-sm text-cyan-200">Conseils</p>
