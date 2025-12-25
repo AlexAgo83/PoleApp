@@ -339,10 +339,10 @@ export default async function TeacherStudentDetailPage({
                       defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
                       className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                     >
-                      <option value="NOT_STARTED">Découverte</option>
-                      <option value="IN_PROGRESS">Tenté</option>
+                      <option value="NOT_STARTED">Nouveauté</option>
+                      <option value="IN_PROGRESS">Initié</option>
                       <option value="PASSED">Passé</option>
-                      <option value="MASTERED">Fluide</option>
+                      <option value="MASTERED">Fluide chorégraphié</option>
                     </select>
                   </label>
                   <label className="block">
@@ -353,10 +353,10 @@ export default async function TeacherStudentDetailPage({
                       className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
                     >
                       <option value="">(non renseigné)</option>
-                      <option value="INITIATED">Initiation</option>
+                      <option value="INITIATED">Initié</option>
                       <option value="PASSED">Passé</option>
-                      <option value="FLUID">Fluide</option>
-                      <option value="CHOREO">Choréo</option>
+                      <option value="FLUID">Fluide chorégraphié</option>
+                      <option value="CHOREO">Fluide chorégraphié</option>
                     </select>
                   </label>
                   <label className="block">
