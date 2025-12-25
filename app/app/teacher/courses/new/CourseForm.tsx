@@ -39,6 +39,7 @@ type Props = {
   defaultPhotoUrl?: string | null;
   defaultDiscipline?: string | null;
   progressByStudent?: ProgressRecord[];
+  disciplines?: { name: string; color?: string }[];
 };
 
 type Note = {
@@ -71,6 +72,7 @@ export function CourseForm({
   defaultPhotoUrl = "",
   defaultDiscipline = "Danse",
   progressByStudent = [],
+  disciplines = [],
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -124,13 +126,20 @@ export function CourseForm({
         </label>
         <label className="text-sm text-slate-200">
           Discipline
-          <input
-            type="text"
+          <select
             name="discipline"
-            placeholder="Danse, Pilates, Pole..."
             defaultValue={defaultDiscipline ?? "Danse"}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
+          >
+            {disciplines.map((d) => (
+              <option key={d.name} value={d.name}>
+                {d.name}
+              </option>
+            ))}
+            {!disciplines.find((d) => d.name.toLowerCase() === (defaultDiscipline ?? "Danse").toLowerCase()) && (
+              <option value={defaultDiscipline ?? "Danse"}>{defaultDiscipline ?? "Danse"}</option>
+            )}
+          </select>
         </label>
       </div>
 

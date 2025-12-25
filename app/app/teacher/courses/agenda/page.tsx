@@ -142,6 +142,11 @@ export default async function CoursesAgendaPage({
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
+  const courseDistinctDisciplines = await prisma.course.findMany({
+    where: { schoolId: session.user.schoolId },
+    select: { discipline: true },
+    distinct: ["discipline"],
+  });
   const teachers = await prisma.user.findMany({
     where: { schoolId: session.user.schoolId, role: "TEACHER" },
     select: { id: true, name: true, email: true },
@@ -156,7 +161,17 @@ export default async function CoursesAgendaPage({
         select: { id: true, name: true, color: true },
         orderBy: { name: "asc" },
       });
-      return (rows.length > 0 ? rows : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
+      const legacy = courseDistinctDisciplines
+        .map((c) => c.discipline)
+        .filter((d): d is string => Boolean(d && d.trim().length > 0))
+        .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+      const merged = [...rows];
+      legacy.forEach((d) => {
+        if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+          merged.push(d);
+        }
+      });
+      return (merged.length > 0 ? merged : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
     } catch {
       return FALLBACK_DISCIPLINES as { name: string; color?: string }[];
     }

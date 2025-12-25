@@ -157,7 +157,7 @@ export default async function StudentCoursesPage({
     ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}),
   };
 
-  const [countsAndData, teachers, studios, disciplinesRaw] = await Promise.all([
+  const [countsAndData, teachers, studios, courseDisciplinesRaw, disciplinesRaw] = await Promise.all([
     (async () => {
       if (onlyMine) {
         const mineWhere = {
@@ -266,6 +266,13 @@ export default async function StudentCoursesPage({
         })
       : Promise.resolve([]),
     session.user.schoolId
+      ? prisma.course.findMany({
+          where: { schoolId: session.user.schoolId },
+          select: { discipline: true },
+          distinct: ["discipline"],
+        })
+      : Promise.resolve([]),
+    session.user.schoolId
       ? (async () => {
           try {
             const client: any = prisma as any;
@@ -281,10 +288,19 @@ export default async function StudentCoursesPage({
         })()
       : Promise.resolve([]),
   ]);
-  const disciplines = (disciplinesRaw.length > 0 ? disciplinesRaw : FALLBACK_DISCIPLINES) as {
-    name: string;
-    color?: string;
-  }[];
+  const disciplines = (() => {
+    const legacy = (courseDisciplinesRaw as { discipline: string | null }[])
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged = [...disciplinesRaw];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d as any);
+      }
+    });
+    return (merged.length > 0 ? merged : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
+  })();
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
   const coursesList: { key: string; course: CourseRow; myAttendance: CourseRow["attendances"][number] | undefined }[] =
