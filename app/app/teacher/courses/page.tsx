@@ -323,11 +323,11 @@ export default async function TeacherCoursesPage({
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1">Discipline</legend>
               <div className="flex flex-wrap gap-2">
-              {disciplines.map((d, idx) => (
-                  <label
-                    key={`${d.id ?? d.name}-${idx}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
-                  >
+            {disciplines.map((d: { name: string; color?: string }, idx: number) => (
+              <label
+                key={`${d.name}-${idx}`}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+              >
                     <input
                       type="checkbox"
                       name="discipline"

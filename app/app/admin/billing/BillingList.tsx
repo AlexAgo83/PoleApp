@@ -82,6 +82,8 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
           premiumCount: 0,
           creditUsersCount: 0,
           vatPercent: 20,
+          subsMonthCount: 0,
+          packsMonthCount: 0,
           error: "fail",
         });
         setFlash("error");
