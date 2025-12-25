@@ -6,7 +6,12 @@ import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
-import { updateSchoolAction } from "../actions";
+import {
+  createDisciplineAction,
+  deleteDisciplineAction,
+  updateDisciplineAction,
+  updateSchoolAction,
+} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +26,7 @@ export default async function AdminSchoolPage() {
     select: {
       id: true,
       name: true,
+      disciplines: { select: { id: true, name: true, color: true }, orderBy: { name: "asc" } },
       studios: { select: { id: true, name: true, address: true } },
       partners: {
         select: {
@@ -170,6 +176,112 @@ export default async function AdminSchoolPage() {
           <Stat label="Élèves" value={studentCount} />
           <Stat label="Studios" value={studioCount} />
           <Stat label="Partenaires" value={partnerCount} />
+        </div>
+      </section>
+
+      <section className="panel space-y-4 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Disciplines</p>
+            <h3 className="text-xl font-semibold text-white">Liste et création</h3>
+            <p className="text-sm text-slate-300">
+              Gère les disciplines utilisables dans les filtres et la création de cours.
+            </p>
+          </div>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white">
+            {baseSchool?.disciplines.length ?? 0} discipline(s)
+          </span>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2">
+          {baseSchool?.disciplines.map((d) => (
+            <div
+              key={d.id}
+              className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-4 w-4 rounded-full border border-white/20"
+                    style={{ backgroundColor: d.color }}
+                    aria-hidden="true"
+                  />
+                  <span className="font-semibold text-white">{d.name}</span>
+                </div>
+                <form action={deleteDisciplineAction}>
+                  <input type="hidden" name="disciplineId" value={d.id} />
+                  <button
+                    type="submit"
+                    className="text-xs font-semibold text-red-200 hover:text-red-100"
+                  >
+                    Supprimer
+                  </button>
+                </form>
+              </div>
+              <form action={updateDisciplineAction} className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-5 md:items-end">
+                <input type="hidden" name="disciplineId" value={d.id} />
+                <label className="text-xs text-slate-300 md:col-span-3">
+                  Nom
+                  <input
+                    name="name"
+                    defaultValue={d.name}
+                    required
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-cyan-400/70"
+                  />
+                </label>
+                <label className="text-xs text-slate-300 md:col-span-1">
+                  Couleur
+                  <input
+                    type="color"
+                    name="color"
+                    defaultValue={d.color}
+                    className="mt-1 h-[42px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
+                  />
+                </label>
+                <div className="md:col-span-1 flex justify-end">
+                  <button
+                    type="submit"
+                    className="w-full rounded-full bg-cyan-500 px-3 py-2 text-xs font-semibold text-slate-950 transition hover:brightness-110"
+                  >
+                    Mettre à jour
+                  </button>
+                </div>
+              </form>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <h4 className="text-sm font-semibold text-white">Créer une discipline</h4>
+          <p className="text-xs text-slate-300">Nom + couleur. Suppression bloquée si utilisée par un cours.</p>
+          <form action={createDisciplineAction} className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-5 md:items-end">
+            <label className="text-xs text-slate-300 md:col-span-3">
+              Nom
+              <input
+                name="name"
+                required
+                placeholder="Danse, Pole, Exotic..."
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/70"
+              />
+            </label>
+            <label className="text-xs text-slate-300 md:col-span-1">
+              Couleur
+              <input
+                type="color"
+                name="color"
+                defaultValue="#7c3aed"
+                className="mt-1 h-[44px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
+              />
+            </label>
+            <div className="md:col-span-1 flex justify-end">
+              <button
+                type="submit"
+                className="w-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-xs font-semibold text-white shadow-lg transition hover:brightness-110"
+              >
+                Ajouter
+              </button>
+            </div>
+          </form>
         </div>
       </section>
     </main>

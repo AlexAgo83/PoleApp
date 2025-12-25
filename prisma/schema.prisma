@@ -76,9 +76,22 @@ model School {
   courses  Course[]
   studios  Studio[]
   partners Partner[]
+  disciplines Discipline[]
   gameSessions GameSession[]
 
   @@unique([name])
+}
+
+model Discipline {
+  id        String   @id @default(cuid())
+  schoolId  String
+  name      String
+  color     String   @default("#7c3aed")
+  createdAt DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id])
+
+  @@unique([schoolId, name])
 }
 
 model User {
