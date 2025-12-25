@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010")
-[Compréhension: 94% / Avancement: 70%]
+[Compréhension: 94% / Avancement: 75%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -34,7 +34,7 @@
 - **Super-admin : reset mot de passe utilisateur**  
   - US: En tant que SUPER_ADMIN, je peux réinitialiser le mot de passe d’un utilisateur (gestion utilisateurs super admin).  
   - AC: Action/bouton dédié, génération d’un mot de passe temporaire, affiché en clair + email, audité.  
-  - État: bouton + mdp temporaire affiché + audit (pas d’email pour l’instant).
+  - État: bouton + mdp temporaire affiché + audit, mailto prêt (pas d’envoi SMTP).
 - **Générateur : pondération par favoris élèves**  
   - US: Les positions “❤️” par les élèves sont favorisées dans la sélection et placées tôt.  
   - AC: Poids augmenté, visible dans le plan (ordre/sélection).  
@@ -44,7 +44,7 @@
 - **Affinage UX filtres disciplines (éviter longue liste)**  
   - US: En tant qu’utilisateur, je peux sélectionner rapidement des disciplines sans scroll/trop de pills (multi-select ou grille compacte).  
   - AC: Variante UX validée (multi-select + chips, double colonne scroll interne, ou “voir plus”).  
-  - État: grille compacte dans filtres cours prof (P2 à compléter si besoin).
+  - État: grille compacte + bloc “voir plus” scrollable dans filtres cours prof (P2 à compléter si besoin).
 
 ## Notes
 - QA effectuée sur version 0.7.6.  

@@ -15,6 +15,7 @@ import {
   upsertCreditPackOfferAction,
   upsertSubscriptionOfferAction,
 } from "./actions";
+import { ResetCopyButton } from "./ResetCopyButton";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -168,11 +169,24 @@ export default async function SuperAdminPage({
       )}
       {flash === "reset-ok" && (
         <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
-          Mot de passe réinitialisé pour {flashEmail ?? "l'utilisateur"}. Nouveau mot de passe temporaire :
-          <span className="mx-2 rounded-lg bg-white/10 px-2 py-1 font-mono text-xs font-semibold text-white">
-            {flashTemp}
-          </span>
-          (à communiquer en privé).
+          <p className="flex flex-wrap items-center gap-2">
+            <span>Mot de passe réinitialisé pour {flashEmail ?? "l'utilisateur"}.</span>
+            <span className="rounded-lg bg-white/10 px-2 py-1 font-mono text-xs font-semibold text-white">
+              {flashTemp}
+            </span>
+            <ResetCopyButton value={flashTemp ?? ""} />
+            <a
+              href={
+                flashEmail
+                  ? `mailto:${flashEmail}?subject=Mot de passe temporaire&body=Voici ton mot de passe temporaire : ${flashTemp}%0AChange-le dès ta connexion.`
+                  : undefined
+              }
+              className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2 py-1 text-[11px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/20"
+            >
+              Envoyer par mail
+            </a>
+          </p>
+          <p className="mt-1 text-xs text-emerald-100/80">Partage en privé. Audit log enregistré.</p>
         </div>
       )}
       {flash === "reset-not-found" && (
