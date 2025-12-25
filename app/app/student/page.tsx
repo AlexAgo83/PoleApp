@@ -236,7 +236,7 @@ export default async function StudentDashboard() {
           {purchases.length === 0 && (
             <p className="text-sm text-slate-400">Aucun achat pour l’instant.</p>
           )}
-          {purchases.map((p) => {
+          {purchases.map((p: { id: string; createdAt: Date; amountCents?: number | null; offerName: string; kind: string; vatPercent?: number | null; creditsGranted?: number | null; isPremiumGranted?: boolean }) => {
             const created = new Date(p.createdAt).toLocaleString("fr-FR", { hour12: false });
             const amount = (p.amountCents ?? 0) / 100;
             return (
