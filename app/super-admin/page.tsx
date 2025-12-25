@@ -8,6 +8,7 @@ import {
   deleteCreditPackOfferAction,
   deleteSubscriptionOfferAction,
   backfillDisciplinesAction,
+  forceDisciplinePoleAction,
   promoteSuperAdminAction,
   resetUserPasswordAction,
   toggleArchiveSchoolAction,
@@ -232,6 +233,16 @@ export default async function SuperAdminPage({
               className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-500/15 px-3 py-2 text-sm font-semibold text-amber-50 transition hover:border-amber-200/80 hover:bg-amber-500/25"
             >
               Backfill disciplines (Pole/Exotic/Souplesse/Pilates/Danse)
+            </button>
+          </form>
+          <form action={forceDisciplinePoleAction} className="flex items-center gap-2">
+            <input type="hidden" name="name" value="Pole" />
+            <input type="hidden" name="color" value="#0ea5e9" />
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full border border-red-300/70 bg-red-500/15 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-200/80 hover:bg-red-500/25"
+            >
+              Forcer toutes les disciplines en “Pole”
             </button>
           </form>
         </div>

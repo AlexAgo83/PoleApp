@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
 
 const basePath = "/super-admin";
+const defaultForcedDiscipline = { name: "Pole", color: "#0ea5e9" };
 
 async function requireSuperAdmin() {
   const session = await getServerSession(authOptions);
@@ -40,6 +41,35 @@ const defaultDisciplines = [
   { name: "Pilates", color: "#10b981" },
   { name: "Danse", color: "#7c3aed" },
 ];
+
+export async function forceDisciplinePoleAction(formData: FormData) {
+  const admin = await requireSuperAdmin();
+  const name = formData.get("name")?.toString().trim() || defaultForcedDiscipline.name;
+  const color = formData.get("color")?.toString().trim() || defaultForcedDiscipline.color;
+
+  const schools = await prisma.school.findMany({ select: { id: true } });
+
+  await prisma.$transaction(async (tx) => {
+    await Promise.all(
+      schools.map((school) =>
+        tx.discipline.upsert({
+          where: { schoolId_name: { schoolId: school.id, name } },
+          update: { color },
+          create: { schoolId: school.id, name, color },
+        })
+      )
+    );
+    await tx.course.updateMany({ data: { discipline: name } });
+    await tx.position.updateMany({ data: { discipline: name } });
+  });
+
+  await logAudit("discipline:force", undefined, { name, color, schools: schools.length });
+  revalidatePath(basePath);
+  revalidatePath("/app");
+  revalidatePath("/positions");
+  revalidatePath("/app/teacher/courses");
+  revalidatePath("/app/student/courses");
+}
 
 export async function backfillDisciplinesAction() {
   await requireSuperAdmin();
