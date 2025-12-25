@@ -51,7 +51,7 @@ export default async function SignupPage({
   const error = resolvedParams?.error;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4 py-10 md:px-6">
       <section className="panel w-full max-w-xl border-indigo-400/25 p-8 shadow-indigo-900/30 md:p-10">
         <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">Inscription</p>
         <h1 className="mt-2 text-3xl font-semibold text-white">Créer un compte élève</h1>
@@ -65,13 +65,13 @@ export default async function SignupPage({
           </p>
         )}
 
-        <form action={signupStudentAction} className="mt-6 space-y-4">
+        <form action={signupStudentAction} className="mt-6 space-y-5">
           <div className="grid gap-3 md:grid-cols-2">
             <label className="text-sm text-slate-200">
               Prénom (optionnel)
               <input
                 name="firstName"
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
                 autoComplete="given-name"
               />
             </label>
@@ -79,7 +79,7 @@ export default async function SignupPage({
               Nom (optionnel)
               <input
                 name="lastName"
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
                 autoComplete="family-name"
               />
             </label>
@@ -91,7 +91,7 @@ export default async function SignupPage({
               name="email"
               type="email"
               required
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
               autoComplete="email"
             />
           </label>
@@ -103,19 +103,19 @@ export default async function SignupPage({
               type="password"
               required
               minLength={8}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
               autoComplete="new-password"
             />
-            <span className="text-xs text-slate-400">
+            <span className="mt-1 block text-xs text-slate-400">
               Minimum 8 caractères. L’email doit être unique.
             </span>
           </label>
 
-          <label className="text-sm text-slate-200">
-            École
+          <div className="space-y-2">
+            <label className="text-sm text-slate-200">École</label>
             <select
               name="schoolId"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             >
               {schools.map((school) => (
                 <option key={school.id} value={school.id}>
@@ -123,12 +123,7 @@ export default async function SignupPage({
                 </option>
               ))}
             </select>
-          </label>
-
-          <label className="flex items-center gap-2 text-sm text-slate-200">
-            <input type="checkbox" name="isPremium" className="h-4 w-4 accent-cyan-500" />
-            Activer Premium (optionnel)
-          </label>
+          </div>
 
           <div className="flex flex-wrap justify-between gap-3 text-sm text-slate-200">
             <Link

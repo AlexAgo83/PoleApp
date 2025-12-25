@@ -32,6 +32,7 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const resolveTarget = useCallback(
     (role?: Role | null) => {
@@ -153,6 +154,11 @@ function LoginContent() {
               {error}
             </p>
           )}
+          {resetMessage && (
+            <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
+              {resetMessage}
+            </p>
+          )}
           {signupSuccess && (
             <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
               Compte créé. Tu peux te connecter avec tes identifiants.
@@ -165,6 +171,28 @@ function LoginContent() {
           >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
+          <button
+            type="button"
+            onClick={async () => {
+              setResetMessage(null);
+              setError(null);
+              try {
+                await fetch("/api/auth/reset", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email }),
+                });
+                setResetMessage(
+                  "Si un compte existe pour cet email, un mot de passe temporaire vient d'être envoyé."
+                );
+              } catch {
+                setResetMessage("Si un compte existe pour cet email, un mot de passe temporaire vient d'être envoyé.");
+              }
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Mot de passe oublié ? Envoyer un mot de passe temporaire
+          </button>
           <Link
             href="/"
             role="button"
@@ -174,8 +202,11 @@ function LoginContent() {
           </Link>
         </form>
 
-        <div className="mt-6 space-y-3 rounded-xl border border-indigo-400/25 bg-white/5 p-4 text-sm text-slate-200">
-          <p className="font-semibold text-white">Pas encore de compte ?</p>
+        <details className="mt-6 space-y-3 rounded-xl border border-indigo-400/25 bg-white/5 p-4 text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-base font-semibold text-white">
+            Pas encore de compte ?
+            <span className="text-sm text-slate-300">▼</span>
+          </summary>
           <div className="flex flex-wrap gap-2">
             <Link
               href="/signup"
@@ -204,25 +235,23 @@ function LoginContent() {
               </button>
             ))}
           </div>
-          <details className="group rounded-lg border border-white/10 bg-white/5 text-xs text-slate-200">
-            <summary className="flex cursor-pointer items-center justify-between px-3 py-2 font-semibold text-white">
+          <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-slate-200">
+            <div className="flex items-center justify-between font-semibold text-white">
               <span>Freemium vs Premium</span>
-              <span className="text-[11px] text-slate-300 transition-transform group-open:rotate-180">
-                ▼
-              </span>
-            </summary>
-            <div className="px-3 pb-3">
-              <p className="mt-1 text-slate-300">
+              <span className="text-[11px] text-slate-300">▲</span>
+            </div>
+            <div className="mt-2 space-y-2">
+              <p>
                 Freemium : accès de base (positions vues, modules ouverts).
                 Premium : base complète des positions + explications et mini-jeu renforcé.
               </p>
-              <p className="mt-2 text-slate-300">
+              <p>
                 Aujourd’hui, la création en self-serve est ouverte pour les élèves. Les comptes
                 Prof/Admin sont encore provisionnés par l’école.
               </p>
             </div>
-          </details>
-        </div>
+          </div>
+        </details>
       </section>
     </main>
   );

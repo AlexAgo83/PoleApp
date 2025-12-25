@@ -239,19 +239,19 @@ export default async function Home() {
               <div className="mt-3 grid gap-2">
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S007 — Élève</p>
-                    <p className="text-white font-semibold">Agendas + mini-jeux</p>
-                    <p className="text-xs text-slate-400">Avancement 80% (planning élève livré)</p>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S010 — DRY_007</p>
+                    <p className="text-white font-semibold">Muscles/blessures, générateur, reset MDP</p>
+                    <p className="text-xs text-slate-400">Avancement 75% (P0/P1 quasi livrés, QA à faire)</p>
                   </div>
                   <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/25 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.5)]">
-                    Livré
+                    En cours
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S006 — Admin</p>
-                    <p className="text-white font-semibold">Studios/positions OK, reste factu/agenda</p>
-                    <p className="text-xs text-slate-400">Avancement 45%</p>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S009 — Générateur</p>
+                    <p className="text-white font-semibold">Répartition 1/2/3/1, transitions, muscles</p>
+                    <p className="text-xs text-slate-400">Avancement 75% (reste QA générateur)</p>
                   </div>
                   <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
                     En cours
@@ -259,12 +259,12 @@ export default async function Home() {
                 </div>
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S005 — Prof</p>
-                    <p className="text-white font-semibold">Agenda studio + générateur + factu</p>
-                    <p className="text-xs text-slate-400">Avancement 15%</p>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S008 — Admin</p>
+                    <p className="text-white font-semibold">Billing + CRUD disciplines + stats</p>
+                    <p className="text-xs text-slate-400">Avancement 75% (mail reset à finaliser en prod)</p>
                   </div>
                   <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-blue-400/60 bg-blue-500/25 px-3 py-1 text-[12px] font-semibold text-blue-50 shadow-inner shadow-blue-900/30">
-                    À lancer
+                    En cours
                   </span>
                 </div>
               </div>

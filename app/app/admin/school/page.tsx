@@ -262,7 +262,7 @@ export default async function AdminSchoolPage({
                 <div className="md:col-span-1 flex justify-end">
                   <button
                     type="submit"
-                    className="w-full rounded-full bg-cyan-500 px-3 py-2 text-xs font-semibold text-slate-950 transition hover:brightness-110"
+                    className="w-full rounded-xl border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
                   >
                     Mettre à jour
                   </button>
