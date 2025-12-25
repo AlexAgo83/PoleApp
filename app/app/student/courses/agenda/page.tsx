@@ -333,6 +333,14 @@ export default async function StudentCoursesAgendaPage({
       })
     : Promise.resolve([]);
 
+  const courseDisciplinesPromise = session.user.schoolId
+    ? prisma.course.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { discipline: true },
+        distinct: ["discipline"],
+      })
+    : Promise.resolve([]);
+
   const disciplinesPromise = session.user.schoolId
     ? prisma.discipline
         .findMany({
@@ -343,9 +351,10 @@ export default async function StudentCoursesAgendaPage({
         .catch(() => [])
     : Promise.resolve([]);
 
-  const [studios, teachers, disciplines] = await Promise.all([
+  const [studios, teachers, courseDisciplines, disciplines] = await Promise.all([
     studiosPromise,
     teachersPromise,
+    courseDisciplinesPromise,
     (async () => {
       try {
         const client: any = prisma as any;
@@ -355,7 +364,17 @@ export default async function StudentCoursesAgendaPage({
           select: { id: true, name: true, color: true },
           orderBy: { name: "asc" },
         });
-        return (rows.length > 0 ? rows : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
+        const legacy = courseDisciplines
+          .map((c) => c.discipline)
+          .filter((d): d is string => Boolean(d && d.trim().length > 0))
+          .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+        const merged = [...rows];
+        legacy.forEach((d) => {
+          if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+            merged.push(d);
+          }
+        });
+        return (merged.length > 0 ? merged : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
       } catch {
         return FALLBACK_DISCIPLINES as { name: string; color?: string }[];
       }

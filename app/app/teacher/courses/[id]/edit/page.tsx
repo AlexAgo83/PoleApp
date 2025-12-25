@@ -56,7 +56,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
 
-  const [students, positions, teachers, studios, progresses] = await Promise.all([
+  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -88,7 +88,44 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
         position: { select: { name: true, type: true } },
       },
     }),
+    prisma.discipline.findMany({
+      where: { schoolId },
+      select: { name: true, color: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.course.findMany({
+      where: { schoolId },
+      select: { discipline: true },
+      distinct: ["discipline"],
+    }),
   ]);
+  const fallbackDisciplines = [
+    { name: "Danse" },
+    { name: "Pole" },
+    { name: "Exotic" },
+    { name: "Souplesse" },
+    { name: "Pilates" },
+  ];
+  const mergedDisciplines = (() => {
+    const rows = disciplinesRaw ?? [];
+    const legacy = courseDisciplines
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged = [...rows];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d);
+      }
+    });
+    if (
+      course.discipline &&
+      !merged.some((m) => m.name.toLowerCase() === course.discipline.toLowerCase())
+    ) {
+      merged.push({ name: course.discipline });
+    }
+    return merged.length > 0 ? merged : fallbackDisciplines;
+  })();
 
   const defaultSelectedStudents = course.attendances.map((a) => a.studentId);
   const defaultSelectedPositions = course.positions.map((p) => p.positionId);
@@ -206,6 +243,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultCostCredits={course.costCredits ?? 100}
           defaultPhotoUrl={course.photoUrl ?? ""}
           defaultDiscipline={course.discipline ?? "Danse"}
+          disciplines={mergedDisciplines}
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,

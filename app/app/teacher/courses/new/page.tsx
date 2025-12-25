@@ -27,7 +27,7 @@ export default async function NewCoursePage() {
     );
   }
 
-  const [students, positions, teachers, studios, progresses] = await Promise.all([
+  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -59,7 +59,38 @@ export default async function NewCoursePage() {
         position: { select: { name: true, type: true } },
       },
     }),
+    prisma.discipline.findMany({
+      where: { schoolId },
+      select: { name: true, color: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.course.findMany({
+      where: { schoolId },
+      select: { discipline: true },
+      distinct: ["discipline"],
+    }),
   ]);
+  const fallbackDisciplines = [
+    { name: "Danse" },
+    { name: "Pole" },
+    { name: "Exotic" },
+    { name: "Souplesse" },
+    { name: "Pilates" },
+  ];
+  const mergedDisciplines = (() => {
+    const rows = disciplinesRaw ?? [];
+    const legacy = courseDisciplines
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged = [...rows];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d);
+      }
+    });
+    return merged.length > 0 ? merged : fallbackDisciplines;
+  })();
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -92,6 +123,7 @@ export default async function NewCoursePage() {
           studios={studios}
           defaultPhotoUrl=""
           defaultDiscipline="Danse"
+          disciplines={mergedDisciplines}
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,
