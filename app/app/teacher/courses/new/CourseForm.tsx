@@ -83,10 +83,10 @@ export function CourseForm({
   const masteryOptions = useMemo(
     () => [
       { value: "", label: "(non renseigné)" },
-      { value: MasteryLevel.INITIATED, label: "Initiation" },
+      { value: MasteryLevel.INITIATED, label: "Initié" },
       { value: MasteryLevel.PASSED, label: "Passé" },
-      { value: MasteryLevel.FLUID, label: "Fluide" },
-      { value: MasteryLevel.CHOREO, label: "Choréo" },
+      { value: MasteryLevel.FLUID, label: "Fluide chorégraphié" },
+      { value: MasteryLevel.CHOREO, label: "Fluide chorégraphié" },
     ],
     []
   );
