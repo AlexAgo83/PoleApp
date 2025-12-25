@@ -35,6 +35,10 @@
   - US: En tant que SUPER_ADMIN, je peux réinitialiser le mot de passe d’un utilisateur (gestion utilisateurs super admin).  
   - AC: Action/bouton dédié, génération d’un mot de passe temporaire, affiché en clair + email, audité.  
   - État: bouton + mdp temporaire affiché + audit, mailto prêt (pas d’envoi SMTP).
+- **Email reset (prod)**  
+  - US: En tant que SUPER_ADMIN, je déclenche un reset et un email part via Resend (ou SMTP).  
+  - AC: Config env (`RESEND_API_KEY`, `EMAIL_FROM`), helper mailer avec fallback silencieux si non configuré, audit conservé.  
+  - Setup: ajouter helper mailer, appeler dans resetUserPasswordAction, prévoir doc pour ajouter les env Render.
 - **Générateur : pondération par favoris élèves**  
   - US: Les positions “❤️” par les élèves sont favorisées dans la sélection et placées tôt.  
   - AC: Poids augmenté, visible dans le plan (ordre/sélection).  
