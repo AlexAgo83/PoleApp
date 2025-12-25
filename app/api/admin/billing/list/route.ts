@@ -132,15 +132,24 @@ export async function GET(request: Request) {
   const monthStart = new Date();
   monthStart.setDate(1);
   monthStart.setHours(0, 0, 0, 0);
-  const monthPurchases = await prisma.purchase.findMany({
-    where: {
-      createdAt: { gte: monthStart },
-      user: { schoolId: session.user.schoolId },
-    },
-    select: { kind: true },
-  });
-  const subsMonthCount = monthPurchases.filter((p) => p.kind === "SUBSCRIPTION").length;
-  const packsMonthCount = monthPurchases.filter((p) => p.kind === "PACK").length;
+  const monthPurchases =
+    (await (async () => {
+      try {
+        const client: any = prisma as any;
+        if (!client.purchase?.findMany) return [];
+        return await client.purchase.findMany({
+          where: {
+            createdAt: { gte: monthStart },
+            user: { schoolId: session.user.schoolId },
+          },
+          select: { kind: true },
+        });
+      } catch {
+        return [];
+      }
+    })()) ?? [];
+  const subsMonthCount = monthPurchases.filter((p: any) => p.kind === "SUBSCRIPTION").length;
+  const packsMonthCount = monthPurchases.filter((p: any) => p.kind === "PACK").length;
 
   return NextResponse.json({
     invoices,

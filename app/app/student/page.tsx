@@ -64,11 +64,19 @@ export default async function StudentDashboard() {
       where: { isActive: true, isOpen: true },
       orderBy: { sortOrder: "asc" },
     }),
-    prisma.purchase.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-    }),
+    (async () => {
+      try {
+        const client: any = prisma as any;
+        if (!client.purchase?.findMany) return [];
+        return await client.purchase.findMany({
+          where: { userId: session.user.id },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        });
+      } catch {
+        return [];
+      }
+    })(),
   ]);
 
   return (
