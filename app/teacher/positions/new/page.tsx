@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { SessionNavBar } from "@/components/SessionNavBar";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 import { NewPositionForm } from "./NewPositionForm";
 
@@ -13,6 +14,11 @@ export default async function NewPositionPage() {
   if (!role || (role !== "TEACHER" && role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
+
+  const muscles = await prisma.muscle.findMany({
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, kind: true },
+  });
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-6 md:py-10">
@@ -53,7 +59,7 @@ export default async function NewPositionPage() {
       </header>
 
       <section className="panel p-4 md:p-6">
-        <NewPositionForm />
+        <NewPositionForm muscles={muscles} />
       </section>
     </main>
   );

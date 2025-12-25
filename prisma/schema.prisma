@@ -150,8 +150,29 @@ model Position {
   favoriteByTeachers TeacherFavoritePosition[]
   favoriteByStudents StudentFavoritePosition[]
   recommendations CourseRecommendation[]
+  muscles       PositionMuscle[]
 
   @@unique([name])
+}
+
+model Muscle {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  kind      String   @default("MUSCLE") // MUSCLE | ARTICULATION | OTHER
+  createdAt DateTime @default(now())
+
+  positions PositionMuscle[]
+}
+
+model PositionMuscle {
+  positionId String
+  muscleId   String
+  createdAt  DateTime @default(now())
+
+  position Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  muscle   Muscle   @relation(fields: [muscleId], references: [id], onDelete: Cascade)
+
+  @@id([positionId, muscleId])
 }
 
 model PositionMedia {

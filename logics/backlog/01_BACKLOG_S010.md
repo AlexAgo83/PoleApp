@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010")
-[Compréhension: 93% / Avancement: 0%]
+[Compréhension: 94% / Avancement: 0%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -16,14 +16,14 @@
   - US: En tant que prof, si un élève a une blessure, le générateur exclut les positions sollicitant la zone (ou privilégie les moins engageantes si pas d’alternative).  
   - AC: Filtres blessures appliqués (s’appuient sur muscles sollicités), pas de positions incompatibles ; fallback si aucune alternative (à définir).
 - **Générateur : distribution des mouvements**  
-  - US: Le cours généré respecte la répartition 1 nouveauté / 2 déjà travaillés / 3 fluides-maîtrisés / 1 choré.  
-  - AC: Plan généré affiche les catégories, compte OK.
+  - US: Le cours généré respecte la répartition 1 nouveauté / 2 initiés / 3 passés/maîtrisés / 1 fluide chorégraphié.  
+  - AC: Plan généré affiche les catégories (nomenclature alignée avec les notations élèves), compte OK.
 - **Générateur : règles d’enchaînement**  
   - US: Pas deux transitions à la suite ; après Trick → Spin ou Spin → Trick, insérer une transition (même en fin de cours).  
   - AC: Plan proposé respecte ces règles.
-- **Niveaux progression : libellés**  
-  - US: En tant qu’utilisateur, je vois et peux saisir les niveaux “Initié, Passé, Maîtrisé, Enchaîné en choré”.  
-  - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé), dernière valeur prévaut ; migration/affichage cohérents.
+- **Niveaux progression : libellés unifiés**  
+  - US: En tant qu’utilisateur, je vois et peux saisir les niveaux “Nouveauté (pas commencé), Initié, Passé, Fluide chorégraphié”.  
+  - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé), dernière valeur prévaut ; migration/affichage cohérents et utilisés par les règles du générateur (même vocabulaire partout).
 
 ## P1 (prochaine itération)
 - **CRUD disciplines (QA/ergonomie)**  

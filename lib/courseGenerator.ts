@@ -26,6 +26,7 @@ type CandidateInput = {
   excludedForInjury: boolean;
   perStudentStatus: Array<"NOT_STARTED" | "IN_PROGRESS" | "PASSED" | "MASTERED">;
   favoriteCount: number;
+  muscles: string[];
 };
 
 function summarizeCandidate(candidate: CandidateInput): {
@@ -126,6 +127,14 @@ function selectTopSuggestions(
     selection[lowestIdx] = bestRevision;
   }
 
+  // Fallback : si pas assez de safe et qu'il reste des exclus (blessures), on en ajoute avec pénalité.
+  if (selection.length < limit && excluded.length > 0) {
+    const excludedSorted = excluded.sort((a, b) => b.score - a.score);
+    while (selection.length < limit && excludedSorted.length > 0) {
+      selection.push(excludedSorted.shift()!);
+    }
+  }
+
   if (options?.forceDiscoverySlot && !selection.some((s) => s.tag === "DISCOVERY")) {
     const bestExcludedDiscovery = excluded
       .filter((s) => s.tag === "DISCOVERY")
@@ -166,10 +175,26 @@ function deriveLearningState(
   return "NOT_STARTED";
 }
 
-function matchContraindications(position: Pick<Position, "contraindications">, activeInjuries: string[]): string[] {
-  if (!position.contraindications) return [];
-  const text = position.contraindications.toLowerCase();
-  return activeInjuries.filter((injury) => text.includes(injury.toLowerCase()));
+function matchContraindications(
+  position: Pick<Position, "contraindications"> & { muscles?: { muscle: { name: string } }[] },
+  activeInjuries: string[]
+): string[] {
+  const lowerInjuries = activeInjuries.map((i) => i.toLowerCase());
+  const hits = new Set<string>();
+  if (position.muscles && position.muscles.length > 0) {
+    position.muscles.forEach((m) => {
+      if (lowerInjuries.includes(m.muscle.name.toLowerCase())) {
+        hits.add(m.muscle.name);
+      }
+    });
+  }
+  if (position.contraindications) {
+    const text = position.contraindications.toLowerCase();
+    lowerInjuries.forEach((injury) => {
+      if (text.includes(injury)) hits.add(injury);
+    });
+  }
+  return Array.from(hits);
 }
 
 export async function generateCourseSuggestions(params: {
@@ -185,7 +210,7 @@ export async function generateCourseSuggestions(params: {
 
   const [positions, progress, injuries, recentCourses, favorites] = await Promise.all([
     prisma.position.findMany({
-      select: { id: true, name: true, type: true, contraindications: true },
+      select: { id: true, name: true, type: true, contraindications: true, muscles: { include: { muscle: true } } },
       orderBy: { name: "asc" },
     }),
     prisma.studentPositionProgress.findMany({
@@ -268,6 +293,7 @@ export async function generateCourseSuggestions(params: {
         excludedForInjury: unsafe.length > 0,
         perStudentStatus,
         favoriteCount: favoriteCounts.get(position.id) ?? 0,
+        muscles: position.muscles.map((m) => m.muscle.name),
       };
     });
 

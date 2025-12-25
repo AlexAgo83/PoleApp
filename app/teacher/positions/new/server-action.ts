@@ -19,6 +19,7 @@ const schema = z.object({
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  muscles: z.array(z.string()).optional(),
 });
 
 export async function createPositionAction(input: z.infer<typeof schema>) {
@@ -51,6 +52,13 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
               ],
             }
           : undefined,
+      ...(data.muscles && data.muscles.length > 0
+        ? {
+            muscles: {
+              create: data.muscles.map((id) => ({ muscleId: id })),
+            },
+          }
+        : {}),
     },
   });
 
