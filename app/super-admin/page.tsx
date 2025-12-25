@@ -9,6 +9,7 @@ import {
   deleteSubscriptionOfferAction,
   backfillDisciplinesAction,
   promoteSuperAdminAction,
+  resetUserPasswordAction,
   toggleArchiveSchoolAction,
   updateSettingsAction,
   upsertCreditPackOfferAction,
@@ -42,6 +43,8 @@ export default async function SuperAdminPage({
     Array.isArray(value) ? value[0] : value;
   const flash = getValue(resolvedParams.flash);
   const flashError = getValue(resolvedParams.error);
+  const flashTemp = getValue(resolvedParams.temp);
+  const flashEmail = getValue(resolvedParams.email);
 
   const getPage = (key: string) => {
     const raw = getValue(resolvedParams[key]);
@@ -161,6 +164,25 @@ export default async function SuperAdminPage({
           {flashError && (
             <span className="ml-2 font-normal text-amber-100/80">({flashError})</span>
           )}
+        </div>
+      )}
+      {flash === "reset-ok" && (
+        <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
+          Mot de passe réinitialisé pour {flashEmail ?? "l'utilisateur"}. Nouveau mot de passe temporaire :
+          <span className="mx-2 rounded-lg bg-white/10 px-2 py-1 font-mono text-xs font-semibold text-white">
+            {flashTemp}
+          </span>
+          (à communiquer en privé).
+        </div>
+      )}
+      {flash === "reset-not-found" && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Utilisateur introuvable pour cette adresse.
+        </div>
+      )}
+      {flash === "reset-invalid" && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Formulaire de réinitialisation invalide.
         </div>
       )}
       <section className="panel border-cyan-300/25 p-5 shadow-cyan-900/30">
@@ -821,6 +843,36 @@ export default async function SuperAdminPage({
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-400/60 bg-red-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/30"
             >
               Valider
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="panel space-y-4 border-indigo-300/25 p-5 shadow-indigo-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.16em] text-indigo-200">Sécurité</p>
+          <h3 className="text-lg font-semibold text-white">Réinitialiser un mot de passe</h3>
+        </div>
+        <p className="text-sm text-slate-300">
+          Génère un mot de passe temporaire et l’applique à l’utilisateur. Partage-le en privé. Audit log automatique.
+        </p>
+        <form action={resetUserPasswordAction} className="grid gap-2 md:grid-cols-[2fr_1fr]">
+          <label className="space-y-1">
+            <span className="text-xs text-slate-300">Email</span>
+            <input
+              name="email"
+              type="email"
+              placeholder="user@poleapp.test"
+              required
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+            />
+          </label>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/30"
+            >
+              Réinitialiser
             </button>
           </div>
         </form>

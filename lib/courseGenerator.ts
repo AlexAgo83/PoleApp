@@ -71,7 +71,7 @@ function summarizeCandidate(candidate: CandidateInput): {
   // Pondérations ajustées : pénaliser plus la répétition récente et les blessures, valoriser un peu plus les coups de cœur.
   const recencyPenalty = candidate.recentOccurrences * 2;
   const injuryPenalty = candidate.unsafeForStudents.length > 0 ? 8 : 0;
-  const favoritesBonus = Math.min(3, candidate.favoriteCount) * 3; // 0 → 0, max 9
+  const favoritesBonus = Math.min(5, candidate.favoriteCount) * 5; // 0 → 0, max 25
   const totalScore =
     discoveryScore * 3 + revisionScore * 2 + safeScore + favoritesBonus - recencyPenalty - injuryPenalty;
 
