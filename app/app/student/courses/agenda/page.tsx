@@ -10,6 +10,13 @@ import { WeekView } from "./WeekView";
 
 export const dynamic = "force-dynamic";
 const NOW_MS = Date.now();
+const FALLBACK_DISCIPLINES = [
+  { name: "Pole", color: "#0ea5e9" },
+  { name: "Exotic", color: "#ec4899" },
+  { name: "Souplesse", color: "#a855f7" },
+  { name: "Pilates", color: "#10b981" },
+  { name: "Danse", color: "#7c3aed" },
+];
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -326,7 +333,25 @@ export default async function StudentCoursesAgendaPage({
       })
     : Promise.resolve([]);
 
-  const [studios, teachers] = await Promise.all([studiosPromise, teachersPromise]);
+  const disciplinesPromise = session.user.schoolId
+    ? prisma.discipline
+        .findMany({
+          where: { schoolId: session.user.schoolId },
+          select: { id: true, name: true, color: true },
+          orderBy: { name: "asc" },
+        })
+        .catch(() => [])
+    : Promise.resolve([]);
+
+  const [studios, teachers, disciplinesRaw] = await Promise.all([
+    studiosPromise,
+    teachersPromise,
+    disciplinesPromise,
+  ]);
+  const disciplines = (disciplinesRaw.length > 0 ? disciplinesRaw : FALLBACK_DISCIPLINES) as {
+    name: string;
+    color?: string;
+  }[];
 
   const initialWeekDays = weekDays.map((d, idx) => {
     const dayAttendances = attendancesByDay[idx];
@@ -545,19 +570,23 @@ const legendItems = [
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Discipline</legend>
               <div className="flex flex-wrap gap-2">
-                {["Pole", "Exotic", "Souplesse", "Pilates"].map((d) => (
+                {disciplines.map((d) => (
                   <label
-                    key={d}
+                    key={d.name}
                     className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
                   >
                     <input
                       type="checkbox"
                       name="discipline"
-                      value={d}
-                      defaultChecked={disciplineFilters.includes(d)}
+                      value={d.name}
+                      defaultChecked={disciplineFilters.includes(d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
-                    {d}
+                    <span
+                      className="inline-flex h-3 w-3 rounded-full border border-white/20"
+                      style={{ backgroundColor: (d as any).color ?? undefined }}
+                    />
+                    {d.name}
                   </label>
                 ))}
               </div>
