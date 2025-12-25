@@ -1,5 +1,5 @@
 # Backlog — Retours QA S009 (session 2025-12-23 02:13)
-[Compréhension: 95% / Avancement: 60%]
+[Compréhension: 95% / Avancement: 70%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -20,8 +20,8 @@
 - Promo/dégrado UI : écran protégé avec recherche par email + bouton “Promouvoir/Dégrader en SUPER_ADMIN”, warning et log ; pas de liste complète des users (exposition limitée).
 
 ## 2) Professeurs / Positions
-- Professeur autorisé à créer des positions (si non existant) et à éditer uniquement ses positions. (P0)
-- Mettre en avant le propriétaire d’une position (badge/mention “Créé par <nom|email>” sur liste/détail/générateur) ; interdire l’édition par d’autres (crayon désactivé + message explicite). (P1)
+- **(DONE)** Professeur autorisé à créer des positions (si non existant) et à éditer uniquement ses positions. (P0)
+- **(DONE)** Mettre en avant le propriétaire d’une position (badge/mention “Créé par <nom|email>” sur liste/détail/générateur) ; interdire l’édition par d’autres (crayon désactivé + message explicite). (P1)
 
 ## Points à clarifier
 - Super Admin : promotion/dégradation d’autres comptes à décider plus tard.
