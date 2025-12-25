@@ -38,7 +38,7 @@
 - **Email reset (prod)**  
   - US: En tant que SUPER_ADMIN, je déclenche un reset et un email part via Resend (ou SMTP).  
   - AC: Config env (`RESEND_API_KEY`, `EMAIL_FROM`), helper mailer avec fallback silencieux si non configuré, audit conservé.  
-  - Setup: ajouter helper mailer, appeler dans resetUserPasswordAction, prévoir doc pour ajouter les env Render.
+  - Setup: helper mailer ajouté (SMTP), appel dans resetUserPasswordAction, prévoir doc env Render (`SMTP_HOST/PORT/USER/PASS`, `EMAIL_FROM`, `ENABLE_EMAIL_RESET`).
 - **Générateur : pondération par favoris élèves**  
   - US: Les positions “❤️” par les élèves sont favorisées dans la sélection et placées tôt.  
   - AC: Poids augmenté, visible dans le plan (ordre/sélection).  
