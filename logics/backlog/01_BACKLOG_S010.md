@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010")
-[Compréhension: 85% / Avancement: 0%]
+[Compréhension: 90% / Avancement: 0%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -10,28 +10,28 @@
 
 ## P0 (bloquant)
 - **Muscles sollicités (dépendance blessures)**  
-  - US: En tant qu’admin/prof, je peux tagger une position avec les muscles sollicités pour que le générateur exclue/pondère en cas de blessure.  
-  - AC: Champs muscles sur position (catalogue), intégrés dans les filtres blessures du générateur.
+  - US: En tant qu’admin/prof, je peux tagger une position avec les muscles/articulations sollicités via un multi-select référentiel pour que le générateur exclue/pondère en cas de blessure.  
+  - AC: Champs muscles sur position (catalogue), utilisés dans les filtres blessures du générateur ; logique d’exclusion stricte ou atténuation si aucune alternative (à trancher).
 - **Générateur : règles de sécurité blessures**  
   - US: En tant que prof, si un élève a une blessure, le générateur exclut les positions sollicitant la zone (ou privilégie les moins engageantes si pas d’alternative).  
-  - AC: Filtres blessures appliqués dans la proposition, pas de positions incompatibles dans le plan généré (s’appuie sur muscles sollicités).
+  - AC: Filtres blessures appliqués (s’appuient sur muscles sollicités), pas de positions incompatibles ; fallback si aucune alternative (à définir).
 - **Générateur : distribution des mouvements**  
   - US: Le cours généré respecte la répartition 1 nouveauté / 2 déjà travaillés / 3 fluides-maîtrisés / 1 choré.  
   - AC: Plan généré affiche les catégories, compte OK.
 - **Générateur : règles d’enchaînement**  
-  - US: Pas deux transitions à la suite ; après Trick → Spin ou Spin → Trick, insérer une transition.  
+  - US: Pas deux transitions à la suite ; après Trick → Spin ou Spin → Trick, insérer une transition (même en fin de cours).  
   - AC: Plan proposé respecte ces règles.
 - **Niveaux progression : libellés**  
   - US: En tant qu’utilisateur, je vois et peux saisir les niveaux “Initié, Passé, Maîtrisé, Enchaîné en choré”.  
-  - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé) côté UI + stockage, mapping cohérent partout.
+  - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé), dernière valeur prévaut ; migration/affichage cohérents.
 
 ## P1 (prochaine itération)
 - **CRUD disciplines (QA/ergonomie)**  
   - US: En tant qu’admin école, je peux gérer les disciplines (création/édition/suppression si non utilisée) avec une UX claire.  
-  - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda.
+  - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda (QA à refaire, besoin mal compris).
 - **Super-admin : reset mot de passe utilisateur**  
   - US: En tant que SUPER_ADMIN, je peux réinitialiser le mot de passe d’un utilisateur (gestion utilisateurs super admin).  
-  - AC: Action/bouton dédié, génération d’un mot de passe temporaire, feedback OK.
+  - AC: Action/bouton dédié, génération d’un mot de passe temporaire, affiché en clair + email, audité.
 - **Générateur : pondération par favoris élèves**  
   - US: Les positions “❤️” par les élèves sont favorisées dans la sélection et placées tôt.  
   - AC: Poids augmenté, visible dans le plan (ordre/sélection).
