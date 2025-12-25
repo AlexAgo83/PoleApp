@@ -9,12 +9,12 @@
 > (Idéalement) Tiens à jour : 07_QE_S010.md
 
 ## P0 (bloquant)
-- **CRUD disciplines manquant (admin)**  
-  - US: En tant qu’admin école, je peux créer/éditer/supprimer (si non utilisée) une discipline pour mon école.  
-  - AC: Bouton/flow CRUD présent et fonctionnel, validation (unicité par école), affichage dans filtres prof/élève/agenda.
+- **Muscles sollicités (dépendance blessures)**  
+  - US: En tant qu’admin/prof, je peux tagger une position avec les muscles sollicités pour que le générateur exclue/pondère en cas de blessure.  
+  - AC: Champs muscles sur position (catalogue), intégrés dans les filtres blessures du générateur.
 - **Générateur : règles de sécurité blessures**  
   - US: En tant que prof, si un élève a une blessure, le générateur exclut les positions sollicitant la zone (ou privilégie les moins engageantes si pas d’alternative).  
-  - AC: Filtres blessures appliqués dans la proposition, pas de positions incompatibles dans le plan généré.
+  - AC: Filtres blessures appliqués dans la proposition, pas de positions incompatibles dans le plan généré (s’appuie sur muscles sollicités).
 - **Générateur : distribution des mouvements**  
   - US: Le cours généré respecte la répartition 1 nouveauté / 2 déjà travaillés / 3 fluides-maîtrisés / 1 choré.  
   - AC: Plan généré affiche les catégories, compte OK.
@@ -26,15 +26,15 @@
   - AC: Remplacement des libellés actuels (acquis/fluide/maîtrisé) côté UI + stockage, mapping cohérent partout.
 
 ## P1 (prochaine itération)
+- **CRUD disciplines (QA/ergonomie)**  
+  - US: En tant qu’admin école, je peux gérer les disciplines (création/édition/suppression si non utilisée) avec une UX claire.  
+  - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda.
 - **Super-admin : reset mot de passe utilisateur**  
   - US: En tant que SUPER_ADMIN, je peux réinitialiser le mot de passe d’un utilisateur (gestion utilisateurs super admin).  
   - AC: Action/bouton dédié, génération d’un mot de passe temporaire, feedback OK.
 - **Générateur : pondération par favoris élèves**  
   - US: Les positions “❤️” par les élèves sont favorisées dans la sélection et placées tôt.  
   - AC: Poids augmenté, visible dans le plan (ordre/sélection).
-- **Générateur : muscles sollicités**  
-  - US: En tant qu’admin/prof, je peux tagger une position avec les muscles sollicités pour aider le générateur à exclure en cas de blessure / préparer échauffements ciblés.  
-  - AC: Champs muscles sur position (catalogue), intégrés dans les filtres blessures du générateur.
 
 ## P2 (plus tard)
 - **Affinage UX filtres disciplines (éviter longue liste)**  
