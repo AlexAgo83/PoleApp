@@ -343,15 +343,24 @@ export default async function StudentCoursesAgendaPage({
         .catch(() => [])
     : Promise.resolve([]);
 
-  const [studios, teachers, disciplinesRaw] = await Promise.all([
+  const [studios, teachers, disciplines] = await Promise.all([
     studiosPromise,
     teachersPromise,
-    disciplinesPromise,
+    (async () => {
+      try {
+        const client: any = prisma as any;
+        if (!client.discipline?.findMany) return FALLBACK_DISCIPLINES;
+        const rows = await client.discipline.findMany({
+          where: { schoolId: session.user.schoolId },
+          select: { id: true, name: true, color: true },
+          orderBy: { name: "asc" },
+        });
+        return (rows.length > 0 ? rows : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
+      } catch {
+        return FALLBACK_DISCIPLINES as { name: string; color?: string }[];
+      }
+    })(),
   ]);
-  const disciplines = (disciplinesRaw.length > 0 ? disciplinesRaw : FALLBACK_DISCIPLINES) as {
-    name: string;
-    color?: string;
-  }[];
 
   const initialWeekDays = weekDays.map((d, idx) => {
     const dayAttendances = attendancesByDay[idx];

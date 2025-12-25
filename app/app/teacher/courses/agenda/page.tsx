@@ -147,17 +147,20 @@ export default async function CoursesAgendaPage({
     select: { id: true, name: true, email: true },
     orderBy: { name: "asc" },
   });
-  const disciplinesRaw = await prisma.discipline
-    .findMany({
-      where: { schoolId: session.user.schoolId },
-      select: { id: true, name: true, color: true },
-      orderBy: { name: "asc" },
-    })
-    .catch(() => []);
-  const disciplines = (disciplinesRaw.length > 0 ? disciplinesRaw : FALLBACK_DISCIPLINES) as {
-    name: string;
-    color?: string;
-  }[];
+  const disciplines = (await (async () => {
+    try {
+      const client: any = prisma as any;
+      if (!client.discipline?.findMany) return FALLBACK_DISCIPLINES;
+      const rows = await client.discipline.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { id: true, name: true, color: true },
+        orderBy: { name: "asc" },
+      });
+      return (rows.length > 0 ? rows : FALLBACK_DISCIPLINES) as { name: string; color?: string }[];
+    } catch {
+      return FALLBACK_DISCIPLINES as { name: string; color?: string }[];
+    }
+  })()) as { name: string; color?: string }[];
 
   const daysInMonth = monthEnd.getDate();
   const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
