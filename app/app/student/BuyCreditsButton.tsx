@@ -4,33 +4,43 @@ import { useEffect, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
-import { demoAddCreditsAction } from "./actions";
+import { buyPackAction, buySubscriptionAction } from "./actions";
 
 type CreditPack = {
   id: string;
   name: string;
   credits: number;
-  price: string;
+  priceCents: number;
+  vatPercent?: number;
 };
 
-const CREDIT_PACKS: CreditPack[] = [
-  { id: "starter", name: "Pack découverte", credits: 100, price: "€9.90" },
-  { id: "booster", name: "Pack booster", credits: 250, price: "€19.90" },
-  { id: "pro", name: "Pack illimité 30 jours", credits: 1000, price: "€39.90" },
-];
+type SubscriptionOffer = {
+  id: string;
+  name: string;
+  monthlyCredits: number;
+  monthlyPriceCents: number;
+  vatPercent?: number;
+};
 
 type Props = {
   currentCredits: number;
   showUpgrade?: boolean;
+  packs: CreditPack[];
+  subscriptions: SubscriptionOffer[];
 };
 
-export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
+function formatPrice(cents: number) {
+  return `${(cents / 100).toFixed(2)} €`;
+}
+
+export function BuyCreditsButton({ currentCredits, showUpgrade, packs, subscriptions }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
-  const [selectedPack, setSelectedPack] = useState<CreditPack>(CREDIT_PACKS[1]);
+  const [selectedPack, setSelectedPack] = useState<CreditPack>(packs[0] ?? { id: "", name: "", credits: 0, priceCents: 0 });
+  const [selectedSub, setSelectedSub] = useState<SubscriptionOffer>(subscriptions[0] ?? { id: "", name: "", monthlyCredits: 1000, monthlyPriceCents: 0 });
   const projectedTotal = currentCredits + selectedPack.credits;
 
   useEffect(() => {
@@ -76,7 +86,7 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
         </div>
 
         <div className="mt-4 grid gap-3">
-          {CREDIT_PACKS.map((pack) => {
+          {packs.map((pack) => {
             const isSelected = pack.id === selectedPack.id;
             return (
               <button
@@ -93,31 +103,27 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
                   <p className="text-sm font-semibold">{pack.name}</p>
                   <p className="text-xs text-slate-300">{pack.credits} crédits</p>
                 </div>
-                <p className="text-sm font-semibold">{pack.price}</p>
+                <p className="text-sm font-semibold">{formatPrice(pack.priceCents)}</p>
               </button>
             );
           })}
         </div>
 
         <div className="mt-5 rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-          Paiement sécurisé en ligne arrive bientôt. En attendant, contacte ton école
-          pour recharger ton compte : nous appliquerons automatiquement le pack
-          sélectionné ({selectedPack.name}).
+          Paiement simulé : l&apos;achat crédite immédiatement ton compte et génère un reçu interne. TVA {selectedPack.vatPercent ?? 20}% incluse.
         </div>
 
         <form
           action={(formData) =>
             startTransition(async () => {
-              await demoAddCreditsAction(formData);
+              await buyPackAction(formData);
               setIsCreditsOpen(false);
               router.refresh();
             })
           }
           className="mt-6 flex items-center justify-end gap-3"
         >
-          <input type="hidden" name="credits" value={selectedPack.credits} />
           <input type="hidden" name="packId" value={selectedPack.id} />
-          <input type="hidden" name="packName" value={selectedPack.name} />
           <button
             type="button"
             className="rounded-lg border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
@@ -129,9 +135,9 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
             type="submit"
             disabled={pending}
             className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
-            aria-label="Ajouter les crédits pour la démo"
+            aria-label="Acheter le pack"
           >
-            {pending ? "Chargement..." : "Continuer (crédits ajoutés)"}
+            {pending ? "Chargement..." : "Payer (simulé)"}
           </button>
         </form>
       </div>
@@ -154,9 +160,7 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
             <h3 className="text-xl font-semibold text-white">
               Accès illimité aux positions et au suivi
             </h3>
-            <p className="text-sm text-slate-300">
-              Le paiement en ligne arrive bientôt. Prévisualise ci-dessous ce que tu obtiendras en passant premium.
-            </p>
+            <p className="text-sm text-slate-300">Paiement simulé : accès premium instantané + crédits offerts.</p>
           </div>
           <button
             type="button"
@@ -176,17 +180,37 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
             <ul className="mt-2 space-y-1.5 text-slate-100">
               <li>• Accès complet à toutes les positions et médias</li>
               <li>• Progression illimitée et mini-jeu sur tout le catalogue</li>
-              <li>• Crédits bonus de bienvenue : 1000</li>
+              <li>• Crédits bonus : {selectedSub?.monthlyCredits ?? 1000}</li>
             </ul>
           </div>
           <div className="rounded-xl border border-cyan-300/30 bg-cyan-400/10 p-4">
             <p className="text-xs uppercase tracking-[0.12em] text-cyan-100">
-              Offre de lancement
+              Offre
             </p>
-            <p className="mt-1 text-base font-semibold text-white">€39.90 / 30 jours</p>
-            <p className="text-xs text-cyan-50/90">
-              Activation manuelle par l&apos;école le temps que le paiement en ligne arrive.
-            </p>
+            {subscriptions.length === 0 ? (
+              <p className="text-sm text-slate-200">Aucune offre disponible.</p>
+            ) : (
+              subscriptions.map((sub) => {
+                const isSelected = sub.id === selectedSub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => setSelectedSub(sub)}
+                    className={`mt-2 w-full rounded-xl border px-3 py-2 text-left transition ${
+                      isSelected
+                        ? "border-cyan-300/70 bg-cyan-400/15 text-white"
+                        : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-white">{sub.name}</p>
+                    <p className="text-xs text-cyan-50/90">
+                      {formatPrice(sub.monthlyPriceCents)} / mois · {sub.monthlyCredits} crédits
+                    </p>
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -200,11 +224,20 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
           </button>
           <button
             type="button"
-            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 opacity-70 transition"
-            disabled
-            aria-label="Paiement premium indisponible pour l'instant"
+            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={pending || !selectedSub?.id}
+            onClick={() =>
+              startTransition(async () => {
+                const fd = new FormData();
+                fd.set("subscriptionId", selectedSub.id);
+                await buySubscriptionAction(fd);
+                setIsUpgradeOpen(false);
+                router.refresh();
+              })
+            }
+            aria-label="Acheter l'abonnement (simulé)"
           >
-            Continuer (bientôt)
+            {pending ? "Chargement..." : "Payer (simulé)"}
           </button>
         </div>
       </div>
@@ -229,10 +262,12 @@ export function BuyCreditsButton({ currentCredits, showUpgrade }: Props) {
             type="button"
             className="rounded-full border border-cyan-400/70 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-400/20"
             onClick={() => {
-              const proPack =
-                CREDIT_PACKS.find((pack) => pack.id === "pro") ??
-                CREDIT_PACKS[CREDIT_PACKS.length - 1];
-              setSelectedPack(proPack);
+              if (packs.length > 0) {
+                setSelectedPack(packs[packs.length - 1]);
+              }
+              if (subscriptions.length > 0) {
+                setSelectedSub(subscriptions[0]);
+              }
               setIsCreditsOpen(false);
               setIsUpgradeOpen(true);
             }}

@@ -8,50 +8,114 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const addCreditsSchema = z.object({
-  credits: z.coerce.number().min(1).max(10_000),
-  packId: z.string().optional(),
-  packName: z.string().optional(),
+const packPurchaseSchema = z.object({
+  packId: z.string().cuid(),
+});
+
+const subscriptionPurchaseSchema = z.object({
+  subscriptionId: z.string().cuid(),
 });
 
 export async function demoAddCreditsAction(formData: FormData) {
+  // Legacy fallback
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     redirect("/access-denied");
   }
 
-  const parsed = addCreditsSchema.safeParse({
-    credits: formData.get("credits"),
-    packId: formData.get("packId") || undefined,
-    packName: formData.get("packName") || undefined,
-  });
-
-  if (!parsed.success) {
-    throw new Error("Formulaire invalide");
+  const credits = Number(formData.get("credits") ?? 0);
+  if (!Number.isFinite(credits) || credits <= 0) {
+    throw new Error("Crédits invalides");
   }
-
   await prisma.user.update({
     where: { id: session.user.id },
-    data: { credits: { increment: parsed.data.credits } },
+    data: { credits: { increment: credits } },
   });
+  revalidatePath("/app/student");
+}
 
-  try {
-    await prisma.auditLog.create({
+export async function buyPackAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || session.user.role !== "STUDENT") {
+    redirect("/access-denied");
+  }
+  const parsed = packPurchaseSchema.safeParse({
+    packId: formData.get("packId"),
+  });
+  if (!parsed.success) throw new Error("Pack invalide");
+
+  const pack = await prisma.creditPackOffer.findFirst({
+    where: { id: parsed.data.packId, isActive: true, isOpen: true },
+  });
+  if (!pack) throw new Error("Pack non disponible");
+
+  await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: session.user!.id },
+      data: { credits: { increment: pack.credits } },
+    });
+    await tx.purchase.create({
       data: {
-        actorId: session.user.id,
-        action: "demo_purchase",
-        target: parsed.data.packId ?? parsed.data.packName ?? "credits_pack",
-        details: {
-          credits: parsed.data.credits,
-          packId: parsed.data.packId,
-          packName: parsed.data.packName,
-          ts: new Date().toISOString(),
-        },
+        userId: session.user!.id,
+        offerId: pack.id,
+        offerName: pack.name,
+        kind: "PACK",
+        amountCents: pack.priceCents,
+        vatPercent: pack.vatPercent ?? 20,
+        currency: "EUR",
+        creditsGranted: pack.credits,
+        isPremiumGranted: false,
+        status: "PAID",
       },
     });
-  } catch (err) {
-    console.warn("audit demo_purchase failed", err);
+  });
+
+  revalidatePath("/app/student");
+  revalidatePath("/app/student/courses");
+  revalidatePath("/app/student/courses/agenda");
+}
+
+export async function buySubscriptionAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || session.user.role !== "STUDENT") {
+    redirect("/access-denied");
   }
+  const parsed = subscriptionPurchaseSchema.safeParse({
+    subscriptionId: formData.get("subscriptionId"),
+  });
+  if (!parsed.success) throw new Error("Abonnement invalide");
+
+  const sub = await prisma.subscriptionOffer.findFirst({
+    where: { id: parsed.data.subscriptionId, isActive: true, isOpen: true },
+  });
+  if (!sub) throw new Error("Abonnement indisponible");
+
+  const creditsToGrant = sub.monthlyCredits ?? 1000;
+  const amountCents = sub.monthlyPriceCents ?? sub.annualPriceCents ?? 0;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: session.user!.id },
+      data: {
+        credits: { increment: creditsToGrant },
+        isPremium: true,
+      },
+    });
+    await tx.purchase.create({
+      data: {
+        userId: session.user!.id,
+        offerId: sub.id,
+        offerName: sub.name,
+        kind: "SUBSCRIPTION",
+        amountCents,
+        vatPercent: sub.vatPercent ?? 20,
+        currency: "EUR",
+        creditsGranted: creditsToGrant,
+        isPremiumGranted: true,
+        status: "PAID",
+      },
+    });
+  });
 
   revalidatePath("/app/student");
   revalidatePath("/app/student/courses");
