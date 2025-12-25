@@ -29,13 +29,13 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 const progressLabels: Record<string, string> = {
-  NOT_STARTED: "Découverte",
-  IN_PROGRESS: "Tenté",
+  NOT_STARTED: "Nouveauté",
+  IN_PROGRESS: "Initié",
   PASSED: "Passé",
-  MASTERED: "Fluide",
-  INITIATED: "Initiation",
-  FLUID: "Fluide",
-  CHOREO: "Choréo",
+  MASTERED: "Fluide chorégraphié",
+  INITIATED: "Initié",
+  FLUID: "Fluide chorégraphié",
+  CHOREO: "Fluide chorégraphié",
 };
 
 type SearchParams =

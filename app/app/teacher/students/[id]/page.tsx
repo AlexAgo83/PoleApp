@@ -10,10 +10,10 @@ import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
 
 const statusLabel: Record<LearningStatus, string> = {
-  NOT_STARTED: "Découverte",
-  IN_PROGRESS: "Tenté",
+  NOT_STARTED: "Nouveauté",
+  IN_PROGRESS: "Initié",
   PASSED: "Passé",
-  MASTERED: "Fluide",
+  MASTERED: "Fluide chorégraphié",
 };
 
 const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {
@@ -321,7 +321,7 @@ export default async function TeacherStudentDetailPage({
                         : statusStyles.NOT_STARTED.solid
                     }`}
                   >
-                    {progress ? statusLabel[progress.learningStatus] : "Découverte"}
+                    {progress ? statusLabel[progress.learningStatus] : "Nouveauté"}
                   </span>
                   {progress?.masteryLevel && (
                     <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white/90">
