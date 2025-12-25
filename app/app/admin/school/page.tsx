@@ -15,11 +15,20 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminSchoolPage() {
+export default async function AdminSchoolPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+} = {}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     redirect("/access-denied");
   }
+
+  const resolvedParams = (await searchParams) ?? {};
+  const getValue = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v);
+  const flash = getValue(resolvedParams.flash);
+  const flashMessage = getValue(resolvedParams.flashMessage);
 
   const baseSchool = await prisma.school.findUnique({
     where: { id: session.user.schoolId },
@@ -98,6 +107,18 @@ export default async function AdminSchoolPage() {
           />
         )}
       </header>
+
+      {flash && flashMessage && (
+        <div
+          className={`rounded-xl border px-4 py-3 text-sm shadow-lg ${
+            flash === "success"
+              ? "border-emerald-300/60 bg-emerald-500/15 text-emerald-50 shadow-emerald-900/30"
+              : "border-amber-300/60 bg-amber-500/15 text-amber-50 shadow-amber-900/30"
+          }`}
+        >
+          {flashMessage}
+        </div>
+      )}
 
       <section className="panel space-y-4 p-6">
         <div className="flex flex-col gap-1">

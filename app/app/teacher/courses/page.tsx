@@ -322,7 +322,7 @@ export default async function TeacherCoursesPage({
             </label>
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1">Discipline</legend>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
             {disciplines.map((d: { name: string; color?: string }, idx: number) => (
               <label
                 key={`${d.name}-${idx}`}

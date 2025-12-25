@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -181,6 +183,45 @@ export async function promoteSuperAdminAction(formData: FormData) {
     by: admin.email,
   });
   revalidatePath(basePath);
+}
+
+const resetSchema = z.object({
+  email: z.string().email(),
+});
+
+export async function resetUserPasswordAction(formData: FormData) {
+  const admin = await requireSuperAdmin();
+  const parsed = resetSchema.safeParse({
+    email: formData.get("email"),
+  });
+  if (!parsed.success) {
+    redirect(`${basePath}?flash=reset-invalid`);
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  if (!user) {
+    redirect(`${basePath}?flash=reset-not-found`);
+  }
+
+  const tempPassword = crypto.randomBytes(9).toString("base64url").slice(0, 12);
+  const passwordHash = await bcrypt.hash(tempPassword, 10);
+
+  await prisma.user.update({
+    where: { email: parsed.data.email },
+    data: { passwordHash },
+  });
+
+  await logAudit("user:reset-password", user.id, {
+    email: user.email,
+    by: admin.email,
+  });
+
+  const qs = new URLSearchParams({
+    flash: "reset-ok",
+    temp: tempPassword,
+    email: user.email,
+  });
+  redirect(`${basePath}?${qs.toString()}`);
 }
 
 function euroToCents(value: number) {

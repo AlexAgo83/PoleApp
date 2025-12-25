@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010")
-[Compréhension: 94% / Avancement: 60%]
+[Compréhension: 94% / Avancement: 70%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -29,18 +29,22 @@
 ## P1 (prochaine itération)
 - **CRUD disciplines (QA/ergonomie)**  
   - US: En tant qu’admin école, je peux gérer les disciplines (création/édition/suppression si non utilisée) avec une UX claire.  
-  - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda (QA à refaire, besoin mal compris).
+  - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda (QA à refaire, besoin mal compris).  
+  - État: flash succès/erreur + blocage suppression si utilisée. Reste QA globale.
 - **Super-admin : reset mot de passe utilisateur**  
   - US: En tant que SUPER_ADMIN, je peux réinitialiser le mot de passe d’un utilisateur (gestion utilisateurs super admin).  
-  - AC: Action/bouton dédié, génération d’un mot de passe temporaire, affiché en clair + email, audité.
+  - AC: Action/bouton dédié, génération d’un mot de passe temporaire, affiché en clair + email, audité.  
+  - État: bouton + mdp temporaire affiché + audit (pas d’email pour l’instant).
 - **Générateur : pondération par favoris élèves**  
   - US: Les positions “❤️” par les élèves sont favorisées dans la sélection et placées tôt.  
-  - AC: Poids augmenté, visible dans le plan (ordre/sélection).
+  - AC: Poids augmenté, visible dans le plan (ordre/sélection).  
+  - État: bonus favoris renforcé (sélection).
 
 ## P2 (plus tard)
 - **Affinage UX filtres disciplines (éviter longue liste)**  
   - US: En tant qu’utilisateur, je peux sélectionner rapidement des disciplines sans scroll/trop de pills (multi-select ou grille compacte).  
-  - AC: Variante UX validée (multi-select + chips, double colonne scroll interne, ou “voir plus”).
+  - AC: Variante UX validée (multi-select + chips, double colonne scroll interne, ou “voir plus”).  
+  - État: grille compacte dans filtres cours prof (P2 à compléter si besoin).
 
 ## Notes
 - QA effectuée sur version 0.7.6.  

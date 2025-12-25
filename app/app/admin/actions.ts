@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -66,6 +67,13 @@ const disciplineSchema = z.object({
   color: z.string().trim().min(3).max(16),
 });
 
+function redirectWithFlash(message: string, type: "success" | "error" = "success") {
+  const params = new URLSearchParams();
+  params.set("flash", type);
+  params.set("flashMessage", message);
+  redirect(`/app/admin/school?${params.toString()}`);
+}
+
 export async function createDisciplineAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
@@ -76,19 +84,27 @@ export async function createDisciplineAction(formData: FormData) {
     color: formData.get("color") ?? "#7c3aed",
   });
   if (!parsed.success) {
-    throw new Error("Formulaire invalide");
+    redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
   const name = parsed.data.name.trim();
   const color = parsed.data.color.trim();
-  await prisma.discipline.create({
-    data: {
-      name,
-      color,
-      schoolId: session.user.schoolId,
-    },
-  });
-  revalidatePath("/app/admin/school");
-  revalidatePath("/app/admin");
+  try {
+    await prisma.discipline.create({
+      data: {
+        name,
+        color,
+        schoolId: session.user.schoolId,
+      },
+    });
+    revalidatePath("/app/admin/school");
+    revalidatePath("/app/admin");
+    redirectWithFlash("Discipline créée");
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      redirectWithFlash("Discipline déjà existante pour cette école", "error");
+    }
+    throw error;
+  }
 }
 
 export async function updateDisciplineAction(formData: FormData) {
@@ -104,7 +120,7 @@ export async function updateDisciplineAction(formData: FormData) {
       color: formData.get("color") ?? "#7c3aed",
     });
   if (!parsed.success) {
-    throw new Error("Formulaire invalide");
+    redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
   const { disciplineId, name, color } = parsed.data;
   const existing = await prisma.discipline.findFirst({
@@ -113,12 +129,20 @@ export async function updateDisciplineAction(formData: FormData) {
   if (!existing) {
     redirect("/access-denied");
   }
-  await prisma.discipline.update({
-    where: { id: disciplineId },
-    data: { name: name.trim(), color: color.trim() },
-  });
-  revalidatePath("/app/admin/school");
-  revalidatePath("/app/admin");
+  try {
+    await prisma.discipline.update({
+      where: { id: disciplineId },
+      data: { name: name.trim(), color: color.trim() },
+    });
+    revalidatePath("/app/admin/school");
+    revalidatePath("/app/admin");
+    redirectWithFlash("Discipline mise à jour");
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      redirectWithFlash("Nom déjà utilisé par une autre discipline", "error");
+    }
+    throw error;
+  }
 }
 
 export async function deleteDisciplineAction(formData: FormData) {
@@ -128,7 +152,7 @@ export async function deleteDisciplineAction(formData: FormData) {
   }
   const disciplineId = formData.get("disciplineId") as string | null;
   if (!disciplineId) {
-    throw new Error("Discipline invalide");
+    redirectWithFlash("Discipline invalide", "error");
   }
   const discipline = await prisma.discipline.findFirst({
     where: { id: disciplineId, schoolId: session.user.schoolId },
@@ -141,10 +165,11 @@ export async function deleteDisciplineAction(formData: FormData) {
     where: { schoolId: session.user.schoolId, discipline: discipline.name },
   });
   if (usedCount > 0) {
-    throw new Error("Suppression bloquée : discipline utilisée par des cours");
+    redirectWithFlash("Suppression bloquée : discipline utilisée par des cours", "error");
   }
 
   await prisma.discipline.delete({ where: { id: disciplineId } });
   revalidatePath("/app/admin/school");
   revalidatePath("/app/admin");
+  redirectWithFlash("Discipline supprimée");
 }
