@@ -42,10 +42,49 @@ export default async function EditPositionPage({ params }: Props) {
 
   const types = Object.values(PositionType);
   const levels = Object.values(PositionLevel);
-  const muscles = await prisma.muscle.findMany({
-    orderBy: { name: "asc" },
-    select: { id: true, name: true, kind: true },
-  });
+  const [muscles, disciplinesRaw, courseDisciplines] = await Promise.all([
+    prisma.muscle.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, kind: true },
+    }),
+    prisma.discipline.findMany({
+      where: { schoolId: session.user.schoolId ?? undefined },
+      select: { name: true, color: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.course.findMany({
+      where: { schoolId: session.user.schoolId ?? undefined },
+      select: { discipline: true },
+      distinct: ["discipline"],
+    }),
+  ]);
+  const fallbackDisciplines = [
+    { name: "Danse" },
+    { name: "Pole" },
+    { name: "Exotic" },
+    { name: "Souplesse" },
+    { name: "Pilates" },
+  ];
+  const disciplines = (() => {
+    const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
+    const legacy = courseDisciplines
+      .map((c) => c.discipline)
+      .filter((d): d is string => Boolean(d && d.trim().length > 0))
+      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
+    const merged: { name: string; color?: string; id?: string }[] = [...rows];
+    legacy.forEach((d) => {
+      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
+        merged.push(d);
+      }
+    });
+    if (
+      position.discipline &&
+      !merged.some((m) => m.name.toLowerCase() === position.discipline.toLowerCase())
+    ) {
+      merged.push({ name: position.discipline });
+    }
+    return merged.length > 0 ? merged : fallbackDisciplines;
+  })();
   const selectedMuscleIds = position.muscles.map((m) => m.muscleId);
   const cover = position.media.find((m) => m.kind === "PHOTO") ?? position.media[0];
   const video = position.media.find((m) => m.kind === "VIDEO");
@@ -80,6 +119,12 @@ export default async function EditPositionPage({ params }: Props) {
               name="levelRequired"
               options={levels}
               defaultValue={position.levelRequired}
+            />
+            <SelectField
+              label="Discipline"
+              name="discipline"
+              options={disciplines.map((d) => d.name)}
+              defaultValue={position.discipline}
             />
             <Field
               label="Grips (séparés par virgule)"
