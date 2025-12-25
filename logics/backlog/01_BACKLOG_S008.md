@@ -1,5 +1,5 @@
 # Backlog — Retours QA S008 (session 2025-12-22 23:14)
-[Compréhension: 94% / Avancement: 45%]
+[Compréhension: 95% / Avancement: 55%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -16,7 +16,7 @@
 - Disciplines : liste dynamique à maintenir côté école (CRUD admin), utiliser pour filtres prof/élève ; par défaut liste existante (Pole/Exotic/Souplesse/Pilates) mais extensible.
 
 ## 2) Vue Élève (résultat : parcours clair, premium valorisé)
-- Cours/Contenus : **(PARTIEL)** corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet). Positions des cours désormais affichées côté élève (liste + planning) ; pas de multi-prof (modèle 1 prof par cours) ; disciplines à exposer si dispo.
+- Cours/Contenus : **(PARTIEL)** corriger relations cours ↔ positions ↔ profs ↔ disciplines (affichage complet). Positions des cours désormais affichées côté élève (liste + planning) ; pas de multi-prof (modèle 1 prof par cours) ; disciplines exposées (agenda semaine + liste + détail).
 - Planning studio/école : nom d’école visible et mise en avant ; changer d’école rafraîchit le planning (P1). Ajouter achat crédits/abonnements (forfait, mensuel, annuel) sur la page école pour permettre l’inscription (P0).
 - Légende interactive : états cliquables et cumulables (Passé, Inscrit, Attente avec rang/quota 14, Disponible) (P1).
 - Vidéos streaming (premium) : onglet “Vidéos” (replay/live) pour premium ; non-premium masqué ou verrouillé. Source = liens/URLs existants pour l’instant, player/hosting plus tard ; live = lien externe avec planning à gérer (P1).
