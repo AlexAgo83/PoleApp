@@ -67,7 +67,7 @@ const disciplineSchema = z.object({
   color: z.string().trim().min(3).max(16),
 });
 
-function redirectWithFlash(message: string, type: "success" | "error" = "success") {
+function redirectWithFlash(message: string, type: "success" | "error" = "success"): never {
   const params = new URLSearchParams();
   params.set("flash", type);
   params.set("flashMessage", message);
@@ -83,8 +83,8 @@ export async function createDisciplineAction(formData: FormData) {
     name: formData.get("name"),
     color: formData.get("color") ?? "#7c3aed",
   });
-  if (!parsed.success || !parsed.data) {
-    redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
+  if (!parsed.success) {
+    return redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
   const name = parsed.data.name.trim();
   const color = parsed.data.color.trim();
@@ -119,8 +119,8 @@ export async function updateDisciplineAction(formData: FormData) {
       name: formData.get("name"),
       color: formData.get("color") ?? "#7c3aed",
     });
-  if (!parsed.success || !parsed.data) {
-    redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
+  if (!parsed.success) {
+    return redirectWithFlash("Formulaire invalide (nom min 2 caractères)", "error");
   }
   const { disciplineId, name, color } = parsed.data;
   const existing = await prisma.discipline.findFirst({
