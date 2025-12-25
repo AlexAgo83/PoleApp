@@ -579,9 +579,9 @@ const legendItems = [
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Discipline</legend>
               <div className="flex flex-wrap gap-2">
-                {disciplines.map((d) => (
+                {disciplines.map((d, idx) => (
                   <label
-                    key={d.name}
+                    key={`${(d as any).id ?? d.name}-${idx}`}
                     className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
                   >
                     <input
