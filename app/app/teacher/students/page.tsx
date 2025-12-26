@@ -292,41 +292,48 @@ export default async function TeacherStudentsPage({
             </div>
           </form>
         </FilterPanel>
-        <div className="flex flex-col divide-y divide-white/5">
+        <div className="flex flex-col gap-4">
           {students.map((student) => (
             <article
               key={student.id}
-              className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20 backdrop-blur md:flex-row md:items-center md:justify-between"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex flex-1 items-center gap-4">
                 <SafeImage
                   src={student.avatarUrl?.trim() || STUDENT_AVATAR_PLACEHOLDER}
                   alt={`Avatar de ${student.name ?? student.email}`}
                   width={48}
                   height={48}
-                  className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
+                  className="h-14 w-14 rounded-full border border-white/15 object-cover shadow-lg shadow-indigo-900/30"
                   fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
                 />
-                <div>
-                  <p className="text-base font-semibold text-white">
-                    {student.name ?? student.email}
-                  </p>
-                  <p className="text-sm text-slate-300">
-                    {student.email} · {student.isPremium ? "Premium" : "Free"} · Âge :{" "}
-                    {student.age ? `${student.age} ans` : "Non renseigné"}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-200">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-semibold">
-                      Vu : {student.progress.length}
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-semibold">
-                      Blessures actives : {student.injuries.filter((inj) => inj.isActive).length}
-                    </span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-lg font-semibold text-white">
+                      {student.name ?? student.email}
+                    </p>
                     {student.isPremium && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-2.5 py-1 font-semibold text-amber-50">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-2.5 py-1 text-[11px] font-semibold text-amber-50">
                         Premium
                       </span>
                     )}
+                  </div>
+                  <p className="text-sm text-slate-200">
+                    {student.name ?? student.email}
+                    <span className="mx-2 text-slate-400">·</span>
+                    {student.email}
+                    <span className="mx-2 text-slate-400">·</span>
+                    {student.isPremium ? "Premium" : "Free"}
+                    <span className="mx-2 text-slate-400">·</span>
+                    Âge : {student.age ? `${student.age} ans` : "Non renseigné"}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-100">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 font-semibold">
+                      Vu : {student.progress.length}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 font-semibold">
+                      Blessures actives : {student.injuries.filter((inj) => inj.isActive).length}
+                    </span>
                   </div>
                 </div>
               </div>
