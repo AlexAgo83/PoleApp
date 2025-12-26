@@ -39,12 +39,13 @@ const progressLabels: Record<string, string> = {
 };
 
 type SearchParams =
-  | { page?: string; type?: string; level?: string; q?: string }
+  | { page?: string; type?: string; level?: string; q?: string; teacher?: string }
   | Promise<{
       page?: string;
       type?: string;
       level?: string;
       q?: string;
+      teacher?: string;
     }>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
@@ -60,7 +61,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       ? (resolvedParams.level as PositionLevel)
       : undefined;
   const q = resolvedParams.q?.toString().trim() || "";
-  const activeFilters = [typeFilter, levelFilter, q && q.length > 0].filter(Boolean).length;
+  const teacherFilter = resolvedParams.teacher?.toString().trim() || "";
+  const activeFilters = [typeFilter, levelFilter, q && q.length > 0, teacherFilter && teacherFilter.length > 0].filter(Boolean)
+    .length;
 
   const where: Prisma.PositionWhereInput = {
     ...(typeFilter ? { type: typeFilter } : {}),
@@ -68,6 +71,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     ...(q
       ? {
           name: { contains: q, mode: Prisma.QueryMode.insensitive },
+        }
+      : {}),
+    ...(teacherFilter
+      ? {
+          createdByUserId: teacherFilter,
         }
       : {}),
   };
@@ -89,7 +97,16 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
   if (q) queryParams.set("q", q);
+  if (teacherFilter) queryParams.set("teacher", teacherFilter);
   const qs = queryParams.toString();
+  const creatorOptions = await prisma.user.findMany({
+    where: {
+      role: "TEACHER",
+      createdPositions: { some: {} },
+    },
+    select: { id: true, name: true, email: true },
+    orderBy: { name: "asc" },
+  });
   const positions = await prisma.position.findMany({
     where,
     orderBy: { updatedAt: "desc" },
@@ -204,8 +221,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         >
           {/* key force le rerender des inputs lorsque les filtres changent pour que “Réinitialiser” remette bien les valeurs par défaut. */}
           <form
-            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${q || "all"}`}
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
             method="get"
           >
             <label className="text-sm text-slate-200">
@@ -250,7 +267,23 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ))}
               </select>
             </label>
-            <div className="md:col-span-3 flex flex-wrap items-center justify-end gap-2">
+            <label className="text-sm text-slate-200">
+              Professeur (créateur)
+              <select
+                key={teacherFilter || "all-teachers"}
+                name="teacher"
+                defaultValue={teacherFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous les profs</option>
+                {creatorOptions.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name ?? t.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
@@ -349,11 +382,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                           🎥 Vidéo
                         </span>
                       )}
-                      {p.createdBy ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
-                          Créé par {p.createdBy.name ?? p.createdBy.email}
-                        </span>
-                      ) : null}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
@@ -376,6 +404,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     )}
                     <div className="mt-auto flex items-center justify-between gap-2">
                       <p className="text-xs text-slate-400">{p.grips ?? "Grip ?"}</p>
+                      {p.createdBy ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
+                          Créé par {p.createdBy.name ?? p.createdBy.email}
+                        </span>
+                      ) : null}
                     </div>
                   </div>
               </Link>
