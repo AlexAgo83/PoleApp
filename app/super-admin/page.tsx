@@ -238,46 +238,6 @@ export default async function SuperAdminPage({
           </dl>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          <form action={backfillDisciplinesAction}>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-500/15 px-3 py-2 text-sm font-semibold text-amber-50 transition hover:border-amber-200/80 hover:bg-amber-500/25"
-            >
-              Backfill disciplines (Pole/Exotic/Souplesse/Pilates/Danse)
-            </button>
-          </form>
-          <form action={forceDisciplinePoleAction} className="flex flex-wrap items-center gap-2 text-sm">
-            <input type="hidden" name="name" value="Pole" />
-            <input type="hidden" name="color" value="#0ea5e9" />
-            <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
-              <span>École</span>
-              <select name="schoolId" className="rounded-lg border border-white/10 bg-slate-900/60 px-2 py-1 text-sm text-white">
-                <option value="">Toutes</option>
-                {schools.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
-              <span>Confirmer</span>
-              <input
-                name="confirm"
-                placeholder="Tape FORCE"
-                className="w-28 rounded-lg border border-white/10 bg-slate-900/60 px-2 py-1 text-sm text-white"
-              />
-            </label>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full border border-red-300/70 bg-red-500/15 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-200/80 hover:bg-red-500/25"
-            >
-              Forcer les disciplines → Pole
-            </button>
-          </form>
-        </div>
-
         <form action={updateSettingsAction} className="mt-4 grid gap-3 md:grid-cols-3">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-200">Devise</span>
