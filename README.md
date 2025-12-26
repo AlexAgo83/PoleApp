@@ -51,6 +51,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ## Positions
 - `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`, badge “Créé par …”.
 - Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin (bloqué si prof non-propriétaire, legacy positions éditables).
+- Discipline mise en avant (badge sur les vignettes et près du titre), stats glassy (type/niveau/grips/créateur) avec overlay “Vu”/progression sur l’image.
 - CRUD : `/teacher/positions/new` et `/teacher/positions/[id]/edit` (Professeur/Admin).
 - Médias : image placeholder si absent, vignettes 2 colonnes sur la liste.
 
@@ -84,6 +85,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ## Seeds (dev)
 - Comptes : `admin@poleapp.test`, `teacher@poleapp.test`, `student1@poleapp.test`, `student2@poleapp.test` (`poleapp123`).
 - Généré : 2 écoles, 5 professeurs + 10 élèves/école, cours de démo, positions/médias, blessures types.
+- Disciplines : catalogue Pole/Pole Exotic/Souplesse/Pilates/Conditioning seeded par école; positions et cours tagués dynamiquement.
+- Muscles/articulations seeded et liés par type de position; positions attribuées aléatoirement à des professeurs seedés; cours répartis sur les profs avec anti-collisions horaires.
 
 ## Déploiement Render
 - Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).
