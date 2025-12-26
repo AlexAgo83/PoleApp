@@ -25,12 +25,13 @@ async function requireSuperAdmin() {
 async function logAudit(action: string, target?: string, details?: Prisma.JsonValue) {
   const session = await getServerSession(authOptions);
   const actorId = session?.user?.id;
+  const detailsValue = details === undefined ? undefined : details ?? Prisma.JsonNull;
   await prisma.auditLog.create({
     data: {
       actorId: actorId ?? undefined,
       action,
       target,
-      details: details ?? null,
+      ...(detailsValue === undefined ? {} : { details: detailsValue }),
     },
   });
 }
