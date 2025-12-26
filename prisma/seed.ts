@@ -118,14 +118,52 @@ const positionsData = [
   { name: "Dynamic Leg Swings", type: PositionType.WARMUP, level: PositionLevel.BEGINNER, grips: "OTHER" },
 ];
 
+const disciplinesCatalog = [
+  { name: "Pole", color: "#0ea5e9" },
+  { name: "Pole Exotic", color: "#d946ef" },
+  { name: "Souplesse", color: "#22c55e" },
+  { name: "Pilates", color: "#f59e0b" },
+  { name: "Conditioning", color: "#6366f1" },
+];
+
+const PRIMARY_DISCIPLINE = disciplinesCatalog[0].name;
+
+const muscleCatalog = [
+  { name: "Deltoïdes", kind: "MUSCLE" },
+  { name: "Grand dorsal", kind: "MUSCLE" },
+  { name: "Biceps brachial", kind: "MUSCLE" },
+  { name: "Triceps", kind: "MUSCLE" },
+  { name: "Avant-bras", kind: "MUSCLE" },
+  { name: "Abdominaux profonds", kind: "MUSCLE" },
+  { name: "Fessiers", kind: "MUSCLE" },
+  { name: "Quadriceps", kind: "MUSCLE" },
+  { name: "Ischio-jambiers", kind: "MUSCLE" },
+  { name: "Adducteurs", kind: "MUSCLE" },
+  { name: "Épaules", kind: "ARTICULATION" },
+  { name: "Poignets", kind: "ARTICULATION" },
+  { name: "Coudes", kind: "ARTICULATION" },
+  { name: "Hanches", kind: "ARTICULATION" },
+  { name: "Genoux", kind: "ARTICULATION" },
+  { name: "Rachis lombaire", kind: "ARTICULATION" },
+  { name: "Chevilles", kind: "ARTICULATION" },
+];
+
+const muscleTargetsByType: Record<PositionType, string[]> = {
+  SPIN: ["Deltoïdes", "Avant-bras", "Épaules"],
+  TRICK: ["Grand dorsal", "Biceps brachial", "Triceps", "Épaules", "Abdominaux profonds"],
+  TRANSITION: ["Abdominaux profonds", "Hanches", "Épaules"],
+  WARMUP: ["Épaules", "Hanches", "Rachis lombaire"],
+  STRENGTH: ["Grand dorsal", "Biceps brachial", "Triceps", "Fessiers", "Abdominaux profonds"],
+};
+
 const schoolsList = [
   "Donuts",
   "Horizon",
   "Académie Arabesque",
-  "Pulsation Dance Center",
+  "Pulsation Pole Center",
   "Atelier du Mouvement",
-  "Impulsion Danse",
-  "Latitude Danse",
+  "Impulsion Pole",
+  "Latitude Pole",
   "Rythme & Grâce",
   "Équilibre",
 ];
@@ -238,18 +276,27 @@ async function resetAll() {
     "CourseAttendance",
     "CourseNote",
     "CoursePosition",
+    "CourseRecommendation",
     "Course",
     "StudentPositionProgress",
     "TeacherFavoritePosition",
+    "StudentFavoritePosition",
+    "PositionTarget",
+    "Muscle",
     "PositionMedia",
     "Position",
+    "Discipline",
     "AuditLog",
     "CreditPackOffer",
     "SubscriptionOffer",
     "GlobalSetting",
+    "Invoice",
+    "Purchase",
     "SponsoredLink",
     "Partner",
+    "PartnerEvent",
     "Studio",
+    "GameSession",
     "StudentInjury",
     "InjuryType",
     "User",
@@ -257,7 +304,7 @@ async function resetAll() {
     CASCADE;`);
 }
 
-async function seedTaxonomies() {
+async function seedInjuryTypes() {
   await Promise.all(
     injuryTypes.map((name) =>
       prisma.injuryType.upsert({
@@ -267,29 +314,87 @@ async function seedTaxonomies() {
       })
     )
   );
+}
+
+async function seedMuscles() {
+  const created = await Promise.all(
+    muscleCatalog.map((muscle) =>
+      prisma.muscle.create({
+        data: {
+          name: muscle.name,
+          kind: muscle.kind,
+        },
+      })
+    )
+  );
+  return created;
+}
+
+async function seedPositions({
+  muscles,
+  teachers,
+}: {
+  muscles: { id: string; name: string }[];
+  teachers: { id: string }[];
+}) {
+  const muscleMap = new Map(muscles.map((m) => [m.name, m.id]));
 
   const createdPositions = [];
   for (let i = 0; i < positionsData.length; i += 1) {
     const pos = positionsData[i];
     const image = POSITION_IMAGES[i % POSITION_IMAGES.length];
+    const discipline = disciplinesCatalog[i % disciplinesCatalog.length]?.name ?? PRIMARY_DISCIPLINE;
+    const muscleTargets = (muscleTargetsByType[pos.type] ?? [])
+      .map((name) => muscleMap.get(name))
+      .filter((id): id is string => Boolean(id))
+      .map((id) => ({ muscleId: id }));
+    const creator = teachers.length > 0 ? teachers[Math.floor(Math.random() * teachers.length)] : null;
     const created = await prisma.position.create({
       data: {
         name: pos.name,
         type: pos.type,
+        discipline,
         levelRequired: pos.level,
         grips: pos.grips,
         description: `${pos.name} (${pos.type.toLowerCase()} · niveau ${pos.level.toLowerCase()})`,
+        createdByUserId: creator?.id,
         media: {
           create: {
             url: image,
             kind: "PHOTO",
           },
         },
+        ...(muscleTargets.length > 0
+          ? {
+              muscles: {
+                create: muscleTargets,
+              },
+            }
+          : {}),
       },
     });
     createdPositions.push(created);
   }
   return createdPositions;
+}
+
+async function seedDisciplines(schools: { id: string }[]) {
+  const bySchool: Record<string, { name: string; color?: string | null }[]> = {};
+
+  for (const school of schools) {
+    const rows = await Promise.all(
+      disciplinesCatalog.map((disc) =>
+        prisma.discipline.upsert({
+          where: { schoolId_name: { schoolId: school.id, name: disc.name } },
+          update: { color: disc.color },
+          create: { schoolId: school.id, name: disc.name, color: disc.color },
+        })
+      )
+    );
+    bySchool[school.id] = rows.map((row) => ({ name: row.name, color: row.color }));
+  }
+
+  return bySchool;
 }
 
 async function seedSchoolsAndUsers() {
@@ -450,8 +555,9 @@ async function seedCourses(schoolsData: {
   teachers: { id: string; schoolId: string }[];
   students: { id: string; schoolId: string }[];
   positions: { id: string }[];
+  disciplinesBySchool: Record<string, { name: string; color?: string | null }[]>;
 }) {
-  const { schools, teachers, students, positions } = schoolsData;
+  const { schools, teachers, students, positions, disciplinesBySchool } = schoolsData;
   let courseImageIdx = 0;
   let courseNameIdx = 0;
   const euro = "EUR";
@@ -459,6 +565,10 @@ async function seedCourses(schoolsData: {
   for (const school of schools) {
     const schoolTeachers = teachers.filter((t) => t.schoolId === school.id);
     const schoolStudents = students.filter((s) => s.schoolId === school.id);
+    const disciplinePool =
+      disciplinesBySchool[school.id] && disciplinesBySchool[school.id].length > 0
+        ? disciplinesBySchool[school.id]
+        : disciplinesCatalog;
 
     // studios
     const studiosForSchool = studiosList.slice(0, 3).map((name, idx) => ({
@@ -486,20 +596,22 @@ async function seedCourses(schoolsData: {
     for (let i = 0; i < slots.length; i += 1) {
       const slot = slots[i];
       const studio = createdStudios[i % createdStudios.length];
-      const teacher = schoolTeachers[i % schoolTeachers.length];
       const startTs = slot.date.getTime();
 
       // éviter collisions studio/teacher (même timestamp)
       const studioTimes = studioSchedule.get(studio.id) ?? [];
       if (studioTimes.includes(startTs)) continue;
-      const teacherTimes = teacherSchedule.get(teacher.id) ?? [];
-      if (teacherTimes.includes(startTs)) continue;
+      const shuffledTeachers = [...schoolTeachers].sort(() => 0.5 - Math.random());
+      const teacher = shuffledTeachers.find((t) => !(teacherSchedule.get(t.id) ?? []).includes(startTs));
+      if (!teacher) continue;
       studioSchedule.set(studio.id, [...studioTimes, startTs]);
+      const teacherTimes = teacherSchedule.get(teacher.id) ?? [];
       teacherSchedule.set(teacher.id, [...teacherTimes, startTs]);
 
       const attendees = schoolStudents.sort(() => 0.5 - Math.random()).slice(0, 5 + (i % 2));
       const coursePositions = positions.sort(() => 0.5 - Math.random()).slice(0, 2 + (i % 3));
       const courseName = courseNames[courseNameIdx % courseNames.length];
+      const courseDiscipline = disciplinePool[(courseNameIdx + i) % disciplinePool.length]?.name ?? PRIMARY_DISCIPLINE;
       courseNameIdx += 1;
       const photoUrl = COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length];
       courseImageIdx += 1;
@@ -513,6 +625,7 @@ async function seedCourses(schoolsData: {
           schoolId: school.id,
           studioId: studio.id,
           photoUrl,
+          discipline: courseDiscipline,
           maxSeats: 30,
           costCredits: 100,
           positions: {
@@ -636,9 +749,12 @@ async function main() {
   await resetAll();
   await seedSuperAdmin();
   await seedGlobalSettingsAndOffers();
-  const positions = await seedTaxonomies();
+  await seedInjuryTypes();
+  const muscles = await seedMuscles();
   const { schools, teachers, students } = await seedSchoolsAndUsers();
-  await seedCourses({ schools, teachers, students, positions });
+  const disciplinesBySchool = await seedDisciplines(schools);
+  const positions = await seedPositions({ muscles, teachers });
+  await seedCourses({ schools, teachers, students, positions, disciplinesBySchool });
   await seedGameSessions(students);
 }
 

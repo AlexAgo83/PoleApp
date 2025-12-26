@@ -290,92 +290,94 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 href={detailHref}
                 className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/60 hover:bg-white/10"
               >
-                {cover ? (
-                  <SafeImage
-                    src={cover.url}
-                    alt={p.name}
-                    width={480}
-                    height={240}
-                    className="h-40 w-full object-cover"
-                    fallbackSrc={POSITION_PLACEHOLDER}
-                  />
-                ) : (
-                  <SafeImage
-                    src={POSITION_PLACEHOLDER}
-                    alt={p.name}
-                    width={480}
-                    height={240}
-                    className="h-40 w-full object-cover"
-                    fallbackSrc={POSITION_PLACEHOLDER}
-                  />
-                )}
-                  <div className="flex flex-1 flex-col gap-2 p-4">
-                    <div className="flex items-center justify-between gap-2">
-                    <p className="text-base font-semibold text-white">{p.name}</p>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
-                      {levelLabels[p.levelRequired]}
+                <div className="relative">
+                  {cover ? (
+                    <SafeImage
+                      src={cover.url}
+                      alt={p.name}
+                      width={480}
+                      height={240}
+                      className="h-40 w-full object-cover"
+                      fallbackSrc={POSITION_PLACEHOLDER}
+                    />
+                  ) : (
+                    <SafeImage
+                      src={POSITION_PLACEHOLDER}
+                      alt={p.name}
+                      width={480}
+                      height={240}
+                      className="h-40 w-full object-cover"
+                      fallbackSrc={POSITION_PLACEHOLDER}
+                    />
+                  )}
+                  {p.discipline ? (
+                    <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
+                      {p.discipline}
                     </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {showPremiumBadge && (
-                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
-                        🔒 Premium
-                      </span>
-                    )}
-                    {hasVideo && (
-                      <span className="inline-flex w-fit items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
-                        🎥 Vidéo
-                      </span>
-                    )}
+                  ) : null}
+                  <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 text-right">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                      Vu : {p._count?.progress ?? 0}
+                    </span>
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                         progressText
                           ? progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
-                            "border border-white/15 bg-white/5 text-slate-200"
-                          : "border border-white/10 bg-white/5 text-slate-200"
+                            "border border-white/15 bg-black/50 text-slate-200"
+                          : "border border-white/15 bg-black/50 text-slate-200"
                       }`}
                     >
                       {progressText ? `Niveau élève : ${progressText}` : "Découverte"}
                     </span>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
-                      Vu : {p._count?.progress ?? 0}
-                    </span>
-                    {p.createdBy ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
-                        Créé par {p.createdBy.name ?? p.createdBy.email}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
-                    {p.discipline ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[11px] font-semibold text-white">
-                        {p.discipline}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="text-sm text-slate-300 line-clamp-2">
-                    {canViewPremium
-                      ? p.tips ?? p.description ?? "Aucun détail"
-                      : "Détails réservés aux élèves premium."}
-                  </p>
-                  {showPremiumBadge && (
-                    <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
-                      <p className="font-semibold">Accès Premium requis</p>
-                      <p className="text-amber-100/80">
-                        Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
-                      </p>
-                      <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
-                        Upgrade (placeholder)
-                      </span>
-                    </div>
-                  )}
-                  <div className="mt-auto flex items-center justify-between gap-2">
-                    <p className="text-xs text-slate-400">
-                      {p.grips ?? "Grip ?"}
-                    </p>
                   </div>
                 </div>
+                  <div className="flex flex-1 flex-col gap-2 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-base font-semibold text-white">{p.name}</p>
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                        {levelLabels[p.levelRequired]}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {showPremiumBadge && (
+                        <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
+                          🔒 Premium
+                        </span>
+                      )}
+                      {hasVideo && (
+                        <span className="inline-flex w-fit items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
+                          🎥 Vidéo
+                        </span>
+                      )}
+                      {p.createdBy ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
+                          Créé par {p.createdBy.name ?? p.createdBy.email}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
+                    </div>
+                    <p className="text-sm text-slate-300 line-clamp-2">
+                      {canViewPremium
+                        ? p.tips ?? p.description ?? "Aucun détail"
+                        : "Détails réservés aux élèves premium."}
+                    </p>
+                    {showPremiumBadge && (
+                      <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
+                        <p className="font-semibold">Accès Premium requis</p>
+                        <p className="text-amber-100/80">
+                          Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
+                        </p>
+                        <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
+                          Upgrade (placeholder)
+                        </span>
+                      </div>
+                    )}
+                    <div className="mt-auto flex items-center justify-between gap-2">
+                      <p className="text-xs text-slate-400">{p.grips ?? "Grip ?"}</p>
+                    </div>
+                  </div>
               </Link>
             );
           })}
