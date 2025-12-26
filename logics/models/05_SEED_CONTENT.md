@@ -1,7 +1,7 @@
 # 05 — Seed content (v0.7.x)
 
-> Seed dev actuelle : 2 écoles, comptes fixes (super admin global + admin/teacher/student1/2, mdp `change-me-password`), studios avec photos, 20 cours démo/école, progression/blessures, favoris, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20.
-> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions créées par des professeurs seedés (assignation aléatoire). Cours répartis aléatoirement entre profs de l’école sans collision horaire.
+> Seed dev actuelle : 2 écoles (photo + URL par défaut), comptes fixes (super admin global + admin/teacher/student1/2, mdp `change-me-password`), studios avec photos, 20 cours démo/école, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits).
+> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions (30) créées par des professeurs seedés (Elza priorisée) + favoris prof auto. Cours répartis entre profs de l’école sans collision horaire, durées par pas de 15 min.
 
 ## Taxonomies
 
@@ -38,37 +38,31 @@
 - Bras
 
 ## Positions (exemples — placeholder)
-> 20 positions “fake” suffisent pour le prototype.
-Chaque position doit avoir au moins 1 image (voir images plus bas)
+> 30 positions (spins/tricks/transitions/warmups/strength), chacune avec au moins 1 image.
 
-Exemple (format libre):
-1. Fireman Spin — SPIN — BEGINNER — grips: TRUE
-2. Chair Spin — SPIN — BEGINNER — grips: TRUE
-3. Back Hook Spin — SPIN — INTERMEDIATE — grips: TRUE
-4. Jasmine — TRICK — INTERMEDIATE — grips: CUP
-5. Gemini — TRICK — INTERMEDIATE — grips: CUP
-6. Scorpio — TRICK — ADVANCED — grips: CUP
-7. Front Hook Transition — TRANSITION — BEGINNER
-8. Basic Climb — STRENGTH — BEGINNER
-9. Shoulder Mount Prep — STRENGTH — INTERMEDIATE (contre-indication épaule)
-10. Warmup Flow 1 — WARMUP — BEGINNER
-11.	Carousel Spin — SPIN — BEGINNER — grips: TRUE
-12.	Cradle Spin	— SPIN — BEGINNER — grips: TRUE
-13.	Butterfly — TRICK — INTERMEDIATE — grips: CUP
-14.	Flatline Scorpio — TRICK — INTERMEDIATE
-15.	Superman — TRICK — ADVANCED — grips: CUP
-16.	Aysha — TRICK — ADVANCED — grips: CUP
-17.	Back-to-Pole — Transition — TRANSITION — BEGINNER
-18.	Fan Kick — STRENGTH — BEGINNER
-19.	Invert Prep (V-Lift) — STRENGTH — INTERMEDIATE
-20.	Dynamic Leg Swings — WARMUP — BEGINNER
+Exemple (format libre, tronqué) :
+1. Fireman Spin — SPIN — BEGINNER — grips: TRUE  
+…  
+10. Warmup Flow 1 — WARMUP — BEGINNER  
+…  
+20. Dynamic Leg Swings — WARMUP — BEGINNER  
+21. Figurehead Spin — SPIN — INTERMEDIATE — grips: TRUE  
+22. Carousel Back Spin — SPIN — INTERMEDIATE — grips: TRUE  
+23. Inside Leg Hang — TRICK — INTERMEDIATE — grips: CUP  
+24. Cupid — TRICK — INTERMEDIATE — grips: CUP  
+25. Shoulder Stand — STRENGTH — INTERMEDIATE — grips: FOREARM  
+26. Iron X Prep — STRENGTH — ADVANCED — grips: FOREARM  
+27. Body Wave Transition — TRANSITION — BEGINNER — grips: OTHER  
+28. Back Bend Flow — WARMUP — BEGINNER — grips: OTHER  
+29. Side Climb — STRENGTH — INTERMEDIATE — grips: TRUE  
+30. Phoenix Spin — SPIN — ADVANCED — grips: TRUE
 
 ## Écoles et utilisateurs générés (mot de passe `change-me-password`)
-- 2 écoles créées : (voir noms plus bas) la première école sera utilisée en priorité.
-- Pour chaque école créer : **3 studios** (voir nom plus bas, et inventer adresse sur Paris)
-- Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `change-me-password`, premium pour 1 élève sur 2.
-- Pour chaque utilisateurs : Les nom prenom et photos de profile sont séléctionnés dans la liste plus bas (Choisir aléatoirement selon le genre)
-- 20 cours de démo créés par école (répartis aléatoirement entre professeurs sans collisions studio/prof sur le créneau, élèves 2–6 par cours, positions 2–4) + il doit y avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, ne peut pas se chevaucher si même studio et/ou même professeur.
+- 2 écoles créées : (voir noms plus bas) la première école sera utilisée en priorité (photo par défaut + URL http://www.google.com).
+- Pour chaque école créer : **3 studios** (voir nom plus bas, adresse fictive Paris).
+- Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `change-me-password`, premium pour 1 élève sur 2, **500 crédits** par élève.
+- Pour chaque utilisateurs : Les nom prenom et photos de profile sont sélectionnés dans la liste plus bas (Choisir aléatoirement selon le genre).
+- 20 cours de démo créés par école (répartis aléatoirement entre professeurs sans collisions studio/prof sur le créneau, élèves 2–6 par cours, positions 2–4) + il doit y avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, durées par pas de 15 min, ne peut pas se chevaucher si même studio et/ou même professeur. Positions privilégiées du prof assigné quand dispo.
 
 ## Comptes seed (mot de passe `change-me-password`) (à affecter à la première école)
 - superadmin@poleapp.test — SUPER_ADMIN (global, sans école)
@@ -151,6 +145,13 @@ Exemple (format libre):
 - Femme : https://i.postimg.cc/prdSnjYK/Gemini-Generated-Image-gu94adgu94adgu94.png
 - Homme : https://i.postimg.cc/wMBrsNcR/Gemini-Generated-Image-yhp3byhp3byhp3by.png
 - Homme : https://i.postimg.cc/1XYj0zJX/Gemini-Generated-Image-b3b57vb3b57vb3b5.png
+
+## Partenaires seed
+- Amazon (SERVICE) avec liens sponsorisés :
+  - Grip Spray — https://amzn.eu/d/cDnGqVK
+  - Barre Pole Dance — https://amzn.eu/d/5fN1EhI
+  - Tenue exotique — https://amzn.eu/d/gPja1CW
+  - Support plafond — https://amzn.eu/d/gPja1CW
 
 ## (à utiliser pour le seed) Liste de nom prenom (avec age) pour les utilisateurs (tout type de rôle & ne peut être utiliser qu'une fois)
 - Léa Morel age:22 Femme
