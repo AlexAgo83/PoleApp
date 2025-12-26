@@ -555,13 +555,18 @@ export default async function StudentSchoolPage({
             </label>
             <label className="text-sm text-slate-200">
               Discipline
-              <input
-                type="text"
+              <select
                 name="discipline"
-                defaultValue={disciplineFilters.join(",")}
-                placeholder="Ex: Pole, Souplesse"
+                defaultValue={disciplineFilters[0] ?? ""}
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
+              >
+                <option value="">Toutes disciplines</option>
+                <option value="Pole">Pole</option>
+                <option value="Pole Exotic">Pole Exotic</option>
+                <option value="Souplesse">Souplesse</option>
+                <option value="Pilates">Pilates</option>
+                <option value="Conditioning">Conditioning</option>
+              </select>
             </label>
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (titre)
