@@ -538,6 +538,7 @@ function buildSchedule(options: { daysPast: number; daysFuture: number; total: n
   const slots: { date: Date; duration: number }[] = [];
   const now = new Date();
   const rng = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const durations = [30, 45, 60, 75, 90];
   const times = [16, 17, 18, 19, 20, 21];
 
   // 5 passés
@@ -546,7 +547,8 @@ function buildSchedule(options: { daysPast: number; daysFuture: number; total: n
     const start = new Date(now);
     start.setDate(now.getDate() + dayOffset);
     start.setHours(times[rng(0, times.length - 1)], 0, 0, 0);
-    slots.push({ date: start, duration: rng(45, 90) });
+    const duration = durations[rng(0, durations.length - 1)];
+    slots.push({ date: start, duration });
   }
   // futurs
   while (slots.length < total) {
@@ -554,7 +556,7 @@ function buildSchedule(options: { daysPast: number; daysFuture: number; total: n
     const start = new Date(now);
     start.setDate(now.getDate() + dayOffset);
     start.setHours(times[rng(0, times.length - 1)], 0, 0, 0);
-    const duration = rng(45, 90);
+    const duration = durations[rng(0, durations.length - 1)];
     const overlap = slots.some((s) => Math.abs(s.date.getTime() - start.getTime()) < 60 * 60 * 1000);
     if (!overlap) {
       slots.push({ date: start, duration });
