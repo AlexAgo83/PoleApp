@@ -14,8 +14,8 @@
 ## Élève
 - `/app/student` dashboard
 - `/app/student/courses` (liste) + `/app/student/courses/[id]` (détail)
-- `/app/student/courses/agenda` : vue mois + semaine inline, filtres (date, prof, studio, recherche, “mes cours”), bouton semaine actuelle
-- `/app/student/progress`, `/app/student/injuries`, `/app/student/game`, `/app/student/teachers`, `/app/student/school`
+- `/app/student/courses/agenda` : vue mois + semaine inline, filtres (date, prof, studio, discipline, recherche, “mes cours”), bouton semaine actuelle
+- `/app/student/progress`, `/app/student/injuries`, `/app/student/game`, `/app/student/teachers`, `/app/student/school` (studios/agenda école avec filtres studio/prof/discipline/recherche/mes cours)
 
 ## Professeur
 - `/app/teacher` dashboard
@@ -30,6 +30,9 @@
 - `/app/admin/courses/[id]` (fiche cours admin)
 - `/app/admin/billing` (facturation : filtres, actions statut, export CSV)
 - `/app/admin/partners` (CRUD + tracking clic/achat), `/app/admin/studios` (CRUD)
+
+## Super admin
+- `/super-admin` (gestion écoles/offres/packs, reset mot de passe, audit)
 
 ## API principales
 - Auth `/api/auth/[...nextauth]`

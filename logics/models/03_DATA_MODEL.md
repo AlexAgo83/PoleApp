@@ -17,8 +17,8 @@
 - Relations : injuries, progress, courseNotes, attendances, coursesTaught, favoritePositions (teacher), studentFavoritePositions (élève), gameSessions
 
 ### School
-- id, name, website?, createdAt
-- Relations : users, courses, studios, partners
+- id, name, website?, photoUrl?, archivedAt?, createdAt
+- Relations : users, courses, studios, partners, disciplines, gameSessions
 
 ### Position
 - id, name (unique), description, levelRequired (PositionLevel), type (PositionType), discipline (string, défaut `Danse`), grips?, tips?, contraindications?
@@ -51,6 +51,7 @@
 - SubscriptionOffer (global) : nom, prix mensuel/annuel TTC, crédits mensuels (1000 par défaut), TVA %, actif/ouvert, ordre, defaultTerm (libre).
 - CreditPackOffer (global) : nom, crédits, prix TTC, TVA %, actif/ouvert, ordre.
 - GlobalSetting : TVA par défaut (20%), devise (EUR), timestamps.
+- Purchase : userId, offerId, offerName, kind (PACK | SUBSCRIPTION), amountCents, vatPercent, currency, creditsGranted, isPremiumGranted, status (default "PAID"), createdAt.
 
 ### Studios / Partenaires
 - Studio : id, name, address?, photoUrl?, schoolId, createdAt/updatedAt
@@ -68,5 +69,5 @@
 
 ## Seed (dev)
 - Comptes fixes : super-admin global + admin/teacher/student1/student2 (`poleapp123`), École 1.
-- Généré : 2 écoles, profs/élèves supplémentaires, studios avec photos, ~20 cours/école répartis entre profs (anti-collisions), progression/blessures, favoris, invoices/packs/offres EUR/TVA20.
-- Disciplines seedées par école (Pole / Pole Exotic / Souplesse / Pilates / Conditioning) appliquées aux positions et cours. Muscles/articulations seedés et associés aux positions selon leur type. Positions attribuées aléatoirement à des professeurs seedés.
+- Généré : 2 écoles (photo/URL par défaut), profs/élèves supplémentaires, studios avec photos, 30 positions, ~20 cours/école (durées 15 min) répartis entre profs (anti-collisions), progression/blessures, favoris prof/élève, invoices/packs/offres EUR/TVA20, partenaire Amazon (liens produits), élèves à 500 crédits.
+- Disciplines seedées par école (Pole / Pole Exotic / Souplesse / Pilates / Conditioning) appliquées aux positions et cours. Muscles/articulations seedés et associés aux positions selon leur type. Positions attribuées à des professeurs seedés (Elza priorisée) + favoris prof générés.
