@@ -134,7 +134,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const disciplineOptions = await prisma.position.findMany({
     select: { discipline: true },
     distinct: ["discipline"],
-    where: { discipline: { not: null } },
     orderBy: { discipline: "asc" },
   });
   const studentProgress = isStudent
