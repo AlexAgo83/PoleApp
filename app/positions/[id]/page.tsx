@@ -314,11 +314,11 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               )}
             </div>
           )}
-          {isStudent && (
+          {isStudent && !isPremium && (
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
               <p className="font-semibold text-white">Gating élève</p>
               <p className="mt-2">
-                Élève gratuit : accès aux positions “débloquées” via cours (stub pour MVP).
+                Élève gratuit : accès aux positions “débloquées” via cours.
               </p>
               <p className="mt-2">
                 Élève premium : accès complet.
