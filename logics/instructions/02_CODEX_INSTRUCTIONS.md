@@ -1,7 +1,7 @@
 # 02 — Instructions pour CODEX (phase produit)
-> Aligné v0.7.8
+> Aligné v0.7.9
 
-Objectif : faire évoluer une **web app** (responsive) livrée en v0.7.8 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
+Objectif : faire évoluer une **web app** (responsive) livrée en v0.7.9 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions
 - Fiches cours / fiches élève
 - Blessures
@@ -36,7 +36,7 @@ Objectif : faire évoluer une **web app** (responsive) livrée en v0.7.8 (Steps 
 - Run dev : `npm run dev` (ou `docker compose watch`), `NEXT_USE_TURBOPACK=0` si panics.
 - Si Turbopack panique : supprimer `.next`/`.turbo` puis forcer Webpack.
 - DB : `npm run db:push` puis `npm run db:seed` (schema `prisma/schema.prisma`).
-- Seed v0.7.8 : 2 écoles (photo/URL par défaut), 5 profs + 10 élèves/école (500 crédits, premium 1/2), 30 positions (muscles + disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning), 20 cours/école (durées multiples de 15 min — 30/45/60/75/90 — avec factures), favoris prof/élève, partenaire Amazon (4 liens produits). Comptes fixes admin/teacher/student1/2/super-admin (`poleapp123`).
+- Seed v0.7.9 : 2 écoles (photo/URL par défaut), 5 profs + 10 élèves/école (500 crédits, premium 1/2), 30 positions (muscles + disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning), 20 cours/école (durées multiples de 15 min — 30/45/60/75/90 — avec factures), favoris prof/élève, partenaire Amazon (4 liens produits). Comptes fixes admin/teacher/student1/2/super-admin (`poleapp123`).
 - Deploy : Render (service web + Postgres), build `npm install && npm run db:migrate:deploy && npm run build` (script `ci-migrate-deploy` fallback db push si pas de migrations), start `npm run start:render` (db push + seed uniquement si DB considérée vide : 0 école et ≤1 user).
 
 Structure proposée :
@@ -47,7 +47,7 @@ Structure proposée :
 
 ---
 
-Les Steps 0→9 ci-dessous constituent le socle livré (tag v0.7.8). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
+Les Steps 0→9 ci-dessous constituent le socle livré (tag v0.7.9). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
 
 ## Step 0 — Bootstrap projet (doit compiler)
 

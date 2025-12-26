@@ -1,5 +1,5 @@
 # Bonnes pratiques avant push Render
-> Aligné v0.7.8 (prod Render)
+> Aligné v0.7.9 (prod Render)
 
 - **Schéma Prisma** : il n’y a pas de migrations versionnées. Toute évolution du schéma doit être poussée via `prisma db push`. Toujours tester en local (`npm run db:push && npm run db:seed && npm run build`) avant de pousser.
 - **Commande build Render** : `npm install && npm run db:migrate:deploy && npm run build`. `db:migrate:deploy` appelle `ci-migrate-deploy` (fait un `prisma db push` + crée le super-admin).
