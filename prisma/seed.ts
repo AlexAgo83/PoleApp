@@ -179,6 +179,17 @@ const schoolsList = [
 ];
 
 const SCHOOL_IMAGE = "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png";
+const PARTNER_AMAZON = {
+  name: "Amazon",
+  website: "https://www.amazon.fr",
+  description: "Produits pole dance et accessoires",
+  links: [
+    { label: "Grip Spray", url: "https://amzn.eu/d/cDnGqVK", category: "PRODUIT" },
+    { label: "Barre Pole Dance", url: "https://amzn.eu/d/5fN1EhI", category: "PRODUIT" },
+    { label: "Tenue exotique", url: "https://amzn.eu/d/gPja1CW", category: "PRODUIT" },
+    { label: "Support plafond", url: "https://amzn.eu/d/gPja1CW", category: "PRODUIT" },
+  ],
+};
 
 const studiosList = [
   "Nova",
@@ -700,6 +711,28 @@ async function seedCourses(schoolsData: {
   }
 }
 
+async function seedPartners(schools: { id: string }[]) {
+  for (const school of schools) {
+    const partner = await prisma.partner.create({
+      data: {
+        name: PARTNER_AMAZON.name,
+        website: PARTNER_AMAZON.website,
+        description: PARTNER_AMAZON.description,
+        kind: "SERVICE",
+        schoolId: school.id,
+      },
+    });
+    await prisma.sponsoredLink.createMany({
+      data: PARTNER_AMAZON.links.map((link) => ({
+        partnerId: partner.id,
+        category: link.category ?? "PRODUIT",
+        label: link.label,
+        url: link.url,
+      })),
+    });
+  }
+}
+
 async function seedGameSessions(students: { id: string; schoolId: string }[]) {
   const sampleStudents = students.slice(0, 3);
   const modes: GameMode[] = [
@@ -800,6 +833,7 @@ async function main() {
   const muscles = await seedMuscles();
   const { schools, teachers, students } = await seedSchoolsAndUsers();
   const disciplinesBySchool = await seedDisciplines(schools);
+  await seedPartners(schools);
   const elzaTeacher = teachers.find((t) => t.email === "teacher@poleapp.test");
   const { createdPositions: positions, positionsByTeacher } = await seedPositions({
     muscles,
