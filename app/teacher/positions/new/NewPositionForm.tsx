@@ -34,9 +34,9 @@ export function NewPositionForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
-  const limitedList = muscles.slice(0, 5);
-  const hasOverflow = muscles.length > limitedList.length;
-  const visibleMuscles = hasOverflow ? limitedList : muscles;
+  const [muscleList, setMuscleList] = useState<Muscle[]>(muscles);
+  const [newMuscle, setNewMuscle] = useState("");
+  const [addingMuscle, setAddingMuscle] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -97,7 +97,7 @@ export function NewPositionForm({
           <button
             type="button"
             className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            onClick={() => setSelectedMuscles(muscles.map((m) => m.id))}
+            onClick={() => setSelectedMuscles(muscleList.map((m) => m.id))}
           >
             Tout
           </button>
@@ -109,39 +109,76 @@ export function NewPositionForm({
             Aucun
           </button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {visibleMuscles.map((m) => {
-            const checked = selectedMuscles.includes(m.id);
-            return (
-              <label
-                key={m.id}
-                className={`inline-flex items-center gap-2 rounded-full border ${checked ? "border-cyan-400/60 bg-cyan-500/15" : "border-white/10 bg-white/5"} px-3 py-1 text-xs text-slate-100 transition`}
-              >
-                <input
-                  type="checkbox"
-                  name="muscles"
-                  value={m.id}
-                  checked={checked}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    setSelectedMuscles((prev) =>
-                      isChecked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
-                    );
-                  }}
-                  className="h-4 w-4 rounded border-white/20 bg-white/5"
-                />
-                <span className="font-semibold text-white">{m.name}</span>
-                <span className="text-[10px] uppercase tracking-[0.08em] text-slate-300">
-                  {m.kind?.toLowerCase()}
-                </span>
-              </label>
-            );
-          })}
-          {hasOverflow && (
-            <span className="text-xs text-slate-300">
-              … {muscles.length - visibleMuscles.length} de plus (non affichés ici)
-            </span>
-          )}
+        <div className="max-h-40 w-full overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-2">
+          <div className="flex flex-wrap gap-2">
+            {muscleList.map((m) => {
+              const checked = selectedMuscles.includes(m.id);
+              return (
+                <label
+                  key={m.id}
+                  className={`inline-flex items-center gap-2 rounded-full border ${checked ? "border-cyan-400/60 bg-cyan-500/15" : "border-white/10 bg-white/5"} px-3 py-1 text-xs text-slate-100 transition`}
+                >
+                  <input
+                    type="checkbox"
+                    name="muscles"
+                    value={m.id}
+                    checked={checked}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+                      setSelectedMuscles((prev) =>
+                        isChecked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
+                      );
+                    }}
+                    className="h-4 w-4 rounded border-white/20 bg-white/5"
+                  />
+                  <span className="font-semibold text-white">{m.name}</span>
+                  <span className="text-[10px] uppercase tracking-[0.08em] text-slate-300">
+                    {m.kind?.toLowerCase()}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={newMuscle}
+            onChange={(e) => setNewMuscle(e.target.value)}
+            placeholder="Ajouter un muscle/articulation"
+            className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400"
+          />
+          <button
+            type="button"
+            disabled={addingMuscle || newMuscle.trim().length < 2}
+            onClick={async () => {
+              if (newMuscle.trim().length < 2) return;
+              setAddingMuscle(true);
+              setError(null);
+              try {
+                const res = await fetch("/api/muscles", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name: newMuscle.trim() }),
+                });
+                if (!res.ok) {
+                  const data = await res.json().catch(() => ({}));
+                  throw new Error(data.error ?? "Ajout muscle impossible");
+                }
+                const created = (await res.json()) as Muscle;
+                setMuscleList((prev) => [...prev, created]);
+                setSelectedMuscles((prev) => [...prev, created.id]);
+                setNewMuscle("");
+              } catch (e) {
+                setError((e as Error).message);
+              } finally {
+                setAddingMuscle(false);
+              }
+            }}
+            className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/80 hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {addingMuscle ? "Ajout..." : "Ajouter"}
+          </button>
         </div>
         <input type="hidden" name="muscles" value="" />
       </div>
