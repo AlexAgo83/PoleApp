@@ -29,13 +29,13 @@
 ## P1 (prochaine itération)
 - **Vue abonnements/packs élèves (prof/admin)**  
   - US: En tant que prof/admin, je vois les abonnements en cours et packs achetés par élève.  
-  - AC: Tables abonnements/packs avec élève, offre, début/fin, statut (actif/expiré/épuisé), crédits restants, montant/moyen de paiement, école ; filtres/tri (statut, date, élève, école), export CSV ; lien vers fiche élève facturation.
+  - AC: Tables abonnements/packs + achats unitaires de presets/combos avec élève, offre, début/fin, statut (actif/expiré/épuisé), crédits restants, montant/moyen de paiement, école ; filtres/tri (statut, date, élève, école), export CSV ; lien fiche élève facturation.
 - **Presets/combos vidéo (premium ou achat)**  
   - US: En tant que prof/admin, je crée/édite un preset (combo vidéo) vendu en premium ou à l’unité (crédits).  
-  - AC: Modèle preset avec titre/description/discipline/vidéo obligatoire/positions incluses/flag paywall (premium requis)/prix crédits optionnel ; catalogue CRUD prof/admin ; cours choisit “preset” OU “positions au détail” (pas de mix) ; affichage élève avec badge premium ou prix crédits, preview limitée si non premium/non acheteur.
+  - AC: Modèle preset avec titre/description/discipline/vidéo obligatoire/positions incluses/flag paywall (premium requis)/prix crédits optionnel (autoriser 0 pour démo) ; catalogue CRUD prof/admin ; cours choisit “preset” OU “positions au détail” (pas de mix) ; affichage élève avec badge premium ou prix crédits, preview limitée si non premium/non acheteur ; tracer usage (compteur/dernière utilisation).
 - **Générateur : explication des mouvements proposés**  
   - US: Lors de la génération, je vois un détail/raison des positions sélectionnées (catégorie, blessure, favoris, récence…).  
-  - AC: Panneau de justification par position (tags + raison textuelle) avant validation, toggle “afficher les raisons”.
+  - AC: Panneau de justification par position (tags + raison textuelle, score en tooltip), toggle “afficher les raisons” avant validation.
 - **CRUD disciplines (QA/ergonomie)**  
   - US: En tant qu’admin école, je peux gérer les disciplines (création/édition/suppression si non utilisée) avec une UX claire.  
   - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda (QA à refaire, besoin mal compris).  
@@ -56,11 +56,11 @@
 ## P2 (plus tard)
 - **Affinage UX filtres disciplines (éviter longue liste)**  
   - US: En tant qu’utilisateur, je peux sélectionner rapidement des disciplines sans scroll/trop de pills (multi-select ou grille compacte).  
-  - AC: Variante UX validée (multi-select + chips, double colonne scroll interne, ou “voir plus”).  
-  - État: grille compacte + bloc “voir plus” scrollable dans filtres cours prof (P2 à compléter si besoin).
+  - AC: Variante UX validée (chips en grille compacte + “voir plus” scrollable, mémorisée par user).  
+  - État: grille compacte + bloc “voir plus” déjà présent côté prof ; reste à consolider variante finale.
 
 ## Notes
 - QA effectuée sur version 0.7.7 (voir 06_QA_S011 pour nouveaux retours).  
-- Super-admin “forcer discipline” : confirmation “FORCE” + scope école recommandé (dry-run/compteur à prévoir avant exécution).  
+- Super-admin “forcer discipline” : confirmation “FORCE” + scope école recommandé, prévoir dry-run/compteur avant exécution, écoles archivées exclues.  
 - Voir 07_QE_S010.md pour questions complémentaires (actuellement vide).  
 - Rappel : préférer actions in-app (pas de commande Render côté user). 
