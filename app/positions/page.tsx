@@ -287,19 +287,40 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
             </label>
             <label className="text-sm text-slate-200">
               Discipline
-              <select
-                key={disciplineFilter || "all-disciplines"}
-                name="discipline"
-                defaultValue={disciplineFilter}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              >
-                <option value="">Toutes disciplines</option>
-                {disciplineOptions.map((d) => (
-                  <option key={d.discipline ?? "none"} value={d.discipline ?? ""}>
-                    {d.discipline ?? "Non définie"}
-                  </option>
-                ))}
-              </select>
+              <div className="mt-1 flex flex-wrap gap-2 rounded-lg border border-white/10 bg-white/10 px-2 py-2">
+                <select
+                  key={disciplineFilter || "all-disciplines"}
+                  name="discipline"
+                  defaultValue={disciplineFilter}
+                  className="min-w-[140px] flex-1 rounded-md bg-transparent px-2 py-1 text-white outline-none focus:border-cyan-400"
+                >
+                  <option value="">Toutes disciplines</option>
+                  {disciplineOptions.map((d) => (
+                    <option key={d.discipline ?? "none"} value={d.discipline ?? ""}>
+                      {d.discipline ?? "Non définie"}
+                    </option>
+                  ))}
+                </select>
+                {disciplineFilter ? (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/50 bg-cyan-500/20 px-3 py-1 text-xs font-semibold text-white">
+                    {disciplineFilter}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const params = new URLSearchParams(window.location.search);
+                        params.delete("discipline");
+                        window.location.search = params.toString();
+                      }}
+                      className="text-cyan-100 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1 text-xs text-slate-400">
+                Multi-sélection à venir : pour l’instant, choisissez une discipline ou réinitialisez rapidement.
+              </p>
             </label>
             <label className="text-sm text-slate-200">
               Professeur (créateur)
