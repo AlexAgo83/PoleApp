@@ -1,5 +1,5 @@
 # 03 — Modèle de données (v0.7.x)
-> Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations : `Invoice`, `CourseRecommendation`, `PartnerEvent`, `StudentFavoritePosition`.
+> Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations : `Invoice`, `CourseRecommendation`, `PartnerEvent`, `StudentFavoritePosition`, muscles/disciplines.
 
 ## Principes
 - Provider Prisma : **PostgreSQL** (`DATABASE_URL` requis).
@@ -21,9 +21,13 @@
 - Relations : users, courses, studios, partners
 
 ### Position
-- id, name (unique), description, levelRequired (PositionLevel), type (PositionType), grips?, tips?, contraindications?
+- id, name (unique), description, levelRequired (PositionLevel), type (PositionType), discipline (string, défaut `Danse`), grips?, tips?, contraindications?
 - createdByUserId?, createdAt/updatedAt
-- Relations : media, progress, courseEntries, courseNotes, favoriteByTeachers, recommendations
+- Relations : media, progress, courseEntries, courseNotes, favoriteByTeachers, recommendations, muscles (via PositionTarget)
+
+### Muscle / PositionTarget
+- Muscle : id, name (unique), kind (string : MUSCLE | ARTICULATION | OTHER), createdAt
+- PositionTarget (pivot) : positionId + muscleId (composite PK), createdAt
 
 ### PositionMedia
 - id, positionId (FK Position), kind (MediaKind), url, createdAt
@@ -36,7 +40,7 @@
 - StudentPositionProgress : studentId, positionId, learningStatus (LearningStatus), masteryLevel (MasteryLevel?), comment?, lastUpdatedByUserId?, createdAt/updatedAt
 
 ### Course et dérivés
-- Course : id, schoolId, teacherId, studioId?, title?, photoUrl?, date, durationMinutes, maxSeats, costCredits, createdAt
+- Course : id, schoolId, teacherId, studioId?, title?, discipline (string, défaut `Danse`), photoUrl?, date, durationMinutes, maxSeats, costCredits, createdAt
 - CourseAttendance : courseId, studentId, status (AttendanceStatus: CONFIRMED | WAITLIST), waitlistRank?, createdAt
 - CoursePosition : courseId, positionId
 - CourseNote : courseId, studentId, positionId, masteryLevel, comment?, createdAt
@@ -63,5 +67,6 @@
 - Role, PositionLevel, PositionType, MediaKind, LearningStatus, MasteryLevel, AttendanceStatus, SuggestionTag, InvoiceStatus, PartnerEventType, GameMode.
 
 ## Seed (dev)
-- Comptes fixes : admin/teacher/student1/student2 (`poleapp123`), École 1.
-- Généré : 2 écoles, profs/élèves supplémentaires, studios avec photos, 1 cours de démo/école, progression/blessures, favoris et crédits pour tester agendas/générateur/billing.
+- Comptes fixes : super-admin global + admin/teacher/student1/student2 (`poleapp123`), École 1.
+- Généré : 2 écoles, profs/élèves supplémentaires, studios avec photos, ~20 cours/école répartis entre profs (anti-collisions), progression/blessures, favoris, invoices/packs/offres EUR/TVA20.
+- Disciplines seedées par école (Pole / Pole Exotic / Souplesse / Pilates / Conditioning) appliquées aux positions et cours. Muscles/articulations seedés et associés aux positions selon leur type. Positions attribuées aléatoirement à des professeurs seedés.
