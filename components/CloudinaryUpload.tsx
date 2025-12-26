@@ -1,0 +1,140 @@
+"use client";
+
+import { useState } from "react";
+
+type Props = {
+  label?: string;
+  currentUrl?: string | null;
+  currentPublicId?: string | null;
+  folder: string;
+  resourceType?: "image" | "video";
+  accept?: string;
+  maxSizeMB?: number;
+  transformPreset?: "avatar" | "cover";
+  onChange: (url: string | null, publicId?: string | null) => void;
+};
+
+type SignatureResponse = {
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  signature: string;
+  folder: string;
+  publicId?: string;
+  resourceType: "image" | "video";
+};
+
+export function CloudinaryUpload({
+  label,
+  currentUrl,
+  currentPublicId,
+  folder,
+  resourceType = "image",
+  accept = "image/*",
+  maxSizeMB = 5,
+  transformPreset,
+  onChange,
+}: Props) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSelect = async (file?: File | null) => {
+    if (!file) return;
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      setError(`Fichier trop volumineux (max ${maxSizeMB}MB)`);
+      return;
+    }
+    setError(null);
+    setUploading(true);
+    try {
+      const sigRes = await fetch("/api/uploads/signature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder, publicId: currentPublicId ?? undefined, resourceType }),
+      });
+      if (!sigRes.ok) throw new Error("Signature indisponible");
+      const sig: SignatureResponse = await sigRes.json();
+
+      const form = new FormData();
+      form.append("file", file);
+      form.append("api_key", sig.apiKey);
+      form.append("timestamp", String(sig.timestamp));
+      form.append("signature", sig.signature);
+      form.append("folder", sig.folder);
+      if (sig.publicId) form.append("public_id", sig.publicId);
+      if (transformPreset === "avatar") {
+        form.append("transformation", "c_fill,g_auto:face,h_400,w_400,q_auto,f_auto");
+      } else if (transformPreset === "cover") {
+        form.append("transformation", "c_fill,g_auto,h_720,w_1280,q_auto,f_auto");
+      }
+
+      const uploadUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/${sig.resourceType}/upload`;
+      const uploadRes = await fetch(uploadUrl, { method: "POST", body: form });
+      if (!uploadRes.ok) throw new Error("Upload Cloudinary échoué");
+      const uploaded = await uploadRes.json();
+      onChange(uploaded.secure_url as string, uploaded.public_id as string);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!currentPublicId) {
+      onChange(null, null);
+      return;
+    }
+    setUploading(true);
+    setError(null);
+    try {
+      await fetch("/api/uploads", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId: currentPublicId, resourceType }),
+      });
+      onChange(null, null);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      {label && <p className="text-sm font-semibold text-slate-100">{label}</p>}
+      <div className="flex flex-wrap items-center gap-3">
+        {currentUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={currentUrl} alt="aperçu" className="h-24 w-24 rounded-lg object-cover" />
+        ) : (
+          <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-white/20 text-xs text-slate-300">
+            Aucun
+          </div>
+        )}
+        <div className="flex gap-2">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/15">
+            <input
+              type="file"
+              accept={accept}
+              className="hidden"
+              onChange={(e) => handleSelect(e.target.files?.[0])}
+              disabled={uploading}
+            />
+            {uploading ? "Téléversement..." : "Uploader"}
+          </label>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={uploading || !currentUrl}
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+      {error && <p className="text-sm text-amber-300">{error}</p>}
+    </div>
+  );
+}
