@@ -1,6 +1,7 @@
 # 05 — Seed content (v0.7.x)
 
-> Seed dev actuelle : 2 écoles, comptes fixes (super admin global + admin/teacher/student1/2, mdp `change-me-password`), studios avec photos, 1 cours démo/école, progression/blessures, favoris et invoices/backfill pour facturation, offres/packs globaux EUR/TVA20.
+> Seed dev actuelle : 2 écoles, comptes fixes (super admin global + admin/teacher/student1/2, mdp `change-me-password`), studios avec photos, 20 cours démo/école, progression/blessures, favoris, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20.
+> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions créées par des professeurs seedés (assignation aléatoire). Cours répartis aléatoirement entre profs de l’école sans collision horaire.
 
 ## Taxonomies
 
@@ -67,7 +68,7 @@ Exemple (format libre):
 - Pour chaque école créer : **3 studios** (voir nom plus bas, et inventer adresse sur Paris)
 - Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `change-me-password`, premium pour 1 élève sur 2.
 - Pour chaque utilisateurs : Les nom prenom et photos de profile sont séléctionnés dans la liste plus bas (Choisir aléatoirement selon le genre)
-- 20 cours de démo créé par école (alterner le professeur, alterner les élèves + entre 2 et 5 par cours, alterner les positions + entre 2 et 5) + il doit y'avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, ne peut pas se chevaucher si même studio et/ou même professeur.
+- 20 cours de démo créés par école (répartis aléatoirement entre professeurs sans collisions studio/prof sur le créneau, élèves 2–6 par cours, positions 2–4) + il doit y avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, ne peut pas se chevaucher si même studio et/ou même professeur.
 
 ## Comptes seed (mot de passe `change-me-password`) (à affecter à la première école)
 - superadmin@poleapp.test — SUPER_ADMIN (global, sans école)
@@ -173,14 +174,14 @@ Exemple (format libre):
 - Chloé Didier age:28 Femme
 - Victor Marin age:40 Homme
 
-## (à utiliser pour le seed) Liste des noms d'école de dance (ne peut être utiliser qu'une fois)
+## (à utiliser pour le seed) Liste des noms d'école (Pole)
 - Donuts
 - Horizon
 - Académie Arabesque
-- Pulsation Dance Center
+- Pulsation Pole Center
 - Atelier du Mouvement
-- Impulsion Danse
-- Latitude Danse
+- Impulsion Pole
+- Latitude Pole
 - Rythme & Grâce
 - Équilibre
 
