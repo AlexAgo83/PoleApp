@@ -176,6 +176,15 @@ export default async function StudentSchoolPage({
     typeof params.studio === "string" && params.studio.length > 0 ? params.studio : undefined;
   const teacherFilter =
     typeof params.teacher === "string" && params.teacher.length > 0 ? params.teacher : undefined;
+  const disciplineFilters =
+    typeof params.discipline === "string"
+      ? params.discipline
+          .split(",")
+          .map((d) => d.trim())
+          .filter(Boolean)
+      : Array.isArray(params.discipline)
+      ? params.discipline.flatMap((d) => d.split(",")).map((d) => d.trim()).filter(Boolean)
+      : [];
   const fromParam = typeof params.from === "string" ? params.from : undefined;
   const toParam = typeof params.to === "string" ? params.to : undefined;
   const q = params.q?.toString().trim() ?? "";
@@ -184,6 +193,18 @@ export default async function StudentSchoolPage({
     params.mine === "1" ||
     params.mine === "on" ||
     params.mine === "";
+  const activeFilters = [
+    view,
+    monthParam,
+    weekParam,
+    studioFilter,
+    teacherFilter,
+    disciplineFilters.length > 0 ? "discipline" : null,
+    fromParam,
+    toParam,
+    q && q.length > 0 ? "q" : null,
+    onlyMine ? "mine" : null,
+  ].filter(Boolean).length;
 
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(baseDate);
@@ -232,6 +253,13 @@ export default async function StudentSchoolPage({
         ...(studioFilter ? { studioId: studioFilter } : {}),
         ...(teacherFilter ? { teacherId: teacherFilter } : {}),
         ...(onlyMine ? { attendances: { some: { studentId: session.user.id } } } : {}),
+        ...(disciplineFilters.length > 0
+          ? {
+              OR: disciplineFilters.map((d) => ({
+                discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+              })),
+            }
+          : {}),
         ...(q
           ? { title: { contains: q, mode: "insensitive" as Prisma.QueryMode } }
           : {}),
@@ -535,6 +563,16 @@ export default async function StudentSchoolPage({
                   </option>
                 ))}
               </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline
+              <input
+                type="text"
+                name="discipline"
+                defaultValue={disciplineFilters.join(",")}
+                placeholder="Ex: Pole, Souplesse"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
             </label>
             <label className="text-sm text-slate-200 md:col-span-2">
               Recherche (titre)
