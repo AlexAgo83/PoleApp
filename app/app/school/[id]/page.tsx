@@ -73,7 +73,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
       orderBy: { name: "asc" },
     }),
     prisma.course.findMany({
-      where: { studioId, discipline: { not: null } },
+      where: { studioId },
       select: { discipline: true },
       distinct: ["discipline"],
       orderBy: { discipline: "asc" },
