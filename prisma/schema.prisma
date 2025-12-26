@@ -151,7 +151,7 @@ model Position {
   favoriteByTeachers TeacherFavoritePosition[]
   favoriteByStudents StudentFavoritePosition[]
   recommendations CourseRecommendation[]
-  muscles       PositionMuscle[]
+  muscles       PositionTarget[]
 
   @@unique([name])
 }
@@ -165,7 +165,7 @@ model Muscle {
   positions PositionMuscle[]
 }
 
-model PositionMuscle {
+model PositionTarget {
   positionId String
   muscleId   String
   createdAt  DateTime @default(now())
