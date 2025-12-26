@@ -572,7 +572,7 @@ async function seedCourses(schoolsData: {
 
     // studios
     const studiosForSchool = studiosList.slice(0, 3).map((name, idx) => ({
-      name: `${name} ${idx + 1}`,
+      name,
       address: `Paris ${idx + 1}`,
       photoUrl: STUDIO_IMAGES[idx % STUDIO_IMAGES.length],
     }));
