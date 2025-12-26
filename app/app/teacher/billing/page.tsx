@@ -340,7 +340,8 @@ export default async function TeacherBillingPage({
                     <input type="hidden" name="invoiceId" value={invoice.id} />
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-1 font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+                      disabled={invoice.status === "SENT" || invoice.status === "PAID" || invoice.status === "CANCELLED"}
+                      className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-1 font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-slate-400"
                     >
                       Envoyer à l&apos;école
                     </button>
