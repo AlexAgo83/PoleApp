@@ -489,9 +489,6 @@ export default async function StudentSchoolPage({
               </span>
             ))}
           </div>
-          <p className="mt-2 text-xs text-slate-300">
-            Le rang s’affiche si fourni (quota 14 élèves, statut WAITLIST requis).
-          </p>
         </section>
 
         <FilterPanel
