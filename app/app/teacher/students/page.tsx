@@ -319,8 +319,6 @@ export default async function TeacherStudentsPage({
                     )}
                   </div>
                   <p className="text-sm text-slate-200">
-                    {student.name ?? student.email}
-                    <span className="mx-2 text-slate-400">·</span>
                     {student.email}
                     <span className="mx-2 text-slate-400">·</span>
                     {student.isPremium ? "Premium" : "Free"}
