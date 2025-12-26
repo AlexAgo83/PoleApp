@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010" & "06_QA_S011")
-[Compréhension: 92% / Avancement: 70%]
+[Compréhension: 93% / Avancement: 75%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -60,7 +60,7 @@
   - État: grille compacte + bloc “voir plus” déjà présent côté prof ; reste à consolider variante finale.
 
 ## Notes
-- QA effectuée sur version 0.7.7 (voir 06_QA_S011 pour nouveaux retours).  
+- QA effectuée sur version 0.7.8 (seed musclée : 30 positions, cours répartis, favoris prof, Amazon partenaire). Voir 06_QA_S011 pour nouveaux retours.  
 - Super-admin “forcer discipline” : confirmation “FORCE” + scope école recommandé, prévoir dry-run/compteur avant exécution, écoles archivées exclues.  
 - Voir 07_QE_S010.md pour questions complémentaires (actuellement vide).  
 - Rappel : préférer actions in-app (pas de commande Render côté user). 
