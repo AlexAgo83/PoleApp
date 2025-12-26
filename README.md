@@ -1,6 +1,6 @@
-# Pole App — Produit v0.5.1 (Steps 0 → 9)
+# Pole App — Produit v0.7.8 (Steps 0 → 9)
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.5.1` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.7.8` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données. Seed idempotent.
@@ -84,9 +84,9 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 
 ## Seeds (dev)
 - Comptes : `admin@poleapp.test`, `teacher@poleapp.test`, `student1@poleapp.test`, `student2@poleapp.test` (`poleapp123`).
-- Généré : 2 écoles, 5 professeurs + 10 élèves/école, cours de démo, positions/médias, blessures types.
+- Généré : 2 écoles (photo/URL par défaut), 5 professeurs + 10 élèves/école, 500 crédits par élève, 30 positions + médias, 40 cours (durées par pas de 15 min) avec invoices backfill, blessures types, partenaires Amazon (4 liens produits).
 - Disciplines : catalogue Pole/Pole Exotic/Souplesse/Pilates/Conditioning seeded par école; positions et cours tagués dynamiquement.
-- Muscles/articulations seeded et liés par type de position; positions attribuées aléatoirement à des professeurs seedés; cours répartis sur les profs avec anti-collisions horaires.
+- Muscles/articulations seeded et liés par type de position; positions attribuées à des professeurs seedés (Elza priorisée), favoris prof auto, cours répartis sur les profs avec anti-collisions horaires.
 
 ## Déploiement Render
 - Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).
