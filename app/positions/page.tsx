@@ -39,13 +39,14 @@ const progressLabels: Record<string, string> = {
 };
 
 type SearchParams =
-  | { page?: string; type?: string; level?: string; q?: string; teacher?: string }
+  | { page?: string; type?: string; level?: string; q?: string; teacher?: string; discipline?: string }
   | Promise<{
       page?: string;
       type?: string;
       level?: string;
       q?: string;
       teacher?: string;
+      discipline?: string;
     }>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
@@ -60,10 +61,16 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     Object.values(PositionLevel).includes(resolvedParams.level as PositionLevel)
       ? (resolvedParams.level as PositionLevel)
       : undefined;
+  const disciplineFilter = resolvedParams.discipline?.toString().trim() || "";
   const q = resolvedParams.q?.toString().trim() || "";
   const teacherFilter = resolvedParams.teacher?.toString().trim() || "";
-  const activeFilters = [typeFilter, levelFilter, q && q.length > 0, teacherFilter && teacherFilter.length > 0].filter(Boolean)
-    .length;
+  const activeFilters = [
+    typeFilter,
+    levelFilter,
+    q && q.length > 0,
+    teacherFilter && teacherFilter.length > 0,
+    disciplineFilter && disciplineFilter.length > 0,
+  ].filter(Boolean).length;
 
   const where: Prisma.PositionWhereInput = {
     ...(typeFilter ? { type: typeFilter } : {}),
@@ -76,6 +83,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     ...(teacherFilter
       ? {
           createdByUserId: teacherFilter,
+        }
+      : {}),
+    ...(disciplineFilter
+      ? {
+          discipline: { contains: disciplineFilter, mode: Prisma.QueryMode.insensitive },
         }
       : {}),
   };
@@ -98,6 +110,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (levelFilter) queryParams.set("level", levelFilter);
   if (q) queryParams.set("q", q);
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
+  if (disciplineFilter) queryParams.set("discipline", disciplineFilter);
   const qs = queryParams.toString();
   const creatorOptions = await prisma.user.findMany({
     where: {
@@ -117,6 +130,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       createdBy: { select: { id: true, name: true, email: true } },
       _count: { select: { progress: true } },
     },
+  });
+  const disciplineOptions = await prisma.position.findMany({
+    select: { discipline: true },
+    distinct: ["discipline"],
+    where: { discipline: { not: null } },
+    orderBy: { discipline: "asc" },
   });
   const studentProgress = isStudent
     ? await prisma.studentPositionProgress.findMany({
@@ -221,8 +240,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         >
           {/* key force le rerender des inputs lorsque les filtres changent pour que “Réinitialiser” remette bien les valeurs par défaut. */}
           <form
-            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${q || "all"}`}
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${disciplineFilter || "all"}-${q || "all"}`}
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
             <label className="text-sm text-slate-200">
@@ -268,6 +287,22 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               </select>
             </label>
             <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                key={disciplineFilter || "all-disciplines"}
+                name="discipline"
+                defaultValue={disciplineFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplineOptions.map((d) => (
+                  <option key={d.discipline ?? "none"} value={d.discipline ?? ""}>
+                    {d.discipline ?? "Non définie"}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
               Professeur (créateur)
               <select
                 key={teacherFilter || "all-teachers"}
@@ -283,7 +318,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ))}
               </select>
             </label>
-            <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
+            <div className="md:col-span-5 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
                 className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
