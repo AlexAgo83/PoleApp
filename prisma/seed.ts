@@ -863,6 +863,53 @@ async function seedGlobalSettingsAndOffers() {
   }
 }
 
+async function seedPurchases(students: { id: string; schoolId: string }[]) {
+  const subscriptions = await prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, take: 2 });
+  const packs = await prisma.creditPackOffer.findMany({ where: { isActive: true, isOpen: true }, take: 2 });
+  if (subscriptions.length === 0 && packs.length === 0) return;
+
+  const bySchool = new Map<string, { id: string; schoolId: string }[]>();
+  students.forEach((s) => {
+    bySchool.set(s.schoolId, [...(bySchool.get(s.schoolId) ?? []), s]);
+  });
+
+  const purchases: Prisma.PurchaseCreateManyInput[] = [];
+  for (const [, list] of bySchool) {
+    const first = list[0];
+    const second = list[1];
+    if (first && subscriptions[0]) {
+      purchases.push({
+        userId: first.id,
+        offerId: subscriptions[0].id,
+        offerName: subscriptions[0].name,
+        kind: "SUBSCRIPTION",
+        amountCents: subscriptions[0].monthlyPriceCents ?? 0,
+        vatPercent: subscriptions[0].vatPercent ?? 20,
+        creditsGranted: subscriptions[0].monthlyCredits ?? 0,
+        isPremiumGranted: true,
+        status: "PAID",
+      });
+    }
+    if (second && packs[0]) {
+      purchases.push({
+        userId: second.id,
+        offerId: packs[0].id,
+        offerName: packs[0].name,
+        kind: "PACK",
+        amountCents: packs[0].priceCents ?? 0,
+        vatPercent: packs[0].vatPercent ?? 20,
+        creditsGranted: packs[0].credits ?? 0,
+        isPremiumGranted: false,
+        status: "PAID",
+      });
+    }
+  }
+
+  if (purchases.length > 0) {
+    await prisma.purchase.createMany({ data: purchases, skipDuplicates: true });
+  }
+}
+
 async function seedSuperAdmin() {
   const existing = await prisma.user.findFirst({ where: { role: Role.SUPER_ADMIN } });
   if (existing) return existing;
@@ -904,6 +951,7 @@ async function main() {
   });
   await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
   await seedStudentInjuries(students);
+  await seedPurchases(students);
   await seedCourses({ schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);
 }
