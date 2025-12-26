@@ -14,10 +14,15 @@ function run(cmd, opts = {}) {
 async function checkDbState() {
   const prisma = new PrismaClient();
   try {
-    const [{ count }] = await prisma.$queryRawUnsafe(
-      'SELECT COUNT(*)::int AS count FROM "User";'
+    const [{ userCount }] = await prisma.$queryRawUnsafe(
+      'SELECT COUNT(*)::int AS "userCount" FROM "User";'
     );
-    return count === 0 ? "empty" : "ready";
+    const [{ schoolCount }] = await prisma.$queryRawUnsafe(
+      'SELECT COUNT(*)::int AS "schoolCount" FROM "School";'
+    );
+    // Considère la DB vide si aucune école et aucun utilisateur métier (ignore un éventuel super-admin seul)
+    if (schoolCount === 0 && userCount <= 1) return "empty";
+    return "ready";
   } catch (err) {
     // Likely missing tables/schema
     console.warn("checkDbState: missing tables or query failed:", err.message || err);
