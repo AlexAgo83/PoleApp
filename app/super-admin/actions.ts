@@ -268,7 +268,7 @@ Ton mot de passe a été réinitialisé par un super admin.
 Nouveau mot de passe temporaire : ${tempPassword}
 Connecte-toi et change-le dès que possible.`;
 
-    void sendMail({
+    const mailResult = await sendMail({
       to: user.email,
       subject: "Mot de passe temporaire",
       text: bodyText,
@@ -278,6 +278,7 @@ Connecte-toi et change-le dès que possible.`;
       flash: "reset-ok",
       temp: tempPassword,
       email: user.email,
+      mail: mailResult.sent ? "sent" : "skipped",
     });
     redirect(`${basePath}?${qs.toString()}`);
   } catch (error) {
