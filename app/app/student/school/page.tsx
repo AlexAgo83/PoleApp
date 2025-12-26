@@ -321,14 +321,6 @@ export default async function StudentSchoolPage({
   const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}`;
   const hasMonthFilter = Boolean(monthParam);
-  const activeFilters =
-    (hasMonthFilter ? 1 : 0) +
-    (studioFilter ? 1 : 0) +
-    (teacherFilter ? 1 : 0) +
-    (onlyMine ? 1 : 0) +
-    (fromParam ? 1 : 0) +
-    (toParam ? 1 : 0) +
-    (q ? 1 : 0);
 
   const paramsForLinks = new URLSearchParams();
   if (studioFilter) paramsForLinks.set("studio", studioFilter);
