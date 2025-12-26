@@ -57,16 +57,18 @@ function summarizeCandidate(candidate: CandidateInput): {
         ? "REVISION"
         : "SAFE";
 
-  const category: "NOVELTY" | "INITIATED" | "PASSED" | "CHOREO" =
-    ratioMastered >= 0.2
-      ? "CHOREO"
-      : ratioNotStarted >= 0.8
-        ? "NOVELTY"
-        : ratioPassed >= 0.6
-          ? "PASSED"
-          : ratioInProgress >= 0.4
-            ? "INITIATED"
-            : "PASSED";
+  let category: "NOVELTY" | "INITIATED" | "PASSED" | "CHOREO";
+  if (ratioMastered >= 0.2) {
+    category = "CHOREO";
+  } else if (tag === "DISCOVERY" || ratioNotStarted >= 0.6) {
+    category = "NOVELTY";
+  } else if (tag === "REVISION" || ratioInProgress >= 0.4) {
+    category = "INITIATED";
+  } else if (ratioPassed >= 0.6) {
+    category = "PASSED";
+  } else {
+    category = "PASSED";
+  }
 
   // Pondérations ajustées : pénaliser plus la répétition récente et les blessures, valoriser un peu plus les coups de cœur.
   const recencyPenalty = candidate.recentOccurrences * 2;

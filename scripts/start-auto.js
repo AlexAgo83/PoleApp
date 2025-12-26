@@ -3,6 +3,8 @@ const { execSync } = require("child_process");
 const { PrismaClient } = require("@prisma/client");
 
 const mode = process.argv[2] === "render" ? "render" : "dev";
+// Turbopack panics locally: default to webpack unless explicitly enabled.
+process.env.NEXT_USE_TURBOPACK = process.env.NEXT_USE_TURBOPACK ?? "0";
 
 function run(cmd, opts = {}) {
   console.log(`\n>>> ${cmd}`);
@@ -26,14 +28,20 @@ async function checkDbState() {
 }
 
 async function ensureSchemaAndSeed() {
-  // Try migrate deploy, fallback to db:push on typical bootstrap failures
-  try {
-    run("npm run db:migrate:deploy");
-  } catch (err) {
-    const msg = String(err?.stderr || err?.stdout || err?.message || "");
-    console.warn("Migration deploy failed, attempting db:push instead.");
-    console.warn(msg);
+  const preferDbPush = true;
+
+  if (preferDbPush) {
     run("npm run db:push");
+  } else {
+    // Try migrate deploy, fallback to db:push on typical bootstrap failures
+    try {
+      run("npm run db:migrate:deploy");
+    } catch (err) {
+      const msg = String(err?.stderr || err?.stdout || err?.message || "");
+      console.warn("Migration deploy failed, attempting db:push instead.");
+      console.warn(msg);
+      run("npm run db:push");
+    }
   }
 
   const state = await checkDbState();

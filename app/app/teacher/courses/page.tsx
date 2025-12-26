@@ -336,7 +336,7 @@ export default async function TeacherCoursesPage({
               <legend className="mb-1">Discipline</legend>
               <div className="rounded-xl border border-white/10 bg-white/5 p-2">
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-                  {disciplines.slice(0, 6).map((d: { name: string; color?: string }, idx: number) => (
+                  {disciplines.slice(0, 6).map((d, idx) => (
                     <label
                       key={`${d.name}-primary-${idx}`}
                       className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
@@ -362,7 +362,7 @@ export default async function TeacherCoursesPage({
                       Voir plus ({disciplines.length - 6})
                     </summary>
                     <div className="grid max-h-40 grid-cols-2 gap-2 overflow-auto pr-1 md:grid-cols-3">
-                      {disciplines.slice(6).map((d: { name: string; color?: string }, idx: number) => (
+                      {disciplines.slice(6).map((d, idx) => (
                         <label
                           key={`${d.name}-extra-${idx}`}
                           className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
