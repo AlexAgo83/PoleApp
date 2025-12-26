@@ -3,6 +3,8 @@
 # Changelog
 
 ## Unreleased — Planning école élève + responsive agenda
+- Positions : discipline badge sur vignettes et header, overlay progression/Vu, stats détaillées en cartes glassy, en-tête simplifié sur la fiche.
+- Seed : muscles/articulations seeded et liés, positions attribuées à des professeurs seedés, cours répartis aléatoirement entre profs sans collisions, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning taguées sur positions/cours.
 - Page école élève : agenda semaine/mois avec filtres (studio/prof/date/recherche/«mes cours»), légende code couleur, prochains cours, liens vers agenda/liste.
 - Agenda élève (cours) : grilles semaine/mois adaptatives sans scroll horizontal sur mobile.
 - Facturation : modèle `Invoice` (statuts Générée/Reçue/Payée/En retard/Annulée), pages `/app/admin/billing` (actions statut/montant, export CSV) et `/app/teacher/billing` (lecture), seed backfill (montant par défaut).
