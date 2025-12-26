@@ -554,6 +554,7 @@ async function seedSchoolsAndUsers() {
           name: person.name,
           age: person.age,
           avatarUrl: pickStudentAvatar(person.gender),
+          credits: 500,
         },
       });
       students.push({ id: created.id, schoolId: school.id });
