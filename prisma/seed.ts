@@ -178,6 +178,8 @@ const schoolsList = [
   "Équilibre",
 ];
 
+const SCHOOL_IMAGE = "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png";
+
 const studiosList = [
   "Nova",
   "Aérial",
@@ -426,6 +428,7 @@ async function seedSchoolsAndUsers() {
       prisma.school.create({
         data: {
           name,
+          photoUrl: SCHOOL_IMAGE,
         },
       })
     )
