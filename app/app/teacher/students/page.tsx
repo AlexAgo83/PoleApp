@@ -321,8 +321,6 @@ export default async function TeacherStudentsPage({
                   <p className="text-sm text-slate-200">
                     {student.email}
                     <span className="mx-2 text-slate-400">·</span>
-                    {student.isPremium ? "Premium" : "Free"}
-                    <span className="mx-2 text-slate-400">·</span>
                     Âge : {student.age ? `${student.age} ans` : "Non renseigné"}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 text-xs text-slate-100">
