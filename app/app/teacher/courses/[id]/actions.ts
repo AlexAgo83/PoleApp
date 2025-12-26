@@ -359,6 +359,9 @@ const applySuggestionsSchema = z.object({
         favoriteCount: z.number().optional(),
         excludedForInjury: z.boolean().optional(),
         unsafeInjuries: z.array(z.string()).optional(),
+        attenuatedForInjury: z.boolean().optional(),
+        fallbackCategory: z.boolean().optional(),
+        unsoftenedChaining: z.boolean().optional(),
       })
     )
     .default([]),

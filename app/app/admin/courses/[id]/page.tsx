@@ -179,6 +179,21 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                       {s.favoriteCount} cœur{s.favoriteCount > 1 ? "s" : ""}
                     </span>
                   ) : null}
+                  {!s.excludedForInjury && s.attenuatedForInjury ? (
+                    <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                      Atténué (blessure)
+                    </span>
+                  ) : null}
+                  {s.fallbackCategory ? (
+                    <span className="rounded-full border border-slate-300/40 bg-slate-500/20 px-2 py-0.5 text-[11px] font-semibold text-slate-50">
+                      Catégorie fallback
+                    </span>
+                  ) : null}
+                  {s.unsoftenedChaining ? (
+                    <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
+                      Enchaînement non adouci
+                    </span>
+                  ) : null}
                   {recommendationByPosition.get(s.positionId)?.excludedForInjury && !recommendationByPosition.get(s.positionId)?.forced ? (
                     <span className="rounded-full border border-red-400/60 bg-red-600/15 px-2 py-0.5 text-[11px] font-semibold text-red-50">
                       Exclu blessure
@@ -201,6 +216,15 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                   </span>
                 </div>
                 <p className="text-xs text-emerald-50/80">{s.reason}</p>
+                {!s.excludedForInjury && s.attenuatedForInjury && (
+                  <p className="text-xs text-amber-100">Compatibilité blessure réduite (priorité moindre).</p>
+                )}
+                {(s.fallbackCategory || s.unsoftenedChaining) && (
+                  <p className="text-xs text-slate-200">
+                    {s.fallbackCategory ? "Placé en fallback de catégorie. " : ""}
+                    {s.unsoftenedChaining ? "Pas de transition disponible entre les mouvements précédents." : ""}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
