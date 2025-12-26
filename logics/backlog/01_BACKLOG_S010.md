@@ -1,5 +1,5 @@
-# Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010")
-[Compréhension: 94% / Avancement: 75%]
+# Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010" & "06_QA_S011")
+[Compréhension: 92% / Avancement: 70%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -11,7 +11,7 @@
 ## P0 (bloquant)
 - **Muscles sollicités (dépendance blessures)**  
   - US: En tant qu’admin/prof, je peux tagger une position avec les muscles/articulations sollicités via un multi-select référentiel pour que le générateur exclue/pondère en cas de blessure.  
-  - AC: Champs muscles sur position (catalogue), utilisés dans les filtres blessures du générateur ; logique d’exclusion stricte ou atténuation si aucune alternative (à trancher).
+  - AC: Champs muscles sur position (catalogue), utilisés dans les filtres blessures du générateur ; logique d’exclusion stricte ou atténuation si aucune alternative (à trancher) ; UI scrollable + bouton “Ajouter un muscle” rapide si référentiel incomplet.
 - **Générateur : règles de sécurité blessures**  
   - US: En tant que prof, si un élève a une blessure, le générateur exclut les positions sollicitant la zone (ou privilégie les moins engageantes si pas d’alternative).  
   - AC: Filtres blessures appliqués (s’appuient sur muscles sollicités), pas de positions incompatibles ; fallback si aucune alternative (à définir).
@@ -27,6 +27,15 @@
   - État: enum Prisma recréée + migration 20251226100000_mastery_enum_cleanup + UI alignée (reste QA global).
 
 ## P1 (prochaine itération)
+- **Vue abonnements/packs élèves (prof/admin)**  
+  - US: En tant que prof/admin, je vois les abonnements en cours et packs achetés par élève.  
+  - AC: Tables abonnements/packs avec élève, offre, début/fin, statut (actif/expiré/épuisé), crédits restants, montant/moyen de paiement, école ; filtres/tri (statut, date, élève, école), export CSV ; lien vers fiche élève facturation.
+- **Presets/combos vidéo (premium ou achat)**  
+  - US: En tant que prof/admin, je crée/édite un preset (combo vidéo) vendu en premium ou à l’unité (crédits).  
+  - AC: Modèle preset avec titre/description/discipline/vidéo obligatoire/positions incluses/flag paywall (premium requis)/prix crédits optionnel ; catalogue CRUD prof/admin ; cours choisit “preset” OU “positions au détail” (pas de mix) ; affichage élève avec badge premium ou prix crédits, preview limitée si non premium/non acheteur.
+- **Générateur : explication des mouvements proposés**  
+  - US: Lors de la génération, je vois un détail/raison des positions sélectionnées (catégorie, blessure, favoris, récence…).  
+  - AC: Panneau de justification par position (tags + raison textuelle) avant validation, toggle “afficher les raisons”.
 - **CRUD disciplines (QA/ergonomie)**  
   - US: En tant qu’admin école, je peux gérer les disciplines (création/édition/suppression si non utilisée) avec une UX claire.  
   - AC: Flow CRUD validé, unicité par école, visibilité dans filtres prof/élève/agenda (QA à refaire, besoin mal compris).  
@@ -51,6 +60,7 @@
   - État: grille compacte + bloc “voir plus” scrollable dans filtres cours prof (P2 à compléter si besoin).
 
 ## Notes
-- QA effectuée sur version 0.7.6.  
+- QA effectuée sur version 0.7.7 (voir 06_QA_S011 pour nouveaux retours).  
+- Super-admin “forcer discipline” : confirmation “FORCE” + scope école recommandé (dry-run/compteur à prévoir avant exécution).  
 - Voir 07_QE_S010.md pour questions complémentaires (actuellement vide).  
 - Rappel : préférer actions in-app (pas de commande Render côté user). 
