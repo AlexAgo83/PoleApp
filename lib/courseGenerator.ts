@@ -124,7 +124,7 @@ function summarizeCandidate(candidate: CandidateInput): {
   // Pondérations ajustées : pénaliser plus la répétition récente et les blessures, valoriser un peu plus les coups de cœur.
   const recencyPenalty = candidate.recentOccurrences * 2;
   const injuryPenalty = candidate.unsafeForStudents.length > 0 ? 8 : 0;
-  const favoritesBonus = Math.min(5, candidate.favoriteCount) * 5; // 0 → 0, max 25
+  const favoritesBonus = Math.min(5, candidate.favoriteCount) * 3; // 0 → 0, max 15
   const totalScore =
     discoveryScore * 3 + revisionScore * 2 + safeScore + favoritesBonus - recencyPenalty - injuryPenalty;
   const weightedScore = candidate.attenuatedForInjury ? totalScore / 2 : totalScore;
@@ -142,6 +142,9 @@ function summarizeCandidate(candidate: CandidateInput): {
   }
   if (candidate.unsafeForStudents.length > 0) {
     parts.push(`exclue blessures (${candidate.unsafeForStudents.join(", ")})`);
+  }
+  if (candidate.attenuatedForInjury) {
+    parts.push("compatibilité réduite (blessure)");
   }
   if (candidate.favoriteCount > 0) {
     parts.push(`${candidate.favoriteCount} coup de cœur élève${candidate.favoriteCount > 1 ? "s" : ""}`);
@@ -278,7 +281,9 @@ function selectTopSuggestions(
     type: entry.item.candidate.type,
     tag: entry.item.tag,
     category: entry.item.category,
-    reason: `${categoryLabel[entry.item.category]} · ${entry.item.reason}`,
+    reason: `${categoryLabel[entry.item.category]} · ${entry.item.reason}${
+      entry.fallback ? " · catégorie fallback" : ""
+    }${entry.item.candidate.unsoftenedChaining ? " · enchaînement non adouci" : ""}`,
     favoriteCount: entry.item.candidate.favoriteCount,
     excludedForInjury: entry.item.candidate.excludedForInjury,
     unsafeInjuries: entry.item.candidate.unsafeForStudents,
