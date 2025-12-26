@@ -162,7 +162,7 @@ model Muscle {
   kind      String   @default("MUSCLE") // MUSCLE | ARTICULATION | OTHER
   createdAt DateTime @default(now())
 
-  positions PositionMuscle[]
+  positions PositionTarget[]
 }
 
 model PositionTarget {

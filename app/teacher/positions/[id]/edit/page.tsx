@@ -272,32 +272,29 @@ function MuscleSelect({
   muscles: { id: string; name: string; kind: string | null }[];
   selected: string[];
 }) {
-  const visible = muscles.slice(0, 5);
-  const overflow = muscles.length - visible.length;
   return (
     <div className="space-y-2 md:col-span-2">
       <p className="text-sm font-semibold text-slate-100">Muscles / articulations sollicités</p>
       <p className="text-xs text-slate-400">Multi-sélection (référentiel).</p>
-      <div className="flex flex-wrap gap-2">
-        {visible.map((m) => (
-          <label
-            key={m.id}
-            className={`inline-flex items-center gap-2 rounded-full border ${selected.includes(m.id) ? "border-cyan-400/60 bg-cyan-500/15" : "border-white/10 bg-white/5"} px-3 py-1 text-xs text-slate-100 transition`}
-          >
-            <input
-              type="checkbox"
-              name="muscles"
-              value={m.id}
-              defaultChecked={selected.includes(m.id)}
-              className="h-4 w-4 rounded border-white/20 bg-white/5"
-            />
-            <span className="font-semibold text-white">{m.name}</span>
-            <span className="text-[10px] uppercase tracking-[0.08em] text-slate-300">{m.kind?.toLowerCase()}</span>
-          </label>
-        ))}
-        {overflow > 0 && (
-          <span className="text-xs text-slate-300">… {overflow} de plus (non affichés ici)</span>
-        )}
+      <div className="max-h-40 w-full overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-2">
+        <div className="flex flex-wrap gap-2">
+          {muscles.map((m) => (
+            <label
+              key={m.id}
+              className={`inline-flex items-center gap-2 rounded-full border ${selected.includes(m.id) ? "border-cyan-400/60 bg-cyan-500/15" : "border-white/10 bg-white/5"} px-3 py-1 text-xs text-slate-100 transition`}
+            >
+              <input
+                type="checkbox"
+                name="muscles"
+                value={m.id}
+                defaultChecked={selected.includes(m.id)}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              <span className="font-semibold text-white">{m.name}</span>
+              <span className="text-[10px] uppercase tracking-[0.08em] text-slate-300">{m.kind?.toLowerCase()}</span>
+            </label>
+          ))}
+        </div>
       </div>
       <input type="hidden" name="muscles" value="" />
     </div>
