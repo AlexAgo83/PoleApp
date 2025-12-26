@@ -663,13 +663,12 @@ async function seedCourses(schoolsData: {
 
       const attendees = schoolStudents.sort(() => 0.5 - Math.random()).slice(0, 5 + (i % 2));
       const teacherPositions = positionsByTeacher[teacher.id] ?? [];
-      const coursePositions =
+      const preferredPositions =
         teacherPositions.length > 0
-          ? teacherPositions
-              .slice()
-              .sort(() => 0.5 - Math.random())
-              .slice(0, 2 + (i % 3))
-          : positions.sort(() => 0.5 - Math.random()).slice(0, 2 + (i % 3));
+          ? positions.filter((p) => teacherPositions.includes(p.id))
+          : [];
+      const pool = preferredPositions.length > 0 ? preferredPositions : positions;
+      const coursePositions = pool.slice().sort(() => 0.5 - Math.random()).slice(0, 2 + (i % 3));
       const courseName = courseNames[courseNameIdx % courseNames.length];
       const courseDiscipline = disciplinePool[(courseNameIdx + i) % disciplinePool.length]?.name ?? PRIMARY_DISCIPLINE;
       courseNameIdx += 1;
@@ -731,6 +730,27 @@ async function seedPartners(schools: { id: string }[]) {
         label: link.label,
         url: link.url,
       })),
+    });
+  }
+}
+
+async function seedTeacherFavorites(options: {
+  teachers: { id: string; schoolId: string }[];
+  positions: { id: string }[];
+  positionsByTeacher: Record<string, string[]>;
+}) {
+  for (const teacher of options.teachers) {
+    const ownedIds = options.positionsByTeacher[teacher.id] ?? [];
+    const ownedPositions = options.positions.filter((p) => ownedIds.includes(p.id));
+    const pool = ownedPositions.length > 0 ? ownedPositions : options.positions;
+    const pick = pool
+      .slice()
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.max(1, Math.min(3, pool.length)));
+    if (pick.length === 0) continue;
+    await prisma.teacherFavoritePosition.createMany({
+      data: pick.map((p) => ({ teacherId: teacher.id, positionId: p.id })),
+      skipDuplicates: true,
     });
   }
 }
@@ -842,6 +862,7 @@ async function main() {
     teachers,
     priorityTeacherId: elzaTeacher?.id,
   });
+  await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
   await seedCourses({ schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);
 }
