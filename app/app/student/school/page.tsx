@@ -61,6 +61,7 @@ export default async function StudentSchoolPage({
     from?: string;
     to?: string;
     q?: string;
+    discipline?: string | string[];
   }>;
 }) {
   const session = await getServerSession(authOptions);
