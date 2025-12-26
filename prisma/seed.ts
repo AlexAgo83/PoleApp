@@ -340,6 +340,7 @@ async function seedPositions({
   priorityTeacherId?: string | null;
 }) {
   const muscleMap = new Map(muscles.map((m) => [m.name, m.id]));
+  const positionsByTeacher: Record<string, string[]> = {};
 
   const createdPositions = [];
   for (let i = 0; i < positionsData.length; i += 1) {
@@ -381,8 +382,11 @@ async function seedPositions({
       },
     });
     createdPositions.push(created);
+    if (creator?.id) {
+      positionsByTeacher[creator.id] = [...(positionsByTeacher[creator.id] ?? []), created.id];
+    }
   }
-  return createdPositions;
+  return { createdPositions, positionsByTeacher };
 }
 
 async function seedDisciplines(schools: { id: string }[]) {
@@ -571,8 +575,9 @@ async function seedCourses(schoolsData: {
   students: { id: string; schoolId: string }[];
   positions: { id: string }[];
   disciplinesBySchool: Record<string, { name: string; color?: string | null }[]>;
+  positionsByTeacher: Record<string, string[]>;
 }) {
-  const { schools, teachers, students, positions, disciplinesBySchool } = schoolsData;
+  const { schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher } = schoolsData;
   let courseImageIdx = 0;
   let courseNameIdx = 0;
   const euro = "EUR";
@@ -631,7 +636,14 @@ async function seedCourses(schoolsData: {
       teacherUsage.set(teacher.id, (teacherUsage.get(teacher.id) ?? 0) + 1);
 
       const attendees = schoolStudents.sort(() => 0.5 - Math.random()).slice(0, 5 + (i % 2));
-      const coursePositions = positions.sort(() => 0.5 - Math.random()).slice(0, 2 + (i % 3));
+      const teacherPositions = positionsByTeacher[teacher.id] ?? [];
+      const coursePositions =
+        teacherPositions.length > 0
+          ? teacherPositions
+              .slice()
+              .sort(() => 0.5 - Math.random())
+              .slice(0, 2 + (i % 3))
+          : positions.sort(() => 0.5 - Math.random()).slice(0, 2 + (i % 3));
       const courseName = courseNames[courseNameIdx % courseNames.length];
       const courseDiscipline = disciplinePool[(courseNameIdx + i) % disciplinePool.length]?.name ?? PRIMARY_DISCIPLINE;
       courseNameIdx += 1;
@@ -776,8 +788,12 @@ async function main() {
   const { schools, teachers, students } = await seedSchoolsAndUsers();
   const disciplinesBySchool = await seedDisciplines(schools);
   const elzaTeacher = teachers.find((t) => t.email === "teacher@poleapp.test");
-  const positions = await seedPositions({ muscles, teachers, priorityTeacherId: elzaTeacher?.id });
-  await seedCourses({ schools, teachers, students, positions, disciplinesBySchool });
+  const { createdPositions: positions, positionsByTeacher } = await seedPositions({
+    muscles,
+    teachers,
+    priorityTeacherId: elzaTeacher?.id,
+  });
+  await seedCourses({ schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);
 }
 
