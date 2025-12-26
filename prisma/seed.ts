@@ -179,6 +179,7 @@ const schoolsList = [
 ];
 
 const SCHOOL_IMAGE = "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png";
+const SCHOOL_WEBSITE = "http://www.google.com";
 const PARTNER_AMAZON = {
   name: "Amazon",
   website: "https://www.amazon.fr",
@@ -440,6 +441,7 @@ async function seedSchoolsAndUsers() {
         data: {
           name,
           photoUrl: SCHOOL_IMAGE,
+          website: SCHOOL_WEBSITE,
         },
       })
     )
