@@ -123,6 +123,8 @@ const positionsData = [
   { name: "Shoulder Stand", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: "FOREARM" },
   { name: "Iron X Prep", type: PositionType.STRENGTH, level: PositionLevel.ADVANCED, grips: "FOREARM" },
   { name: "Body Wave Transition", type: PositionType.TRANSITION, level: PositionLevel.BEGINNER, grips: "OTHER" },
+  { name: "Shoulder Slide Transition", type: PositionType.TRANSITION, level: PositionLevel.INTERMEDIATE, grips: "OTHER" },
+  { name: "Wrist Relief Flow", type: PositionType.TRANSITION, level: PositionLevel.BEGINNER, grips: "OTHER" },
   { name: "Back Bend Flow", type: PositionType.WARMUP, level: PositionLevel.BEGINNER, grips: "OTHER" },
   { name: "Side Climb", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: "TRUE" },
   { name: "Phoenix Spin", type: PositionType.SPIN, level: PositionLevel.ADVANCED, grips: "TRUE" },
@@ -756,6 +758,43 @@ async function seedTeacherFavorites(options: {
   }
 }
 
+async function seedStudentInjuries(students: { id: string; schoolId: string }[]) {
+  const targets = ["Épaule", "Bas du dos"];
+  const injuryRows = await prisma.injuryType.findMany({ where: { name: { in: targets } } });
+  if (injuryRows.length === 0) return;
+
+  const bySchool = new Map<string, { id: string; schoolId: string }[]>();
+  students.forEach((s) => {
+    bySchool.set(s.schoolId, [...(bySchool.get(s.schoolId) ?? []), s]);
+  });
+
+  const data: Prisma.StudentInjuryCreateManyInput[] = [];
+  for (const [, list] of bySchool) {
+    const first = list[0];
+    const second = list[1];
+    const shoulder = injuryRows.find((i) => i.name === "Épaule");
+    const back = injuryRows.find((i) => i.name === "Bas du dos");
+    if (first && shoulder) {
+      data.push({
+        studentId: first.id,
+        injuryTypeId: shoulder.id,
+        isActive: true,
+      });
+    }
+    if (second && back) {
+      data.push({
+        studentId: second.id,
+        injuryTypeId: back.id,
+        isActive: true,
+      });
+    }
+  }
+
+  if (data.length > 0) {
+    await prisma.studentInjury.createMany({ data, skipDuplicates: true });
+  }
+}
+
 async function seedGameSessions(students: { id: string; schoolId: string }[]) {
   const sampleStudents = students.slice(0, 3);
   const modes: GameMode[] = [
@@ -864,6 +903,7 @@ async function main() {
     priorityTeacherId: elzaTeacher?.id,
   });
   await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
+  await seedStudentInjuries(students);
   await seedCourses({ schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);
 }
