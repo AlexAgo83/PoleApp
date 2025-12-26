@@ -22,7 +22,7 @@
 ## Stack / scripts
 - Next.js App Router, Prisma Postgres, NextAuth Credentials, Tailwind.
 - Scripts : `npm run db:migrate:deploy` (via ci-migrate-deploy), `npm run db:push`, `npm run dev`, `npm run start:render`.
-- Seed idempotent : 2 écoles, comptes fixes (admin/teacher/student1/2, mdp `poleapp123`), studios/photos, cours démo, progression/blessures/favoris.
+- Seed idempotent : 2 écoles, comptes fixes (admin/teacher/student1/2, mdp `poleapp123`), studios/photos, cours démo, progression/blessures/favoris, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning, muscles/articulations liés, positions attribuées à des profs seedés et cours répartis entre profs sans collisions.
 
 ## À maintenir
 - Tenir à jour : backlogs, changelog, modèles (`models/03_DATA_MODEL.md`), routes (`models/04_ROUTES_AND_SCREENS.md`), instructions.
