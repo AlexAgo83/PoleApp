@@ -333,9 +333,11 @@ async function seedMuscles() {
 async function seedPositions({
   muscles,
   teachers,
+  priorityTeacherId,
 }: {
   muscles: { id: string; name: string }[];
   teachers: { id: string }[];
+  priorityTeacherId?: string | null;
 }) {
   const muscleMap = new Map(muscles.map((m) => [m.name, m.id]));
 
@@ -348,7 +350,12 @@ async function seedPositions({
       .map((name) => muscleMap.get(name))
       .filter((id): id is string => Boolean(id))
       .map((id) => ({ muscleId: id }));
-    const creator = teachers.length > 0 ? teachers[Math.floor(Math.random() * teachers.length)] : null;
+    const creator =
+      priorityTeacherId && i < 5
+        ? { id: priorityTeacherId }
+        : teachers.length > 0
+        ? teachers[Math.floor(Math.random() * teachers.length)]
+        : null;
     const created = await prisma.position.create({
       data: {
         name: pos.name,
@@ -446,8 +453,11 @@ async function seedSchoolsAndUsers() {
     },
   ];
 
+  const teachers: { id: string; schoolId: string; email?: string }[] = [];
+  const students: { id: string; schoolId: string }[] = [];
+
   for (const acc of fixedAccounts) {
-    await prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         email: acc.email,
         passwordHash,
@@ -459,12 +469,15 @@ async function seedSchoolsAndUsers() {
         age: acc.age ?? null,
       },
     });
+    if (acc.role === Role.TEACHER) {
+      teachers.push({ id: created.id, schoolId: schools[acc.schoolIdx].id, email: acc.email });
+    }
+    if (acc.role === Role.STUDENT) {
+      students.push({ id: created.id, schoolId: schools[acc.schoolIdx].id });
+    }
   }
 
   // Distribute remaining names for teachers/students
-  const teachers: { id: string; schoolId: string }[] = [];
-  const students: { id: string; schoolId: string }[] = [];
-
   const teacherAvatars = [...TEACHER_AVATARS];
   const femaleAvatars = [...FEMALE_STUDENT_AVATARS];
   const maleAvatars = [...MALE_STUDENT_AVATARS];
@@ -552,7 +565,7 @@ function buildSchedule(options: { daysPast: number; daysFuture: number; total: n
 
 async function seedCourses(schoolsData: {
   schools: { id: string; name: string }[];
-  teachers: { id: string; schoolId: string }[];
+  teachers: { id: string; schoolId: string; email?: string }[];
   students: { id: string; schoolId: string }[];
   positions: { id: string }[];
   disciplinesBySchool: Record<string, { name: string; color?: string | null }[]>;
@@ -565,6 +578,7 @@ async function seedCourses(schoolsData: {
   for (const school of schools) {
     const schoolTeachers = teachers.filter((t) => t.schoolId === school.id);
     const schoolStudents = students.filter((s) => s.schoolId === school.id);
+    const teacherUsage = new Map<string, number>();
     const disciplinePool =
       disciplinesBySchool[school.id] && disciplinesBySchool[school.id].length > 0
         ? disciplinesBySchool[school.id]
@@ -601,12 +615,18 @@ async function seedCourses(schoolsData: {
       // éviter collisions studio/teacher (même timestamp)
       const studioTimes = studioSchedule.get(studio.id) ?? [];
       if (studioTimes.includes(startTs)) continue;
-      const shuffledTeachers = [...schoolTeachers].sort(() => 0.5 - Math.random());
-      const teacher = shuffledTeachers.find((t) => !(teacherSchedule.get(t.id) ?? []).includes(startTs));
+      const sortedTeachers = [...schoolTeachers].sort((a, b) => {
+        const countA = teacherUsage.get(a.id) ?? 0;
+        const countB = teacherUsage.get(b.id) ?? 0;
+        if (countA === countB) return Math.random() - 0.5;
+        return countA - countB;
+      });
+      const teacher = sortedTeachers.find((t) => !(teacherSchedule.get(t.id) ?? []).includes(startTs));
       if (!teacher) continue;
       studioSchedule.set(studio.id, [...studioTimes, startTs]);
       const teacherTimes = teacherSchedule.get(teacher.id) ?? [];
       teacherSchedule.set(teacher.id, [...teacherTimes, startTs]);
+      teacherUsage.set(teacher.id, (teacherUsage.get(teacher.id) ?? 0) + 1);
 
       const attendees = schoolStudents.sort(() => 0.5 - Math.random()).slice(0, 5 + (i % 2));
       const coursePositions = positions.sort(() => 0.5 - Math.random()).slice(0, 2 + (i % 3));
@@ -753,7 +773,8 @@ async function main() {
   const muscles = await seedMuscles();
   const { schools, teachers, students } = await seedSchoolsAndUsers();
   const disciplinesBySchool = await seedDisciplines(schools);
-  const positions = await seedPositions({ muscles, teachers });
+  const elzaTeacher = teachers.find((t) => t.email === "teacher@poleapp.test");
+  const positions = await seedPositions({ muscles, teachers, priorityTeacherId: elzaTeacher?.id });
   await seedCourses({ schools, teachers, students, positions, disciplinesBySchool });
   await seedGameSessions(students);
 }
