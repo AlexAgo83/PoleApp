@@ -1,7 +1,7 @@
 # 02 — Instructions pour CODEX (phase produit)
-> Doit être à jour avec le projet
+> Aligné v0.7.8
 
-Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.6 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
+Objectif : faire évoluer une **web app** (responsive) livrée en v0.7.8 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions
 - Fiches cours / fiches élève
 - Blessures
@@ -33,11 +33,11 @@ Objectif : faire évoluer une **web app** (responsive) livrée en v0.4.6 (Steps 
 - Zod pour validation
 - React Hook Form (optionnel) pour forms
 - Testing: Vitest (unit)
-- Run dev : `npm run dev` (ou `docker compose watch` pour hot-reload conteneur, target `dev` avec code + schema embarqués, sans bind mount)
-- Si Turbopack panique : supprimer `.next`/`.turbo` puis forcer Webpack avec `NEXT_USE_TURBOPACK=0 npm run dev` (ou la variable dans Docker/Render).
-- DB : `npm run db:push` puis `npm run db:seed` (les scripts pointent sur `prisma/schema.prisma`)
-- Seed : 2 écoles (École 1/École 2) + 5 profs et 10 élèves par école (mot de passe `poleapp123`, premium 1/2) + comptes fixes admin/teacher/student1/2
-- Deploy : `render.yaml` (service web + Postgres), build `npm install && npx prisma db push && npx prisma generate && npm run build`, start `npm run db:push && npm run db:seed && npm run start`
+- Run dev : `npm run dev` (ou `docker compose watch`), `NEXT_USE_TURBOPACK=0` si panics.
+- Si Turbopack panique : supprimer `.next`/`.turbo` puis forcer Webpack.
+- DB : `npm run db:push` puis `npm run db:seed` (schema `prisma/schema.prisma`).
+- Seed v0.7.8 : 2 écoles (photo/URL par défaut), 5 profs + 10 élèves/école (500 crédits, premium 1/2), 30 positions (muscles + disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning), 20 cours/école (durées multiples de 15 min — 30/45/60/75/90 — avec factures), favoris prof/élève, partenaire Amazon (4 liens produits). Comptes fixes admin/teacher/student1/2/super-admin (`poleapp123`).
+- Deploy : Render (service web + Postgres), build `npm install && npm run db:migrate:deploy && npm run build` (script `ci-migrate-deploy` fallback db push si pas de migrations), start `npm run start:render` (db push + seed uniquement si DB considérée vide : 0 école et ≤1 user).
 
 Structure proposée :
 - `/app` routes
@@ -47,7 +47,7 @@ Structure proposée :
 
 ---
 
-Les Steps 0→9 ci-dessous constituent le socle livré (tag `v0.4.6`). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
+Les Steps 0→9 ci-dessous constituent le socle livré (tag v0.7.8). S’appuyer dessus comme référence, mais appliquer les règles “Mode produit” ci-dessus pour toute évolution.
 
 ## Step 0 — Bootstrap projet (doit compiler)
 
