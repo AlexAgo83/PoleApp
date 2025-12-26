@@ -27,12 +27,20 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
   const qRaw = resolvedSearch?.q;
   const pageRaw = resolvedSearch?.page;
+  const teacherFilter = typeof resolvedSearch?.teacher === "string" ? resolvedSearch.teacher : "";
+  const disciplineFilter = resolvedSearch?.discipline?.toString().trim() ?? "";
   const q = typeof qRaw === "string" ? qRaw.trim() : "";
   const currentPage = Math.max(1, Number.isFinite(Number(pageRaw)) ? Number(pageRaw) : 1);
   const pageSize = 5;
 
   const where = {
     studioId,
+    ...(teacherFilter ? { teacherId: teacherFilter } : {}),
+    ...(disciplineFilter
+      ? {
+          discipline: { contains: disciplineFilter, mode: Prisma.QueryMode.insensitive },
+        }
+      : {}),
     ...(q
       ? {
           title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
@@ -42,22 +50,35 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
 
   const totalCount = await prisma.course.count({ where });
 
-  const studio = await prisma.studio.findUnique({
-    where: { id: studioId },
-    include: {
-      school: { select: { id: true, name: true } },
-      courses: {
-        orderBy: { date: "asc" },
-        skip: (currentPage - 1) * pageSize,
-        take: pageSize,
-        where,
-        include: {
-          teacher: { select: { id: true, name: true, email: true } },
-          _count: { select: { attendances: true, positions: true, notes: true } },
+  const [studio, teacherOptions, disciplineOptions] = await Promise.all([
+    prisma.studio.findUnique({
+      where: { id: studioId },
+      include: {
+        school: { select: { id: true, name: true } },
+        courses: {
+          orderBy: { date: "asc" },
+          skip: (currentPage - 1) * pageSize,
+          take: pageSize,
+          where,
+          include: {
+            teacher: { select: { id: true, name: true, email: true } },
+            _count: { select: { attendances: true, positions: true, notes: true } },
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.user.findMany({
+      where: { schoolId: session.user.schoolId ?? undefined, role: "TEACHER" },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.course.findMany({
+      where: { studioId, discipline: { not: null } },
+      select: { discipline: true },
+      distinct: ["discipline"],
+      orderBy: { discipline: "asc" },
+    }),
+  ]);
 
   if (!studio || (session.user.schoolId && studio.school?.id && studio.school.id !== session.user.schoolId)) {
     redirect("/access-denied");
@@ -72,6 +93,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
       : userRole === "TEACHER"
         ? "/app/teacher/school"
         : "/app/student/school";
+  const activeFilters = [q && q.length > 0, teacherFilter, disciplineFilter].filter(Boolean).length;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
@@ -112,6 +134,28 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             </Link>
           </div>
         </div>
+        {activeFilters > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+              {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
+            </span>
+            {teacherFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Professeur filtré
+              </span>
+            )}
+            {disciplineFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Discipline : “{disciplineFilter}”
+              </span>
+            )}
+            {q && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Recherche : “{q}”
+              </span>
+            )}
+          </div>
+        )}
         {studio.photoUrl && (
           <div className="w-full">
             <SafeImage
@@ -146,6 +190,40 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                   className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
               </label>
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className="text-sm text-slate-200">
+                  Professeur
+                  <select
+                    name="teacher"
+                    defaultValue={teacherFilter}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  >
+                    <option value="">Tous les professeurs</option>
+                    {teacherOptions.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name ?? t.email}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-sm text-slate-200">
+                  Discipline
+                  <select
+                    name="discipline"
+                    defaultValue={disciplineFilter}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  >
+                    <option value="">Toutes disciplines</option>
+                    {disciplineOptions
+                      .filter((d) => d.discipline && d.discipline.trim().length > 0)
+                      .map((d) => (
+                        <option key={d.discipline} value={d.discipline ?? ""}>
+                          {d.discipline}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+              </div>
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   type="submit"
