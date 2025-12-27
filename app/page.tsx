@@ -143,10 +143,10 @@ export default async function Home() {
 
   return (
     <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <section className="panel relative overflow-visible px-3 text-sm text-slate-200 md:px-4">
+      <section className="panel relative overflow-visible px-3 py-2 text-sm text-slate-200 md:px-4 md:py-1.5">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
         <div className="relative grid h-full grid-cols-1 items-center gap-1 md:grid-cols-[1fr_auto_1fr] md:gap-2">
-          <div className="flex flex-row items-center justify-center gap-1 md:flex-col md:items-start md:justify-center md:gap-0.5">
+          <div className="flex flex-row items-center justify-center gap-2 md:flex-col md:items-start md:justify-center md:gap-1">
             {isAuthenticated && (
               <>
                 <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/50 bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-indigo-500/20">
