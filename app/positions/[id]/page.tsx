@@ -64,6 +64,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     decodedFrom && decodedFrom.startsWith("/") && !decodedFrom.startsWith("//") ? decodedFrom : undefined;
   const backHref = safeFrom ?? "/positions";
   const isFromPositionsList = Boolean(safeFrom && safeFrom.startsWith("/positions"));
+  const isFromProgress = Boolean(safeFrom && safeFrom.startsWith("/app/student/progress"));
   const filtersFromList = (() => {
     if (!isFromPositionsList || !safeFrom) return null;
     const url = new URL(`http://localhost${safeFrom}`);
@@ -106,6 +107,19 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     redirect("/login");
   }
   const homeForRole = defaultHomeForRole(session?.user?.role);
+  const progressFilters = (() => {
+    if (!isFromProgress || !safeFrom) return null;
+    const url = new URL(`http://localhost${safeFrom}`);
+    const type = url.searchParams.get("type");
+    const level = url.searchParams.get("level");
+    const q = url.searchParams.get("q") ?? "";
+    return {
+      type: type && Object.values(PositionType).includes(type as PositionType) ? (type as PositionType) : undefined,
+      level:
+        level && Object.values(PositionLevel).includes(level as PositionLevel) ? (level as PositionLevel) : undefined,
+      q,
+    };
+  })();
   const disciplineRows = session.user.schoolId
     ? await prisma.discipline.findMany({
         where: { schoolId: session.user.schoolId },
@@ -190,6 +204,25 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     session?.user?.role === "SCHOOL_ADMIN" ||
     (session?.user?.role === "TEACHER" &&
       (!position.createdByUserId || position.createdByUserId === session?.user?.id));
+  const progressEntries =
+    isFromProgress && isStudent
+      ? await prisma.studentPositionProgress.findMany({
+          where: { studentId: session.user.id },
+          select: { positionId: true },
+        })
+      : [];
+  const progressIds = progressEntries.map((p) => p.positionId);
+  const progressWhere: Prisma.PositionWhereInput | null =
+    isFromProgress && isStudent
+      ? {
+          ...(session.user.isPremium ? {} : { id: { in: progressIds } }),
+          ...(progressFilters?.type ? { type: progressFilters.type } : {}),
+          ...(progressFilters?.level ? { levelRequired: progressFilters.level } : {}),
+          ...(progressFilters?.q
+            ? { name: { contains: progressFilters.q, mode: Prisma.QueryMode.insensitive } }
+            : {}),
+        }
+      : null;
   const navList =
     filtersFromList && isFromPositionsList
       ? await prisma.position.findMany({
@@ -197,11 +230,20 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           orderBy: { updatedAt: "desc" },
           select: { id: true, name: true },
         })
-      : [];
+      : progressWhere
+        ? await prisma.position.findMany({
+            where: progressWhere,
+            orderBy: { name: "asc" },
+            select: { id: true, name: true },
+          })
+        : [];
   const currentIndex = navList.findIndex((p) => p.id === position.id);
   const prevPosition = currentIndex > 0 ? navList[currentIndex - 1] : null;
   const nextPosition = currentIndex >= 0 && currentIndex < navList.length - 1 ? navList[currentIndex + 1] : null;
   const encodedFrom = safeFrom ? encodeURIComponent(safeFrom) : undefined;
+
+  const hasNav = (isFromPositionsList && navList.length > 0) || (isFromProgress && navList.length > 0);
+  const navLabel = isFromPositionsList ? "liste filtrée" : isFromProgress ? "progression" : "positions";
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
@@ -457,11 +499,11 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           )}
         </aside>
       </section>
-      {isFromPositionsList && (
+      {hasNav && (
         <nav className="panel flex flex-wrap items-center justify-between gap-3 p-4 md:p-5">
           <div className="flex flex-col">
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Navigation</p>
-            <p className="text-sm text-slate-200">Parcourir la liste filtrée</p>
+            <p className="text-sm text-slate-200">Parcourir la {navLabel}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
