@@ -1,4 +1,4 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.7.x
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.8.1
 > Doit rester à jour avec le projet (backlogs, changelog, modèles, routes).
 
 ## Contenu principal
@@ -11,13 +11,14 @@
 - `CHANGELOG.md`: journal des versions
 - `README.md`: ce fichier
 
-## État produit (v0.7.x)
+## État produit (v0.8.1)
 - Auth/RBAC + profils (élève/prof/admin) avec préférences (cœurs) prof/élève.
-- Positions + progression + blessures + mini-jeux (GameSession).
-- Cours : présence/attente, notes, générateur avec suggestions pondérées par cœurs, badges “appliqué”.
+- Positions : progression/blessures/mini-jeux + upload vidéo Cloudinary authentifié (URL signées), muscles/articulations reliés, filtres multi-disciplines.
+- Cours : présence/attente, notes, générateur (règles d’enchaînement, raisons, favoris), badges “appliqué”.
 - Agendas semaine inline (Admin/Teacher/Student) + bouton “Semaine actuelle”.
-- Facturation : table `Invoice`, UI admin (actions statut, export CSV) + lecture prof.
+- Facturation : `Invoice` + UI admin (statuts, export CSV) + lecture prof ; achats élèves (packs/abos/presets) listés côté admin/prof.
 - Partenaires : CRUD + liens sponsorisés + tracking PartnerEvent (clic/achat).
+- Presets/combos vidéo : CRUD admin/prof, catalogue élève, achat en crédits/premium, images + vidéos.
 
 ## Stack / scripts
 - Next.js App Router, Prisma Postgres, NextAuth Credentials, Tailwind.
