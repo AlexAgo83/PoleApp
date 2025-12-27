@@ -457,7 +457,7 @@ const legendItems = [
             Mois : {monthLabel}. Les jours avec cours suivis sont marqués.
           </p>
         </div>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2">
           <Link
             href="/app/student/courses"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -466,8 +466,6 @@ const legendItems = [
             <img src="/icons/list.svg" alt="" className="h-4 w-4" />
             Liste
           </Link>
-        </div>
-        <div className="flex w-full justify-end">
           <Link
             href="/app/student"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
