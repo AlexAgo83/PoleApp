@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-12-28 — Release v0.8.2 (thème renforcé + panels super-admin)
+- Thème global : palette accent fuchsia (remap des couleurs “cyan”), texte éclairci, fond lilas/bleu atténué, overlays panels assombris pour lisibilité.
+- Super admin : formulaires “Nouvelle offre abonnement”, “Nouveau pack crédits” et “Créer une école” alignés sur les autres panels (fond glassy sombre, bordure visible), repli mémorisé conservé.
+- UI : boutons/badges utilisent la palette fuchsia, sans modifier le fond global.
+
 ## Unreleased — Planning école élève + responsive agenda
 - Positions : discipline badge sur vignettes et header, overlay progression/Vu, stats détaillées en cartes glassy, en-tête simplifié sur la fiche.
 - Seed : muscles/articulations seeded et liés, positions attribuées à des professeurs seedés, cours répartis aléatoirement entre profs sans collisions, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning taguées sur positions/cours.

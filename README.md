@@ -1,6 +1,6 @@
-# Pole App — Produit v0.7.9
+# Pole App — Produit v0.8.2
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.7.9` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.8.2` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données. Seed idempotent.
@@ -101,6 +101,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 3) Limit Prisma `select` to fields actually rendered in lists (users/courses/studios) to reduce payload and speed up rendering.
 
 ## Changelog
+- v0.8.2 : Palette accent fuchsia (remap global des couleurs cyan), panels super-admin harmonisés (Nouvelle offre abonnement, Nouveau pack crédits, Créer une école) sur le thème sombre glassy, fond global légèrement atténué pour améliorer la lisibilité.
 - v0.4.6 : Panel filtres persistés par utilisateur, panels création admin repliables, harmonisation UI studios/partenaires/utilisateurs, versioning bump et préparations Cloudinary.
 - v0.4.5 : Profils enrichis (photo, âge, diplômes, positions préférées prof) + fiches prof publiques accessibles aux élèves. Cours avec photos optionnelles, listes/détails alignés élèves/profs, filtres studios/partenaires/admin, avatars dans les listes (élèves/profs/users).
 - v0.4.4 : Steps 0→9 livrées (Discovery QA terminée), passage en phase produit et tag `v0.4.4` figé comme baseline.
