@@ -142,13 +142,10 @@ export default async function Home() {
 
   return (
     <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <section className="panel relative min-h-[140px] overflow-visible p-5 text-sm text-slate-200 md:min-h-[180px]">
+      <section className="panel relative min-h-[50px] overflow-visible p-5 text-sm text-slate-200 md:min-h-[115px]">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
-        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
-          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
-        </div>
-        <div className="relative flex h-full flex-col justify-end gap-3 pl-24 md:flex-row md:items-end md:justify-between md:pl-0 md:pt-6">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="relative grid h-full grid-cols-1 items-center gap-4 md:grid-cols-[1fr_auto_1fr] md:gap-6">
+          <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start">
             {isAuthenticated && (
               <>
                 <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/50 bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-indigo-500/20">
@@ -168,7 +165,10 @@ export default async function Home() {
               </>
             )}
           </div>
-          <div className="pointer-events-auto absolute bottom-4 right-4 flex flex-wrap items-center gap-2 md:static md:self-end">
+          <div className="flex justify-center">
+            <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
             {session?.user ? (
               <>
                 <Link
