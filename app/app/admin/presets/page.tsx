@@ -168,7 +168,7 @@ export default async function AdminPresetsPage() {
                         <p className="text-xs text-slate-400">Aucune position liée.</p>
                       )}
                     </div>
-                    <form action={deletePresetAdminAction} method="post">
+                    <form action={deletePresetAdminAction}>
                       <input type="hidden" name="id" value={preset.id} />
                       <button
                         type="submit"
