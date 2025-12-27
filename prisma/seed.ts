@@ -41,16 +41,28 @@ const POSITION_IMAGES = [
 
 const POSITION_VIDEOS = [
   {
-    url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k.mp4",
-    publicId: "poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k",
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/01_xphtvq.mp4",
+    publicId: "01_xphtvq",
   },
   {
-    url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/poleapp/positions/poleapp/positions/ez38yqvywnxis1g6rpbd.mp4",
-    publicId: "poleapp/positions/poleapp/positions/ez38yqvywnxis1g6rpbd",
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/02_e8rhmg.mp4",
+    publicId: "02_e8rhmg",
   },
   {
-    url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k.mp4",
-    publicId: "poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k",
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/03_yjmfi7.mp4",
+    publicId: "03_yjmfi7",
+  },
+  {
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/04_exjndq.mp4",
+    publicId: "04_exjndq",
+  },
+  {
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/05_flr6zp.mp4",
+    publicId: "05_flr6zp",
+  },
+  {
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/06_shrnly.mp4",
+    publicId: "06_shrnly",
   },
 ];
 
@@ -549,6 +561,7 @@ async function seedSchoolsAndUsers() {
         name: acc.name,
         avatarUrl: acc.avatar,
         age: acc.age ?? null,
+        credits: acc.role === Role.STUDENT ? 1000 : undefined,
       },
     });
     if (acc.role === Role.TEACHER) {
@@ -982,6 +995,7 @@ async function seedPresets(options: {
           discipline: preset.discipline,
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
+          imageUrl: preset.imageUrl ?? null,
           usageCount: 0,
           schoolId: school.id,
           createdByUserId: teacher?.id,

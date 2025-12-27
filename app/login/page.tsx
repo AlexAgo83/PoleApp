@@ -81,43 +81,49 @@ function LoginContent() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 py-12">
-      <section className="panel w-full max-w-xl max-h-[90vh] overflow-auto border-indigo-400/25 p-8 shadow-indigo-900/30 md:p-10">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-start px-4 py-8 md:items-center md:justify-center md:px-6 md:py-12">
+      <section className="panel w-full max-w-xl border-indigo-400/25 p-6 shadow-indigo-900/30 md:p-9">
         <p className="text-sm uppercase tracking-[0.14em] text-indigo-100">
           Pole App
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-white">
           Connexion
         </h1>
-        <p className="mt-2 text-slate-300">
-          Utilisez les comptes seed pour tester les rôles et l’accès protégé.
-        </p>
-        <div className="mt-4 space-y-2 text-sm text-slate-200">
-          <div className="flex flex-wrap gap-2">
-            {presets.slice(0, 3).map((preset) => (
-              <button
-                key={preset.email}
-                onClick={() => setEmail(preset.email)}
-                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
-                type="button"
-              >
-                {preset.label}
-              </button>
-            ))}
+        <details className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            Accès démo (comptes seed)
+            <span className="text-xs text-slate-300">▼</span>
+          </summary>
+          <p className="mt-3 text-slate-300 text-sm">
+            Utilisez les comptes seed pour tester les rôles et l’accès protégé.
+          </p>
+          <div className="mt-3 space-y-2 text-sm text-slate-200">
+            <div className="flex flex-wrap gap-2">
+              {presets.slice(0, 3).map((preset) => (
+                <button
+                  key={preset.email}
+                  onClick={() => setEmail(preset.email)}
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
+                  type="button"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {presets.slice(3).map((preset) => (
+                <button
+                  key={preset.email}
+                  onClick={() => setEmail(preset.email)}
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
+                  type="button"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {presets.slice(3).map((preset) => (
-              <button
-                key={preset.email}
-                onClick={() => setEmail(preset.email)}
-                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 transition hover:border-cyan-400/70 hover:bg-white/10"
-                type="button"
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        </details>
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="text-sm text-slate-200" htmlFor="email">

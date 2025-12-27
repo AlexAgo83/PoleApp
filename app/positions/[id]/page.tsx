@@ -249,8 +249,8 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel relative flex flex-wrap items-center justify-between gap-4 overflow-visible rounded-2xl border border-white/20 bg-gradient-to-r from-indigo-900/50 via-slate-900/60 to-cyan-900/40 p-6 shadow-lg shadow-indigo-900/30 backdrop-blur-lg">
-        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
-          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
+        <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
+          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" href="/" />
         </div>
         <div className="relative flex flex-1 flex-wrap items-center justify-between gap-4 pl-24 md:pl-0 md:pt-6">
           <div>

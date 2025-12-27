@@ -10,6 +10,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled } from "@/lib/cloudinary";
 
+const RESERVED_POSITION_VIDEO_PUBLIC_IDS = new Set([
+  "01_xphtvq",
+  "02_e8rhmg",
+  "03_yjmfi7",
+  "04_exjndq",
+  "05_flr6zp",
+  "06_shrnly",
+]);
+
 const schema = z.object({
   id: z.string().min(1),
   name: z.string().min(2),
@@ -70,7 +79,7 @@ export async function updatePositionAction(formData: FormData) {
     existing.media.some((m) => m.kind === MediaKind.VIDEO && m.publicId && m.publicId !== data.videoPublicId)
   ) {
     const old = existing.media.find((m) => m.kind === MediaKind.VIDEO && m.publicId);
-    if (old?.publicId) {
+    if (old?.publicId && !RESERVED_POSITION_VIDEO_PUBLIC_IDS.has(old.publicId)) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       destroyAsset(old.publicId, "video", "authenticated").catch(() => {});
     }
@@ -157,7 +166,7 @@ export async function deletePositionAction(formData: FormData) {
 
   if (isCloudinaryEnabled()) {
     existing.media
-      .filter((m) => m.publicId)
+      .filter((m) => m.publicId && !RESERVED_POSITION_VIDEO_PUBLIC_IDS.has(m.publicId))
       .forEach((m) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         destroyAsset(

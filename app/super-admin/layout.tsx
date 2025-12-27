@@ -15,8 +15,8 @@ export default async function SuperAdminLayout({ children }: { children: React.R
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 py-6 md:px-8 md:py-10">
       <header className="panel relative overflow-visible border-cyan-300/30 p-6 shadow-cyan-900/40">
-        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
-          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
+        <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
+          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" href="/" />
         </div>
         <div className="relative flex flex-col gap-4 pl-24 md:flex-row md:items-center md:justify-between md:pl-0 md:pt-6">
           <div className="space-y-1">

@@ -134,8 +134,8 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-4 py-6 md:gap-6 md:px-8 md:py-10">
       <section className="panel relative overflow-visible border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
-          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
+        <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
+          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" href="/" />
         </div>
         <div className="relative flex flex-wrap items-center justify-between gap-3 pl-24 md:pl-0 md:pt-6">
           <div>
