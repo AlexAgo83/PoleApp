@@ -215,16 +215,19 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                     {s.tag === "DISCOVERY" ? "Découverte" : s.tag === "REVISION" ? "Révision" : "Safe"}
                   </span>
                 </div>
-                <p className="text-xs text-emerald-50/80">{s.reason}</p>
-                {!s.excludedForInjury && s.attenuatedForInjury && (
-                  <p className="text-xs text-amber-100">Compatibilité blessure réduite (priorité moindre).</p>
-                )}
-                {(s.fallbackCategory || s.unsoftenedChaining) && (
-                  <p className="text-xs text-slate-200">
-                    {s.fallbackCategory ? "Placé en fallback de catégorie. " : ""}
-                    {s.unsoftenedChaining ? "Pas de transition disponible entre les mouvements précédents." : ""}
-                  </p>
-                )}
+                <div className="text-xs text-emerald-50/80 space-y-1">
+                  <p className="font-semibold text-indigo-100">Pourquoi ?</p>
+                  <p>{s.reason}</p>
+                  {!s.excludedForInjury && s.attenuatedForInjury && (
+                    <p className="text-amber-100">Compatibilité blessure réduite (priorité moindre).</p>
+                  )}
+                  {(s.fallbackCategory || s.unsoftenedChaining) && (
+                    <p className="text-slate-200">
+                      {s.fallbackCategory ? "Placé en fallback de catégorie. " : ""}
+                      {s.unsoftenedChaining ? "Pas de transition disponible entre les mouvements précédents." : ""}
+                    </p>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

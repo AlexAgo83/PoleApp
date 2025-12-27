@@ -526,15 +526,19 @@ export default async function TeacherCourseDetailPage({
                           Incompatible : {s.unsafeInjuries.join(", ")}
                         </p>
                       )}
-                      {!s.excludedForInjury && s.attenuatedForInjury && (
-                        <p className="text-xs text-amber-100">Compatibilité blessure réduite (priorité moindre).</p>
-                      )}
-                      {(s.fallbackCategory || s.unsoftenedChaining) && (
-                        <p className="text-xs text-slate-200">
-                          {s.fallbackCategory ? "Placé en fallback de catégorie. " : ""}
-                          {s.unsoftenedChaining ? "Pas de transition disponible entre les mouvements précédents." : ""}
-                        </p>
-                      )}
+                      <div className="text-xs text-slate-200 space-y-1">
+                        <p className="font-semibold text-indigo-100">Pourquoi ?</p>
+                        <p className="text-slate-300">{s.reason}</p>
+                        {!s.excludedForInjury && s.attenuatedForInjury && (
+                          <p className="text-amber-100">Compatibilité blessure réduite (priorité moindre).</p>
+                        )}
+                        {(s.fallbackCategory || s.unsoftenedChaining) && (
+                          <p className="text-slate-200">
+                            {s.fallbackCategory ? "Placé en fallback de catégorie. " : ""}
+                            {s.unsoftenedChaining ? "Pas de transition disponible entre les mouvements précédents." : ""}
+                          </p>
+                        )}
+                      </div>
                       {s.excludedForInjury && (
                         <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-amber-50">
                           <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-4 w-4" />
