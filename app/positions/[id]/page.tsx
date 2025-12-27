@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { CircularRedFox } from "@/components/FoxVignette";
 import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { generateSignedUrl } from "@/lib/cloudinary";
@@ -247,50 +248,55 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <header className="panel flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/20 bg-gradient-to-r from-indigo-900/50 via-slate-900/60 to-cyan-900/40 p-6 shadow-lg shadow-indigo-900/30 backdrop-blur-lg">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            {session?.user?.role === "SCHOOL_ADMIN"
-              ? "Espace admin"
-              : session?.user?.role === "TEACHER"
-              ? "Espace prof"
-              : session?.user?.role === "STUDENT"
-              ? "Espace élève"
-              : "Accueil"}
-          </p>
-          <h1 className="text-2xl font-semibold text-white">Positions</h1>
-          <p className="text-sm text-slate-200">
-            Catalogue des positions avec filtres et détail. Visible selon tes droits.
-          </p>
-          {position.createdBy ? (
-            <p className="text-xs text-slate-300 mt-1">
-              Créé par {position.createdBy.name ?? position.createdBy.email}
-            </p>
-          ) : null}
+      <header className="panel relative flex flex-wrap items-center justify-between gap-4 overflow-visible rounded-2xl border border-white/20 bg-gradient-to-r from-indigo-900/50 via-slate-900/60 to-cyan-900/40 p-6 shadow-lg shadow-indigo-900/30 backdrop-blur-lg">
+        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
+          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {session?.user ? (
-            <>
+        <div className="relative flex flex-1 flex-wrap items-center justify-between gap-4 pl-24 md:pl-0 md:pt-6">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+              {session?.user?.role === "SCHOOL_ADMIN"
+                ? "Espace admin"
+                : session?.user?.role === "TEACHER"
+                ? "Espace prof"
+                : session?.user?.role === "STUDENT"
+                ? "Espace élève"
+                : "Accueil"}
+            </p>
+            <h1 className="text-2xl font-semibold text-white">Positions</h1>
+            <p className="text-sm text-slate-200">
+              Catalogue des positions avec filtres et détail. Visible selon tes droits.
+            </p>
+            {position.createdBy ? (
+              <p className="text-xs text-slate-300 mt-1">
+                Créé par {position.createdBy.name ?? position.createdBy.email}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {session?.user ? (
+              <>
+                <Link
+                  href={homeForRole}
+                  role="button"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-indigo-300 hover:bg-indigo-500/15"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/house.svg" alt="" className="h-4 w-4" />
+                  Mon espace
+                </Link>
+                <SignOutButton />
+              </>
+            ) : (
               <Link
-                href={homeForRole}
+                href="/login"
                 role="button"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-indigo-300 hover:bg-indigo-500/15"
+                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/house.svg" alt="" className="h-4 w-4" />
-                Mon espace
+                Se connecter
               </Link>
-              <SignOutButton />
-            </>
-          ) : (
-            <Link
-              href="/login"
-              role="button"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
-            >
-              Se connecter
-            </Link>
-          )}
+            )}
+          </div>
         </div>
       </header>
       <header className="panel flex flex-wrap items-center justify-between gap-4 p-4 md:p-6">

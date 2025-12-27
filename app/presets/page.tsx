@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { CircularRedFox } from "@/components/FoxVignette";
 import { FilterPanel } from "@/components/FilterPanel";
 import { SafeImage } from "@/components/SafeImage";
 import { DisciplineMultiSelect } from "@/components/DisciplineMultiSelect";
@@ -132,25 +133,30 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-4 py-6 md:gap-6 md:px-8 md:py-10">
-      <section className="panel flex flex-wrap items-center justify-between gap-3 p-6 border-indigo-400/25 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
-          </p>
-          <p className="text-sm md:text-base text-slate-200 leading-6">
-            Catalogue des combos / presets vidéo de l’école.
-          </p>
+      <section className="panel relative overflow-visible border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
+          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={homeForRole}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/house.svg" alt="" className="h-4 w-4" />
-            Mon espace
-          </Link>
-          <SignOutButton />
+        <div className="relative flex flex-wrap items-center justify-between gap-3 pl-24 md:pl-0 md:pt-6">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+              Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
+            </p>
+            <p className="text-sm md:text-base text-slate-200 leading-6">
+              Catalogue des combos / presets vidéo de l’école.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={homeForRole}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/house.svg" alt="" className="h-4 w-4" />
+              Mon espace
+            </Link>
+            <SignOutButton />
+          </div>
         </div>
       </section>
 
