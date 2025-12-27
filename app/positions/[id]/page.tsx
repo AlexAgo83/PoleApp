@@ -34,6 +34,23 @@ const levelLabels: Record<PositionLevel, string> = {
   ADVANCED: "Avancé",
 };
 
+function hexToRgba(color: string, alpha: number) {
+  if (!color || !color.startsWith("#")) return null;
+  let hex = color.slice(1);
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+  if (hex.length !== 6) return null;
+  const num = Number.parseInt(hex, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export default async function PositionDetailPage({ params, searchParams }: Props) {
   const awaitedParams = await params;
   if (!awaitedParams?.id) {
@@ -89,6 +106,27 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     redirect("/login");
   }
   const homeForRole = defaultHomeForRole(session?.user?.role);
+  const disciplineRows = session.user.schoolId
+    ? await prisma.discipline.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { name: true, color: true },
+      })
+    : [];
+  const disciplineColors = new Map(
+    disciplineRows
+      .filter((d) => d.name)
+      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
+  );
+  const disciplineStyle = (name?: string | null) => {
+    if (!name) return undefined;
+    const color = disciplineColors.get(name.toLowerCase());
+    if (!color) return undefined;
+    return {
+      borderColor: color,
+      color,
+      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
+    };
+  };
 
   const position = await prisma.position.findUnique({
     where: { id: awaitedParams.id },
@@ -221,7 +259,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl font-semibold text-white">{position.name}</h1>
             {position.discipline ? (
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
+              <span
+                className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold text-white"
+                style={disciplineStyle(position.discipline)}
+              >
                 {position.discipline}
               </span>
             ) : null}
@@ -309,7 +350,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         <aside className="panel space-y-4 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             {position.discipline ? (
-              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold text-white">
+              <span
+                className="rounded-full border px-3 py-1 text-[11px] font-semibold text-white"
+                style={disciplineStyle(position.discipline)}
+              >
                 {position.discipline}
               </span>
             ) : (
