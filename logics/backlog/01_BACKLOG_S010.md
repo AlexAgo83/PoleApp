@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010" & "06_QA_S011")
-[Compréhension: 93% / Avancement: 75%]
+[Compréhension: 95% / Avancement: 85%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -30,9 +30,9 @@
 - **Vue abonnements/packs élèves (prof/admin)**  
   - US: En tant que prof/admin, je vois les abonnements en cours et packs achetés par élève.  
   - AC: Tables abonnements/packs + achats unitaires de presets/combos avec élève, offre, début/fin, statut (actif/expiré/épuisé), crédits restants, montant/moyen de paiement, école ; filtres/tri (statut, date, élève, école), export CSV ; lien fiche élève facturation.
-- **Presets/combos vidéo (premium ou achat)**  
+- **Presets/combos vidéo (premium ou achat)** *(catalogue + CRUD livrés, reste QA finale)*  
   - US: En tant que prof/admin, je crée/édite un preset (combo vidéo) vendu en premium ou à l’unité (crédits).  
-  - AC: Modèle preset avec titre/description/discipline/vidéo obligatoire/positions incluses/flag paywall (premium requis)/prix crédits optionnel (autoriser 0 pour démo) ; catalogue CRUD prof/admin ; cours choisit “preset” OU “positions au détail” (pas de mix) ; affichage élève avec badge premium ou prix crédits, preview limitée si non premium/non acheteur ; tracer usage (compteur/dernière utilisation).
+  - AC: Modèle preset avec titre/description/discipline/vidéo obligatoire/positions incluses/flag paywall (premium requis)/prix crédits optionnel (autoriser 0 pour démo) ; catalogue CRUD prof/admin (avec images et prof créateur) livré ; catalogue élève `/presets` avec badges premium/credits et achat ; reste à tracer usage (compteur/dernière utilisation) et QA.
 - **Générateur : explication des mouvements proposés**  
   - US: Lors de la génération, je vois un détail/raison des positions sélectionnées (catégorie, blessure, favoris, récence…).  
   - AC: Panneau de justification par position (tags + raison textuelle, score en tooltip), toggle “afficher les raisons” avant validation.
