@@ -213,10 +213,10 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
       <section className="panel flex flex-wrap items-center justify-between gap-3 p-6 border-indigo-400/25 shadow-indigo-900/30">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+          <h1 className="text-3xl font-semibold text-white">
             Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
-          </p>
-          <p className="text-base md:text-lg text-slate-200 leading-6">
+          </h1>
+          <p className="text-lg text-slate-200 leading-7">
             Accès aux positions et navigation retour selon ton rôle.
           </p>
         </div>
