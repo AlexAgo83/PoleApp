@@ -462,14 +462,16 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         >
                           {p.discipline}
                         </span>
-                      ) : <span />}
+                      ) : (
+                        <span />
+                      )}
                       <div className="flex flex-col items-end gap-2 text-right">
                         {hasVideo && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
                             🎥 Vidéo
                           </span>
                         )}
-                        {((p._count?.progress ?? 0) > 0) && (
+                        {(p._count?.progress ?? 0) > 0 && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
                             Vu : {p._count?.progress ?? 0}
                           </span>
@@ -485,6 +487,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                           </span>
                         ) : null}
                       </div>
+                      {showPremiumBadge && (
+                        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
+                          🔒 Premium
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -495,13 +502,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         {levelLabels[p.levelRequired]}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {showPremiumBadge && (
-                        <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
-                          🔒 Premium
-                        </span>
-                      )}
-                    </div>
+                    <div className="flex flex-wrap items-center gap-2" />
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                     </div>
@@ -516,9 +517,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         <p className="text-amber-100/80">
                           Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
                         </p>
-                        <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
-                          Devenir premium
-                        </span>
+                        <div className="mt-3 flex justify-end">
+                          <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
+                            Devenir premium
+                          </span>
+                        </div>
                       </div>
                     )}
                     <div className="mt-auto flex items-center justify-between gap-2">
