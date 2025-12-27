@@ -487,12 +487,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                           </span>
                         ) : null}
                       </div>
-                      {showPremiumBadge && (
-                        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
-                          🔒 Premium
-                        </span>
-                      )}
                     </div>
+                  )}
+                  {showPremiumBadge && (
+                    <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
+                      🔒 Premium
+                    </span>
                   )}
                 </div>
                   <div className="flex flex-1 flex-col gap-2 p-4">
