@@ -243,7 +243,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ? "Espace prof"
                 : "Espace élève"}
             </p>
-            <h1 className="text-3xl font-semibold text-white">Positions</h1>
+            <h1 className="text-2xl font-semibold text-white md:text-3xl">Positions</h1>
             <p className="text-base md:text-lg text-slate-200">
               Catalogue des positions avec filtres et détail. Visible selon tes droits.
             </p>
