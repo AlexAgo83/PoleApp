@@ -246,9 +246,12 @@ export default async function TeacherCourseDetailPage({
               className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-semibold text-white">
+                <Link
+                  href={`/positions/${cp.position.id}`}
+                  className="font-semibold text-white underline-offset-4 transition hover:text-cyan-200 hover:underline"
+                >
                   {cp.position.name}
-                </span>
+                </Link>
                 <div className="flex flex-wrap items-center gap-2">
                   {cp.position.type ? (
                     <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
