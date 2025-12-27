@@ -274,8 +274,8 @@ export default async function SuperAdminPage({
           storageKey="superadmin:new-subscription-offer"
           title="Nouvelle offre abonnement"
           defaultOpen={false}
-          className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20"
-          contentClassName="mt-3"
+          className="panel p-4 md:p-5"
+          contentClassName="mt-4"
         >
           <form action={upsertSubscriptionOfferAction} className="grid gap-2 md:grid-cols-2">
             <label className="space-y-1">
@@ -498,8 +498,8 @@ export default async function SuperAdminPage({
           storageKey="superadmin:new-credit-pack"
           title="Nouveau pack crédits"
           defaultOpen={false}
-          className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20"
-          contentClassName="mt-3"
+          className="panel p-4 md:p-5"
+          contentClassName="mt-4"
         >
           <form action={upsertCreditPackOfferAction} className="grid gap-2 md:grid-cols-2">
             <label className="space-y-1">
@@ -670,7 +670,7 @@ export default async function SuperAdminPage({
         storageKey="superadmin:create-school"
         title="Créer une école"
         defaultOpen={false}
-        className="rounded-xl border border-dashed border-white/15 bg-white/5 p-4 shadow-inner shadow-black/20 space-y-4"
+        className="panel p-4 md:p-5 space-y-4"
         contentClassName="space-y-4"
       >
         <div>

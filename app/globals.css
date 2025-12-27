@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #060714;
-  --foreground: #e7ecf7;
-  --panel: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.12);
+  --background: #0d1025;
+  --foreground: #f9fbff;
+  --panel: rgba(13, 18, 36, 0.44);
+  --border: rgba(255, 255, 255, 0.24);
   --accent: #7c3aed;
   --accent-strong: #22d3ee;
   --accent-warm: #f472b6;
@@ -19,10 +19,10 @@
 
 body {
   background:
-    radial-gradient(circle at 20% 25%, rgba(124, 58, 237, 0.16), transparent 32%),
-    radial-gradient(circle at 70% 10%, rgba(34, 211, 238, 0.18), transparent 26%),
-    radial-gradient(circle at 85% 60%, rgba(244, 114, 182, 0.14), transparent 24%),
-    linear-gradient(135deg, #050712 0%, #0c1024 45%, #0a0f1f 100%);
+    radial-gradient(circle at 18% 22%, rgba(179, 136, 255, 0.23), transparent 36%),
+    radial-gradient(circle at 72% 12%, rgba(127, 214, 255, 0.24), transparent 30%),
+    radial-gradient(circle at 86% 64%, rgba(244, 153, 194, 0.18), transparent 28%),
+    linear-gradient(135deg, #bca0ff 0%, #93b5ff 45%, #7cd8f0 100%);
   color: var(--foreground);
 }
 
@@ -39,10 +39,25 @@ a {
 }
 
 .panel {
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(34, 211, 238, 0.08)),
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.45), rgba(12, 20, 35, 0.38)),
+    linear-gradient(135deg, rgba(179, 136, 255, 0.22), rgba(127, 214, 255, 0.16)),
     var(--panel);
   border: 1px solid var(--border);
   border-radius: 20px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.panel input:not([type="checkbox"]):not([type="radio"]),
+.panel select,
+.panel textarea {
+  background-color: rgba(12, 18, 36, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: var(--foreground);
+}
+
+.panel input::placeholder,
+.panel textarea::placeholder {
+  color: rgba(233, 238, 248, 0.72);
 }
