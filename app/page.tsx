@@ -15,7 +15,7 @@ const moduleSections = [
     title: "Super Admin",
     href: "/super-admin",
     description: "Backoffice global : écoles, admins, TVA/devise, offres abonnements/packs, audit.",
-    status: "Nouveau",
+    status: "v0.8.2",
     role: "Super Admin",
     icon: "🛡️",
   },
@@ -202,34 +202,88 @@ export default async function Home() {
           </summary>
           <div className="relative grid gap-4 md:grid-cols-[2fr_1.05fr]">
             <div className="space-y-3">
-              <p className="max-w-2xl text-slate-200">
-                Plateforme unifiée élève/prof/admin : positions sans gating côté staff, suivi des blessures,
-                cours avec crédits + liste d’attente (rang), mini-jeux parité rôles (6 modes + leaderboard),
-                agendas élève (cours + école) et prof/admin avec pastilles d’état, studios/partenaires éditables,
-                navigation par rôle.
-              </p>
+              <div className="max-w-2xl space-y-3 text-slate-200">
+                <p>
+                  <span className="font-semibold">Suite pole & aerial complète</span> :{" "}
+                  <span className="font-semibold">catalogue positions photo/vidéo</span> (niveaux, badges discipline,
+                  créateur, badge vidéo) avec <span className="font-semibold">progression gamifiée</span> (mastery, “vu”,
+                  niveaux unifiés, badges “Créé par” et disciplines colorées) et{" "}
+                  <span className="font-semibold">mini-jeux</span> pour ancrer les figures (6 modes, leaderboard).{" "}
+                  <span className="font-semibold">Agendas interactifs</span> élève/prof/admin (mois + semaine, filtres
+                  studio/prof/discipline/recherche, prochaines séances, navigation liste/agenda) et{" "}
+                  <span className="font-semibold">navigation multi-rôles sécurisée</span> pour passer des cours aux
+                  positions sans friction, retour contextuel conservé.
+                </p>
+                <p>
+                  <span className="font-semibold">Expérience élève</span> : découverte guidée des positions débloquées
+                  via les cours, accès premium clair, compteur “vu”/progression, mini-jeux pour réviser, agenda personnel
+                  (liste/agenda) avec filtres mémorisés et achats crédits/abos en un clic.
+                </p>
+                <p>
+                  <span className="font-semibold">Expérience professeur</span> : gestion rapide des cours (liste + agenda
+                  semaine/mois), filtres studio/prof/discipline, accès direct aux positions avec droits d’édition,
+                  suivi blessures/progression des élèves, et navigation retour vers la liste pour garder le contexte.
+                </p>
+                <p>
+                  <span className="font-semibold">Expérience école/admin</span> : pilotage des utilisateurs, studios et
+                  partenaires, agenda consolidé de l’école, filtres persistés, stats rapides et harmonisation des panneaux
+                  (création prof/élève/admin, studios/partenaires, promo/dégrad). Navigation cohérente et panels glassy
+                  pour une vision claire de l’activité.
+                </p>
+                <p>
+                  Côté business : <span className="font-semibold">achats crédits/abonnements</span> élève (TVA/€,
+                  historique, badges premium), <span className="font-semibold">facturation intégrée</span> (statuts
+                  Générée/Envoyée/Reçue/Payée, exports CSV, toasts, filtres persistés) et{" "}
+                  <span className="font-semibold">offres/packs super-admin</span> (devise/TVA, panels repliables,
+                  pagination). <span className="font-semibold">Panels backoffice harmonisés</span> et{" "}
+                  <span className="font-semibold">thème glassy</span> aux{" "}
+                  <span className="font-semibold">accents fuchsia</span> pour sublimer cours, positions et dashboards,
+                  avec gradients atténués pour la lisibilité.
+                </p>
+              </div>
               <div className="flex flex-wrap gap-3 text-sm text-slate-200">
                 <span className="rounded-full border border-indigo-400/30 bg-indigo-500/15 px-3 py-1">
-                  Accès différencié élève / prof / admin
+                  Catalogue positions photo/vidéo + niveaux
                 </span>
                 <span className="rounded-full border border-cyan-400/30 bg-cyan-500/15 px-3 py-1">
-                  Suivi sécurité : blessures visibles par le professeur
+                  Agendas interactifs multi-rôles
                 </span>
                 <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1">
-                  Progression + mini-jeux (6 modes) avec leaderboard
+                  Progression + mini-jeux (6 modes)
                 </span>
-                <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
-                  Navigation unifiée (session, rôle, Mon espace)
+                <span className="rounded-full border border-fuchsia-400/40 bg-fuchsia-500/20 px-3 py-1">
+                  Disciplines colorées + badges créateur
+                </span>
+                <span className="rounded-full border border-violet-400/40 bg-violet-500/20 px-3 py-1">
+                  Cours avec crédits + liste d’attente
                 </span>
                 <span className="rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1">
-                  Crédits + liste d’attente (rang) sur les cours
+                  Facturation statuts + export CSV
                 </span>
-                <span className="rounded-full border border-blue-400/30 bg-blue-500/15 px-3 py-1">
-                  Agendas multi-rôles (élève / prof / admin)
+                <span className="rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1">
+                  Crédits/abonnements & facturation
+                </span>
+                <span className="rounded-full border border-sky-300/40 bg-sky-500/20 px-3 py-1">
+                  Vidéos sécurisées (Cloudinary signé)
+                </span>
+                <span className="rounded-full border border-rose-400/40 bg-rose-500/20 px-3 py-1">
+                  Blessures + sécurité affichée au prof
+                </span>
+                <span className="rounded-full border border-lime-400/40 bg-lime-500/20 px-3 py-1">
+                  Offres/packs super-admin (TVA/EUR)
+                </span>
+                <span className="rounded-full border border-indigo-300/40 bg-indigo-500/20 px-3 py-1">
+                  Fiches prof publiques + favoris élèves
+                </span>
+                <span className="rounded-full border border-teal-300/40 bg-teal-500/20 px-3 py-1">
+                  Studios & partenaires avec filtres
+                </span>
+                <span className="rounded-full border border-purple-400/30 bg-purple-500/15 px-3 py-1">
+                  Multi-rôles sécurisé (élève/prof/admin/super admin)
                 </span>
               </div>
             </div>
-            <aside className="relative rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/20">
+            <aside className="relative h-fit self-start rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/20">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Avancement</p>
                 <span className="inline-flex items-center rounded-full border border-emerald-400/50 bg-emerald-500/20 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-inner shadow-emerald-700/30">
@@ -239,19 +293,29 @@ export default async function Home() {
               <div className="mt-3 grid gap-2">
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S010 — DRY_007</p>
-                    <p className="text-white font-semibold">Muscles/blessures, générateur, reset MDP</p>
-                    <p className="text-xs text-slate-400">Avancement 75% (P0/P1 quasi livrés, QA à faire)</p>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S006 — Partenaires & facturation admin</p>
+                    <p className="text-white font-semibold">Filtres persistés, exports CSV, toasts, agenda admin</p>
+                    <p className="text-xs text-slate-400">Avancement 100% (QA validée)</p>
                   </div>
-                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/25 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.5)]">
-                    En cours
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/20 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.45)]">
+                    Livré
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S009 — Générateur</p>
-                    <p className="text-white font-semibold">Répartition 1/2/3/1, transitions, muscles</p>
-                    <p className="text-xs text-slate-400">Avancement 75% (reste QA générateur)</p>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S005 — Agenda teacher & générateur cours</p>
+                    <p className="text-white font-semibold">Filtres multi, badges appliqué/forcé/exclu, scoring équilibré</p>
+                    <p className="text-xs text-slate-400">Avancement 100% (QA validée)</p>
+                  </div>
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/20 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.45)]">
+                    Livré
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S010 — DRY_007</p>
+                    <p className="text-white font-semibold">Muscles/blessures, générateur, reset MDP</p>
+                    <p className="text-xs text-slate-400">Avancement 75% (P0/P1 quasi livrés, QA à faire)</p>
                   </div>
                   <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
                     En cours
@@ -259,11 +323,21 @@ export default async function Home() {
                 </div>
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S008 — Admin</p>
-                    <p className="text-white font-semibold">Billing + CRUD disciplines + stats</p>
-                    <p className="text-xs text-slate-400">Avancement 75% (mail reset à finaliser en prod)</p>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S009 — Super-admin & audit</p>
+                    <p className="text-white font-semibold">Audit log/2FA (placeholder), promo/dégrad, panels harmonisés</p>
+                    <p className="text-xs text-slate-400">Avancement 80% (UI harmonisée, reste QA audit/logs)</p>
                   </div>
-                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-blue-400/60 bg-blue-500/25 px-3 py-1 text-[12px] font-semibold text-blue-50 shadow-inner shadow-blue-900/30">
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
+                    En cours
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S008 — Admin/élève</p>
+                    <p className="text-white font-semibold">Billing, CRUD disciplines, achats élève</p>
+                    <p className="text-xs text-slate-400">Avancement 85% (mail reset prod à finaliser, QA achats/disciplines)</p>
+                  </div>
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
                     En cours
                   </span>
                 </div>

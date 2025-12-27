@@ -517,7 +517,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                           Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
                         </p>
                         <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
-                          Upgrade (placeholder)
+                          Devenir premium
                         </span>
                       </div>
                     )}
