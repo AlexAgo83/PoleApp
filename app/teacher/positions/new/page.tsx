@@ -33,11 +33,11 @@ export default async function NewPositionPage() {
   ]);
 
   const fallbackDisciplines = [
-    { name: "Danse" },
     { name: "Pole" },
-    { name: "Exotic" },
+    { name: "Pole Exotic" },
     { name: "Souplesse" },
     { name: "Pilates" },
+    { name: "Conditioning" },
   ];
   const disciplines = (() => {
     const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
