@@ -34,7 +34,7 @@ export default async function TeacherDashboard() {
       : [];
 
   return (
-    <main className="grid gap-6">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
@@ -47,7 +47,7 @@ export default async function TeacherDashboard() {
               )}
             </div>
             <h2 className="text-xl text-white">
-              Bonjour <span className="font-semibold">{displayName}</span>,
+              Bonjour <span className="font-semibold text-fuchsia-200">{displayName}</span>,
             </h2>
           </div>
           {teacherProfileHref && (
