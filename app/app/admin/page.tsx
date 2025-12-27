@@ -285,24 +285,58 @@ export default async function AdminDashboard({
             description="Ajoute profs/élèves, bascule premium ou change un rôle."
             href="/app/admin/users"
             cta="Gérer les utilisateurs"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="7" r="3" />
+                <path d="M5 21v-2a5 5 0 0110 0v2" />
+                <path d="M17 11h3" />
+                <path d="M18.5 9.5v3" />
+              </svg>
+            }
           />
           <ActionCard
             title="Suivre les cours"
             description="Consulte les cours saisis et l’impact progression."
             href="/app/teacher/courses"
             cta="Voir les cours"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="5" width="16" height="15" rx="2" />
+                <path d="M16 3v4" />
+                <path d="M8 3v4" />
+                <path d="M4 11h16" />
+                <path d="M9 15h2" />
+                <path d="M13 15h2" />
+              </svg>
+            }
           />
           <ActionCard
             title="Achats (packs / abos / presets)"
             description="Consulte les achats des élèves (packs crédits, abonnements, presets)."
             href="/app/admin/purchases"
             cta="Voir les achats"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="6" width="18" height="12" rx="2" />
+                <path d="M3 10h18" />
+                <path d="M7 15h2" />
+                <path d="M15 15h2" />
+              </svg>
+            }
           />
           <ActionCard
             title="Presets / combos"
             description="Crée et gère les presets vidéo premium ou en crédits."
             href="/app/admin/presets"
             cta="Gérer les presets"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="5" width="16" height="14" rx="2" />
+                <path d="M4 9h16" />
+                <path d="M8 5v14" />
+                <path d="M16 5v14" />
+              </svg>
+            }
           />
         </div>
       </section>
@@ -325,23 +359,36 @@ function ActionCard({
   description,
   href,
   cta,
+  icon,
 }: {
   title: string;
   description: string;
   href: string;
   cta: string;
+  icon?: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/60 hover:bg-white/10"
+      className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/60 hover:bg-white/10"
     >
-      <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">Action</p>
-      <p className="text-lg font-semibold text-white">{title}</p>
-      <p className="text-sm text-slate-300">{description}</p>
-      <span className="text-sm font-semibold text-cyan-300 group-hover:translate-x-1">
-        {cta} →
-      </span>
+      <div className="flex items-start gap-3">
+        {icon ? (
+          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+            {icon}
+          </span>
+        ) : null}
+        <div className="flex-1">
+          <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">Action</p>
+          <p className="text-lg font-semibold text-white">{title}</p>
+          <p className="text-sm text-slate-300">{description}</p>
+        </div>
+      </div>
+      <div className="flex items-center justify-end">
+        <span className="text-sm font-semibold text-cyan-300 group-hover:translate-x-1">
+          {cta} →
+        </span>
+      </div>
     </Link>
   );
 }
