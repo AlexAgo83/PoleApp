@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { FilterPanel } from "@/components/FilterPanel";
 import { SafeImage } from "@/components/SafeImage";
+import { DisciplineMultiSelect } from "@/components/DisciplineMultiSelect";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
@@ -239,30 +240,12 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1">Disciplines</legend>
               <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
-                <div className="flex flex-wrap gap-2">
-                  {disciplineOptions.slice(0, 8).map((d) => {
-                    const value = d.discipline ?? "";
-                    if (!value) return null;
-                    const checked = disciplineFilters.includes(value);
-                    return (
-                      <label
-                        key={value}
-                        className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200"
-                      >
-                        <input
-                          type="checkbox"
-                          name="discipline"
-                          value={value}
-                          defaultChecked={checked}
-                          className="peer sr-only"
-                        />
-                        <span className="peer-checked:text-white peer-checked:border-cyan-300/70 peer-checked:bg-cyan-500/20 peer-checked:px-3 peer-checked:py-1 peer-checked:rounded-full peer-checked:border">
-                          {value}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
+                <DisciplineMultiSelect
+                  options={disciplineOptions.map((d) => d.discipline ?? "").filter(Boolean)}
+                  selected={disciplineFilters}
+                  inputName="discipline"
+                  storageKey="disciplines:presets"
+                />
               </div>
             </fieldset>
             <label className="text-sm text-slate-200">
