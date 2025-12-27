@@ -66,8 +66,18 @@ export default async function AdminPurchasesPage({
   return (
     <main className="px-4 py-6 text-white">
       <section className="panel space-y-2 p-6">
-        <h1 className="text-2xl font-semibold">Achats (packs / abonnements)</h1>
-        <p className="text-sm text-slate-300">Achats des élèves de l’école : packs crédits et abonnements.</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h1 className="text-2xl font-semibold">Achats (packs / abonnements)</h1>
+            <p className="text-sm text-slate-300">Achats des élèves de l’école : packs crédits et abonnements.</p>
+          </div>
+          <Link
+            href="/app/admin"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour dashboard
+          </Link>
+        </div>
       </section>
 
       <section className="panel mt-4 space-y-4 p-6">

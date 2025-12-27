@@ -103,6 +103,12 @@ export default async function AdminBillingPage({ searchParams }: { searchParams?
           </p>
         </div>
         <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
+          <Link
+            href="/app/admin/purchases"
+            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-2 text-sm font-semibold text-cyan-50 transition hover:border-cyan-200 hover:bg-cyan-500/25"
+          >
+            Voir achats (packs/abos/presets)
+          </Link>
           <form action={backfillInvoicesAction} className="inline-flex">
             <input type="hidden" name="redirectTo" value={backfillRedirect} />
             <button
