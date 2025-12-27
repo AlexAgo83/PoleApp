@@ -291,7 +291,7 @@ function selectTopSuggestions(
     forced: false,
     attenuatedForInjury: entry.item.candidate.attenuatedForInjury,
     fallbackCategory: entry.fallback,
-    unsoftenedChaining: entry.item.unsoftenedChaining ?? false,
+    unsoftenedChaining: entry.item.candidate.unsoftenedChaining ?? false,
   }));
 }
 
