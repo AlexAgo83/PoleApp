@@ -5,35 +5,8 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 import HealthBadge from "@/components/HealthBadge";
 import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
+import { CircularRedFox, PlainRedFox } from "@/components/FoxVignette";
 import packageJson from "../package.json";
-
-type FoxProps = { className?: string; sizeClass?: string };
-
-const CircularRedFox = ({ className, sizeClass }: FoxProps) => (
-  <div className={`pointer-events-none relative ${sizeClass ?? "h-20 w-20 md:h-32 md:w-32"} ${className ?? ""}`}>
-    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-400/25 via-indigo-400/20 to-fuchsia-500/25 blur-3xl" />
-    <div className="absolute inset-0 rounded-full overflow-hidden">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/redFox_color.png"
-        alt="Mascotte Red Fox"
-        className="h-full w-full object-contain drop-shadow-2xl"
-        style={{ transform: "scale(0.9)" }}
-      />
-    </div>
-  </div>
-);
-
-const PlainRedFox = ({ className, sizeClass }: FoxProps) => (
-  <div className={`pointer-events-none relative ${sizeClass ?? "h-24 w-24 md:h-36 md:w-36"} ${className ?? ""}`}>
-    {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img
-      src="/redFox_color.png"
-      alt="Mascotte Red Fox"
-      className="h-full w-full object-contain drop-shadow-2xl"
-    />
-  </div>
-);
 
 const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? packageJson.version ?? "0.0.0";
 const billingStatus = `Livré (${appVersion})`;
