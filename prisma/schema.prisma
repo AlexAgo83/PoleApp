@@ -78,6 +78,7 @@ model School {
   partners Partner[]
   disciplines Discipline[]
   gameSessions GameSession[]
+  presets  Preset[]
 
   @@unique([name])
 }
@@ -119,6 +120,7 @@ model User {
   gameSessions     GameSession[]
   partnerEvents    PartnerEvent[]
   purchases        Purchase[]
+  createdPresets   Preset[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -152,6 +154,7 @@ model Position {
   favoriteByStudents StudentFavoritePosition[]
   recommendations CourseRecommendation[]
   muscles       PositionTarget[]
+  presetLinks   PresetPosition[]
 
   @@unique([name])
 }

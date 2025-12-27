@@ -18,7 +18,6 @@ export default async function AdminPresetsPage() {
 
   const [positions, presets, disciplines] = await Promise.all([
     prisma.position.findMany({
-      where: { school: { id: session.user.schoolId } },
       select: { id: true, name: true, discipline: true },
       orderBy: { name: "asc" },
       take: 30,
