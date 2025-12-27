@@ -154,7 +154,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   if (!position) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4 py-12 md:px-6 md:py-16">
+      <main className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center gap-4 px-2 py-6 md:px-8 md:py-10">
         <div className="panel w-full max-w-xl p-6 text-center text-slate-200">
           <p>Position introuvable.</p>
           <Link
@@ -246,7 +246,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const navLabel = isFromPositionsList ? "liste filtrée" : isFromProgress ? "progression" : "positions";
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
       <header className="panel flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/20 bg-gradient-to-r from-indigo-900/50 via-slate-900/60 to-cyan-900/40 p-6 shadow-lg shadow-indigo-900/30 backdrop-blur-lg">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
