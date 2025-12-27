@@ -9,28 +9,40 @@ const schema = z.object({
   folder: z.string().trim().min(1),
   publicId: z.string().trim().optional(),
   resourceType: z.enum(["image", "video"]).optional(),
+  deliveryType: z.enum(["upload", "authenticated"]).optional(),
+  accessMode: z.enum(["authenticated"]).optional(),
 });
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
+    console.error("[cloudinary-signature] unauthorized request");
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   if (!isCloudinaryEnabled()) {
+    console.error("[cloudinary-signature] cloudinary not configured");
     return NextResponse.json({ error: "cloudinary not configured" }, { status: 503 });
   }
 
   const body = await request.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
+    console.error("[cloudinary-signature] invalid payload", parsed.error.flatten());
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
   }
 
-  const data = signUpload({
-    folder: parsed.data.folder,
-    publicId: parsed.data.publicId,
-    resourceType: parsed.data.resourceType,
-  });
+  try {
+    const data = signUpload({
+      folder: parsed.data.folder,
+      publicId: parsed.data.publicId,
+      resourceType: parsed.data.resourceType,
+      deliveryType: parsed.data.deliveryType,
+      accessMode: parsed.data.accessMode,
+    });
 
-  return NextResponse.json(data);
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("[cloudinary-signature] failed to sign", error);
+    return NextResponse.json({ error: "signature failed" }, { status: 500 });
+  }
 }

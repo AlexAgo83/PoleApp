@@ -1,5 +1,6 @@
 import {
   GameMode,
+  MediaKind,
   PositionLevel,
   PositionType,
   Prisma,
@@ -37,6 +38,11 @@ const POSITION_IMAGES = [
   "https://i.postimg.cc/zf4NW71p/Gemini_Generated_Image_s8vw7ls8vw7ls8vw.png",
   "https://i.postimg.cc/mrK4MjGm/Gemini_Generated_Image_y1xzydy1xzydy1xz.png",
 ];
+
+const DEFAULT_POSITION_VIDEO = {
+  url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/v1766809164/poleapp/positions/ez38yqvywnxis1g6rpbd.mp4",
+  publicId: "poleapp/positions/ez38yqvywnxis1g6rpbd",
+};
 
 const COURSE_IMAGES = [
   "https://i.postimg.cc/nL81tmX2/Gemini-Generated-Image-gwcxudgwcxudgwcx.png",
@@ -419,10 +425,17 @@ async function seedPositions({
         description: `${pos.name} (${pos.type.toLowerCase()} · niveau ${pos.level.toLowerCase()})`,
         createdByUserId: creator?.id,
         media: {
-          create: {
-            url: image,
-            kind: "PHOTO",
-          },
+          create: [
+            {
+              url: image,
+              kind: MediaKind.PHOTO,
+            },
+            {
+              url: DEFAULT_POSITION_VIDEO.url,
+              publicId: DEFAULT_POSITION_VIDEO.publicId,
+              kind: MediaKind.VIDEO,
+            },
+          ],
         },
         ...(muscleTargets.length > 0
           ? {

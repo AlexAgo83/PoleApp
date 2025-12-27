@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
+import { generateSignedUrl } from "@/lib/cloudinary";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
@@ -80,10 +81,17 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const cover =
     position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
+  const signedVideoUrl =
+    video?.publicId && video.publicId.length > 0
+      ? generateSignedUrl({ publicId: video.publicId, resourceType: "video" })
+      : null;
+  const videoSrc = signedVideoUrl ?? video?.url ?? undefined;
   const videoPoster =
-    video?.url && video.url.includes("/upload/")
-      ? video.url.replace("/upload/", "/upload/so_0/")
-      : POSITION_PLACEHOLDER;
+    signedVideoUrl && video?.publicId
+      ? undefined
+      : video?.url && video.url.includes("/upload/")
+        ? video.url.replace("/upload/", "/upload/so_0/")
+        : POSITION_PLACEHOLDER;
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
   const hasUnlocked = isStudent
@@ -302,7 +310,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                       controls
                       poster={videoPoster}
                       className="h-64 w-full bg-black object-cover"
-                      src={video.url}
+                      src={videoSrc}
                     >
                       Votre navigateur ne supporte pas la vidéo.
                     </video>

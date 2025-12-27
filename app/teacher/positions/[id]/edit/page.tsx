@@ -5,6 +5,7 @@ import { SessionNavBar } from "@/components/SessionNavBar";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EditPositionForm } from "./EditPositionForm";
+import { deletePositionAction } from "./action";
 
 export const dynamic = "force-dynamic";
 
@@ -81,9 +82,6 @@ export default async function EditPositionPage({ params }: Props) {
     return merged.length > 0 ? merged : fallbackDisciplines;
   })();
   const selectedMuscleIds = position.muscles.map((m) => m.muscleId);
-  const cover = position.media.find((m) => m.kind === "PHOTO") ?? position.media[0];
-  const video = position.media.find((m) => m.kind === "VIDEO");
-
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-6 md:py-10">
       <SessionNavBar session={session} />
@@ -116,6 +114,22 @@ export default async function EditPositionPage({ params }: Props) {
           disciplines={disciplines}
           selectedMuscleIds={selectedMuscleIds}
         />
+      </section>
+
+      <section className="panel border-red-500/30 bg-red-500/5 p-6">
+        <h2 className="text-lg font-semibold text-white">Supprimer cette position</h2>
+        <p className="text-sm text-slate-200">
+          Action irréversible. Les liens cours/progression seront supprimés.
+        </p>
+        <form action={deletePositionAction} className="mt-4">
+          <input type="hidden" name="positionId" value={position.id} />
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
+          >
+            Supprimer
+          </button>
+        </form>
       </section>
     </main>
   );

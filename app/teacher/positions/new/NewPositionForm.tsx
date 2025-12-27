@@ -98,6 +98,7 @@ export function NewPositionForm({
           label="Uploader une vidéo"
           folder="poleapp/positions"
           resourceType="video"
+          deliveryType="authenticated"
           accept="video/*"
           maxSizeMB={100}
           currentUrl={videoUrl || undefined}

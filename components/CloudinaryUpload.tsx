@@ -11,6 +11,7 @@ type Props = {
   accept?: string;
   maxSizeMB?: number;
   transformPreset?: "avatar" | "cover";
+  deliveryType?: "upload" | "authenticated";
   onChange: (url: string | null, publicId?: string | null) => void;
 };
 
@@ -22,6 +23,7 @@ type SignatureResponse = {
   folder: string;
   publicId?: string;
   resourceType: "image" | "video";
+  deliveryType?: "upload" | "authenticated";
 };
 
 export function CloudinaryUpload({
@@ -33,10 +35,12 @@ export function CloudinaryUpload({
   accept = "image/*",
   maxSizeMB = 5,
   transformPreset,
+  deliveryType = "upload",
   onChange,
 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isVideo = resourceType === "video";
 
   const handleSelect = async (file?: File | null) => {
     if (!file) return;
@@ -50,9 +54,19 @@ export function CloudinaryUpload({
       const sigRes = await fetch("/api/uploads/signature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder, publicId: currentPublicId ?? undefined, resourceType }),
+        body: JSON.stringify({
+          folder,
+          publicId: currentPublicId ?? undefined,
+          resourceType,
+          deliveryType,
+          accessMode: deliveryType === "authenticated" ? "authenticated" : undefined,
+        }),
       });
-      if (!sigRes.ok) throw new Error("Signature indisponible");
+      if (!sigRes.ok) {
+        const txt = await sigRes.text().catch(() => "");
+        console.error("[cloudinary-upload] signature failed", sigRes.status, txt);
+        throw new Error("Signature indisponible");
+      }
       const sig: SignatureResponse = await sigRes.json();
 
       const form = new FormData();
@@ -62,6 +76,10 @@ export function CloudinaryUpload({
       form.append("signature", sig.signature);
       form.append("folder", sig.folder);
       if (sig.publicId) form.append("public_id", sig.publicId);
+      if (sig.deliveryType && sig.deliveryType !== "upload") {
+        form.append("type", sig.deliveryType);
+        form.append("access_mode", "authenticated");
+      }
       if (transformPreset === "avatar") {
         form.append("transformation", "c_fill,g_auto:face,h_400,w_400,q_auto,f_auto");
       } else if (transformPreset === "cover") {
@@ -70,7 +88,11 @@ export function CloudinaryUpload({
 
       const uploadUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/${sig.resourceType}/upload`;
       const uploadRes = await fetch(uploadUrl, { method: "POST", body: form });
-      if (!uploadRes.ok) throw new Error("Upload Cloudinary échoué");
+      if (!uploadRes.ok) {
+        const txt = await uploadRes.text().catch(() => "");
+        console.error("[cloudinary-upload] upload failed", uploadRes.status, txt);
+        throw new Error("Upload Cloudinary échoué");
+      }
       const uploaded = await uploadRes.json();
       onChange(uploaded.secure_url as string, uploaded.public_id as string);
     } catch (e) {
@@ -95,6 +117,7 @@ export function CloudinaryUpload({
       });
       onChange(null, null);
     } catch (e) {
+      console.error("[cloudinary-upload] delete failed", e);
       setError((e as Error).message);
     } finally {
       setUploading(false);
@@ -106,8 +129,17 @@ export function CloudinaryUpload({
       {label && <p className="text-sm font-semibold text-slate-100">{label}</p>}
       <div className="flex flex-wrap items-center gap-3">
         {currentUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={currentUrl} alt="aperçu" className="h-24 w-24 rounded-lg object-cover" />
+          isVideo ? (
+            <video
+              src={currentUrl}
+              className="h-24 w-36 rounded-lg object-cover"
+              controls
+              preload="metadata"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={currentUrl} alt="aperçu" className="h-24 w-24 rounded-lg object-cover" />
+          )
         ) : (
           <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-white/20 text-xs text-slate-300">
             Aucun

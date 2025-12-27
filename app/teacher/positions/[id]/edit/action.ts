@@ -72,7 +72,7 @@ export async function updatePositionAction(formData: FormData) {
     const old = existing.media.find((m) => m.kind === MediaKind.VIDEO && m.publicId);
     if (old?.publicId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      destroyAsset(old.publicId, "video").catch(() => {});
+      destroyAsset(old.publicId, "video", "authenticated").catch(() => {});
     }
   }
 
@@ -160,7 +160,11 @@ export async function deletePositionAction(formData: FormData) {
       .filter((m) => m.publicId)
       .forEach((m) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        destroyAsset(m.publicId!, m.kind === MediaKind.VIDEO ? "video" : "image").catch(() => {});
+        destroyAsset(
+          m.publicId!,
+          m.kind === MediaKind.VIDEO ? "video" : "image",
+          m.kind === MediaKind.VIDEO ? "authenticated" : "upload",
+        ).catch(() => {});
       });
   }
 
