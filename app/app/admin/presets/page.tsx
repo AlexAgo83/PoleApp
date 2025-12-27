@@ -56,79 +56,81 @@ export default async function AdminPresetsPage() {
       </section>
 
       <section className="panel mt-4 space-y-4 p-6">
-        <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-          <form action={createPresetAdminAction} className="space-y-3 rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30">
-            <h2 className="text-lg font-semibold text-white">Créer un preset</h2>
-            <label className="text-sm text-slate-200">
-              Titre
-              <input
-                name="title"
-                required
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="text-sm text-slate-200">
-              Discipline
-              <select name="discipline" className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400">
-                <option value="">(Optionnel)</option>
-                {disciplines.map((d) => (
-                  <option key={d.name} value={d.name}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm text-slate-200">
-              Description
-              <textarea
-                name="description"
-                rows={3}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <label className="text-sm text-slate-200">
-              Lien vidéo
-              <input
-                name="videoUrl"
-                type="url"
-                placeholder="https://..."
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              />
-            </label>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
-              <label className="inline-flex items-center gap-2">
-                <input type="checkbox" name="premiumRequired" className="h-4 w-4" />
-                <span>Premium requis</span>
-              </label>
-              <label className="inline-flex items-center gap-2">
-                <span>Prix crédits</span>
+        <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
+          <section className="rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30">
+            <form action={createPresetAdminAction} className="space-y-3">
+              <h2 className="text-lg font-semibold text-white">Créer un preset</h2>
+              <label className="text-sm text-slate-200">
+                Titre
                 <input
-                  name="priceCredits"
-                  type="number"
-                  min={0}
-                  placeholder="ex: 150"
-                  className="w-24 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-cyan-400"
+                  name="title"
+                  required
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
               </label>
-            </div>
-            <div className="text-sm text-slate-200">
-              <p className="text-xs uppercase tracking-[0.12em] text-indigo-100">Positions incluses (max 6)</p>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {positions.slice(0, 16).map((p) => (
-                  <label key={p.id} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2 py-1">
-                    <input type="checkbox" name="positionIds" value={p.id} className="h-4 w-4" />
-                    <span className="text-sm text-white">{p.name}</span>
-                  </label>
-                ))}
+              <label className="text-sm text-slate-200">
+                Discipline
+                <select name="discipline" className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400">
+                  <option value="">(Optionnel)</option>
+                  {disciplines.map((d) => (
+                    <option key={d.name} value={d.name}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm text-slate-200">
+                Description
+                <textarea
+                  name="description"
+                  rows={3}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="text-sm text-slate-200">
+                Lien vidéo
+                <input
+                  name="videoUrl"
+                  type="url"
+                  placeholder="https://..."
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                />
+              </label>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+                <label className="inline-flex items-center gap-2">
+                  <input type="checkbox" name="premiumRequired" className="h-4 w-4" />
+                  <span>Premium requis</span>
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <span>Prix crédits</span>
+                  <input
+                    name="priceCredits"
+                    type="number"
+                    min={0}
+                    placeholder="ex: 150"
+                    className="w-24 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
               </div>
-            </div>
-            <button
-              type="submit"
-              className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-200"
-            >
-              Créer
-            </button>
-          </form>
+              <div className="text-sm text-slate-200">
+                <p className="text-xs uppercase tracking-[0.12em] text-indigo-100">Positions incluses (max 6)</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {positions.slice(0, 16).map((p) => (
+                    <label key={p.id} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2 py-1">
+                      <input type="checkbox" name="positionIds" value={p.id} className="h-4 w-4" />
+                      <span className="text-sm text-white">{p.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-200"
+              >
+                Créer
+              </button>
+            </form>
+          </section>
 
           <section className="space-y-3 rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30">
             <h2 className="text-lg font-semibold text-white">Presets existants</h2>
