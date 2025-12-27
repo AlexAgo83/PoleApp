@@ -184,6 +184,7 @@ model PositionMedia {
   positionId String
   kind       MediaKind
   url        String
+  publicId   String?
   createdAt  DateTime  @default(now())
   position   Position  @relation(fields: [positionId], references: [id])
 }

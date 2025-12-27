@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { destroyAsset, isCloudinaryEnabled } from "@/lib/cloudinary";
 
 const schema = z.object({
   id: z.string().min(1),
@@ -21,6 +22,7 @@ const schema = z.object({
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  videoPublicId: z.string().optional(),
   muscles: z.array(z.string()).optional(),
 });
 
@@ -43,6 +45,7 @@ export async function updatePositionAction(formData: FormData) {
     contraindications: formData.get("contraindications") || undefined,
     imageUrl: formData.get("imageUrl") || undefined,
     videoUrl: formData.get("videoUrl") || undefined,
+    videoPublicId: formData.get("videoPublicId") || undefined,
     muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
   });
 
@@ -53,13 +56,24 @@ export async function updatePositionAction(formData: FormData) {
   const data = parsed.data;
   const existing = await prisma.position.findUnique({
     where: { id: data.id },
-    select: { id: true, createdByUserId: true },
+    select: { id: true, createdByUserId: true, media: true },
   });
   if (!existing) {
     redirect("/positions");
   }
   if (role === "TEACHER" && (!existing.createdByUserId || existing.createdByUserId !== session.user.id)) {
     redirect("/access-denied");
+  }
+
+  if (
+    isCloudinaryEnabled() &&
+    existing.media.some((m) => m.kind === MediaKind.VIDEO && m.publicId && m.publicId !== data.videoPublicId)
+  ) {
+    const old = existing.media.find((m) => m.kind === MediaKind.VIDEO && m.publicId);
+    if (old?.publicId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      destroyAsset(old.publicId, "video").catch(() => {});
+    }
   }
 
   await prisma.position.update({
@@ -81,7 +95,9 @@ export async function updatePositionAction(formData: FormData) {
                 ...(data.imageUrl
                   ? [{ kind: MediaKind.PHOTO, url: data.imageUrl }]
                   : []),
-                ...(data.videoUrl ? [{ kind: MediaKind.VIDEO, url: data.videoUrl }] : []),
+                ...(data.videoUrl
+                  ? [{ kind: MediaKind.VIDEO, url: data.videoUrl, publicId: data.videoPublicId ?? null }]
+                  : []),
               ],
             }
           : undefined,
@@ -121,7 +137,7 @@ export async function deletePositionAction(formData: FormData) {
 
   const existing = await prisma.position.findUnique({
     where: { id: parsed.data.positionId },
-    select: { id: true, createdByUserId: true },
+    select: { id: true, createdByUserId: true, media: true },
   });
 
   if (!existing) {
@@ -138,6 +154,15 @@ export async function deletePositionAction(formData: FormData) {
     await tx.positionMedia.deleteMany({ where: { positionId: parsed.data.positionId } });
     await tx.position.delete({ where: { id: parsed.data.positionId } });
   });
+
+  if (isCloudinaryEnabled()) {
+    existing.media
+      .filter((m) => m.publicId)
+      .forEach((m) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        destroyAsset(m.publicId!, m.kind === MediaKind.VIDEO ? "video" : "image").catch(() => {});
+      });
+  }
 
   revalidatePath("/positions");
   redirect("/positions");

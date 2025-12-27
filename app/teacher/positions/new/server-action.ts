@@ -20,6 +20,7 @@ const schema = z.object({
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  videoPublicId: z.string().optional(),
   muscles: z.array(z.string()).optional(),
 });
 
@@ -50,7 +51,9 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
                 ...(data.imageUrl
                   ? [{ kind: MediaKind.PHOTO, url: data.imageUrl }]
                   : []),
-                ...(data.videoUrl ? [{ kind: MediaKind.VIDEO, url: data.videoUrl }] : []),
+                ...(data.videoUrl
+                  ? [{ kind: MediaKind.VIDEO, url: data.videoUrl, publicId: data.videoPublicId ?? null }]
+                  : []),
               ],
             }
           : undefined,
