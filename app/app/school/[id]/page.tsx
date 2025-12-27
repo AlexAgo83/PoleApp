@@ -96,7 +96,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const activeFilters = [q && q.length > 0, teacherFilter, disciplineFilter].filter(Boolean).length;
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel p-4 md:p-6 space-y-3">
         <div className="flex flex-wrap items-start gap-2">
           <div className="min-w-[240px] flex-1">

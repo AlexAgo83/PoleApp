@@ -105,7 +105,7 @@ export default async function TeacherPublicProfilePage({
   const favoritePositionIds = teacher.favoritePositions.map((fp) => fp.positionId);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-4 px-0 py-6 md:gap-6 md:px-6 md:py-8">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">

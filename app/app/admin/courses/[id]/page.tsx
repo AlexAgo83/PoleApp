@@ -89,7 +89,7 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
   const teacherName = course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const cost = course.costCredits ?? 100;
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel space-y-3 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

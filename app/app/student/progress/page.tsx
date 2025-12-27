@@ -180,7 +180,7 @@ export default async function StudentProgressPage({
   const qs = queryParams.toString();
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel p-6 sm:p-8">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
           Élève

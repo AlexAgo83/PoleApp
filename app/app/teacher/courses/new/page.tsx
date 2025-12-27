@@ -13,7 +13,7 @@ export default async function NewCoursePage() {
   const schoolId = session?.user?.schoolId;
   if (!teacherId || !schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4 py-10 md:px-6 md:py-16">
+      <main className="flex min-h-screen w-full flex-col gap-4">
         <div className="panel w-full max-w-md p-6 text-center text-slate-200">
           <p>Accès restreint aux profs/admin.</p>
           <Link
@@ -93,7 +93,7 @@ export default async function NewCoursePage() {
   })();
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-5 px-2 py-6 md:px-8 md:py-10">
       <header className="panel p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
           Professeur / Admin

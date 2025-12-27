@@ -79,7 +79,7 @@ export default async function StudentTeachersPage({
   }`;
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel border-indigo-400/25 p-6 shadow-indigo-900/30">
         <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
           Élève

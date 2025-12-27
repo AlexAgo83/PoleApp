@@ -65,7 +65,7 @@ export default async function TeacherPurchasesPage({
   const exportHref = `/api/teacher/purchases/export${exportParams.toString() ? `?${exportParams.toString()}` : ""}`;
 
   return (
-    <main className="px-4 py-6 text-white">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-2 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
