@@ -170,13 +170,13 @@ export default async function AdminPurchasesPage({
           <div className="flex items-center gap-2">
             <a
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-              href={`?${new URLSearchParams({ ...searchParams, page: String(Math.max(1, page - 1)) }).toString()}`}
+              href={`?${new URLSearchParams({ ...(searchParams ?? {}), page: String(Math.max(1, page - 1)) }).toString()}`}
             >
               Précédent
             </a>
             <a
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-              href={`?${new URLSearchParams({ ...searchParams, page: String(Math.min(totalPages, page + 1)) }).toString()}`}
+              href={`?${new URLSearchParams({ ...(searchParams ?? {}), page: String(Math.min(totalPages, page + 1)) }).toString()}`}
             >
               Suivant
             </a>
