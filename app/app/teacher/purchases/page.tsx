@@ -58,6 +58,11 @@ export default async function TeacherPurchasesPage({
     }),
   ]);
   const totalPages = Math.max(1, Math.ceil(count / 10));
+  const exportParams = new URLSearchParams();
+  if (kind) exportParams.set("kind", kind);
+  if (status) exportParams.set("status", status);
+  if (q) exportParams.set("q", q);
+  const exportHref = `/api/teacher/purchases/export${exportParams.toString() ? `?${exportParams.toString()}` : ""}`;
 
   return (
     <main className="px-4 py-6 text-white">
@@ -67,6 +72,12 @@ export default async function TeacherPurchasesPage({
             <h1 className="text-2xl font-semibold">Achats élèves (packs / abonnements / presets)</h1>
             <p className="text-sm text-slate-300">Lecture seule sur les achats de ton école.</p>
           </div>
+          <a
+            href={exportHref}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+          >
+            Export CSV
+          </a>
         </div>
       </section>
 

@@ -26,6 +26,7 @@ const schema = z.object({
     .optional(),
   diplomas: z.string().trim().max(2000, "Texte trop long").optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
+  returnTo: z.string().trim().optional(),
 });
 
 export async function updateTeacherProfileAction(formData: FormData) {
@@ -45,6 +46,7 @@ export async function updateTeacherProfileAction(formData: FormData) {
     avatarUrl: (formData.get("avatarUrl") as string | null)?.trim() || undefined,
     diplomas: (formData.get("diplomas") as string | null)?.trim() || undefined,
     favoritePositions: formData.getAll("favoritePositions").map((value) => value.toString()),
+    returnTo: (formData.get("returnTo") as string | null)?.trim() || undefined,
   });
 
   if (!parsed.success) {
@@ -86,7 +88,11 @@ export async function updateTeacherProfileAction(formData: FormData) {
     }
   });
 
-  const targetPath = `/app/teachers/${parsed.data.teacherId}`;
+  const safeReturn =
+    parsed.data.returnTo && parsed.data.returnTo.startsWith("/") ? parsed.data.returnTo : undefined;
+  const targetPath = `/app/teachers/${parsed.data.teacherId}${
+    safeReturn ? `?from=${encodeURIComponent(safeReturn)}` : ""
+  }`;
   revalidatePath(targetPath);
   redirect(targetPath);
 }

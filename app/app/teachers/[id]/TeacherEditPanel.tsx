@@ -17,9 +17,10 @@ type Props = {
     favoritePositionIds: string[];
   };
   positions: PositionOption[];
+  returnTo?: string;
 };
 
-export function TeacherEditPanel({ teacherId, defaults, positions }: Props) {
+export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: Props) {
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
 
@@ -52,6 +53,7 @@ export function TeacherEditPanel({ teacherId, defaults, positions }: Props) {
           className="mt-4 grid gap-4 md:grid-cols-2"
         >
           <input type="hidden" name="teacherId" value={teacherId} />
+          {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
           <label className="space-y-2 text-sm text-slate-200">
             Prénom
             <input
