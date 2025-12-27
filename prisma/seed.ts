@@ -39,10 +39,20 @@ const POSITION_IMAGES = [
   "https://i.postimg.cc/mrK4MjGm/Gemini_Generated_Image_y1xzydy1xzydy1xz.png",
 ];
 
-const DEFAULT_POSITION_VIDEO = {
-  url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/v1766809164/poleapp/positions/ez38yqvywnxis1g6rpbd.mp4",
-  publicId: "poleapp/positions/ez38yqvywnxis1g6rpbd",
-};
+const POSITION_VIDEOS = [
+  {
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k.mp4",
+    publicId: "poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k",
+  },
+  {
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/poleapp/positions/poleapp/positions/ez38yqvywnxis1g6rpbd.mp4",
+    publicId: "poleapp/positions/poleapp/positions/ez38yqvywnxis1g6rpbd",
+  },
+  {
+    url: "https://res.cloudinary.com/dk8vz7gfe/video/authenticated/poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k.mp4",
+    publicId: "poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k",
+  },
+];
 
 const COURSE_IMAGES = [
   "https://i.postimg.cc/nL81tmX2/Gemini-Generated-Image-gwcxudgwcxudgwcx.png",
@@ -415,6 +425,7 @@ async function seedPositions({
         : teachers.length > 0
         ? teachers[Math.floor(Math.random() * teachers.length)]
         : null;
+    const videoAsset = POSITION_VIDEOS[i % POSITION_VIDEOS.length];
     const created = await prisma.position.create({
       data: {
         name: pos.name,
@@ -431,8 +442,8 @@ async function seedPositions({
               kind: MediaKind.PHOTO,
             },
             {
-              url: DEFAULT_POSITION_VIDEO.url,
-              publicId: DEFAULT_POSITION_VIDEO.publicId,
+              url: videoAsset.url,
+              publicId: videoAsset.publicId,
               kind: MediaKind.VIDEO,
             },
           ],
