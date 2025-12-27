@@ -150,7 +150,7 @@ export default async function StudentCourseDetailPage({
   });
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-3 md:w-2/3">

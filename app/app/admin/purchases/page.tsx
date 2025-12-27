@@ -65,7 +65,7 @@ export default async function AdminPurchasesPage({
   const totalPages = Math.max(1, Math.ceil(count / 10));
 
   return (
-    <main className="px-4 py-6 text-white">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-2 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>

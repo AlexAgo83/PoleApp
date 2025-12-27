@@ -77,7 +77,7 @@ export default async function ProfilePage({
   const saved = resolvedSearch.saved === "1";
 
   return (
-    <main className="mx-auto grid max-w-4xl gap-6">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-6">
         <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
           Profil

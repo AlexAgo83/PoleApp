@@ -59,7 +59,7 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
   const totalPages = Math.max(1, Math.ceil(totalPresets / take));
 
   return (
-    <main className="px-4 py-6 text-white">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-2 p-6">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>

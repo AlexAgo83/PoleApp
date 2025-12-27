@@ -241,7 +241,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
 
   if (!selectedMode) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-0 py-6 md:px-8 md:py-10">
+      <main className="flex min-h-screen w-full flex-col gap-4">
         <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
@@ -398,7 +398,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
 
   if (questions.length === 0) {
     return (
-      <main className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 px-6 py-12">
+      <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-5 px-2 py-6 md:px-8 md:py-10">
         <div className="panel w-full max-w-md p-6 text-center text-slate-200">
           <p>Pas assez de contenu pour ce mode.</p>
           <p className="text-sm text-slate-300">Ajoute des positions ou change de mode.</p>
@@ -425,7 +425,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
   const leaderboard = leaderboardByMode.get(selectedMode) ?? [];
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-5 px-2 py-6 md:px-8 md:py-10">
       <header className="panel flex flex-col gap-4 p-6">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
