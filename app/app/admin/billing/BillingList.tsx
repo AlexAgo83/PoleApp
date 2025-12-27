@@ -150,17 +150,17 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
     <div className="space-y-4">
       {data && (
         <section className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="panel h-full p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Crédits élèves</p>
             <p className="text-2xl font-semibold text-white">{data.totalCredits} crédits</p>
             <p className="text-sm text-slate-300">Somme totale sur les élèves de l’école.</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="panel h-full p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-emerald-200">Élèves actifs (mois en cours)</p>
             <p className="text-2xl font-semibold text-white">{data.activeCount}</p>
             <p className="text-sm text-slate-300">Actifs = Premium ou crédits &gt; 0.</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="panel h-full p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-indigo-200">Répartition (mois)</p>
             <div className="mt-2 space-y-2 text-sm text-slate-200">
               <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
