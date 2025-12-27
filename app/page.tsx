@@ -7,6 +7,34 @@ import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 import packageJson from "../package.json";
 
+type FoxProps = { className?: string; sizeClass?: string };
+
+const CircularRedFox = ({ className, sizeClass }: FoxProps) => (
+  <div className={`pointer-events-none relative ${sizeClass ?? "h-20 w-20 md:h-32 md:w-32"} ${className ?? ""}`}>
+    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-400/25 via-indigo-400/20 to-fuchsia-500/25 blur-3xl" />
+    <div className="absolute inset-0 rounded-full overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/redFox_color.png"
+        alt="Mascotte Red Fox"
+        className="h-full w-full object-contain drop-shadow-2xl"
+        style={{ transform: "scale(0.9)" }}
+      />
+    </div>
+  </div>
+);
+
+const PlainRedFox = ({ className, sizeClass }: FoxProps) => (
+  <div className={`pointer-events-none relative ${sizeClass ?? "h-24 w-24 md:h-36 md:w-36"} ${className ?? ""}`}>
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img
+      src="/redFox_color.png"
+      alt="Mascotte Red Fox"
+      className="h-full w-full object-contain drop-shadow-2xl"
+    />
+  </div>
+);
+
 const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? packageJson.version ?? "0.0.0";
 const billingStatus = `Livré (${appVersion})`;
 
@@ -140,52 +168,57 @@ export default async function Home() {
   const isAuthenticated = Boolean(session?.user);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <section className="panel relative flex flex-col gap-3 overflow-hidden p-5 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
+    <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
+      <section className="panel relative overflow-visible p-5 text-sm text-slate-200">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-cyan-400/10" />
-        <div className="relative flex flex-wrap items-center gap-2">
-          {isAuthenticated && (
-            <>
-              <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/50 bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-indigo-500/20">
-                <span className="text-[11px] uppercase tracking-[0.14em] text-indigo-100">
-                  Session
-                </span>
-                <span className="truncate">{session?.user?.email}</span>
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-cyan-500/20">
-                <span className="text-[11px] uppercase tracking-[0.14em] text-cyan-100">
-                  Rôle
-                </span>
-                <span>
-                  {roleLabels[session?.user?.role ?? ""] ?? session?.user?.role}
-                </span>
-              </span>
-            </>
-          )}
+        <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
+          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" />
         </div>
-        <div className="relative flex flex-wrap items-center gap-2 md:justify-end">
-          {session?.user ? (
-            <>
+        <div className="relative flex flex-col gap-3 pl-24 md:flex-row md:items-center md:justify-between md:pl-0 md:pt-6">
+          <div className="flex flex-wrap items-center gap-2">
+            {isAuthenticated && (
+              <>
+                <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/50 bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-indigo-500/20">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-indigo-100">
+                    Session
+                  </span>
+                  <span className="truncate">{session?.user?.email}</span>
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-white shadow-inner shadow-cyan-500/20">
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-cyan-100">
+                    Rôle
+                  </span>
+                  <span>
+                    {roleLabels[session?.user?.role ?? ""] ?? session?.user?.role}
+                  </span>
+                </span>
+              </>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 md:justify-end">
+            {session?.user ? (
+              <>
+                <Link
+                  href={homeForRole}
+                  role="button"
+                  className="inline-flex items-center gap-2 rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-1.5 font-semibold text-white transition hover:border-indigo-300 hover:bg-indigo-500/30"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/house.svg" alt="" className="h-4 w-4" />
+                  Mon espace
+                </Link>
+                <SignOutButton />
+              </>
+            ) : (
               <Link
-                href={homeForRole}
-                role="button"
-                className="inline-flex items-center gap-2 rounded-full border border-indigo-400/60 bg-indigo-500/20 px-3 py-1.5 font-semibold text-white transition hover:border-indigo-300 hover:bg-indigo-500/30"
+                href="/login"
+                className="rounded-full border border-cyan-100/80 bg-cyan-500 px-4 py-2 font-semibold text-white shadow-lg shadow-indigo-900/30 transition hover:bg-cyan-400 hover:border-cyan-50 hover:-translate-y-0.5 active:translate-y-[1px]"
+                style={{ flexShrink: 0, whiteSpace: "nowrap" }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/house.svg" alt="" className="h-4 w-4" />
-                Mon espace
+                Se connecter
               </Link>
-              <SignOutButton />
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-full border border-cyan-100/80 bg-cyan-500 px-4 py-2 font-semibold text-white shadow-lg shadow-indigo-900/30 transition hover:bg-cyan-400 hover:border-cyan-50 hover:-translate-y-0.5 active:translate-y-[1px]"
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-            >
-              Se connecter
-            </Link>
-          )}
+            )}
+          </div>
         </div>
       </section>
 
@@ -404,22 +437,6 @@ export default async function Home() {
           </div>
         </details>
       )}
-
-      <div className="relative flex justify-center">
-        <div className="pointer-events-none relative h-32 w-32 md:h-48 md:w-48">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-400/25 via-indigo-400/20 to-fuchsia-500/25 blur-3xl" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/redFox_color.png"
-            alt="Mascotte Red Fox"
-            className="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
-            style={{
-              maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 85%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 85%, transparent 100%)",
-            }}
-          />
-        </div>
-      </div>
 
     </main>
   );
