@@ -405,6 +405,22 @@ export default async function Home() {
         </details>
       )}
 
+      <div className="relative flex justify-center">
+        <div className="pointer-events-none relative h-32 w-32 md:h-48 md:w-48">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-400/25 via-indigo-400/20 to-fuchsia-500/25 blur-3xl" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/redFox_color.png"
+            alt="Mascotte Red Fox"
+            className="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
+            style={{
+              maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 85%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 85%, transparent 100%)",
+            }}
+          />
+        </div>
+      </div>
+
     </main>
   );
 }
