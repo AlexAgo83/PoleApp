@@ -263,19 +263,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 ? "Espace élève"
                 : "Accueil"}
             </p>
-            <h1 className="text-2xl font-semibold text-white">Positions</h1>
-            <p className="text-sm text-slate-200">
-              Catalogue des positions avec filtres et détail. Visible selon tes droits.
-            </p>
-            {position.createdBy ? (
-              <p className="text-xs text-slate-300 mt-1">
-                Créé par {position.createdBy.name ?? position.createdBy.email}
-              </p>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {session?.user ? (
-              <>
+          <h1 className="text-2xl font-semibold text-white">Positions</h1>
+          <p className="text-sm text-slate-200">
+            Catalogue des positions avec filtres et détail. Visible selon tes droits.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {session?.user ? (
+            <>
                 <Link
                   href={homeForRole}
                   role="button"
