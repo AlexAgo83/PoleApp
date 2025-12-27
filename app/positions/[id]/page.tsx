@@ -1,4 +1,4 @@
-import { MediaKind, PositionLevel, PositionType } from "@prisma/client";
+import { MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -41,10 +41,48 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   }
 
   const awaitedSearch = searchParams ? await searchParams : undefined;
-  const from = awaitedSearch?.from;
+  const rawFrom = awaitedSearch?.from;
+  const decodedFrom = rawFrom ? decodeURIComponent(rawFrom) : undefined;
   const safeFrom =
-    from && from.startsWith("/") && !from.startsWith("//") ? from : undefined;
+    decodedFrom && decodedFrom.startsWith("/") && !decodedFrom.startsWith("//") ? decodedFrom : undefined;
   const backHref = safeFrom ?? "/positions";
+  const isFromPositionsList = Boolean(safeFrom && safeFrom.startsWith("/positions"));
+  const filtersFromList = (() => {
+    if (!isFromPositionsList || !safeFrom) return null;
+    const url = new URL(`http://localhost${safeFrom}`);
+    const type = url.searchParams.get("type");
+    const level = url.searchParams.get("level");
+    const teacher = url.searchParams.get("teacher");
+    const q = url.searchParams.get("q") ?? "";
+    const discipline = url.searchParams.get("discipline") ?? "";
+
+    const disciplineFilters =
+      discipline
+        .split(",")
+        .map((d) => d.trim())
+        .filter(Boolean) ?? [];
+
+    const where: Prisma.PositionWhereInput = {
+      ...(type && Object.values(PositionType).includes(type as PositionType) ? { type: type as PositionType } : {}),
+      ...(level && Object.values(PositionLevel).includes(level as PositionLevel)
+        ? { levelRequired: level as PositionLevel }
+        : {}),
+      ...(teacher ? { createdByUserId: teacher } : {}),
+      ...(q
+        ? {
+            name: { contains: q, mode: Prisma.QueryMode.insensitive },
+          }
+        : {}),
+      ...(disciplineFilters.length
+        ? {
+            OR: disciplineFilters.map((d) => ({
+              discipline: { contains: d, mode: Prisma.QueryMode.insensitive },
+            })),
+          }
+        : {}),
+    };
+    return { where };
+  })();
 
   const session = await getServerSession(authOptions);
   if (!session?.user) {
@@ -114,6 +152,18 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     session?.user?.role === "SCHOOL_ADMIN" ||
     (session?.user?.role === "TEACHER" &&
       (!position.createdByUserId || position.createdByUserId === session?.user?.id));
+  const navList =
+    filtersFromList && isFromPositionsList
+      ? await prisma.position.findMany({
+          where: filtersFromList.where,
+          orderBy: { updatedAt: "desc" },
+          select: { id: true, name: true },
+        })
+      : [];
+  const currentIndex = navList.findIndex((p) => p.id === position.id);
+  const prevPosition = currentIndex > 0 ? navList[currentIndex - 1] : null;
+  const nextPosition = currentIndex >= 0 && currentIndex < navList.length - 1 ? navList[currentIndex + 1] : null;
+  const encodedFrom = safeFrom ? encodeURIComponent(safeFrom) : undefined;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
@@ -363,6 +413,44 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           )}
         </aside>
       </section>
+      {isFromPositionsList && (
+        <nav className="panel flex flex-wrap items-center justify-between gap-3 p-4 md:p-5">
+          <div className="flex flex-col">
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Navigation</p>
+            <p className="text-sm text-slate-200">Parcourir la liste filtrée</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={
+                prevPosition
+                  ? `/positions/${prevPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`
+                  : "#"
+              }
+              aria-disabled={!prevPosition}
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                prevPosition
+                  ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                  : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+              }`}
+            >
+              ← Précédente
+              {prevPosition ? <span className="text-xs text-slate-300">({prevPosition.name})</span> : null}
+            </Link>
+            <Link
+              href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
+              aria-disabled={!nextPosition}
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                nextPosition
+                  ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                  : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+              }`}
+            >
+              Suivante →
+              {nextPosition ? <span className="text-xs text-slate-300">({nextPosition.name})</span> : null}
+            </Link>
+          </div>
+        </nav>
+      )}
     </main>
   );
 }

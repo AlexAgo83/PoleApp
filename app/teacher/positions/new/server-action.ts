@@ -14,7 +14,7 @@ const schema = z.object({
   description: z.string().optional(),
   type: z.nativeEnum(PositionType),
   levelRequired: z.nativeEnum(PositionLevel),
-  discipline: z.string().trim().min(1).default("Danse"),
+  discipline: z.string().trim().min(1).default("Pole"),
   grips: z.string().optional(),
   tips: z.string().optional(),
   contraindications: z.string().optional(),

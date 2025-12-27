@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 12;
 
 const typeLabels: Record<PositionType, string> = {
   SPIN: "Spin",
@@ -138,11 +138,21 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       _count: { select: { progress: true } },
     },
   });
-  const disciplineOptions = await prisma.position.findMany({
+  const disciplineOptionsRaw = await prisma.position.findMany({
     select: { discipline: true },
     distinct: ["discipline"],
     orderBy: { discipline: "asc" },
   });
+  const disciplineOptions = disciplineOptionsRaw.reduce<{ discipline: string }[]>((acc, row) => {
+    const name = row.discipline?.trim();
+    if (!name) return acc;
+    const key = name.toLowerCase();
+    if (key === "danse") return acc;
+    if (!acc.some((d) => d.discipline.toLowerCase() === key)) {
+      acc.push({ discipline: name });
+    }
+    return acc;
+  }, []);
   const studentProgress = isStudent
     ? await prisma.studentPositionProgress.findMany({
         where: { studentId: session.user.id },
