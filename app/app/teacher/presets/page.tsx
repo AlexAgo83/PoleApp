@@ -43,20 +43,18 @@ export default async function TeacherPresetsPage() {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-2 p-6">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Espace prof</p>
-            <h1 className="text-2xl font-semibold">Presets / combos</h1>
-            <p className="text-sm text-slate-300">Crée des combos vidéo premium ou achetables en crédits.</p>
-          </div>
-          <Link
-            href="/app/teacher"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
-          </Link>
+      <section className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
+        <div className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Espace prof</p>
+          <h1 className="text-2xl font-semibold text-white md:text-2xl">Presets / combos</h1>
+          <p className="text-sm text-slate-300 leading-6">Crée des combos vidéo premium ou achetables en crédits.</p>
         </div>
+        <Link
+          href="/app/teacher"
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+        >
+          ← Retour accueil
+        </Link>
       </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
