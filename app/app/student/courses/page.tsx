@@ -457,7 +457,7 @@ export default async function StudentCoursesPage({
             <fieldset className="text-sm text-slate-200">
               <legend className="mb-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Discipline</legend>
               <div className="flex flex-wrap gap-2">
-                {disciplines.map((d, idx) => (
+                {disciplines.slice(0, 6).map((d, idx) => (
                   <label
                     key={`${d.name}-${idx}`}
                     className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
@@ -469,14 +469,36 @@ export default async function StudentCoursesPage({
                       defaultChecked={disciplineFilters.includes(d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
-                    <span
-                    className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                      style={{ backgroundColor: d.color ?? undefined }}
-                    />
+                    <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />
                     {d.name}
                   </label>
                 ))}
               </div>
+              {disciplines.length > 6 && (
+                <details className="mt-2 space-y-2">
+                  <summary className="cursor-pointer text-xs text-slate-300 hover:text-white">
+                    Voir plus ({disciplines.length - 6})
+                  </summary>
+                  <div className="grid max-h-40 grid-cols-2 gap-2 overflow-auto pr-1 md:grid-cols-3">
+                    {disciplines.slice(6).map((d, idx) => (
+                      <label
+                        key={`${d.name}-extra-${idx}`}
+                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="discipline"
+                          value={d.name}
+                          defaultChecked={disciplineFilters.includes(d.name)}
+                          className="h-4 w-4 rounded border-white/20 bg-white/5"
+                        />
+                        <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />
+                        {d.name}
+                      </label>
+                    ))}
+                  </div>
+                </details>
+              )}
             </fieldset>
             <label className="text-sm text-slate-200">
               Tri
