@@ -38,6 +38,23 @@ const progressLabels: Record<string, string> = {
   FLUID_CHOREO: "Fluide chorégraphié",
 };
 
+function hexToRgba(color: string, alpha: number) {
+  if (!color || !color.startsWith("#")) return null;
+  let hex = color.slice(1);
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+  if (hex.length !== 6) return null;
+  const num = Number.parseInt(hex, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 type SearchParams =
   | { page?: string; type?: string; level?: string; q?: string; teacher?: string; discipline?: string }
   | Promise<{
@@ -112,6 +129,27 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const homeForRole = defaultHomeForRole(session.user.role);
   const isStudent = session.user.role === "STUDENT";
   const isPremium = Boolean(session.user.isPremium);
+  const disciplineRows = session.user.schoolId
+    ? await prisma.discipline.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { name: true, color: true },
+      })
+    : [];
+  const disciplineColors = new Map(
+    disciplineRows
+      .filter((d) => d.name)
+      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
+  );
+  const disciplineStyle = (name?: string | null) => {
+    if (!name) return undefined;
+    const color = disciplineColors.get(name.toLowerCase());
+    if (!color) return undefined;
+    return {
+      borderColor: color,
+      color,
+      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
+    };
+  };
   const queryParams = new URLSearchParams();
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
@@ -408,14 +446,20 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     />
                   )}
                   {p.discipline ? (
-                    <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
+                    <span
+                      className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
+                      style={disciplineStyle(p.discipline)}
+                    >
                       {p.discipline}
                     </span>
                   ) : null}
                   {(hasVideo || (p._count?.progress ?? 0) > 0 || progressText) && (
                     <div className="absolute left-3 right-3 top-3 flex flex-wrap items-start justify-between gap-2">
                       {p.discipline ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
+                          style={disciplineStyle(p.discipline)}
+                        >
                           {p.discipline}
                         </span>
                       ) : <span />}
@@ -455,11 +499,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       {showPremiumBadge && (
                         <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
                           🔒 Premium
-                        </span>
-                      )}
-                      {hasVideo && (
-                        <span className="inline-flex w-fit items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
-                          🎥 Vidéo
                         </span>
                       )}
                     </div>
