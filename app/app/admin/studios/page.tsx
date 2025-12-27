@@ -41,7 +41,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   const userKey = session.user.id ?? "anon";
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <main className="flex min-h-screen w-full flex-col gap-4">
         <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Studios</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
@@ -79,7 +79,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
     });
   } catch {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <main className="flex min-h-screen w-full flex-col gap-4">
         <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Studios</h1>
           <p className="text-sm text-amber-200">
@@ -91,7 +91,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       {flash && (
         <div className="fixed bottom-4 right-4 z-30 space-y-2">
           {flash === "created" && (

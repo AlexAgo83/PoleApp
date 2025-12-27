@@ -29,7 +29,7 @@ export default async function AdminDashboard({
 
   if (!session.user.schoolId) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+      <main className="flex min-h-screen w-full flex-col gap-4">
         <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Admin école</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
@@ -148,7 +148,7 @@ export default async function AdminDashboard({
   });
 
   return (
-  <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-0 py-6 md:gap-6 md:px-8 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel p-3 md:p-6">
         <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
