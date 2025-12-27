@@ -168,7 +168,7 @@ export default async function TeacherPresetsPage() {
                         <p className="text-xs text-slate-400">Aucune position liée.</p>
                       )}
                     </div>
-                    <form action={deletePresetAction} method="post">
+                    <form action={deletePresetAction}>
                       <input type="hidden" name="id" value={preset.id} />
                       <button
                         type="submit"
