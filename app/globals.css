@@ -5,9 +5,9 @@
   --foreground: #f9fbff;
   --panel: rgba(13, 18, 36, 0.44);
   --border: rgba(255, 255, 255, 0.24);
-  --accent: #7c3aed;
-  --accent-strong: #22d3ee;
-  --accent-warm: #f472b6;
+  --accent: #d946ef;
+  --accent-strong: #fb7ba2;
+  --accent-warm: #fda4af;
 }
 
 @theme inline {
@@ -15,6 +15,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Redirect cyan palette to fuchsia tones for accents */
+  --color-cyan-50: #fdf4ff;
+  --color-cyan-100: #fae8ff;
+  --color-cyan-200: #f5d0fe;
+  --color-cyan-300: #f0abfc;
+  --color-cyan-400: #e879f9;
+  --color-cyan-500: #d946ef;
+  --color-cyan-600: #c026d3;
+  --color-cyan-700: #a21caf;
+  --color-cyan-800: #86198f;
+  --color-cyan-900: #701a75;
+  --color-cyan-950: #4a044e;
 }
 
 body {
