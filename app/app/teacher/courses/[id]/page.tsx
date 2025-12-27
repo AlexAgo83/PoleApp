@@ -452,12 +452,6 @@ export default async function TeacherCourseDetailPage({
                         defaultChecked={!s.excludedForInjury}
                         className="mt-1 h-4 w-4"
                       />
-                      {s.excludedForInjury ? (
-                        <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-rose-100">
-                          <input type="checkbox" name="forcePositionIds" value={s.positionId} className="h-3 w-3" />
-                          <span>Forcer quand même</span>
-                        </div>
-                      ) : null}
                     </div>
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
