@@ -15,6 +15,15 @@
 - Super admin : panels “Créer une école” (collapsable mémorisé), “Assigner un admin” dédié au-dessus de Promotion/Dégradation non-collapsible, pagination écoles/offres/packs, formulaires “Nouvelles offres” repliés par défaut, titres harmonisés.
 - Positions : pages `/positions` protégées (login requis), header UI alignée sur le reste, contenu accessible aux élèves gratuits dès qu’une position est débloquée via cours (pas de bannière premium), message vidéo adapté.
 
+## 2025-12-27 — Release v0.7.9 (catalogue presets + seed images)
+- Nouvelle page `/presets` (catalogue combos/presets) avec filtres intégrés au panneau, badges discipline/premium/crédits, pagination, achat élève direct, messages flash, vignettes images.
+- Admin/Prof presets : panels arrondis harmonisés, choix du prof créateur (admin), champ image en création + mise à jour, cartes avec vignette, actions supprimer/MAJ image alignées.
+- Achats prof/admin : filtres via FilterPanel, panels alignés, pagination corrigée (plus d’erreur Symbol).
+- Positions : masquage Vu/Progression si compteur 0, clear discipline sans JS, texte multi-sélection retiré.
+- SafeImage : tailles par défaut pour les hôtes autorisés (évite l’erreur “width” requis).
+- Seed : champ `imageUrl` sur Preset, deux presets avec images, nouvelles images écoles/positions, hôte `i.postimg.cc` autorisé; credits élèves 500 conservés.
+- Version bump 0.7.9.
+
 ## 2025-12-22 — Release v0.7.0 (cœurs élèves, exclusions blessures, partenaires)
 - Version bump 0.7.0.
 - Générateur : pondération par cœurs élèves (favorite positions), badge “cœur”, exclusion stricte des positions incompatibles blessures, badge “Exclu blessure”, toggle “forcer 1 découverte”.
