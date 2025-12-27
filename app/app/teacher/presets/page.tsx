@@ -188,6 +188,10 @@ export default async function TeacherPresetsPage() {
                         <p className="text-xs text-slate-400">Aucune position liée.</p>
                       )}
                     </div>
+                    <div className="text-xs text-slate-400">
+                      Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
+                      {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
+                    </div>
                     <form action={updatePresetImageAction} className="flex flex-wrap items-center gap-2">
                       <input type="hidden" name="id" value={preset.id} />
                       <input

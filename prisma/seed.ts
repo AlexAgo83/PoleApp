@@ -172,7 +172,7 @@ const muscleTargetsByType: Record<PositionType, string[]> = {
 };
 
 const schoolsList = [
-  "Donuts",
+  "APEX",
   "Horizon",
   "Académie Arabesque",
   "Pulsation Pole Center",
@@ -271,7 +271,7 @@ const seedPresetsData = [
   },
   {
     title: "Preset Crédit 150",
-    discipline: "Pole Exotic",
+    discipline: "Exotic",
     premiumRequired: false,
     priceCredits: 150,
     description: "Preset achetable en crédits, avec focus exotic.",
@@ -958,6 +958,7 @@ async function seedPresets(options: {
           discipline: preset.discipline,
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
+          usageCount: 0,
           schoolId: school.id,
           createdByUserId: teacher?.id,
           positions: {

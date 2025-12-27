@@ -61,7 +61,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     Object.values(PositionLevel).includes(resolvedParams.level as PositionLevel)
       ? (resolvedParams.level as PositionLevel)
       : undefined;
-  const disciplineFilter = resolvedParams.discipline?.toString().trim() || "";
+  const disciplineFilters =
+    resolvedParams.discipline
+      ?.toString()
+      .split(",")
+      .map((d) => d.trim())
+      .filter(Boolean) ?? [];
   const q = resolvedParams.q?.toString().trim() || "";
   const teacherFilter = resolvedParams.teacher?.toString().trim() || "";
   const activeFilters = [
@@ -69,7 +74,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     levelFilter,
     q && q.length > 0,
     teacherFilter && teacherFilter.length > 0,
-    disciplineFilter && disciplineFilter.length > 0,
+    disciplineFilters.length > 0,
   ].filter(Boolean).length;
 
   const where: Prisma.PositionWhereInput = {
@@ -85,9 +90,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           createdByUserId: teacherFilter,
         }
       : {}),
-    ...(disciplineFilter
+    ...(disciplineFilters.length
       ? {
-          discipline: { contains: disciplineFilter, mode: Prisma.QueryMode.insensitive },
+          OR: disciplineFilters.map((d) => ({
+            discipline: { contains: d, mode: Prisma.QueryMode.insensitive },
+          })),
         }
       : {}),
   };
@@ -110,7 +117,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (levelFilter) queryParams.set("level", levelFilter);
   if (q) queryParams.set("q", q);
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
-  if (disciplineFilter) queryParams.set("discipline", disciplineFilter);
+  if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
   const qs = queryParams.toString();
   const creatorOptions = await prisma.user.findMany({
     where: {
@@ -239,7 +246,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         >
           {/* key force le rerender des inputs lorsque les filtres changent pour que “Réinitialiser” remette bien les valeurs par défaut. */}
           <form
-            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${disciplineFilter || "all"}-${q || "all"}`}
+            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${disciplineFilters.join("|") || "all"}-${q || "all"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -285,38 +292,35 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ))}
               </select>
             </label>
-            <label className="text-sm text-slate-200">
-              Discipline
-              <div className="mt-1 flex flex-wrap gap-2 rounded-lg border border-white/10 bg-white/10 px-2 py-2">
-                <select
-                  key={disciplineFilter || "all-disciplines"}
-                  name="discipline"
-                  defaultValue={disciplineFilter}
-                  className="min-w-[140px] flex-1 rounded-md bg-transparent px-2 py-1 text-white outline-none focus:border-cyan-400"
-                >
-                  <option value="">Toutes disciplines</option>
-                  {disciplineOptions.map((d) => (
-                    <option key={d.discipline ?? "none"} value={d.discipline ?? ""}>
-                      {d.discipline ?? "Non définie"}
-                    </option>
-                  ))}
-                </select>
-                {disciplineFilter ? (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/50 bg-cyan-500/20 px-3 py-1 text-xs font-semibold text-white">
-                    {disciplineFilter}
-                    <a
-                      href={`?${(() => {
-                        const params = new URLSearchParams(queryParams.toString());
-                        params.delete("discipline");
-                        return params.toString();
-                      })()}`}
-                    >
-                      ✕
-                    </a>
-                  </span>
-                ) : null}
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1">Disciplines</legend>
+              <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
+                <div className="flex flex-wrap gap-2">
+                  {disciplineOptions.slice(0, 8).map((d) => {
+                    const value = d.discipline ?? "";
+                    if (!value) return null;
+                    const checked = disciplineFilters.includes(value);
+                    return (
+                      <label
+                        key={value}
+                        className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="discipline"
+                          value={value}
+                          defaultChecked={checked}
+                          className="peer sr-only"
+                        />
+                        <span className="peer-checked:text-white peer-checked:border-cyan-300/70 peer-checked:bg-cyan-500/20 peer-checked:px-3 peer-checked:py-1 peer-checked:rounded-full peer-checked:border">
+                          {value}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
-            </label>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Professeur (créateur)
               <select
