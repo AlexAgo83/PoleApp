@@ -54,7 +54,7 @@ export default async function AdminPresetsPage() {
       </div>
 
       <section className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-        <form action={createPresetAdminAction} className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
+        <form action={createPresetAdminAction} className="space-y-3 rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30">
           <h2 className="text-lg font-semibold text-white">Créer un preset</h2>
           <label className="text-sm text-slate-200">
             Titre
@@ -127,7 +127,7 @@ export default async function AdminPresetsPage() {
           </button>
         </form>
 
-        <section className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
+        <section className="space-y-3 rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30">
           <h2 className="text-lg font-semibold text-white">Presets existants</h2>
           {presets.length === 0 ? (
             <p className="text-slate-300">Aucun preset pour le moment.</p>
