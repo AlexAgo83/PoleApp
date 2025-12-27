@@ -1,7 +1,5 @@
 # Changelog
 
-# Changelog
-
 ## Unreleased — Planning école élève + responsive agenda
 - Positions : discipline badge sur vignettes et header, overlay progression/Vu, stats détaillées en cartes glassy, en-tête simplifié sur la fiche.
 - Seed : muscles/articulations seeded et liés, positions attribuées à des professeurs seedés, cours répartis aléatoirement entre profs sans collisions, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning taguées sur positions/cours.
@@ -14,6 +12,13 @@
 - Profil : toast de confirmation “Profil mis à jour”.
 - Super admin : panels “Créer une école” (collapsable mémorisé), “Assigner un admin” dédié au-dessus de Promotion/Dégradation non-collapsible, pagination écoles/offres/packs, formulaires “Nouvelles offres” repliés par défaut, titres harmonisés.
 - Positions : pages `/positions` protégées (login requis), header UI alignée sur le reste, contenu accessible aux élèves gratuits dès qu’une position est débloquée via cours (pas de bannière premium), message vidéo adapté.
+
+## 2025-12-27 — Release v0.8.1 (vidéos Cloudinary positions)
+- Positions : upload vidéo Cloudinary authentifié sur création/édition (signature serveur, suppression des anciens assets via publicId, limite 100MB) avec stockage `videoUrl`/`videoPublicId`.
+- Lecture : fiche position lit les vidéos via URL signées Cloudinary, poster fallback, badge vidéo et bloc Premium si élève non débloqué.
+- Catalogue positions : cartes list ajoutent badge vidéo, compteur “Vu” et rappel du niveau élève/progress pour les étudiants ; lien retour conservé.
+- Seed : chaque position seed inclut une vidéo Cloudinary authenticated (3 assets en rotation) pour tester la lecture signée et le nettoyage publicId.
+- Admin presets : `searchParams` awaité pour fiabiliser la pagination (plus d’erreur Next sur la page admin/presets).
 
 ## 2025-12-27 — Release v0.7.9 (catalogue presets + seed images)
 - Nouvelle page `/presets` (catalogue combos/presets) avec filtres intégrés au panneau, badges discipline/premium/crédits, pagination, achat élève direct, messages flash, vignettes images.
