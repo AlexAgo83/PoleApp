@@ -14,7 +14,7 @@ export default async function StudentDashboard() {
   }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, isPremium: true, credits: true, schoolId: true },
+    select: { name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarUrl: true },
   });
   const isPremium = Boolean(user?.isPremium);
   const nameParts =
@@ -26,6 +26,8 @@ export default async function StudentDashboard() {
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
   const displayName = firstName ?? lastName ?? user?.email ?? "élève";
   const credits = user?.credits ?? 0;
+  const avatarUrl = user?.avatarUrl ?? session.user.image ?? null;
+  const avatarInitial = (displayName?.[0] ?? "É").toUpperCase();
   const partners =
     user?.schoolId
       ? await prisma.partner.findMany({
@@ -83,10 +85,20 @@ export default async function StudentDashboard() {
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl text-white">
-            Bonjour <span className="font-semibold">{displayName}</span>,
-          </h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/5 shadow-inner shadow-slate-900/30">
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-base font-semibold text-white/90">{avatarInitial}</span>
+              )}
+            </div>
+            <h2 className="text-xl text-white">
+              Bonjour <span className="font-semibold">{displayName}</span>,
+            </h2>
+          </div>
           <Link
             href="/app/profile"
             className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"

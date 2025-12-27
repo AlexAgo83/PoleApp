@@ -6,14 +6,22 @@ import { prisma } from "@/lib/prisma";
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
+  const teacherUser = session?.user?.id
+    ? await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { avatarUrl: true, name: true, email: true },
+      })
+    : null;
   const nameParts =
-    session?.user?.name
+    (teacherUser?.name ?? session?.user?.name)
       ?.trim()
       .split(/\s+/)
       .filter(Boolean) ?? [];
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
-  const displayName = firstName ?? lastName ?? session?.user?.email ?? "professeur";
+  const displayName = firstName ?? lastName ?? teacherUser?.email ?? session?.user?.email ?? "professeur";
+  const avatarUrl = teacherUser?.avatarUrl ?? session?.user?.image ?? null;
+  const avatarInitial = (displayName?.[0] ?? "P").toUpperCase();
   const teacherProfileHref = session?.user?.id ? `/app/teachers/${session.user.id}` : "/app/profile";
   const partners =
     session?.user?.schoolId
@@ -28,10 +36,20 @@ export default async function TeacherDashboard() {
   return (
     <main className="grid gap-6">
       <section className="panel space-y-4 p-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl text-white">
-            Bonjour <span className="font-semibold">{displayName}</span>,
-          </h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/5 shadow-inner shadow-slate-900/30">
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-base font-semibold text-white/90">{avatarInitial}</span>
+              )}
+            </div>
+            <h2 className="text-xl text-white">
+              Bonjour <span className="font-semibold">{displayName}</span>,
+            </h2>
+          </div>
           {teacherProfileHref && (
             <Link
               href={teacherProfileHref}
