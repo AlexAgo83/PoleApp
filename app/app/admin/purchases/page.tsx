@@ -67,7 +67,7 @@ export default async function AdminPurchasesPage({
       <h1 className="text-2xl font-semibold">Achats (packs / abonnements)</h1>
       <p className="text-sm text-slate-300">Achats des élèves de l’école : packs crédits et abonnements.</p>
 
-      <form className="mt-4 grid gap-3 rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30 md:grid-cols-4">
+      <form className="mt-4 grid gap-3 rounded-xl border border-white/25 bg-white/10/90 p-4 shadow-md shadow-black/40 md:grid-cols-4">
         <label className="text-sm">
           <span className="text-xs uppercase tracking-[0.12em] text-indigo-100">Type</span>
           <select name="kind" defaultValue={kind} className="mt-1 w-full rounded-lg bg-white/10 px-2 py-2 text-white">
@@ -104,7 +104,7 @@ export default async function AdminPurchasesPage({
         </div>
       </form>
 
-      <section className="mt-4 rounded-xl border border-white/15 bg-white/5/80 p-4 shadow-inner shadow-black/30">
+      <section className="mt-4 rounded-xl border border-white/25 bg-white/10/90 p-4 shadow-md shadow-black/40">
         {rows.length === 0 ? (
           <p className="text-slate-300">Aucun achat trouvé.</p>
         ) : (
