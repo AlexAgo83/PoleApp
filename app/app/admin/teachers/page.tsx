@@ -152,48 +152,50 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
           </form>
         </FilterPanel>
         {teachers.length === 0 ? (
-          <p className="text-slate-300">Aucun professeur trouvé.</p>
+          <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200">
+            Aucun professeur trouvé.
+          </div>
         ) : (
           <>
-            <div className="divide-y divide-white/10">
+            <div className="flex flex-col gap-4">
               {teachers.map((teacher) => (
-                <div
+                <article
                   key={teacher.id}
-              className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <SafeImage
-                  src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
-                  alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
-                  width={48}
-                  height={48}
-                  className="h-12 w-12 rounded-full border border-white/10 object-cover shadow"
-                  fallbackSrc={TEACHER_AVATAR_PLACEHOLDER}
-                />
-                    <div>
-                      <p className="text-base font-semibold text-white">{teacher.name ?? "Professeur"}</p>
-                      <p className="text-sm text-slate-300">{teacher.email}</p>
+                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20 backdrop-blur md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="flex flex-1 items-center gap-4">
+                    <SafeImage
+                      src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
+                      alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
+                      width={56}
+                      height={56}
+                      className="h-14 w-14 rounded-full border border-white/15 object-cover shadow-lg shadow-indigo-900/30"
+                      fallbackSrc={TEACHER_AVATAR_PLACEHOLDER}
+                    />
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-lg font-semibold text-white">{teacher.name ?? "Professeur"}</p>
+                        {teacher.isPremium && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-2.5 py-1 text-[11px] font-semibold text-amber-50">
+                            Premium
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-200">{teacher.email}</p>
                       <p className="text-xs text-slate-400">
                         Créé le {new Date(teacher.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                    {teacher.isPremium && (
-                      <span className="rounded-full border border-amber-300/50 bg-amber-400/15 px-3 py-1 text-[12px] font-semibold text-amber-100">
-                        Premium
-                      </span>
-                    )}
-                    <Link
-                      href={`/app/teachers/${teacher.id}?from=/app/admin/teachers`}
-                      className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-center text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 md:w-auto"
-                    >
-                      Voir la fiche
-                    </Link>
-                  </div>
-                </div>
-            ))}
-          </div>
+                  <Link
+                    href={`/app/teachers/${teacher.id}?from=/app/admin/teachers`}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  >
+                    Voir la fiche
+                  </Link>
+                </article>
+              ))}
+            </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-4 text-sm text-slate-200">
               <span>
