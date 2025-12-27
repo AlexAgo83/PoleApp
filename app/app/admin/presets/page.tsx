@@ -11,13 +11,18 @@ import { prisma } from "@/lib/prisma";
 import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdminAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 
-export default async function AdminPresetsPage({ searchParams }: { searchParams?: { page?: string } }) {
+type SearchParams =
+  | { page?: string }
+  | Promise<{ page?: string }>;
+
+export default async function AdminPresetsPage({ searchParams }: { searchParams?: SearchParams }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     redirect("/access-denied");
   }
 
-  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
+  const awaitedParams = (await Promise.resolve(searchParams)) ?? {};
+  const page = Math.max(1, Number.parseInt(awaitedParams.page ?? "1", 10) || 1);
   const take = 10;
   const skip = (page - 1) * take;
 
