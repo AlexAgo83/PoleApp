@@ -23,7 +23,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
             <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">Super Admin</p>
             <h1 className="text-3xl font-semibold text-white">Backoffice global</h1>
             <p className="text-sm text-slate-300">
-              Gestion des écoles, admins, offres globaux (abonnements/packs) et paramètres TVA/devise.
+            Gestion des écoles, admins, offres et paramètres.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 md:justify-end">

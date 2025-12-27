@@ -347,6 +347,16 @@ export default async function Home() {
                     En cours
                   </span>
                 </div>
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S011 — Retours QA S012</p>
+                    <p className="text-white font-semibold">Combos associés, agenda studio, parcours élève/premium, facturation, statuts financiers</p>
+                    <p className="text-xs text-slate-400">Avancement 0% (backlog validé, implémentation à planifier)</p>
+                  </div>
+                  <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-slate-300 bg-slate-500/30 px-3 py-1 text-[12px] font-semibold text-slate-100">
+                    À faire
+                  </span>
+                </div>
               </div>
             </aside>
           </div>
