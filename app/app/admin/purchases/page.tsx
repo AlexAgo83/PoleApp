@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
