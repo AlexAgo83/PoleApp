@@ -80,6 +80,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const cover =
     position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
+  const videoPoster =
+    video?.url && video.url.includes("/upload/")
+      ? video.url.replace("/upload/", "/upload/so_0/")
+      : POSITION_PLACEHOLDER;
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
   const hasUnlocked = isStudent
@@ -293,15 +297,16 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               </div>
               {canViewContent ? (
                 video ? (
-                  <a
-                    href={video.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-                  >
-                    Ouvrir la vidéo
-                    <span aria-hidden>↗</span>
-                  </a>
+                  <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                    <video
+                      controls
+                      poster={videoPoster}
+                      className="h-64 w-full bg-black object-cover"
+                      src={video.url}
+                    >
+                      Votre navigateur ne supporte pas la vidéo.
+                    </video>
+                  </div>
                 ) : (
                   <p className="mt-2 text-xs text-slate-200">
                     Aucune vidéo fournie pour le moment. Un lien sera ajouté prochainement.

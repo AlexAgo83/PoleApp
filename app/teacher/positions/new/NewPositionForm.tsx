@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 
+import { CloudinaryUpload } from "@/components/CloudinaryUpload";
 import { createPositionAction } from "./server-action";
 
 const schema = z.object({
@@ -17,6 +18,7 @@ const schema = z.object({
   contraindications: z.string().optional(),
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
+  videoPublicId: z.string().optional(),
   discipline: z.string().min(1),
   muscles: z.array(z.string()).optional(),
 });
@@ -37,6 +39,8 @@ export function NewPositionForm({
   const [muscleList, setMuscleList] = useState<Muscle[]>(muscles);
   const [newMuscle, setNewMuscle] = useState("");
   const [addingMuscle, setAddingMuscle] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [videoPublicId, setVideoPublicId] = useState<string>("");
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -52,6 +56,7 @@ export function NewPositionForm({
       contraindications: formData.get("contraindications") || undefined,
       imageUrl: formData.get("imageUrl") || undefined,
       videoUrl: formData.get("videoUrl") || undefined,
+      videoPublicId: formData.get("videoPublicId") || undefined,
       discipline: formData.get("discipline"),
       muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
     });
@@ -87,7 +92,24 @@ export function NewPositionForm({
       <Field label="Conseils" name="tips" textarea />
       <Field label="Contre-indications" name="contraindications" textarea />
       <Field label="Image URL (placeholder accepté)" name="imageUrl" />
-      <Field label="Vidéo (URL)" name="videoUrl" placeholder="https://..." />
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-slate-100">Vidéo (Cloudinary)</p>
+        <CloudinaryUpload
+          label="Uploader une vidéo"
+          folder="poleapp/positions"
+          resourceType="video"
+          accept="video/*"
+          maxSizeMB={100}
+          currentUrl={videoUrl || undefined}
+          currentPublicId={videoPublicId || undefined}
+          onChange={(url, publicId) => {
+            setVideoUrl(url ?? "");
+            setVideoPublicId(publicId ?? "");
+          }}
+        />
+        <input type="hidden" name="videoUrl" value={videoUrl} />
+        <input type="hidden" name="videoPublicId" value={videoPublicId} />
+      </div>
       <div className="space-y-2">
         <p className="text-sm font-semibold text-slate-100">Muscles / articulations sollicités</p>
         <p className="text-xs text-slate-400">
