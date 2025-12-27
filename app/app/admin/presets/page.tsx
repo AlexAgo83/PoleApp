@@ -8,7 +8,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-import { createPresetAdminAction, deletePresetAdminAction } from "./actions";
+import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdminAction } from "./actions";
+import { SafeImage } from "@/components/SafeImage";
 
 export default async function AdminPresetsPage({ searchParams }: { searchParams?: { page?: string } }) {
   const session = await getServerSession(authOptions);
@@ -20,7 +21,7 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
   const take = 10;
   const skip = (page - 1) * take;
 
-  const [positions, presets, disciplines] = await Promise.all([
+  const [positions, presets, disciplines, teachers] = await Promise.all([
     prisma.position.findMany({
       select: { id: true, name: true, discipline: true },
       orderBy: { name: "asc" },
@@ -28,7 +29,10 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
     }),
     prisma.preset.findMany({
       where: { schoolId: session.user.schoolId },
-      include: { positions: { include: { position: { select: { name: true } } } }, createdBy: { select: { name: true, email: true } } },
+      include: {
+        positions: { include: { position: { select: { name: true } } } },
+        createdBy: { select: { name: true, email: true } },
+      },
       orderBy: { createdAt: "desc" },
       skip,
       take,
@@ -40,6 +44,11 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
         orderBy: { name: "asc" },
       })
       .catch(() => []),
+    prisma.user.findMany({
+      where: { schoolId: session.user.schoolId, role: "TEACHER" },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
   const totalPresets = await prisma.preset.count({ where: { schoolId: session.user.schoolId } });
   const totalPages = Math.max(1, Math.ceil(totalPresets / take));
@@ -63,9 +72,9 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
       </section>
 
       <section className="mt-6 grid gap-6 md:grid-cols-2">
-        <section className="panel space-y-3 p-5">
+        <section className="panel space-y-4 p-5">
           <h2 className="text-lg font-semibold text-white">Créer un preset</h2>
-          <form action={createPresetAdminAction} className="space-y-3">
+          <form action={createPresetAdminAction} className="space-y-4">
             <label className="text-sm text-slate-200">
               Titre
               <input
@@ -102,7 +111,32 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+            <label className="text-sm text-slate-200">
+              Image (URL)
+              <input
+                name="imageUrl"
+                type="url"
+                placeholder="https://…"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+              <span className="text-xs text-slate-400">Facultatif. Une image rendra la carte plus lisible dans le catalogue.</span>
+            </label>
+            <label className="text-sm text-slate-200">
+              Professeur (créateur)
+              <select
+                name="teacherId"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                defaultValue=""
+              >
+                <option value="">(Moi) {session.user.name ?? session.user.email}</option>
+                {teachers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name ?? t.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-200">
               <label className="inline-flex items-center gap-2">
                 <input type="checkbox" name="premiumRequired" className="h-4 w-4" />
                 <span>Premium requis</span>
@@ -147,7 +181,12 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
               <ul className="space-y-2">
                 {presets.map((preset) => (
                   <li key={preset.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-col gap-3">
+                      {preset.imageUrl ? (
+                        <div className="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                          <SafeImage src={preset.imageUrl} alt={preset.title} className="h-36 w-full object-cover" />
+                        </div>
+                      ) : null}
                       <div className="space-y-1">
                         <p className="text-lg font-semibold text-white">{preset.title}</p>
                         <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
@@ -180,15 +219,33 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
                           <p className="text-xs text-slate-400">Aucune position liée.</p>
                         )}
                       </div>
-                      <form action={deletePresetAdminAction}>
+                      <form action={updatePresetImageAdminAction} className="flex flex-wrap items-center gap-2">
                         <input type="hidden" name="id" value={preset.id} />
+                        <input
+                          type="url"
+                          name="imageUrl"
+                          defaultValue={preset.imageUrl ?? ""}
+                          placeholder="URL image"
+                          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400"
+                        />
                         <button
                           type="submit"
-                          className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
+                          className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-200"
                         >
-                          Supprimer
+                          Mettre à jour l’image
                         </button>
                       </form>
+                      <div className="flex justify-end">
+                        <form action={deletePresetAdminAction}>
+                          <input type="hidden" name="id" value={preset.id} />
+                          <button
+                            type="submit"
+                            className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
+                          >
+                            Supprimer
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </li>
                 ))}

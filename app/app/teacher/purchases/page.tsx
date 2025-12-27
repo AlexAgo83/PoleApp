@@ -6,6 +6,7 @@ import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 
 function formatEuro(cents: number) {
@@ -60,53 +61,67 @@ export default async function TeacherPurchasesPage({
 
   return (
     <main className="px-4 py-6 text-white">
-      <h1 className="text-2xl font-semibold">Achats élèves (packs / abonnements / presets)</h1>
-      <p className="text-sm text-slate-300">Lecture seule sur les achats de ton école.</p>
-
-      <form className="mt-4 grid gap-3 rounded-xl border border-white/10 bg-white/5 p-4 md:grid-cols-4">
-        <label className="text-sm">
-          <span className="text-xs uppercase tracking-[0.12em] text-indigo-100">Type</span>
-          <select name="kind" defaultValue={kind} className="mt-1 w-full rounded-lg bg-white/10 px-2 py-2 text-white">
-            <option value="">Tous</option>
-            <option value="PACK">Pack</option>
-            <option value="SUBSCRIPTION">Abonnement</option>
-            <option value="PRESET">Preset</option>
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="text-xs uppercase tracking-[0.12em] text-indigo-100">Statut</span>
-          <select name="status" defaultValue={status} className="mt-1 w-full rounded-lg bg-white/10 px-2 py-2 text-white">
-            <option value="">Tous</option>
-            <option value="PAID">Payé</option>
-            <option value="PENDING">En attente</option>
-            <option value="CANCELLED">Annulé</option>
-          </select>
-        </label>
-        <label className="text-sm md:col-span-2">
-          <span className="text-xs uppercase tracking-[0.12em] text-indigo-100">Recherche élève/offre</span>
-          <input
-            name="q"
-            defaultValue={q}
-            className="mt-1 w-full rounded-lg bg-white/10 px-3 py-2 text-white"
-            placeholder="Nom élève ou offre"
-          />
-        </label>
-        <div className="md:col-span-4 flex justify-end">
-          <button
-            type="submit"
-            className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-200"
-          >
-            Filtrer
-          </button>
+      <section className="panel space-y-2 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h1 className="text-2xl font-semibold">Achats élèves (packs / abonnements / presets)</h1>
+            <p className="text-sm text-slate-300">Lecture seule sur les achats de ton école.</p>
+          </div>
         </div>
-      </form>
+      </section>
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
-        {rows.length === 0 ? (
-          <p className="text-slate-300">Aucun achat trouvé.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-slate-200">
+      <section className="panel mt-4 space-y-4 p-6">
+        <FilterPanel
+          title="Filtres"
+          activeCount={[kind, status, q && q.length > 0].filter(Boolean).length}
+          storageKey="filters:teacher-purchases"
+          userKey={session.user.id ?? "anon"}
+        >
+          <form className="grid gap-3 md:grid-cols-4">
+            <label className="text-sm text-slate-200">
+              Type
+              <select name="kind" defaultValue={kind} className="mt-1 w-full rounded-lg bg-white/10 px-2 py-2 text-white outline-none focus:border-cyan-400">
+                <option value="">Tous</option>
+                <option value="PACK">Pack</option>
+                <option value="SUBSCRIPTION">Abonnement</option>
+                <option value="PRESET">Preset</option>
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Statut
+              <select name="status" defaultValue={status} className="mt-1 w-full rounded-lg bg-white/10 px-2 py-2 text-white outline-none focus:border-cyan-400">
+                <option value="">Tous</option>
+                <option value="PAID">Payé</option>
+                <option value="PENDING">En attente</option>
+                <option value="CANCELLED">Annulé</option>
+              </select>
+            </label>
+            <label className="text-sm md:col-span-2 text-slate-200">
+              Recherche élève/offre
+              <input
+                name="q"
+                defaultValue={q}
+                className="mt-1 w-full rounded-lg bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                placeholder="Nom élève ou offre"
+              />
+            </label>
+            <div className="md:col-span-4 flex justify-end">
+              <button
+                type="submit"
+                className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-200"
+              >
+                Filtrer
+              </button>
+            </div>
+          </form>
+        </FilterPanel>
+
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+          {rows.length === 0 ? (
+            <p className="text-slate-300">Aucun achat trouvé.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm text-slate-200">
               <thead>
                 <tr className="border-b border-white/10 text-left text-xs uppercase tracking-[0.12em] text-indigo-100">
                   <th className="px-3 py-2">Élève</th>
@@ -156,27 +171,42 @@ export default async function TeacherPurchasesPage({
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
-        )}
+              </table>
+            </div>
+          )}
 
-        <div className="mt-3 flex items-center justify-between text-sm text-slate-300">
-          <span>
-            Page {page} / {totalPages} · {count} achats
-          </span>
-          <div className="flex items-center gap-2">
-            <a
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-              href={`?${new URLSearchParams({ ...searchParams, page: String(Math.max(1, page - 1)) }).toString()}`}
-            >
-              Précédent
-            </a>
-            <a
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-              href={`?${new URLSearchParams({ ...searchParams, page: String(Math.min(totalPages, page + 1)) }).toString()}`}
-            >
-              Suivant
-            </a>
+          <div className="mt-3 flex items-center justify-between text-sm text-slate-300">
+            <span>
+              Page {page} / {totalPages} · {count} achats
+            </span>
+            <div className="flex items-center gap-2">
+              {(() => {
+                const params = new URLSearchParams();
+                if (kind) params.set("kind", kind);
+                if (status) params.set("status", status);
+                if (q) params.set("q", q);
+                params.set("page", String(Math.max(1, page - 1)));
+                const prevHref = `?${params.toString()}`;
+                params.set("page", String(Math.min(totalPages, page + 1)));
+                const nextHref = `?${params.toString()}`;
+                return (
+                  <>
+                    <a
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                      href={prevHref}
+                    >
+                      Précédent
+                    </a>
+                    <a
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                      href={nextHref}
+                    >
+                      Suivant
+                    </a>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
       </section>
