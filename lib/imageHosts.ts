@@ -11,4 +11,5 @@ export const allowedImageHosts = [
   "avatars.githubusercontent.com",
   "images.ctfassets.net",
   "www.ainsidansehem.fr",
+  "i.postimg.cc",
 ];

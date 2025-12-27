@@ -42,6 +42,8 @@ export function SafeImage({
 
   const isDataOrRelative = !parsedUrl;
   const isAllowedHost = parsedUrl ? allowedImageHosts.includes(parsedUrl.hostname) : false;
+  const resolvedWidth = width ?? 800;
+  const resolvedHeight = height ?? 450;
 
   if (forceFallback || isDataOrRelative || !isAllowedHost) {
     return (
@@ -58,15 +60,15 @@ export function SafeImage({
   }
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      className={className}
-      width={width}
-      height={height}
-      loading={loading}
-      unoptimized
-      onError={() => setForceFallback(true)}
-    />
-  );
+      <Image
+        src={src}
+        alt={alt}
+        className={className}
+        width={resolvedWidth}
+        height={resolvedHeight}
+        loading={loading}
+        unoptimized
+        onError={() => setForceFallback(true)}
+      />
+    );
 }

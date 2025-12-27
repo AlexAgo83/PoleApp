@@ -520,6 +520,7 @@ model Preset {
   description      String?
   discipline       String?
   videoUrl         String?
+  imageUrl         String?
   premiumRequired  Boolean   @default(false)
   priceCredits     Int?
   createdAt        DateTime  @default(now())

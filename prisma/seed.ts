@@ -33,6 +33,9 @@ const POSITION_IMAGES = [
   "https://i.postimg.cc/13PWdtzW/Gemini-Generated-Image-8df1hr8df1hr8df1.png",
   "https://i.postimg.cc/T3Gksw-Pt/Gemini-Generated-Image-tqk096tqk096tqk0.png",
   "https://i.postimg.cc/CxYv21KQ/Gemini-Generated-Image-x6c36yx6c36yx6c3.png",
+  "https://i.postimg.cc/g01pRsPN/Gemini_Generated_Image_4nvmg14nvmg14nvm.png",
+  "https://i.postimg.cc/zf4NW71p/Gemini_Generated_Image_s8vw7ls8vw7ls8vw.png",
+  "https://i.postimg.cc/mrK4MjGm/Gemini_Generated_Image_y1xzydy1xzydy1xz.png",
 ];
 
 const COURSE_IMAGES = [
@@ -180,7 +183,12 @@ const schoolsList = [
   "Équilibre",
 ];
 
-const SCHOOL_IMAGE = "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png";
+const SCHOOL_IMAGES = [
+  "https://i.postimg.cc/XYM9HSkn/Gemini_Generated_Image_3dwugg3dwugg3dwu.png",
+  "https://i.postimg.cc/mgx7XfyR/Gemini_Generated_Image_qs6pi3qs6pi3qs6p.png",
+  "https://i.postimg.cc/8z8LKQmG/Gemini_Generated_Image_xrgzgtxrgzgtxrgz.png",
+  "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png",
+];
 const SCHOOL_WEBSITE = "http://www.google.com";
 const PARTNER_AMAZON = {
   name: "Amazon",
@@ -259,6 +267,7 @@ const seedPresetsData = [
     discipline: "Pole",
     premiumRequired: true,
     description: "Combo court pour débutants, axé fluidité et musicalité.",
+    imageUrl: "https://i.postimg.cc/65XPDS0n/Gemini-Generated-Image-r18l7or18l7or18l.png",
   },
   {
     title: "Preset Crédit 150",
@@ -266,6 +275,7 @@ const seedPresetsData = [
     premiumRequired: false,
     priceCredits: 150,
     description: "Preset achetable en crédits, avec focus exotic.",
+    imageUrl: "https://i.postimg.cc/65XPDS0d/Gemini-Generated-Image-qoeoe9qoeoe9qoeo.png",
   },
 ];
 
@@ -454,11 +464,11 @@ async function seedSchoolsAndUsers() {
   // On prend les 2 premières écoles de la liste
   const selectedSchools = schoolsList.slice(0, 2);
   const schools = await Promise.all(
-    selectedSchools.map((name) =>
+    selectedSchools.map((name, idx) =>
       prisma.school.create({
         data: {
           name,
-          photoUrl: SCHOOL_IMAGE,
+          photoUrl: SCHOOL_IMAGES[idx % SCHOOL_IMAGES.length],
           website: SCHOOL_WEBSITE,
         },
       })

@@ -16,6 +16,10 @@ const subscriptionPurchaseSchema = z.object({
   subscriptionId: z.string().cuid(),
 });
 
+const presetPurchaseSchema = z.object({
+  presetId: z.string().cuid(),
+});
+
 export async function demoAddCreditsAction(formData: FormData) {
   // Legacy fallback
   const session = await getServerSession(authOptions);
@@ -120,4 +124,65 @@ export async function buySubscriptionAction(formData: FormData) {
   revalidatePath("/app/student");
   revalidatePath("/app/student/courses");
   revalidatePath("/app/student/courses/agenda");
+}
+
+export async function buyPresetAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || session.user.role !== "STUDENT" || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  const parsed = presetPurchaseSchema.safeParse({
+    presetId: formData.get("presetId"),
+  });
+  if (!parsed.success) throw new Error("Preset invalide");
+
+  const preset = await prisma.preset.findFirst({
+    where: { id: parsed.data.presetId, schoolId: session.user.schoolId },
+    select: { id: true, title: true, priceCredits: true, premiumRequired: true },
+  });
+  if (!preset) throw new Error("Preset indisponible");
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { credits: true, isPremium: true } });
+  if (!user) redirect("/access-denied");
+
+  if (preset.premiumRequired && !user.isPremium) {
+    throw new Error("Preset réservé aux membres premium");
+  }
+
+  const alreadyBought = await prisma.purchase.findFirst({
+    where: { userId: session.user.id, kind: "PRESET", offerId: preset.id, status: "PAID" },
+  });
+  if (alreadyBought) return redirect("/app/presets?flash=already");
+
+  const cost = preset.priceCredits ?? 0;
+  if (cost > 0 && (user.credits ?? 0) < cost) {
+    throw new Error("Crédits insuffisants");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    if (cost > 0) {
+      await tx.user.update({
+        where: { id: session.user!.id },
+        data: { credits: { decrement: cost } },
+      });
+    }
+    await tx.purchase.create({
+      data: {
+        userId: session.user!.id,
+        offerId: preset.id,
+        offerName: preset.title,
+        kind: "PRESET",
+        amountCents: 0,
+        vatPercent: 20,
+        currency: "EUR",
+        creditsGranted: 0,
+        isPremiumGranted: false,
+        status: "PAID",
+      },
+    });
+  });
+
+  revalidatePath("/presets");
+  revalidatePath("/app/student");
+  redirect("/presets?flash=ok");
 }

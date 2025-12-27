@@ -304,23 +304,18 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 {disciplineFilter ? (
                   <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/50 bg-cyan-500/20 px-3 py-1 text-xs font-semibold text-white">
                     {disciplineFilter}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const params = new URLSearchParams(window.location.search);
+                    <a
+                      href={`?${(() => {
+                        const params = new URLSearchParams(queryParams.toString());
                         params.delete("discipline");
-                        window.location.search = params.toString();
-                      }}
-                      className="text-cyan-100 hover:text-white"
+                        return params.toString();
+                      })()}`}
                     >
                       ✕
-                    </button>
+                    </a>
                   </span>
                 ) : null}
               </div>
-              <p className="mt-1 text-xs text-slate-400">
-                Multi-sélection à venir : pour l’instant, choisissez une discipline ou réinitialisez rapidement.
-              </p>
             </label>
             <label className="text-sm text-slate-200">
               Professeur (créateur)
@@ -403,21 +398,25 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       {p.discipline}
                     </span>
                   ) : null}
-                  <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 text-right">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
-                      Vu : {p._count?.progress ?? 0}
-                    </span>
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                        progressText
-                          ? progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
+                  {((p._count?.progress ?? 0) > 0) && (
+                    <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 text-right">
+                      {((p._count?.progress ?? 0) > 0) && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                          Vu : {p._count?.progress ?? 0}
+                        </span>
+                      )}
+                      {progressText ? (
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                            progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
                             "border border-white/15 bg-black/50 text-slate-200"
-                          : "border border-white/15 bg-black/50 text-slate-200"
-                      }`}
-                    >
-                      {progressText ? `Niveau élève : ${progressText}` : "Découverte"}
-                    </span>
-                  </div>
+                          }`}
+                        >
+                          Niveau élève : {progressText}
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
                   <div className="flex flex-1 flex-col gap-2 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">

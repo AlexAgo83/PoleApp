@@ -8,7 +8,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-import { createPresetAction, deletePresetAction } from "./actions";
+import { createPresetAction, deletePresetAction, updatePresetImageAction } from "./actions";
+import { SafeImage } from "@/components/SafeImage";
 
 export default async function TeacherPresetsPage() {
   const session = await getServerSession(authOptions);
@@ -24,7 +25,10 @@ export default async function TeacherPresetsPage() {
     }),
     prisma.preset.findMany({
       where: { schoolId: session.user.schoolId },
-      include: { positions: { include: { position: { select: { name: true } } } }, createdBy: { select: { name: true, email: true } } },
+      include: {
+        positions: { include: { position: { select: { name: true } } } },
+        createdBy: { select: { name: true, email: true } },
+      },
       orderBy: { createdAt: "desc" },
       take: 20,
     }),
@@ -39,21 +43,23 @@ export default async function TeacherPresetsPage() {
 
   return (
     <main className="px-4 py-6 text-white">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Espace prof</p>
-          <h1 className="text-2xl font-semibold">Presets / combos</h1>
-          <p className="text-sm text-slate-300">Crée des combos vidéo premium ou achetables en crédits.</p>
+      <section className="panel space-y-2 p-6">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Espace prof</p>
+            <h1 className="text-2xl font-semibold">Presets / combos</h1>
+            <p className="text-sm text-slate-300">Crée des combos vidéo premium ou achetables en crédits.</p>
+          </div>
+          <Link
+            href="/app/teacher"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour accueil
+          </Link>
         </div>
-        <Link
-          href="/app/teacher"
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          ← Retour accueil
-        </Link>
-      </div>
+      </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
+      <section className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         <form action={createPresetAction} className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
           <h2 className="text-lg font-semibold text-white">Créer un preset</h2>
           <label className="text-sm text-slate-200">
@@ -89,6 +95,15 @@ export default async function TeacherPresetsPage() {
               name="videoUrl"
               type="url"
               placeholder="https://..."
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+          </label>
+          <label className="text-sm text-slate-200">
+            Image (URL)
+            <input
+              name="imageUrl"
+              type="url"
+              placeholder="https://…"
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
           </label>
@@ -135,7 +150,12 @@ export default async function TeacherPresetsPage() {
             <ul className="space-y-2">
               {presets.map((preset) => (
                 <li key={preset.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-col gap-3">
+                    {preset.imageUrl ? (
+                      <div className="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                        <SafeImage src={preset.imageUrl} alt={preset.title} className="h-32 w-full object-cover" />
+                      </div>
+                    ) : null}
                     <div className="space-y-1">
                       <p className="text-lg font-semibold text-white">{preset.title}</p>
                       <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
@@ -168,15 +188,33 @@ export default async function TeacherPresetsPage() {
                         <p className="text-xs text-slate-400">Aucune position liée.</p>
                       )}
                     </div>
-                    <form action={deletePresetAction}>
+                    <form action={updatePresetImageAction} className="flex flex-wrap items-center gap-2">
                       <input type="hidden" name="id" value={preset.id} />
+                      <input
+                        type="url"
+                        name="imageUrl"
+                        defaultValue={preset.imageUrl ?? ""}
+                        placeholder="URL image"
+                        className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400"
+                      />
                       <button
                         type="submit"
-                        className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
+                        className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-200"
                       >
-                        Supprimer
+                        Mettre à jour l’image
                       </button>
                     </form>
+                    <div className="flex justify-end">
+                      <form action={deletePresetAction}>
+                        <input type="hidden" name="id" value={preset.id} />
+                        <button
+                          type="submit"
+                          className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
+                        >
+                          Supprimer
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 </li>
               ))}

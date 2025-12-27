@@ -212,6 +212,20 @@ export default async function StudentDashboard() {
             </p>
           </Link>
           <Link
+            href="/presets"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+              Combos / presets
+            </p>
+            <p className="text-base font-semibold text-white">
+              Parcourir et acheter les combos
+            </p>
+            <p className="text-sm text-slate-300">
+              Catalogue de combos vidéo (premium ou crédits). Achat direct pour débloquer les contenus.
+            </p>
+          </Link>
+          <Link
             href="/app/student/game"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
