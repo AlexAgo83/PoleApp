@@ -10,11 +10,15 @@ import { prisma } from "@/lib/prisma";
 
 import { createPresetAdminAction, deletePresetAdminAction } from "./actions";
 
-export default async function AdminPresetsPage() {
+export default async function AdminPresetsPage({ searchParams }: { searchParams?: { page?: string } }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     redirect("/access-denied");
   }
+
+  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
+  const take = 10;
+  const skip = (page - 1) * take;
 
   const [positions, presets, disciplines] = await Promise.all([
     prisma.position.findMany({
@@ -26,7 +30,8 @@ export default async function AdminPresetsPage() {
       where: { schoolId: session.user.schoolId },
       include: { positions: { include: { position: { select: { name: true } } } }, createdBy: { select: { name: true, email: true } } },
       orderBy: { createdAt: "desc" },
-      take: 30,
+      skip,
+      take,
     }),
     prisma.discipline
       .findMany({
@@ -36,6 +41,8 @@ export default async function AdminPresetsPage() {
       })
       .catch(() => []),
   ]);
+  const totalPresets = await prisma.preset.count({ where: { schoolId: session.user.schoolId } });
+  const totalPages = Math.max(1, Math.ceil(totalPresets / take));
 
   return (
     <main className="px-4 py-6 text-white">
@@ -55,7 +62,7 @@ export default async function AdminPresetsPage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="mt-6 grid gap-6 md:grid-cols-2">
         <section className="panel space-y-3 p-5">
           <h2 className="text-lg font-semibold text-white">Créer un preset</h2>
           <form action={createPresetAdminAction} className="space-y-3">
@@ -136,55 +143,80 @@ export default async function AdminPresetsPage() {
           {presets.length === 0 ? (
             <p className="text-slate-300">Aucun preset pour le moment.</p>
           ) : (
-            <ul className="space-y-2">
-              {presets.map((preset) => (
-                <li key={preset.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="space-y-1">
-                      <p className="text-lg font-semibold text-white">{preset.title}</p>
-                      <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
-                        {preset.discipline ? (
-                          <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">
-                            {preset.discipline}
-                          </span>
-                        ) : null}
-                        {preset.premiumRequired ? (
-                          <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">Premium</span>
-                        ) : preset.priceCredits ? (
-                          <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">
-                            {preset.priceCredits} crédits
-                          </span>
+            <>
+              <ul className="space-y-2">
+                {presets.map((preset) => (
+                  <li key={preset.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold text-white">{preset.title}</p>
+                        <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+                          {preset.discipline ? (
+                            <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">
+                              {preset.discipline}
+                            </span>
+                          ) : null}
+                          {preset.premiumRequired ? (
+                            <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">Premium</span>
+                          ) : preset.priceCredits ? (
+                            <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">
+                              {preset.priceCredits} crédits
+                            </span>
+                          ) : (
+                            <span className="rounded-full border border-slate-300/40 bg-slate-500/20 px-2 py-0.5">Gratuit</span>
+                          )}
+                          {preset.createdBy ? (
+                            <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
+                              Créé par {preset.createdBy.name ?? preset.createdBy.email}
+                            </span>
+                          ) : null}
+                        </div>
+                        {preset.positions.length > 0 ? (
+                          <p className="text-xs text-slate-300">
+                            Positions : {preset.positions.map((pp) => pp.position.name).join(", ")}
+                          </p>
                         ) : (
-                          <span className="rounded-full border border-slate-300/40 bg-slate-500/20 px-2 py-0.5">Gratuit</span>
+                          <p className="text-xs text-slate-400">Aucune position liée.</p>
                         )}
-                        {preset.createdBy ? (
-                          <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
-                            Créé par {preset.createdBy.name ?? preset.createdBy.email}
-                          </span>
-                        ) : null}
                       </div>
-                      {preset.positions.length > 0 ? (
-                        <p className="text-xs text-slate-300">
-                          Positions : {preset.positions.map((pp) => pp.position.name).join(", ")}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-slate-400">Aucune position liée.</p>
-                      )}
+                      <form action={deletePresetAdminAction}>
+                        <input type="hidden" name="id" value={preset.id} />
+                        <button
+                          type="submit"
+                          className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
+                        >
+                          Supprimer
+                        </button>
+                      </form>
                     </div>
-                    <form action={deletePresetAdminAction}>
-                      <input type="hidden" name="id" value={preset.id} />
-                      <button
-                        type="submit"
-                        className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
-                      >
-                        Supprimer
-                      </button>
-                    </form>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 flex items-center justify-between text-sm text-slate-300">
+                <span>
+                  Page {page} / {totalPages} · {totalPresets} presets
+                </span>
+                <div className="flex items-center gap-2">
+                  {page > 1 && (
+                    <Link
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                      href={`?page=${Math.max(1, page - 1)}`}
+                    >
+                      Précédent
+                    </Link>
+                  )}
+                  {page < totalPages && (
+                    <Link
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                      href={`?page=${Math.min(totalPages, page + 1)}`}
+                    >
+                      Suivant
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </>
           )}
         </section>
       </section>

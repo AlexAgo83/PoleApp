@@ -210,16 +210,22 @@ export default async function AdminDashboard({
             Cours
           </Link>
           <Link
-            href="/positions"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Positions
-          </Link>
-          <Link
-            href="/app/student/game"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Jeux
+          href="/positions"
+          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+        >
+          Positions
+        </Link>
+        <Link
+          href="/app/admin/presets"
+          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+        >
+          Combo / Presets
+        </Link>
+        <Link
+          href="/app/student/game"
+          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+        >
+          Jeux
           </Link>
           <Link
             href="/app/admin/billing"
