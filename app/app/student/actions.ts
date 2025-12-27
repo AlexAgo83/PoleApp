@@ -180,6 +180,13 @@ export async function buyPresetAction(formData: FormData) {
         status: "PAID",
       },
     });
+    await tx.preset.update({
+      where: { id: preset.id },
+      data: {
+        usageCount: { increment: 1 },
+        lastUsedAt: new Date(),
+      },
+    });
   });
 
   revalidatePath("/presets");

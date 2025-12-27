@@ -45,7 +45,12 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
   const schoolId = session.user.schoolId || undefined;
 
   const q = params.q?.toString().trim() || "";
-  const disciplineFilter = params.discipline?.toString().trim() || "";
+  const disciplineFilters =
+    params.discipline
+      ?.toString()
+      .split(",")
+      .map((d) => d.trim())
+      .filter(Boolean) ?? [];
   const priceFilter = params.price?.toString() || "";
   const rawPage = Number(params.page ?? "1");
   const flash = params.flash?.toString() || "";
@@ -60,7 +65,13 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           ],
         }
       : {}),
-    ...(disciplineFilter ? { discipline: { contains: disciplineFilter, mode: "insensitive" } } : {}),
+    ...(disciplineFilters.length
+      ? {
+          OR: disciplineFilters.map((d) => ({
+            discipline: { contains: d, mode: "insensitive" },
+          })),
+        }
+      : {}),
   };
 
   if (priceFilter === "premium") {
@@ -110,12 +121,12 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       : Promise.resolve(new Set<string>()),
   ]);
 
-  const activeFilters = [q && q.length > 0, disciplineFilter, priceFilter].filter(Boolean).length;
+  const activeFilters = [q && q.length > 0, disciplineFilters.length > 0, priceFilter].filter(Boolean).length;
   const hasCredits = studentInfo?.credits ?? 0;
   const hasPremium = studentInfo?.isPremium ?? false;
   const queryParams = new URLSearchParams();
   if (q) queryParams.set("q", q);
-  if (disciplineFilter) queryParams.set("discipline", disciplineFilter);
+  if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
   if (priceFilter) queryParams.set("price", priceFilter);
 
   return (
@@ -157,12 +168,20 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               Parcours filtrable des combos : discipline, premium ou crédits. Les élèves peuvent acheter directement.
             </p>
           </div>
-          <div className="flex w-full justify-end md:w-auto">
+          <div className="flex w-full justify-end gap-2 md:w-auto">
+            {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
+              <Link
+                href="/app/teacher/presets"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Gestion (prof/admin)
+              </Link>
+            )}
             <Link
-              href="/app/teacher/presets"
+              href={homeForRole}
               className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              Gestion (prof/admin)
+              ← Retour accueil
             </Link>
           </div>
         </div>
@@ -203,7 +222,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           contentClassName="mt-3"
         >
           <form
-            key={`filters-${q || "all"}-${disciplineFilter || "all"}-${priceFilter || "all"}`}
+            key={`filters-${q || "all"}-${disciplineFilters.join("|") || "all"}-${priceFilter || "all"}`}
             method="get"
             className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
@@ -217,22 +236,35 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
-            <label className="text-sm text-slate-200">
-              Discipline
-              <select
-                key={disciplineFilter || "all-disciplines"}
-                name="discipline"
-                defaultValue={disciplineFilter}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus-border-cyan-400"
-              >
-                <option value="">Toutes disciplines</option>
-                {disciplineOptions.map((d) => (
-                  <option key={d.discipline ?? "none"} value={d.discipline ?? ""}>
-                    {d.discipline ?? "Non définie"}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1">Disciplines</legend>
+              <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
+                <div className="flex flex-wrap gap-2">
+                  {disciplineOptions.slice(0, 8).map((d) => {
+                    const value = d.discipline ?? "";
+                    if (!value) return null;
+                    const checked = disciplineFilters.includes(value);
+                    return (
+                      <label
+                        key={value}
+                        className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="discipline"
+                          value={value}
+                          defaultChecked={checked}
+                          className="peer sr-only"
+                        />
+                        <span className="peer-checked:text-white peer-checked:border-cyan-300/70 peer-checked:bg-cyan-500/20 peer-checked:px-3 peer-checked:py-1 peer-checked:rounded-full peer-checked:border">
+                          {value}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Tarification
               <select
@@ -311,6 +343,10 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                     ) : (
                       <p className="text-xs text-slate-400">Aucune position liée.</p>
                     )}
+                    <p className="text-xs text-slate-400">
+                      Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
+                      {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
+                    </p>
                   </div>
                   <div className="mt-4 flex items-center justify-between">
                     <div className="text-xs text-slate-300">

@@ -523,6 +523,8 @@ model Preset {
   imageUrl         String?
   premiumRequired  Boolean   @default(false)
   priceCredits     Int?
+  usageCount       Int       @default(0)
+  lastUsedAt       DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   positions        PresetPosition[]
