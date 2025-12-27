@@ -253,6 +253,22 @@ const courseNames = [
   "Tricks Intermédiaire",
 ];
 
+const seedPresetsData = [
+  {
+    title: "Combo Fluide Débutant",
+    discipline: "Pole",
+    premiumRequired: true,
+    description: "Combo court pour débutants, axé fluidité et musicalité.",
+  },
+  {
+    title: "Preset Crédit 150",
+    discipline: "Pole Exotic",
+    premiumRequired: false,
+    priceCredits: 150,
+    description: "Preset achetable en crédits, avec focus exotic.",
+  },
+];
+
 type Gender = "F" | "M";
 
 const people: { name: string; age: number; gender: Gender }[] = [
@@ -910,6 +926,39 @@ async function seedPurchases(students: { id: string; schoolId: string }[]) {
   }
 }
 
+async function seedPresets(options: {
+  schools: { id: string }[];
+  positions: { id: string; name: string; discipline: string | null }[];
+  teachers: { id: string; schoolId: string }[];
+}) {
+  const { schools, positions, teachers } = options;
+  for (const school of schools) {
+    const teacher = teachers.find((t) => t.schoolId === school.id) ?? null;
+    const positionPool = positions.filter((p) => !!p.discipline);
+    for (const preset of seedPresetsData) {
+      const picked = positionPool
+        .filter((p) => (preset.discipline ? p.discipline === preset.discipline : true))
+        .slice()
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+      await prisma.preset.create({
+        data: {
+          title: preset.title,
+          description: preset.description,
+          discipline: preset.discipline,
+          premiumRequired: preset.premiumRequired ?? false,
+          priceCredits: preset.priceCredits ?? null,
+          schoolId: school.id,
+          createdByUserId: teacher?.id,
+          positions: {
+            create: picked.map((p) => ({ positionId: p.id })),
+          },
+        },
+      });
+    }
+  }
+}
+
 async function seedSuperAdmin() {
   const existing = await prisma.user.findFirst({ where: { role: Role.SUPER_ADMIN } });
   if (existing) return existing;
@@ -951,6 +1000,7 @@ async function main() {
   });
   await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
   await seedStudentInjuries(students);
+  await seedPresets({ schools, positions, teachers });
   await seedPurchases(students);
   await seedCourses({ schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);

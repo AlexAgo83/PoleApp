@@ -494,7 +494,7 @@ model Purchase {
   userId           String
   offerId          String
   offerName        String
-  kind             String   // PACK | SUBSCRIPTION
+  kind             String   // PACK | SUBSCRIPTION | PRESET
   amountCents      Int
   vatPercent       Int      @default(20)
   currency         String   @default("EUR")
@@ -507,6 +507,34 @@ model Purchase {
 
   @@index([userId])
   @@index([kind, status])
+}
+
+model Preset {
+  id               String    @id @default(cuid())
+  schoolId         String
+  createdByUserId  String?
+  title            String
+  description      String?
+  discipline       String?
+  videoUrl         String?
+  premiumRequired  Boolean   @default(false)
+  priceCredits     Int?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  positions        PresetPosition[]
+  school           School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdBy        User?     @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId])
+}
+
+model PresetPosition {
+  presetId   String
+  positionId String
+  preset     Preset   @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  position   Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
+
+  @@id([presetId, positionId])
 }
 
 model AuditLog {
