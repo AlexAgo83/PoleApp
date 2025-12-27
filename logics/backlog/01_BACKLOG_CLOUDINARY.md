@@ -1,5 +1,5 @@
 # Backlog Cloudinary (uploads médias)
-[Compréhension: 30% / Avancement: 0%]
+[Compréhension: 80% / Avancement: 40%]
 > FAIBLE PRIORITE
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
@@ -41,9 +41,9 @@
 - Ajouter une variante pour les tailles : avatar carré (crop/resize), photo cours (16:9), etc. via props `transformPreset`.
 
 ## Intégrations UI (à planifier)
-- Profil utilisateur : remplacer l’input URL par le composant upload (avatar).
-- Fiche cours (création/édition) : remplacer l’URL photo par le composant upload.
-- Fiche position (si besoin) : uploader media principal.
+- Profil utilisateur : remplacer l’input URL par le composant upload (avatar). *(TODO)*
+- Fiche cours (création/édition) : remplacer l’URL photo par le composant upload. *(TODO)*
+- Fiche position : uploader media principal + vidéo (fait).
 - Prévoir placeholders si aucune image.
 
 ## Sécurité & limites
@@ -61,3 +61,8 @@
 - Ajouter `cloudinary` au package.json.
 - Mettre à jour la doc Render (vars d’env + rappel build/start).
 - Vérifier `npm run build` après ajout des env côté CI/Render.
+
+## État
+- Upload vidéo positions en mode authenticated + URL signées : livré (`CloudinaryUpload`, routes signature/delete, helper generateSignedUrl).
+- Seed : chaque position reçoit une vidéo Cloudinary authenticated (publicId round-robin).
+- Reste à faire : avatars utilisateurs, photos cours/studios via composant upload, presets si nécessaire.

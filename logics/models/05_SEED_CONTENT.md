@@ -1,7 +1,7 @@
-# 05 — Seed content (v0.7.x)
+# 05 — Seed content (v0.8.1)
 
-> Seed dev actuelle : 2 écoles (photo + URL par défaut), comptes fixes (super admin global + admin/teacher/student1/2, mdp `poleapp123`), studios avec photos, 20 cours démo/école, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits).
-> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions (30) créées par des professeurs seedés (Elza priorisée) + favoris prof auto. Cours répartis entre profs de l’école sans collision horaire, durées par pas de 15 min.
+> Seed dev actuelle : 2 écoles (photo + URL http://www.google.com), comptes fixes (super admin global + admin/teacher/student1/2, mdp `poleapp123`), studios avec photos, 20 cours démo/école, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits), crédits 500 par élève.
+> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions (30) créées par des professeurs seedés (Elza priorisée) + favoris prof auto + vidéo Cloudinary authentifiée par position (round-robin sur 3 publicId). Cours répartis entre profs de l’école sans collision horaire, durées par pas de 15 min.
 
 ## Taxonomies
 
@@ -38,7 +38,12 @@
 - Bras
 
 ## Positions (exemples — placeholder)
-> 30 positions (spins/tricks/transitions/warmups/strength), chacune avec au moins 1 image.
+> 30 positions (spins/tricks/transitions/warmups/strength), chacune avec 1 image + 1 vidéo Cloudinary authentifiée (publicId round-robin sur 3 valeurs).
+
+Vidéos Cloudinary utilisées (authenticated) :
+- `poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k`
+- `poleapp/positions/poleapp/positions/ez38yqvywnxis1g6rpbd`
+- `poleapp/positions/poleapp/positions/nki6uakajeqfvikcvr8k` (doublon volontaire round-robin)
 
 Exemple (format libre, tronqué) :
 1. Fireman Spin — SPIN — BEGINNER — grips: TRUE  
@@ -58,7 +63,7 @@ Exemple (format libre, tronqué) :
 30. Phoenix Spin — SPIN — ADVANCED — grips: TRUE
 
 ## Écoles et utilisateurs générés (mot de passe `poleapp123`)
-- 2 écoles créées : (voir noms plus bas) la première école sera utilisée en priorité (photo par défaut + URL http://www.google.com).
+- 2 écoles créées : (voir noms plus bas) la première école sera utilisée en priorité (photo par défaut + URL http://www.google.com). **Donuts** a été renommée **APEX** dans le seed.
 - Pour chaque école créer : **3 studios** (voir nom plus bas, adresse fictive Paris).
 - Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `poleapp123`, premium pour 1 élève sur 2, **500 crédits** par élève.
 - Pour chaque utilisateurs : Les nom prenom et photos de profile sont sélectionnés dans la liste plus bas (Choisir aléatoirement selon le genre).
