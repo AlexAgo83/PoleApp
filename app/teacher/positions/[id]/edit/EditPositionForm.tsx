@@ -80,6 +80,7 @@ export function EditPositionForm({
           label="Uploader une vidéo"
           folder="poleapp/positions"
           resourceType="video"
+          deliveryType="authenticated"
           accept="video/*"
           maxSizeMB={100}
           currentUrl={videoUrl || undefined}
@@ -102,15 +103,6 @@ export function EditPositionForm({
         >
           Enregistrer
         </button>
-        <form action={deletePositionAction}>
-          <input type="hidden" name="positionId" value={position.id} />
-          <button
-            type="submit"
-            className="rounded-full border border-red-300/60 bg-red-500/15 px-4 py-2 text-sm font-semibold text-red-100 transition hover:border-red-200"
-          >
-            Supprimer
-          </button>
-        </form>
       </div>
     </form>
   );

@@ -8,6 +8,7 @@ import { destroyAsset, isCloudinaryEnabled } from "@/lib/cloudinary";
 const schema = z.object({
   publicId: z.string().trim().min(1),
   resourceType: z.enum(["image", "video"]).optional(),
+  deliveryType: z.enum(["upload", "authenticated"]).optional(),
 });
 
 export async function DELETE(request: Request) {
@@ -22,13 +23,19 @@ export async function DELETE(request: Request) {
   const body = await request.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
+    console.error("[cloudinary-destroy] invalid payload", parsed.error.flatten());
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
   }
 
   try {
-    const res = await destroyAsset(parsed.data.publicId, parsed.data.resourceType);
+    const res = await destroyAsset(
+      parsed.data.publicId,
+      parsed.data.resourceType ?? "image",
+      parsed.data.deliveryType ?? "upload",
+    );
     return NextResponse.json({ ok: true, result: res });
-  } catch {
+  } catch (error) {
+    console.error("[cloudinary-destroy] destroy failed", error);
     return NextResponse.json({ error: "destroy failed" }, { status: 500 });
   }
 }
