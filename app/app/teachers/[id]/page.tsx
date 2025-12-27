@@ -90,7 +90,11 @@ export default async function TeacherPublicProfilePage({
       .filter((p): p is NonNullable<typeof p> => Boolean(p)) ?? [];
   const backHref =
     safeFrom ??
-    (session.user.role === "STUDENT" ? "/app/student/teachers" : "/app/teacher");
+    (session.user.role === "SCHOOL_ADMIN"
+      ? "/app/admin/teachers"
+      : session.user.role === "STUDENT"
+        ? "/app/student/teachers"
+        : "/app/teacher");
   const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
   const [firstNameDefault, ...restName] =
     (teacher.name ?? "")
@@ -174,6 +178,7 @@ export default async function TeacherPublicProfilePage({
             favoritePositionIds,
           }}
           positions={positions}
+          returnTo={backHref}
         />
       )}
     </main>

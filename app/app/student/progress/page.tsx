@@ -52,6 +52,23 @@ const typeLabels = {
 
 const PAGE_SIZE = 10;
 
+function hexToRgba(color: string, alpha: number) {
+  if (!color || !color.startsWith("#")) return null;
+  let hex = color.slice(1);
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+  if (hex.length !== 6) return null;
+  const num = Number.parseInt(hex, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export default async function StudentProgressPage({
   searchParams,
 }: {
@@ -131,6 +148,27 @@ export default async function StudentProgressPage({
     skip,
     take: PAGE_SIZE,
   });
+  const disciplineRows = session.user.schoolId
+    ? await prisma.discipline.findMany({
+        where: { schoolId: session.user.schoolId },
+        select: { name: true, color: true },
+      })
+    : [];
+  const disciplineColors = new Map(
+    disciplineRows
+      .filter((d) => d.name)
+      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
+  );
+  const disciplineStyle = (name?: string | null) => {
+    if (!name) return undefined;
+    const color = disciplineColors.get(name.toLowerCase());
+    if (!color) return undefined;
+    return {
+      borderColor: color,
+      color,
+      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
+    };
+  };
 
   const lockedCount = 0;
   const totalPages = Math.max(1, Math.ceil(filteredCount / PAGE_SIZE));
@@ -265,41 +303,72 @@ export default async function StudentProgressPage({
             const cover = position.media[0];
             const detailHref = `/positions/${position.id}?from=/app/student/progress?page=${page}${qs ? `&${qs}` : ""}`;
             const seen = seenCounts.get(position.id) ?? 0;
+            const showProgress = seen > 0;
 
             return (
               <Link
                 key={position.id}
                 href={detailHref}
-                className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-indigo-300/60 hover:bg-white/10"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-900/40 via-slate-900/40 to-cyan-900/30 shadow-inner shadow-black/30 transition hover:border-cyan-300/60 hover:shadow-cyan-900/30"
               >
-                {cover ? (
-                  <SafeImage
-                    src={cover.url}
-                    alt={position.name}
-                    width={480}
-                    height={200}
-                    className="h-40 w-full object-cover"
-                    fallbackSrc={POSITION_PLACEHOLDER}
-                  />
-                ) : (
-                  <SafeImage
-                    src={POSITION_PLACEHOLDER}
-                    alt={position.name}
-                    width={480}
-                    height={200}
-                    className="h-40 w-full object-cover"
-                    fallbackSrc={POSITION_PLACEHOLDER}
-                  />
-                )}
+                <div className="relative">
+                  {cover ? (
+                    <SafeImage
+                      src={cover.url}
+                      alt={position.name}
+                      width={480}
+                      height={200}
+                      className="h-44 w-full object-cover"
+                      fallbackSrc={POSITION_PLACEHOLDER}
+                    />
+                  ) : (
+                    <SafeImage
+                      src={POSITION_PLACEHOLDER}
+                      alt={position.name}
+                      width={480}
+                      height={200}
+                      className="h-44 w-full object-cover"
+                      fallbackSrc={POSITION_PLACEHOLDER}
+                    />
+                  )}
+                  <div className="absolute left-3 right-3 top-3 flex items-start justify-between gap-2">
+                    {position.discipline ? (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
+                        style={disciplineStyle(position.discipline)}
+                      >
+                        {position.discipline}
+                      </span>
+                    ) : (
+                      <span />
+                    )}
+                    <div className="flex flex-col items-end gap-2 text-right">
+                      {showProgress ? (
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusStyles[status as LearningStatus].solid}`}
+                        >
+                          {statusLabels[status as LearningStatus]}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                  {showProgress ? (
+                    <div className="absolute bottom-3 left-3">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                        Vu : {seen}
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-lg font-semibold text-white">
-                      {position.name}
-                    </h3>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[status as LearningStatus].solid}`}
-                    >
-                      {statusLabels[status as LearningStatus]}
+                    <h3 className="text-lg font-semibold text-white">{position.name}</h3>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                      {position.levelRequired === "BEGINNER"
+                        ? "Beginner"
+                        : position.levelRequired === "INTERMEDIATE"
+                          ? "Intermédiaire"
+                          : "Avancé"}
                     </span>
                   </div>
                   <p className="text-sm text-cyan-200">{typeLabels[position.type]}</p>
@@ -307,13 +376,14 @@ export default async function StudentProgressPage({
                     {position.tips ?? position.description ?? "Aucun détail"}
                   </p>
                   {mastery && (
-                    <p className="text-xs text-slate-200">
-                      Niveau : {masteryLabels[mastery]}
+                    <p className="text-xs font-semibold text-slate-200">
+                      Niveau élève : {masteryLabels[mastery]}
                     </p>
                   )}
-                  <div className="mt-auto flex flex-wrap items-center justify-end gap-2 text-xs">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-2 py-0.5 font-semibold text-cyan-100">
-                      Vu : {seen}
+                  <div className="mt-auto flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+                    <span>Progression enregistrée</span>
+                    <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 font-semibold text-slate-100">
+                      {progress ? "Oui" : "Non"}
                     </span>
                   </div>
                 </div>
