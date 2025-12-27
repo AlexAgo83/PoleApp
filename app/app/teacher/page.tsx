@@ -164,6 +164,22 @@ export default async function TeacherDashboard() {
               Dashboard et gestion utilisateurs (réservé School Admin).
             </p>
           </Link>
+          <Link
+            href="/app/teacher/purchases"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Achats élèves</p>
+            <p className="text-base font-semibold text-white">Packs / Abos / Presets</p>
+            <p className="text-sm text-slate-300">Lecture des achats de l’école (packs, abonnements, presets).</p>
+          </Link>
+          <Link
+            href="/app/teacher/presets"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Presets / combos</p>
+            <p className="text-base font-semibold text-white">Créer/ gérer les presets</p>
+            <p className="text-sm text-slate-300">Combos vidéo premium ou en crédits avec positions liées.</p>
+          </Link>
         </div>
       </section>
 
