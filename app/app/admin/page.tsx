@@ -286,6 +286,18 @@ export default async function AdminDashboard({
             href="/app/teacher/courses"
             cta="Voir les cours"
           />
+          <ActionCard
+            title="Achats (packs / abos / presets)"
+            description="Consulte les achats des élèves (packs crédits, abonnements, presets)."
+            href="/app/admin/purchases"
+            cta="Voir les achats"
+          />
+          <ActionCard
+            title="Presets / combos"
+            description="Crée et gère les presets vidéo premium ou en crédits."
+            href="/app/admin/presets"
+            cta="Gérer les presets"
+          />
         </div>
       </section>
 
