@@ -216,7 +216,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
             Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
           </p>
-          <p className="text-sm md:text-base text-slate-200 leading-6">
+          <p className="text-base md:text-lg text-slate-200 leading-6">
             Accès aux positions et navigation retour selon ton rôle.
           </p>
         </div>
@@ -244,7 +244,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 : "Espace élève"}
             </p>
             <h1 className="text-3xl font-semibold text-white">Positions</h1>
-            <p className="text-sm text-slate-200">
+            <p className="text-base md:text-lg text-slate-200">
               Catalogue des positions avec filtres et détail. Visible selon tes droits.
             </p>
           </div>
@@ -490,7 +490,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 </div>
                   <div className="flex flex-1 flex-col gap-2 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-base font-semibold text-white">{p.name}</p>
+                      <p className="text-lg font-semibold text-white">{p.name}</p>
                       <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
                         {levelLabels[p.levelRequired]}
                       </span>
