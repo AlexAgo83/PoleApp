@@ -87,6 +87,7 @@
 - Édition série : prévoir un mode “modifier cette occurrence uniquement” vs “modifier les futures” ?
 ### Progression
 - [ ] En cours (modèle série + occurrences virtuelles générées, UI récurrence ajoutée ; reste édition occurrence, affichage spécifique, QA)
+- [x] Édition cours : mise à jour interdit si collision horaire/studio détectée (aligné création)
 - [x] Timezone/alerte ICS configurables dans la page super-admin (global settings)
 
 ## P2 — Ajouter un cours à son agenda système (DONE)
