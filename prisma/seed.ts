@@ -7,6 +7,8 @@ import {
   PrismaClient,
   Role,
   InvoiceStatus,
+  MasteryLevel,
+  LearningStatus,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -170,6 +172,7 @@ const disciplinesCatalog = [
 ];
 
 const PRIMARY_DISCIPLINE = disciplinesCatalog[0].name;
+const NOW_TS = Date.now();
 
 const muscleCatalog = [
   { name: "Deltoïdes", kind: "MUSCLE" },
@@ -781,6 +784,52 @@ async function seedCourses(schoolsData: {
         data: attendees.map((s) => ({ courseId: course.id, studentId: s.id })),
       });
 
+      if (slot.date.getTime() < NOW_TS && coursePositions.length > 0 && attendees.length > 0) {
+        const notesData: Prisma.CourseNoteCreateManyInput[] = [];
+        for (const attendee of attendees) {
+          for (const position of coursePositions) {
+            if (Math.random() < 0.55) {
+              const masteryLevel = pickRandomMastery();
+              notesData.push({
+                courseId: course.id,
+                studentId: attendee.id,
+                positionId: position.id,
+                masteryLevel,
+                comment: null,
+              });
+              const learningStatus =
+                masteryLevel === MasteryLevel.PASSED || masteryLevel === MasteryLevel.FLUID_CHOREO
+                  ? LearningStatus.PASSED
+                  : masteryLevel === MasteryLevel.INITIATED
+                    ? LearningStatus.IN_PROGRESS
+                    : LearningStatus.NOT_STARTED;
+              await prisma.studentPositionProgress.upsert({
+                where: {
+                  studentId_positionId: { studentId: attendee.id, positionId: position.id },
+                },
+                update: {
+                  learningStatus,
+                  masteryLevel,
+                  comment: null,
+                  lastUpdatedByUserId: teacher.id,
+                },
+                create: {
+                  studentId: attendee.id,
+                  positionId: position.id,
+                  learningStatus,
+                  masteryLevel,
+                  comment: null,
+                  lastUpdatedByUserId: teacher.id,
+                },
+              });
+            }
+          }
+        }
+        if (notesData.length > 0) {
+          await prisma.courseNote.createMany({ data: notesData });
+        }
+      }
+
       const confirmedCount = attendees.length;
       const defaultAmountCents = computeDefaultInvoiceAmountCents(confirmedCount, course.maxSeats);
       await prisma.invoice.create({
@@ -794,6 +843,23 @@ async function seedCourses(schoolsData: {
       });
     }
   }
+}
+
+function pickRandomMastery(): MasteryLevel {
+  const pool: MasteryLevel[] = [
+    MasteryLevel.NOVELTY,
+    MasteryLevel.INITIATED,
+    MasteryLevel.PASSED,
+    MasteryLevel.FLUID_CHOREO,
+  ];
+  const weights = [0.2, 0.45, 0.25, 0.1];
+  const r = Math.random();
+  let acc = 0;
+  for (let i = 0; i < pool.length; i += 1) {
+    acc += weights[i];
+    if (r <= acc) return pool[i];
+  }
+  return pool[0];
 }
 
 async function seedPartners(schools: { id: string }[]) {

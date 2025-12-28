@@ -26,6 +26,7 @@ type Props = {
   initialPrev: string;
   initialNext: string;
   initialDays: Day[];
+  compact?: boolean;
   filters: {
     teacher?: string;
     studio?: string;
@@ -45,7 +46,7 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
-export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, filters, baseFrom }: Props) {
+export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, filters, baseFrom, compact }: Props) {
   const [days, setDays] = useState<Day[]>(initialDays);
   const [week, setWeek] = useState(initialWeek);
   const [prev, setPrev] = useState(initialPrev);
@@ -93,13 +94,15 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     fetchWeek(currentWeekKey);
   };
 
+  const containerClass = compact ? "rounded-2xl border border-white/0 bg-transparent p-0" : "panel p-6";
+
   const totalCourses = useMemo(
     () => days.reduce((acc, day) => acc + day.courses.length, 0),
     [days]
   );
 
   return (
-    <section className="panel p-6">
+    <section className={containerClass}>
       <div className="flex flex-wrap items-center justify-between gap-2 text-lg font-semibold text-white">
         <span>Vue semaine</span>
         <span className="text-sm font-normal text-cyan-100">{totalCourses} cours sur la semaine affichée</span>
