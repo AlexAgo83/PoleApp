@@ -32,6 +32,8 @@ export function AvatarUploadField({
         currentPublicId={publicId ?? undefined}
         folder={folder}
         maxSizeMB={maxSizeMB}
+        maxWidth={1080}
+        maxHeight={1080}
         deliveryType="authenticated"
         transformPreset="avatar"
         onChange={(newUrl, newPublicId) => {

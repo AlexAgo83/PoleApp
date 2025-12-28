@@ -12,6 +12,8 @@ type Props = {
   maxSizeMB?: number;
   transformPreset?: "avatar" | "cover";
   deliveryType?: "upload" | "authenticated";
+  maxWidth?: number;
+  maxHeight?: number;
   onChange: (url: string | null, publicId?: string | null) => void;
 };
 
@@ -33,10 +35,12 @@ export function CloudinaryUpload({
   currentPublicId,
   folder,
   resourceType = "image",
-  accept = "image/*",
+  accept = "image/jpeg,image/png,image/webp",
   maxSizeMB = 5,
   transformPreset,
   deliveryType = "upload",
+  maxWidth,
+  maxHeight,
   onChange,
 }: Props) {
   const [uploading, setUploading] = useState(false);
@@ -50,6 +54,26 @@ export function CloudinaryUpload({
     if (file.size > maxSizeMB * 1024 * 1024) {
       setError(`Fichier trop volumineux (max ${maxSizeMB}MB)`);
       return;
+    }
+    // Dimension check for images (avatars/covers)
+    if (!isVideo && (maxWidth || maxHeight || transformPreset === "avatar")) {
+      const blobUrl = URL.createObjectURL(file);
+      try {
+        const img = new Image();
+        img.src = blobUrl;
+        await img.decode();
+        const limitW = maxWidth ?? 1080;
+        const limitH = maxHeight ?? 1080;
+        if (img.naturalWidth > limitW || img.naturalHeight > limitH) {
+          setError(`Image trop grande (${img.naturalWidth}x${img.naturalHeight}). Max ${limitW}x${limitH}px.`);
+          URL.revokeObjectURL(blobUrl);
+          return;
+        }
+      } catch {
+        // if decoding fails, continue upload
+      } finally {
+        URL.revokeObjectURL(blobUrl);
+      }
     }
     setError(null);
     setUploading(true);
