@@ -27,7 +27,7 @@ export default async function NewCoursePage() {
     );
   }
 
-  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines] = await Promise.all([
+  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines, teacherFavoritesRows] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -69,6 +69,10 @@ export default async function NewCoursePage() {
       select: { discipline: true },
       distinct: ["discipline"],
     }),
+    prisma.teacherFavoritePosition.findMany({
+      where: { teacherId: session.user.role === "TEACHER" ? teacherId ?? undefined : undefined },
+      select: { teacherId: true, positionId: true },
+    }),
   ]);
   const fallbackDisciplines = [
     { name: "Danse" },
@@ -91,6 +95,19 @@ export default async function NewCoursePage() {
     });
     return merged.length > 0 ? merged : fallbackDisciplines;
   })();
+
+  const teacherIdsForFavorites =
+    session.user.role === "TEACHER" ? [teacherId] : teachers.map((t) => t.id);
+  const filteredTeacherFavorites = teacherFavoritesRows.filter((row) =>
+    teacherIdsForFavorites.includes(row.teacherId)
+  );
+  const studentsWithActiveInjury = (await prisma.studentInjury.findMany({
+    where: { studentId: { in: students.map((s) => s.id) }, isActive: true },
+    select: { studentId: true },
+  })).reduce<Record<string, number>>((acc, row) => {
+    acc[row.studentId] = (acc[row.studentId] ?? 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-5 px-2 py-6 md:px-8 md:py-10">
@@ -124,6 +141,12 @@ export default async function NewCoursePage() {
           defaultStudioId={studios[0]?.id ?? null}
           defaultPhotoUrl=""
           disciplines={mergedDisciplines}
+          teacherFavorites={filteredTeacherFavorites.reduce<Record<string, string[]>>((acc, row) => {
+            if (!acc[row.teacherId]) acc[row.teacherId] = [];
+            acc[row.teacherId].push(row.positionId);
+            return acc;
+          }, {})}
+          studentsWithActiveInjury={studentsWithActiveInjury}
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,
