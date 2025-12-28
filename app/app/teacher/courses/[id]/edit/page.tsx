@@ -64,7 +64,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
     }),
     prisma.position.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, name: true, type: true },
+      select: { id: true, name: true, type: true, discipline: true },
     }),
     role === "SCHOOL_ADMIN"
       ? prisma.user.findMany({
