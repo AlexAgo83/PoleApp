@@ -160,16 +160,22 @@ export default async function TeacherBillingPage({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href={`/api/teacher/invoices/export-csv${qs ? `?${qs}` : ""}`}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Export CSV
-          </Link>
-          <Link
             href="/app/teacher"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             ← Retour accueil
+          </Link>
+          <Link
+            href="/app/teacher/purchases"
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
+          >
+            Achats élèves
+          </Link>
+          <Link
+            href={`/api/teacher/invoices/export-csv${qs ? `?${qs}` : ""}`}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Export CSV
           </Link>
         </div>
       </header>
