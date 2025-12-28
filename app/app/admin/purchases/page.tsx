@@ -22,20 +22,23 @@ function formatDate(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
 }
 
-export default async function AdminPurchasesPage({
-  searchParams,
-}: {
-  searchParams?: { kind?: string; status?: string; q?: string; page?: string };
-}) {
+type SearchParams = { kind?: string; status?: string; q?: string; page?: string } | Promise<{ kind?: string; status?: string; q?: string; page?: string }>;
+
+function getParam(value?: string) {
+  return typeof value === "string" ? value : undefined;
+}
+
+export default async function AdminPurchasesPage({ searchParams }: { searchParams?: SearchParams }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     redirect("/access-denied");
   }
 
-  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
-  const kind = searchParams?.kind?.toUpperCase() || "";
-  const status = searchParams?.status?.toUpperCase() || "";
-  const q = searchParams?.q?.trim() || "";
+  const params = (await Promise.resolve(searchParams)) ?? {};
+  const page = Math.max(1, Number.parseInt(getParam(params.page) ?? "1", 10) || 1);
+  const kind = getParam(params.kind)?.toUpperCase() || "";
+  const status = getParam(params.status)?.toUpperCase() || "";
+  const q = getParam(params.q)?.trim() || "";
 
   const where: Prisma.PurchaseWhereInput = {
     user: { schoolId: session.user.schoolId },
