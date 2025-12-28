@@ -12,6 +12,7 @@ import {
   updateCourseNotesOnlyAction,
 } from "./actions";
 import { MasteryLevel } from "@prisma/client";
+import { ShareLinkButton } from "@/components/ShareLinkButton";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -170,6 +171,7 @@ export default async function TeacherCourseDetailPage({
     minute: "2-digit",
   });
   const icsHref = `/api/courses/${course.id}/ics`;
+  const sharePath = `/app/teacher/courses/${course.id}`;
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
@@ -198,6 +200,7 @@ export default async function TeacherCourseDetailPage({
                     Notes : {course.notes.length}
                   </span>
                 )}
+                <ShareLinkButton path={sharePath} />
                 <Link
                   href={icsHref}
                   prefetch={false}
