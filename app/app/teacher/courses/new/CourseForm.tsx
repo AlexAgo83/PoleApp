@@ -366,7 +366,7 @@ export function CourseForm({
 
       <label className="block text-sm text-slate-200">
         Positions abordées (Filtrées par discipline)
-        <div className="mt-2 flex flex-wrap items-center gap-3">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
           {selectedPositions.length > 0 && (
             <button
               type="button"
@@ -378,7 +378,7 @@ export function CourseForm({
               }}
               className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
             >
-              Désélectionner tout
+              Tout désélectionner
             </button>
           )}
           {selectedStudents.length > 0 && (
