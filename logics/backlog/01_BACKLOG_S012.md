@@ -87,7 +87,7 @@
 ### Progression
 - [ ] Not started
 
-## P2 — Ajouter un cours à son agenda système
+## P2 — Ajouter un cours à son agenda système (DONE)
 ### User stories
 - En tant qu’utilisateur autorisé, depuis la page détail cours je peux l’ajouter à mon agenda système (iCal/Google/Outlook) via un lien ICS dynamique.
 ### Critères d’acceptation
@@ -98,12 +98,12 @@
 - Tests manuels (ICS téléchargé + ouvert).
 - Compatibilité desktop/mobile.
 ### Progression
-- [ ] En cours (route ICS + bouton OK, reste timezone/alerte)
+- [x] DONE (route ICS + bouton, timezone globale + alarme 30min, lien role-aware)
 
 ### À clarifier (global)
 - P1 récurrence : planifier plus tard la gestion d’exceptions (sauter une date) et l’édition série vs futures occurrences.
 
-## P2 — Partage réseaux sociaux (détail cours)
+## P2 — Partage réseaux sociaux (détail cours) (DONE)
 ### User stories
 - En tant que prof/admin, je peux partager un cours sur les réseaux sociaux depuis sa page détail.
 ### Critères d’acceptation
@@ -113,4 +113,4 @@
 - Tests manuels: copie lien, ouverture intents.
 - Vérifier absence de data sensible dans l’URL.
 ### Progression
-- [ ] Not started
+- [x] DONE (bouton partage natif/copie, lien sans `from`)
