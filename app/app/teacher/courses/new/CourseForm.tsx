@@ -400,6 +400,7 @@ export function CourseForm({
                     className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
                   >
                     <option value={RecurrenceFrequency.DAILY}>Quotidienne</option>
+                    <option value={RecurrenceFrequency.WEEKLY}>Hebdomadaire</option>
                     <option value={RecurrenceFrequency.BIWEEKLY}>Bi-hebdo</option>
                     <option value={RecurrenceFrequency.MONTHLY}>Mensuelle</option>
                   </select>

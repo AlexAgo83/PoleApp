@@ -301,6 +301,8 @@ function generateOccurrences(
     occurrences.push(new Date(current));
     if (frequency === RecurrenceFrequency.DAILY) {
       current = new Date(current.getTime() + 24 * 60 * 60_000);
+    } else if (frequency === RecurrenceFrequency.WEEKLY) {
+      current = new Date(current.getTime() + 7 * 24 * 60 * 60_000);
     } else if (frequency === RecurrenceFrequency.BIWEEKLY) {
       current = new Date(current.getTime() + 14 * 24 * 60 * 60_000);
     } else {
