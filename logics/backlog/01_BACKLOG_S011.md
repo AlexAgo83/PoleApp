@@ -1,5 +1,5 @@
 # Backlog — Retours QA S012 (06_QA_S012.md)
-[Compréhension: 100% / Avancement: 0%]
+[Compréhension: 100% / Avancement: 1/6]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -15,11 +15,11 @@
 - Progression: TODO
 - Priorité: P1
 
-## F2 – Vue agenda sur fiche studio
+## F2 – Vue agenda sur fiche studio **(DONE)**
 - User stories: En tant qu’admin/prof/élève, depuis la fiche studio, je peux voir un onglet/vue « Agenda » qui affiche uniquement les cours de ce studio avec les mêmes interactions que l’agenda cours existant.
 - Critères d’acceptation: bascule entre liste/agenda; agenda filtré par studio courant uniquement; navigation et filtres identiques à l’agenda cours actuel; responsive OK.
 - DoD: tests manuels liste/agenda; filtre studio vérifié; QA mobile/desktop.
-- Progression: TODO
+- Progression: DONE (implémenté : vue agenda/semaines/mois filtrée par studio, même interactions que l’agenda cours)
 - Priorité: P1
 
 ## F3 – Parcours élève : réservation / renommage pages
