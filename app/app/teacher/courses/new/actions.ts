@@ -192,13 +192,8 @@ export async function createCourseAction(formData: FormData) {
   });
 
   revalidatePath("/app/teacher/courses");
-  const from = parsed.data.from;
-  const safeFrom = from && from.startsWith("/") && !from.startsWith("//") ? from : null;
-  if (safeFrom) {
-    revalidatePath(safeFrom);
-    redirect(safeFrom);
-  }
-  redirect(`/app/teacher/courses`);
+  const detailHref = `/app/teacher/courses/${courseId}`;
+  redirect(detailHref);
 }
 
 async function upsertProgressFromNotes(

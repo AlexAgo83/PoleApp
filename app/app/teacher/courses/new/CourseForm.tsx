@@ -90,22 +90,72 @@ export function CourseForm({
   groupedPanels = false,
   defaultCollapsed,
 }: Props) {
+  const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
+  const resolvedDefaultDate = useMemo(() => {
+    const dateValue = defaultDate ? new Date(defaultDate) : new Date();
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${dateValue.getFullYear()}-${pad(dateValue.getMonth() + 1)}-${pad(
+      dateValue.getDate()
+    )}T${pad(dateValue.getHours())}:${pad(dateValue.getMinutes())}`;
+  }, [defaultDate]);
+
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
   const [selectedPositions, setSelectedPositions] = useState<string[]>(
     defaultSelectedPositions
   );
+  const [titleValue, setTitleValue] = useState(defaultTitle ?? "");
+  const [dateValue, setDateValue] = useState(resolvedDefaultDate);
+  const [studioValue, setStudioValue] = useState(resolvedStudioId);
+  const [durationValue, setDurationValue] = useState(String(defaultDurationMinutes));
+  const [maxSeatsValue, setMaxSeatsValue] = useState(String(defaultMaxSeats));
+  const [waitlistValue, setWaitlistValue] = useState(String(defaultWaitlistQuota ?? 0));
+  const [costValue, setCostValue] = useState(String(defaultCostCredits));
+  const [photoValue, setPhotoValue] = useState(defaultPhotoUrl ?? "");
   const [notes, setNotes] = useState<Record<string, Note>>(defaultNotes);
   const [lastGeneratedCount, setLastGeneratedCount] = useState(0);
-  const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
   const [selectedTeacherId, setSelectedTeacherId] = useState(
     defaultTeacherId ?? teachers[0]?.id ?? ""
   );
   const [selectedDiscipline, setSelectedDiscipline] = useState(defaultDiscipline ?? "");
   const [showConfirm, setShowConfirm] = useState(false);
   const [allowSubmit, setAllowSubmit] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [mounted, setMounted] = useState(false);
+  const preserveScroll = (cb: () => void) => {
+    const y = typeof window !== "undefined" ? window.scrollY : 0;
+    cb();
+    if (typeof window !== "undefined") {
+      requestAnimationFrame(() => window.scrollTo({ top: y }));
+    }
+  };
+
+  const pruneNotesForPositions = (positionsToKeep: Set<string>) => {
+    setNotes((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        const [, posId] = key.split("-");
+        if (!positionsToKeep.has(posId)) {
+          delete next[key];
+        }
+      });
+      return next;
+    });
+  };
+
+  const pruneNotesForStudents = (studentsToKeep: Set<string>) => {
+    setNotes((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        const [studentId] = key.split("-");
+        if (!studentsToKeep.has(studentId)) {
+          delete next[key];
+        }
+      });
+      return next;
+    });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -149,15 +199,19 @@ export function CourseForm({
       (p) => (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase()
     );
   }, [positions, selectedDiscipline]);
-  const resolvedDefaultDate = useMemo(() => {
-    const dateValue = defaultDate ? new Date(defaultDate) : new Date();
-    const pad = (n: number) => n.toString().padStart(2, "0");
-    return `${dateValue.getFullYear()}-${pad(dateValue.getMonth() + 1)}-${pad(
-      dateValue.getDate()
-    )}T${pad(dateValue.getHours())}:${pad(dateValue.getMinutes())}`;
-  }, [defaultDate]);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const invalid: string[] = [];
+    if (!selectedDiscipline) invalid.push("discipline");
+    if (selectedPositions.length === 0) invalid.push("positions");
+    if (!studioValue) invalid.push("studio");
+    if (!titleValue.trim()) invalid.push("titre");
+    if (!dateValue) invalid.push("date");
+    if (invalid.length > 0) {
+      e.preventDefault();
+      setFormError("Merci de remplir les champs requis (discipline, positions, studio, titre, date).");
+      return;
+    }
+    setFormError(null);
     if (!allowSubmit && selectedStudents.length > 0) {
       e.preventDefault();
       setShowConfirm(true);
@@ -182,17 +236,17 @@ export function CourseForm({
 
   useEffect(() => {
     if (!groupedPanels) return;
-    const saved = localStorage.getItem("course-form:collapsed");
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem("course-form:collapsed");
+      if (saved) {
         const parsed = JSON.parse(saved) as { students?: boolean; positions?: boolean };
         setCollapsedPanels((prev) => ({
           students: parsed.students ?? prev.students,
           positions: parsed.positions ?? prev.positions,
         }));
-      } catch (e) {
-        console.warn("Failed to parse collapse state", e);
       }
+    } catch (e) {
+      console.warn("Failed to parse collapse state", e);
     }
   }, [groupedPanels]);
 
@@ -251,7 +305,8 @@ export function CourseForm({
             type="datetime-local"
             name="date"
             required
-            defaultValue={resolvedDefaultDate}
+            value={dateValue}
+            onChange={(e) => setDateValue(e.target.value)}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
         </label>
@@ -262,7 +317,8 @@ export function CourseForm({
             name="title"
             required
             placeholder="Cours du soir - Spins inter"
-            defaultValue={defaultTitle ?? ""}
+            value={titleValue}
+            onChange={(e) => setTitleValue(e.target.value)}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
         </label>
@@ -291,11 +347,12 @@ export function CourseForm({
             <label className="text-sm text-slate-200">
               Studio
               <select
-                name="studioId"
-                required
-                defaultValue={resolvedStudioId}
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-              >
+              name="studioId"
+              required
+              value={studioValue}
+              onChange={(e) => setStudioValue(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            >
                 {studios.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -311,7 +368,8 @@ export function CourseForm({
               name="durationMinutes"
               min={30}
               step={15}
-              defaultValue={defaultDurationMinutes}
+              value={durationValue}
+              onChange={(e) => setDurationValue(e.target.value)}
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             />
             <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
@@ -323,7 +381,8 @@ export function CourseForm({
               name="costCredits"
               min={0}
               step={10}
-              defaultValue={defaultCostCredits}
+              value={costValue}
+              onChange={(e) => setCostValue(e.target.value)}
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             />
             <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0.</p>
@@ -355,7 +414,8 @@ export function CourseForm({
               type="url"
               name="photoUrl"
               placeholder="https://…"
-              defaultValue={defaultPhotoUrl ?? ""}
+              value={photoValue}
+              onChange={(e) => setPhotoValue(e.target.value)}
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             />
             <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
@@ -363,26 +423,28 @@ export function CourseForm({
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <label className="text-sm text-slate-200">
-            Places maximum
-            <input
-              type="number"
-              name="maxSeats"
-              min={1}
-              defaultValue={defaultMaxSeats}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-            <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
-          </label>
-          <label className="text-sm text-slate-200">
-            Quota liste d&apos;attente
-            <input
-              type="number"
-              name="waitlistQuota"
-              min={0}
-              defaultValue={defaultWaitlistQuota ?? 0}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
+        <label className="text-sm text-slate-200">
+          Places maximum
+          <input
+            type="number"
+            name="maxSeats"
+            min={1}
+            value={maxSeatsValue}
+            onChange={(e) => setMaxSeatsValue(e.target.value)}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
+          <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
+        </label>
+        <label className="text-sm text-slate-200">
+          Quota liste d&apos;attente
+          <input
+            type="number"
+            name="waitlistQuota"
+            min={0}
+            value={waitlistValue}
+            onChange={(e) => setWaitlistValue(e.target.value)}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
             <p className="mt-1 text-xs text-slate-400">0 = illimité. Si plein et quota atteint, inscription refusée.</p>
           </label>
         </div>
@@ -392,7 +454,7 @@ export function CourseForm({
         title={groupedPanels ? "Élèves présents" : undefined}
         collapsible={groupedPanels}
         collapsed={collapsedPanels.students}
-        onToggle={() => updateCollapsed("students", !collapsedPanels.students)}
+        onToggle={() => preserveScroll(() => updateCollapsed("students", !collapsedPanels.students))}
       >
           <div className="flex flex-wrap items-center justify-between gap-2">
           <span>Forcer l'inscription / Pre-filtrer & générer</span>
@@ -403,6 +465,7 @@ export function CourseForm({
                 e.preventDefault();
                 e.stopPropagation();
                 setSelectedStudents([]);
+                pruneNotesForStudents(new Set());
               }}
               className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
             >
@@ -422,13 +485,17 @@ export function CourseForm({
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={(e) => {
-                    setSelectedStudents((prev) =>
-                      e.target.checked
-                        ? [...prev, student.id]
-                        : prev.filter((id) => id !== student.id)
-                    );
-                  }}
+                  onChange={(e) =>
+                    preserveScroll(() => {
+                      setSelectedStudents((prev) => {
+                        const next = e.target.checked ? [...prev, student.id] : prev.filter((id) => id !== student.id);
+                        if (!e.target.checked) {
+                          pruneNotesForStudents(new Set(next));
+                        }
+                        return next;
+                      });
+                    })
+                  }
                 />
                 <span className="flex items-center gap-2">
                   {student.name ?? student.email}
@@ -448,13 +515,19 @@ export function CourseForm({
       </Panel>
 
       <Panel
-        title={groupedPanels ? "Positions abordées" : undefined}
+        title={
+          groupedPanels
+            ? `Positions abordées${selectedPositions.length > 0 ? ` (${selectedPositions.length})` : ""}`
+            : undefined
+        }
         collapsible={groupedPanels}
         collapsed={collapsedPanels.positions}
-        onToggle={() => updateCollapsed("positions", !collapsedPanels.positions)}
+        onToggle={() => preserveScroll(() => updateCollapsed("positions", !collapsedPanels.positions))}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span>Filtrées par discipline</span>
+          <span>
+            Filtrées par discipline{selectedDiscipline ? ` (${selectedDiscipline})` : ""}
+          </span>
           {selectedPositions.length > 0 && (
             <button
               type="button"
@@ -463,6 +536,7 @@ export function CourseForm({
                 e.stopPropagation();
                 setSelectedPositions([]);
                 setLastGeneratedCount(0);
+                pruneNotesForPositions(new Set());
               }}
               className="ml-auto rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
             >
@@ -544,13 +618,17 @@ export function CourseForm({
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={(e) => {
-                    setSelectedPositions((prev) =>
-                      e.target.checked
-                        ? [...prev, position.id]
-                        : prev.filter((id) => id !== position.id)
-                    );
-                  }}
+                  onChange={(e) =>
+                    preserveScroll(() => {
+                      setSelectedPositions((prev) => {
+                        const next = e.target.checked ? [...prev, position.id] : prev.filter((id) => id !== position.id);
+                        if (!e.target.checked) {
+                          pruneNotesForPositions(new Set(next));
+                        }
+                        return next;
+                      });
+                    })
+                  }
                 />
                 <span className="flex flex-col text-sm leading-tight">
                   <span className="flex items-center gap-2">
@@ -570,7 +648,7 @@ export function CourseForm({
       </Panel>
 
       {selectedStudents.length > 0 && selectedPositions.length > 0 && (
-        <div className={groupedPanels ? "panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6" : ""}>
+        <section className="panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
           <NotesMatrix
             students={students.filter((s) => selectedStudents.includes(s.id))}
             positions={positions.filter((p) => selectedPositions.includes(p.id))}
@@ -578,7 +656,7 @@ export function CourseForm({
             notes={notes}
             setNotes={setNotes}
           />
-        </div>
+        </section>
       )}
 
       <input
@@ -602,6 +680,7 @@ export function CourseForm({
 
       {!hideFooterActions && (
         <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-white/10 pt-4">
+          {formError && <p className="text-sm font-semibold text-amber-200">{formError}</p>}
           {cancelHref && (
             <a
               href={cancelHref}
