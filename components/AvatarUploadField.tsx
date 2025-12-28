@@ -18,7 +18,7 @@ export function AvatarUploadField({
   folder,
   currentUrl,
   currentPublicId,
-  maxSizeMB = 2,
+  maxSizeMB = 4,
   onChange,
 }: Props) {
   const [url, setUrl] = useState<string | null>(currentUrl ?? null);
@@ -32,8 +32,8 @@ export function AvatarUploadField({
         currentPublicId={publicId ?? undefined}
         folder={folder}
         maxSizeMB={maxSizeMB}
-        maxWidth={1080}
-        maxHeight={1080}
+        maxWidth={2160}
+        maxHeight={2160}
         deliveryType="authenticated"
         transformPreset="avatar"
         onChange={(newUrl, newPublicId) => {

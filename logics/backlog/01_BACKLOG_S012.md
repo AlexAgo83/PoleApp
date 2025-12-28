@@ -15,7 +15,7 @@
 - En tant qu’admin/QA, les images par défaut du seed utilisent les `public_id` fournis (≈15 hommes / 15 femmes), affectés de façon random sans doublons par sexe lors du seed.
 
 ### Critères d’acceptation
-- Upload : signature générée par un endpoint serveur, upload client (widget/SDK) en mode “restricted” (URLs signées/timebound), taille max et ratio contrôlés (max 2 Mo, 1080x1080, jpg/png/webp, carré recommandé avec crop).
+- Upload : signature générée par un endpoint serveur, upload client (widget/SDK) en mode “restricted” (URLs signées/timebound), taille max et ratio contrôlés (max 4 Mo, 2160x2160, jpg/png/webp, carré recommandé avec crop).
 - Rôles : élèves/profs ne peuvent gérer QUE leur propre avatar ; admins peuvent tout modifier.
 - Suppression : retire la référence DB et supprime le fichier Cloudinary sauf si l’image est marquée “seed par défaut”.
 - Fallback : plus de références à l’ancien stockage statique ; un fallback Cloudinary “par défaut” reste disponible si l’utilisateur n’a rien uploadé.
@@ -35,7 +35,7 @@
 - [ ] En cours (impl Cloudinary restrict + seed random OK, reste QA upload/suppression)
 - [x] Nettoyage avatar Cloudinary lors de la suppression d’un utilisateur (admin)
 - [x] Audit affichage avatars : vues principales élève/prof/admin passent par `resolveAvatarUrl` + fallback signé par défaut
-- [x] Upload avatars : taille max 2 Mo, dimensions 1080x1080 max, formats jpg/png/webp contrôlés côté client
+- [x] Upload avatars : taille max 4 Mo, dimensions 2160x2160 max, formats jpg/png/webp contrôlés côté client
 - [x] Uploads forcés en mode authenticated (images/vidéos) pour éviter les assets publics
 
 ### Tâches additionnelles (avatars affichage)
