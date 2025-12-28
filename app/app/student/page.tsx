@@ -32,6 +32,7 @@ export default async function StudentDashboard() {
     avatarPublicId: user?.avatarPublicId,
     avatarUrl: user?.avatarUrl ?? session.user.image ?? null,
     placeholder: AVATAR_PLACEHOLDER,
+    seedKey: user?.id ?? session.user.id,
   });
   const avatarInitial = (displayName?.[0] ?? "É").toUpperCase();
   const partners =

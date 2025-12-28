@@ -1,5 +1,5 @@
 # Backlog — Retours QA S013 (06_QA_S013.md)
-[Compréhension: 100% / Avancement: 65% (P0 en cours de validation)]
+[Compréhension: 100% / Avancement: 70% (P0 en cours de validation)]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -36,6 +36,7 @@
 
 ### Tâches additionnelles (avatars affichage)
 - Audit des vues/listes/cartes utilisant encore `avatarUrl` (élève/prof/admin) et passage à `resolveAvatarUrl`/`generateSignedUrl` avec fallback par défaut.
+- [x] Fallback avatars : utilisation des avatars Cloudinary par défaut (pool fourni, hashé par user) avec URL signée pour les vues principales (prof/élève/admin).
 - Vérifier placeholders et delivery type `authenticated` pour les avatars (URL signées, pas de 404).
 
 ## P1 — Wording: “Positions coups de cœur” (DONE)
