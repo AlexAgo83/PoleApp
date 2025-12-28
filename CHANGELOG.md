@@ -165,6 +165,12 @@
 - Formulaire création cours `/app/teacher/courses/new` (date/titre, élèves, positions, notes élève×position) avec mise à jour progression automatique.
 - Liste des cours `/app/teacher/courses` (dernier 20) + historique élève `/app/student/courses`.
 
+## 2025-12-28 — Billing manual states & seed samples
+- Factures : prise en charge du statut REFUNDED + statuts financiers manuels (PAID/LATE) visibles sur admin/prof; API admin update enrichie (remboursement, notes, opérateur).
+- UI admin/prof mise à jour : badges remboursement/statut manuel + notes affichées.
+- Seed renforcé : 40 cours générés avec exemples de factures remboursées et statuts manuels pour QA F5/F6.
+- Correctif `searchParams` async sur `/app/admin/purchases` (Next 13+).
+
 ## 2025-12-19 — Step 6 (Mini-jeu)
 - Route élève `/app/student/game` : quiz photo → nom (10 questions) sur les positions débloquées (ou toute la base si premium).
 - Résumé score + correction détaillée en fin de partie; fallback message si <4 positions disponibles.

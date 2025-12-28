@@ -731,28 +731,19 @@ async function seedCourses(schoolsData: {
     );
 
     const slots = buildSchedule({ daysPast: 15, daysFuture: 15, total: 20 });
-    const studioSchedule = new Map<string, number[]>();
-    const teacherSchedule = new Map<string, number[]>();
+    const forcedStatuses = ["REFUNDED", "MANUAL_PAID", "MANUAL_LATE"];
 
     for (let i = 0; i < slots.length; i += 1) {
       const slot = slots[i];
       const studio = createdStudios[i % createdStudios.length];
-      const startTs = slot.date.getTime();
-
-      // éviter collisions studio/teacher (même timestamp)
-      const studioTimes = studioSchedule.get(studio.id) ?? [];
-      if (studioTimes.includes(startTs)) continue;
       const sortedTeachers = [...schoolTeachers].sort((a, b) => {
         const countA = teacherUsage.get(a.id) ?? 0;
         const countB = teacherUsage.get(b.id) ?? 0;
         if (countA === countB) return Math.random() - 0.5;
         return countA - countB;
       });
-      const teacher = sortedTeachers.find((t) => !(teacherSchedule.get(t.id) ?? []).includes(startTs));
+      const teacher = sortedTeachers[0] ?? schoolTeachers[0];
       if (!teacher) continue;
-      studioSchedule.set(studio.id, [...studioTimes, startTs]);
-      const teacherTimes = teacherSchedule.get(teacher.id) ?? [];
-      teacherSchedule.set(teacher.id, [...teacherTimes, startTs]);
       teacherUsage.set(teacher.id, (teacherUsage.get(teacher.id) ?? 0) + 1);
 
       const attendees = schoolStudents.sort(() => 0.5 - Math.random()).slice(0, 5 + (i % 2));
@@ -840,10 +831,15 @@ async function seedCourses(schoolsData: {
       const confirmedCount = attendees.length;
       const defaultAmountCents = computeDefaultInvoiceAmountCents(confirmedCount, course.maxSeats);
       const roll = Math.random();
-      const isRefunded = Boolean(schoolAdmin) && roll < 0.12;
-      const hasManualStatus = Boolean(schoolAdmin) && !isRefunded && roll >= 0.12 && roll < 0.3;
+      const forced = forcedStatuses.shift();
+      const isRefunded = Boolean(schoolAdmin) && (forced === "REFUNDED" || roll < 0.12);
+      const hasManualStatus = Boolean(schoolAdmin) && !isRefunded && (forced === "MANUAL_PAID" || forced === "MANUAL_LATE" || (roll >= 0.12 && roll < 0.3));
       const manualStatus =
-        hasManualStatus && roll < 0.2 ? ManualFinancialStatus.PAID : hasManualStatus ? ManualFinancialStatus.LATE : ManualFinancialStatus.NONE;
+        hasManualStatus && (forced === "MANUAL_PAID" || roll < 0.2)
+          ? ManualFinancialStatus.PAID
+          : hasManualStatus
+            ? ManualFinancialStatus.LATE
+            : ManualFinancialStatus.NONE;
 
       await prisma.invoice.create({
         data: {
