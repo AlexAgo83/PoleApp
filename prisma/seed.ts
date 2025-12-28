@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import {
   GameMode,
   MediaKind,
@@ -81,39 +83,6 @@ const COURSE_IMAGES = [
   "https://i.postimg.cc/50Jy145L/Gemini-Generated-Image-nvh7mrnvh7mrnvh7.png",
   "https://i.postimg.cc/fLsyZz70/Gemini-Generated-Image-o5cowyo5cowyo5co.png",
   "https://i.postimg.cc/bJPr8y0x/Gemini-Generated-Image-o77i1wo77i1wo77i.png",
-];
-
-const FEMALE_STUDENT_AVATARS = [
-  "https://i.postimg.cc/9fGYXf9g/Gemini-Generated-Image-ga85o3ga85o3ga85.png",
-  "https://i.postimg.cc/wBhQxBNG/Gemini-Generated-Image-8a2y748a2y748a2y.png",
-  "https://i.postimg.cc/Gpkx3pDf/Gemini-Generated-Image-lymsnclymsnclyms.png",
-  "https://i.postimg.cc/MHGLjBbV/Gemini-Generated-Image-kk2x4wkk2x4wkk2x.png",
-  "https://i.postimg.cc/gjBTy0N6/Gemini-Generated-Image-it8ll5it8ll5it8l.png",
-  "https://i.postimg.cc/wMBrsNct/Gemini-Generated-Image-1s02y51s02y51s02.png",
-  "https://i.postimg.cc/ZnDMPqVR/Gemini-Generated-Image-f3pd1gf3pd1gf3pd.png",
-];
-
-const MALE_STUDENT_AVATARS = [
-  "https://i.postimg.cc/KYnDcYTw/Gemini-Generated-Image-h13y3wh13y3wh13y.png",
-  "https://i.postimg.cc/VNjWsNtT/Gemini-Generated-Image-q1xtvnq1xtvnq1xt.png",
-  "https://i.postimg.cc/k5xvM58r/Gemini-Generated-Image-hagw0mhagw0mhagw.png",
-  "https://i.postimg.cc/C5K2f8Hf/Gemini-Generated-Image-krr7xokrr7xokrr7.png",
-  "https://i.postimg.cc/6qQPGZL8/Gemini-Generated-Image-9ifeph9ifeph9ife.png",
-  "https://i.postimg.cc/pr16QdqF/Gemini-Generated-Image-f6cfrf6cfrf6cfrf.png",
-  "https://i.postimg.cc/VLD38nbM/Gemini-Generated-Image-i27lxyi27lxyi27l.png",
-  "https://i.postimg.cc/7Ympk0T0/Gemini-Generated-Image-apgygfapgygfapgy.png",
-];
-
-const TEACHER_AVATARS = [
-  "https://i.postimg.cc/ZqkLhNWN/Gemini-Generated-Image-ir90ejir90ejir90.png",
-  "https://i.postimg.cc/wBKkdN1s/Gemini-Generated-Image-yf123byf123byf12.png",
-  "https://i.postimg.cc/JhwQWXsH/Gemini-Generated-Image-xdf05vxdf05vxdf0.png",
-  "https://i.postimg.cc/8C8bVv7L/Gemini-Generated-Image-hrrbcvhrrbcvhrrb.png",
-  "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png",
-  "https://i.postimg.cc/R0cLC0t2/Gemini-Generated-Image-7xe2nm7xe2nm7xe2.png",
-  "https://i.postimg.cc/prdSnjYK/Gemini-Generated-Image-gu94adgu94adgu94.png",
-  "https://i.postimg.cc/wMBrsNcR/Gemini-Generated-Image-yhp3byhp3byhp3by.png",
-  "https://i.postimg.cc/1XYj0zJX/Gemini-Generated-Image-b3b57vb3b57vb3b5.png",
 ];
 
 const injuryTypes = [
@@ -354,6 +323,23 @@ const people: { name: string; age: number; gender: Gender }[] = [
   { name: "Victor Marin", age: 40, gender: "M" },
 ];
 
+const defaultAvatarPublicIds = (process.env.CLOUDINARY_AVATAR_DEFAULT_IDS ?? "")
+  .split(",")
+  .map((v) => v.trim())
+  .filter(Boolean);
+
+const femaleAvatarDefaults = defaultAvatarPublicIds.filter((id) => id.toLowerCase().startsWith("fe_"));
+const maleAvatarDefaults = defaultAvatarPublicIds.filter((id) => id.toLowerCase().startsWith("ma_"));
+
+function shuffle<T>(input: T[]): T[] {
+  const arr = [...input];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function makePersonFallback(counter: number): { name: string; age: number; gender: Gender } {
   const genders: Gender[] = ["F", "M"];
   const gender = genders[counter % 2];
@@ -534,9 +520,27 @@ async function seedSchoolsAndUsers() {
   );
 
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
+  const femaleAvatarPool = shuffle(femaleAvatarDefaults);
+  const maleAvatarPool = shuffle(maleAvatarDefaults);
+
+  const takeAvatarPublicId = (gender?: Gender | null) => {
+    if (gender === "F" && femaleAvatarPool.length) return femaleAvatarPool.shift()!;
+    if (gender === "M" && maleAvatarPool.length) return maleAvatarPool.shift()!;
+    if (femaleAvatarPool.length) return femaleAvatarPool.shift()!;
+    if (maleAvatarPool.length) return maleAvatarPool.shift()!;
+    return null;
+  };
 
   // Fixed accounts on school1
-  const fixedAccounts = [
+  const fixedAccounts: {
+    email: string;
+    role: Role;
+    premium: boolean;
+    name: string;
+    schoolIdx: number;
+    age?: number;
+    gender?: Gender;
+  }[] = [
     { email: "admin@poleapp.test", role: Role.SCHOOL_ADMIN, premium: true, name: "Admin Admin", schoolIdx: 0, age: 40 },
     {
       email: "teacher@poleapp.test",
@@ -544,8 +548,8 @@ async function seedSchoolsAndUsers() {
       premium: true,
       name: "Elza Martinez",
       schoolIdx: 0,
-      avatar: TEACHER_AVATARS[0],
       age: 32,
+      gender: "F",
     },
     {
       email: "student1@poleapp.test",
@@ -553,7 +557,6 @@ async function seedSchoolsAndUsers() {
       premium: false,
       name: "Anna Douchez",
       schoolIdx: 0,
-      avatar: FEMALE_STUDENT_AVATARS[0],
       age: 31,
       gender: "F" as Gender,
     },
@@ -563,7 +566,6 @@ async function seedSchoolsAndUsers() {
       premium: true,
       name: "Carlo Mendes",
       schoolIdx: 0,
-      avatar: MALE_STUDENT_AVATARS[0],
       age: 35,
       gender: "M" as Gender,
     },
@@ -582,7 +584,7 @@ async function seedSchoolsAndUsers() {
         isPremium: acc.premium,
         schoolId: schools[acc.schoolIdx].id,
         name: acc.name,
-        avatarUrl: acc.avatar,
+        avatarPublicId: takeAvatarPublicId(acc.gender ?? null),
         age: acc.age ?? null,
         credits: acc.role === Role.STUDENT ? 1000 : undefined,
       },
@@ -599,15 +601,14 @@ async function seedSchoolsAndUsers() {
   }
 
   // Distribute remaining names for teachers/students
-  const teacherAvatars = [...TEACHER_AVATARS];
-  const femaleAvatars = [...FEMALE_STUDENT_AVATARS];
-  const maleAvatars = [...MALE_STUDENT_AVATARS];
   const peoplePool = [...people];
   let fallbackCounter = 1;
 
   const pickStudentAvatar = (gender: Gender) => {
-    if (gender === "F" && femaleAvatars.length) return femaleAvatars.shift()!;
-    if (gender === "M" && maleAvatars.length) return maleAvatars.shift()!;
+    if (gender === "F" && femaleAvatarPool.length) return femaleAvatarPool.shift()!;
+    if (gender === "M" && maleAvatarPool.length) return maleAvatarPool.shift()!;
+    if (femaleAvatarPool.length) return femaleAvatarPool.shift()!;
+    if (maleAvatarPool.length) return maleAvatarPool.shift()!;
     return null;
   };
 
@@ -627,7 +628,7 @@ async function seedSchoolsAndUsers() {
           schoolId: school.id,
           name: person.name,
           age: person.age,
-          avatarUrl: teacherAvatars.length ? teacherAvatars.shift() : null,
+          avatarPublicId: takeAvatarPublicId(person.gender),
         },
       });
       teachers.push({ id: created.id, schoolId: school.id });
@@ -644,7 +645,7 @@ async function seedSchoolsAndUsers() {
           schoolId: school.id,
           name: person.name,
           age: person.age,
-          avatarUrl: pickStudentAvatar(person.gender),
+          avatarPublicId: pickStudentAvatar(person.gender),
           credits: 500,
         },
       });

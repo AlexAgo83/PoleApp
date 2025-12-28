@@ -1,5 +1,5 @@
 # Backlog — Retours QA S013 (06_QA_S013.md)
-[Compréhension: 100% / Avancement: 0%]
+[Compréhension: 100% / Avancement: 20% (P0 en cours de validation)]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -15,24 +15,28 @@
 - En tant qu’admin/QA, les images par défaut du seed utilisent les `public_id` fournis (≈15 hommes / 15 femmes), affectés de façon random sans doublons par sexe lors du seed.
 
 ### Critères d’acceptation
-- Upload : signature générée par un endpoint serveur, upload client (widget/SDK) en mode “restricted” (URLs signées/timebound), taille max et ratio contrôlés (suggestion : max 2 Mo, 1080x1080, jpg/png/webp, carré recommandé avec crop).
+- Upload : signature générée par un endpoint serveur, upload client (widget/SDK) en mode “restricted” (URLs signées/timebound), taille max et ratio contrôlés (max 2 Mo, 1080x1080, jpg/png/webp, carré recommandé avec crop).
 - Rôles : élèves/profs ne peuvent gérer QUE leur propre avatar ; admins peuvent tout modifier.
 - Suppression : retire la référence DB et supprime le fichier Cloudinary sauf si l’image est marquée “seed par défaut”.
 - Fallback : plus de références à l’ancien stockage statique ; un fallback Cloudinary “par défaut” reste disponible si l’utilisateur n’a rien uploadé.
-- Seed : possibilité de injecter les `public_id` fournis (par sexe), distribution random sans doublons ; dossier par environnement aligné sur la config vidéo si déjà en place.
+- Seed : possibilité d’injecter les `public_id` fournis (par sexe, cf. 05_SEED_CONTENT), distribution random sans doublons ; dossier par environnement aligné sur la config vidéo si déjà en place.
 - Parcours UI : bouton “Changer photo” (upload + preview + supprimer) proposé ; support mobile (upload fichier, option caméra si dispo navigateur).
 
 ### DoD
 - Tests manuels : upload/remplacement/suppression pour élève, prof, admin ; vérif suppression Cloudinary (sauf images seed).
 - Vérif env : variables Cloudinary présentes (.env déjà utilisé pour vidéo), dossier env cohérent si existant.
 - Code : refs statiques supprimées, fallback Cloudinary par défaut ; contrôles de taille/format/crop appliqués.
-- Seed : documenté dans `05_SEED_CONTENT.md` une fois les `public_id` reçus.
+- Seed : documenté dans `05_SEED_CONTENT.md` (liste public_id fournie), distribution random sans doublons par sexe.
 
 ### Questions restantes
-- Liste finale des `public_id` seed H/F (≈15 chacun) à intégrer.
+- Reste : implémenter le seed randomisé avec les `public_id` fournis.
 
 ### Progression
-- [ ] Not started
+- [ ] En cours (impl Cloudinary restrict, reste seed + QA)
+
+### Tâches additionnelles (avatars affichage)
+- Audit des vues/listes/cartes utilisant encore `avatarUrl` (élève/prof/admin) et passage à `resolveAvatarUrl`/`generateSignedUrl` avec fallback par défaut.
+- Vérifier placeholders et delivery type `authenticated` pour les avatars (URL signées, pas de 404).
 
 ## P1 — Wording: “Positions coups de cœur”
 ### User stories
@@ -52,6 +56,7 @@
 ### Critères d’acceptation
 - Le filtre est appliqué dès le premier rendu (sans clic), y compris sur l’agenda élève.
 - Navigation / pagination conserve le filtre.
+- Pas de mémorisation : chaque ouverture repart sur “Mes cours” par défaut.
 ### DoD
 - Tests manuels sur desktop/mobile.
 - Pas de régression sur autres filtres.
@@ -68,6 +73,7 @@
 - Inscription élève bloquée tant qu’aucune position n’est définie.
 - Édition : pouvoir modifier une occurrence sans affecter celles déjà “fixées” ; occurrences virtuelles éditables individuellement pour devenir réelles.
 - Collisions studio/horaires : ajout d’une restriction empêchant la création en cas de conflit.
+- Fin de série : gérer une date de fin (prioritaire à court terme ; nb d’occurrences à planifier plus tard).
 - Timezone : configurée côté super-admin (défaut Europe/Paris) ; affichage côté utilisateur dans sa timezone locale.
 - Occurrences virtuelles côté élèves : affichage read-only avec indication visuelle “non validée”.
 - Paramètre `from` à retirer des liens partagés.
@@ -86,7 +92,7 @@
 - En tant qu’utilisateur autorisé, depuis la page détail cours je peux l’ajouter à mon agenda système (iCal/Google/Outlook) via un lien ICS dynamique.
 ### Critères d’acceptation
 - Bouton “Ajouter à mon agenda” sur la page détail (un seul pour tous les rôles).
-- Génération d’un lien ICS dynamique incluant titre/date/durée/studio/discipline et localisation (adresse studio), avec lien de retour vers l’app ; timezone globale (super-admin) utilisée, l’agenda client convertit.
+- Génération d’un lien ICS dynamique incluant titre/date/durée/studio/discipline et localisation (adresse studio), avec lien de retour vers l’app ; timezone globale (super-admin) utilisée, l’agenda client convertit ; alerte par défaut (30 min avant).
 - Paramètre `from` exclu du lien ICS partagé.
 ### DoD
 - Tests manuels (ICS téléchargé + ouvert).
