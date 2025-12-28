@@ -139,6 +139,7 @@ export default async function StudentCourseDetailPage({
   const endTime =
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
   const icsHref = `/api/courses/${course.id}/ics`;
+  const sharePath = `/app/student/courses/${course.id}`;
   const canBuy =
     !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
@@ -258,6 +259,7 @@ export default async function StudentCourseDetailPage({
                 </button>
               </form>
             )}
+            <ShareLinkButton path={sharePath} />
             <Link
               href={icsHref}
               prefetch={false}
