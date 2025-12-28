@@ -40,6 +40,8 @@ type Props = {
   defaultDiscipline?: string | null;
   progressByStudent?: ProgressRecord[];
   disciplines?: { name: string; color?: string }[];
+  teacherFavorites?: Record<string, string[]>;
+  studentsWithActiveInjury?: Record<string, number>;
 };
 
 type Note = {
@@ -73,6 +75,8 @@ export function CourseForm({
   defaultDiscipline = "",
   progressByStudent = [],
   disciplines = [],
+  teacherFavorites = {},
+  studentsWithActiveInjury = {},
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -82,6 +86,9 @@ export function CourseForm({
   const [notes, setNotes] = useState<Record<string, Note>>(defaultNotes);
   const [lastGeneratedCount, setLastGeneratedCount] = useState(0);
   const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
+  const [selectedTeacherId, setSelectedTeacherId] = useState(
+    defaultTeacherId ?? teachers[0]?.id ?? ""
+  );
   const [selectedDiscipline, setSelectedDiscipline] = useState(defaultDiscipline ?? "");
 
   const masteryOptions = useMemo(
@@ -107,6 +114,9 @@ export function CourseForm({
     disciplines.some(
       (d) => d.name.toLowerCase() === defaultDiscipline.toLowerCase()
     );
+  const favoritePositionsForTeacher = useMemo(() => {
+    return new Set(teacherFavorites[selectedTeacherId] ?? []);
+  }, [teacherFavorites, selectedTeacherId]);
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions;
     return positions.filter(
@@ -121,8 +131,19 @@ export function CourseForm({
     )}T${pad(dateValue.getHours())}:${pad(dateValue.getMinutes())}`;
   }, [defaultDate]);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (selectedStudents.length > 0) {
+      const ok = window.confirm(
+        "Au moins un élève est inscrit de force sur ce cours. Confirmer la création ?"
+      );
+      if (!ok) {
+        e.preventDefault();
+      }
+    }
+  };
+
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-4" onSubmit={handleSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
           Date
@@ -139,10 +160,11 @@ export function CourseForm({
           <input
             type="text"
             name="title"
+            required
             placeholder="Cours du soir - Spins inter"
             defaultValue={defaultTitle ?? ""}
-          className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-        />
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
         </label>
         <label className="text-sm text-slate-200">
           Discipline
@@ -171,7 +193,8 @@ export function CourseForm({
           Professeur (admin)
           <select
             name="teacherId"
-            defaultValue={defaultTeacherId ?? ""}
+            value={selectedTeacherId}
+            onChange={(e) => setSelectedTeacherId(e.target.value)}
             required
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           >
@@ -249,7 +272,7 @@ export function CourseForm({
             defaultValue={defaultCostCredits}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
-          <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits.</p>
+          <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0.</p>
         </label>
       </div>
 
@@ -266,10 +289,11 @@ export function CourseForm({
       </label>
 
       <label className="block text-sm text-slate-200">
-        Élèves présents
+        Élèves présents (Forcer l'inscription / Pre-filtrer & générer)
         <div className="mt-2 grid gap-2 md:grid-cols-2">
           {students.map((student) => {
             const checked = selectedStudents.includes(student.id);
+            const hasInjury = Boolean(studentsWithActiveInjury[student.id]);
             return (
               <label
                 key={student.id}
@@ -286,7 +310,14 @@ export function CourseForm({
                     );
                   }}
                 />
-                {student.name ?? student.email}
+                <span className="flex items-center gap-2">
+                  {student.name ?? student.email}
+                  {hasInjury ? (
+                    <span className="rounded-full border border-amber-400/60 bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold text-amber-100">
+                      Blessure active
+                    </span>
+                  ) : null}
+                </span>
               </label>
             );
           })}
@@ -296,9 +327,10 @@ export function CourseForm({
       <label className="block text-sm text-slate-200">
         Positions abordées
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
+          {selectedStudents.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
               // Génère une sélection rapide basée sur les élèves sélectionnés et leur progression.
               const selectedSet = new Set(selectedStudents);
               const weights: Record<string, number> = {
@@ -346,11 +378,12 @@ export function CourseForm({
                 return Array.from(new Set(merged));
               });
               setLastGeneratedCount(proposed.length);
-            }}
-            className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-          >
-            Générer (auto)
-          </button>
+              }}
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+            >
+              Générer (auto)
+            </button>
+          )}
           {lastGeneratedCount > 0 && (
             <span className="text-xs text-emerald-100">
               +{lastGeneratedCount} proposées selon les élèves
@@ -365,6 +398,7 @@ export function CourseForm({
         <div className="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
           {filteredPositions.map((position) => {
             const checked = selectedPositions.includes(position.id);
+            const isFavorite = favoritePositionsForTeacher.has(position.id);
             return (
               <label
                 key={position.id}
@@ -376,12 +410,19 @@ export function CourseForm({
                   onChange={(e) => {
                     setSelectedPositions((prev) =>
                       e.target.checked
-                        ? [...prev, position.id]
-                        : prev.filter((id) => id !== position.id)
-                    );
-                  }}
-                />
-                {position.name} ({position.type})
+                      ? [...prev, position.id]
+                      : prev.filter((id) => id !== position.id)
+                  );
+                }}
+              />
+                <span className="flex items-center gap-2">
+                  {position.name} ({position.type})
+                  {isFavorite ? (
+                    <span className="text-rose-200" title="Position favorite du professeur">
+                      ♥
+                    </span>
+                  ) : null}
+                </span>
               </label>
             );
           })}
@@ -411,7 +452,7 @@ export function CourseForm({
       {courseId && <input type="hidden" name="courseId" value={courseId} />}
       <input type="hidden" name="notes" value={JSON.stringify(notesArray)} />
       {teachers.length === 0 && (
-        <input type="hidden" name="teacherId" value={defaultTeacherId ?? ""} />
+        <input type="hidden" name="teacherId" value={selectedTeacherId} />
       )}
 
       <div className="mt-4 flex flex-wrap justify-end gap-3">

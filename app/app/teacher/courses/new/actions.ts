@@ -11,7 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 
 const courseSchema = z.object({
-  title: z.string().optional(),
+  title: z.string().trim().min(1, "Titre requis"),
   date: z.coerce.date(),
   studentIds: z.array(z.string().cuid()).default([]),
   positionIds: z.array(z.string().cuid()).min(1),

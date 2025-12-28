@@ -56,7 +56,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
 
-  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines] = await Promise.all([
+  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines, teacherFavoritesRows] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },
@@ -97,6 +97,14 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       where: { schoolId },
       select: { discipline: true },
       distinct: ["discipline"],
+    }),
+    prisma.teacherFavoritePosition.findMany({
+      where: {
+        teacherId: {
+          in: [teacherId, course.teacherId].filter(Boolean) as string[],
+        },
+      },
+      select: { teacherId: true, positionId: true },
     }),
   ]);
   const fallbackDisciplines = [
@@ -244,6 +252,12 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultPhotoUrl={course.photoUrl ?? ""}
           defaultDiscipline={course.discipline ?? ""}
           disciplines={mergedDisciplines}
+          teacherFavorites={teacherFavoritesRows.reduce<Record<string, string[]>>((acc, row) => {
+            if (!acc[row.teacherId]) acc[row.teacherId] = [];
+            acc[row.teacherId].push(row.positionId);
+            return acc;
+          }, {})}
+          studentsWithActiveInjury={studentsWithActiveInjury}
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,
