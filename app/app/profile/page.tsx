@@ -207,7 +207,7 @@ export default async function ProfilePage({
 
           {(isTeacher || isStudent) && (
             <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-200">Positions préférées</span>
+              <span className="text-sm font-medium text-slate-200">Positions coups de cœur</span>
               <select
                 name="favoritePositions"
                 multiple
@@ -259,7 +259,7 @@ export default async function ProfilePage({
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
-                Positions préférées
+                Positions coups de cœur
               </p>
               {favoritePositionIds.length > 0 ? (
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -289,7 +289,7 @@ export default async function ProfilePage({
           <div className="mt-3 space-y-3 text-sm text-slate-200">
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
-                Positions préférées
+                Positions coups de cœur
               </p>
               {favoritePositionIds.length > 0 ? (
                 <div className="mt-2 flex flex-wrap gap-2">

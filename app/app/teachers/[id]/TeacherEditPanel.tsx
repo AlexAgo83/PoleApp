@@ -106,7 +106,7 @@ export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: P
             />
           </label>
           <label className="md:col-span-2 space-y-2 text-sm text-slate-200">
-            Positions préférées
+            Positions coups de cœur
             <select
               name="favoritePositions"
               multiple

@@ -152,7 +152,7 @@ export default async function TeacherPublicProfilePage({
       </section>
 
       <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Positions préférées</h2>
+        <h2 className="text-lg font-semibold text-white">Positions coups de cœur</h2>
         {favoritePositions.length > 0 ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {favoritePositions.map((position) => (
