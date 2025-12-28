@@ -33,6 +33,7 @@ export function signUpload(options: {
   resourceType?: "image" | "video";
   deliveryType?: "upload" | "authenticated";
   accessMode?: "authenticated";
+  transformation?: string;
 }) {
   if (!isCloudinaryEnabled()) {
     throw new Error("Cloudinary not configured");
@@ -49,6 +50,9 @@ export function signUpload(options: {
   if (options.accessMode === "authenticated") {
     paramsToSign.access_mode = options.accessMode;
   }
+  if (options.transformation) {
+    paramsToSign.transformation = options.transformation;
+  }
 
   const signature = cloudinary.utils.api_sign_request(paramsToSign, apiSecret as string);
 
@@ -62,6 +66,7 @@ export function signUpload(options: {
     resourceType: options.resourceType ?? "image",
     deliveryType: options.deliveryType ?? "upload",
     accessMode: options.accessMode,
+    transformation: options.transformation,
   };
 }
 

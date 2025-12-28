@@ -24,6 +24,7 @@ type SignatureResponse = {
   publicId?: string;
   resourceType: "image" | "video";
   deliveryType?: "upload" | "authenticated";
+  transformation?: string;
 };
 
 export function CloudinaryUpload({
@@ -50,6 +51,12 @@ export function CloudinaryUpload({
     }
     setError(null);
     setUploading(true);
+    const transformation =
+      transformPreset === "avatar"
+        ? "c_fill,g_auto:face,h_400,w_400,q_auto,f_auto"
+        : transformPreset === "cover"
+          ? "c_fill,g_auto,h_720,w_1280,q_auto,f_auto"
+          : undefined;
     try {
       const sigRes = await fetch("/api/uploads/signature", {
         method: "POST",
@@ -60,6 +67,7 @@ export function CloudinaryUpload({
           resourceType,
           deliveryType,
           accessMode: deliveryType === "authenticated" ? "authenticated" : undefined,
+          transformation,
         }),
       });
       if (!sigRes.ok) {
@@ -80,10 +88,8 @@ export function CloudinaryUpload({
         form.append("type", sig.deliveryType);
         form.append("access_mode", "authenticated");
       }
-      if (transformPreset === "avatar") {
-        form.append("transformation", "c_fill,g_auto:face,h_400,w_400,q_auto,f_auto");
-      } else if (transformPreset === "cover") {
-        form.append("transformation", "c_fill,g_auto,h_720,w_1280,q_auto,f_auto");
+      if (sig.transformation) {
+        form.append("transformation", sig.transformation);
       }
 
       const uploadUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/${sig.resourceType}/upload`;
