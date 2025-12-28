@@ -172,9 +172,15 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const cover =
     position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
+  const deliveryTypeForVideo: "upload" | "authenticated" =
+    video?.url?.includes("/authenticated/") ? "authenticated" : "upload";
   const signedVideoUrl =
     video?.publicId && video.publicId.length > 0
-      ? generateSignedUrl({ publicId: video.publicId, resourceType: "video" })
+      ? generateSignedUrl({
+          publicId: video.publicId,
+          resourceType: "video",
+          deliveryType: deliveryTypeForVideo,
+        })
       : null;
   const videoSrc = signedVideoUrl ?? video?.url ?? undefined;
   const videoPoster =
