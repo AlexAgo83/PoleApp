@@ -129,6 +129,29 @@ export async function updateCourseAction(formData: FormData) {
     }
   }
 
+  const start = new Date(data.date);
+  const duration = data.durationMinutes ?? 60;
+  const end = new Date(start.getTime() + duration * 60_000);
+  const nearbyCourses = await prisma.course.findMany({
+    where: {
+      studioId: data.studioId,
+      id: { not: data.id },
+      date: {
+        gte: new Date(start.getTime() - 4 * 60 * 60_000),
+        lte: new Date(end.getTime() + 4 * 60 * 60_000),
+      },
+    },
+    select: { id: true, date: true, durationMinutes: true },
+  });
+  const hasCollision = nearbyCourses.some((c) => {
+    const cStart = new Date(c.date);
+    const cEnd = new Date(cStart.getTime() + (c.durationMinutes ?? 60) * 60_000);
+    return start < cEnd && cStart < end;
+  });
+  if (hasCollision) {
+    throw new Error("Conflit horaire/studio détecté, mise à jour impossible");
+  }
+
   await prisma.$transaction(async (tx) => {
     try {
       const teacherToConnect = teacherId ?? existing.teacherId;
