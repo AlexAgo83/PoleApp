@@ -475,6 +475,12 @@ export default async function StudentCoursesAgendaPage({
         <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
           <div className="flex flex-wrap items-center gap-2">
             <Link
+              href="/app/student"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
+            </Link>
+            <Link
               href={buildViewHref("week")}
               className={`rounded-full px-3 py-1.5 font-semibold transition ${
                 view === "week"
@@ -502,12 +508,6 @@ export default async function StudentCoursesAgendaPage({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/list.svg" alt="" className="h-4 w-4" />
             Liste
-          </Link>
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
           </Link>
         </div>
       </header>

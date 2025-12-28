@@ -315,18 +315,18 @@ export default async function StudentCoursesPage({
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Link
+            href="/app/student"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour accueil
+          </Link>
+          <Link
             href="/app/student/courses/agenda"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/agenda.svg" alt="" className="h-4 w-4" />
             Agenda
-          </Link>
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
           </Link>
         </div>
       </header>
