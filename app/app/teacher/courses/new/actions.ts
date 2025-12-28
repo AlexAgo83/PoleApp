@@ -19,6 +19,7 @@ const courseSchema = z.object({
   studioId: z.string().cuid(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
   discipline: z.string().trim().min(1),
+  from: z.string().optional(),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -61,6 +62,7 @@ export async function createCourseAction(formData: FormData) {
     waitlistQuota: formData.get("waitlistQuota") ?? 0,
     costCredits: formData.get("costCredits") ?? 100,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
+    from: formData.get("from")?.toString(),
   });
 
   if (!parsed.success) {
@@ -190,6 +192,12 @@ export async function createCourseAction(formData: FormData) {
   });
 
   revalidatePath("/app/teacher/courses");
+  const from = parsed.data.from;
+  const safeFrom = from && from.startsWith("/") && !from.startsWith("//") ? from : null;
+  if (safeFrom) {
+    revalidatePath(safeFrom);
+    redirect(safeFrom);
+  }
   redirect(`/app/teacher/courses`);
 }
 

@@ -7,7 +7,11 @@ import { prisma } from "@/lib/prisma";
 import { CourseForm } from "./CourseForm";
 import { createCourseAction } from "./actions";
 
-export default async function NewCoursePage() {
+export default async function NewCoursePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ from?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   const teacherId = session?.user?.id;
   const schoolId = session?.user?.schoolId;
@@ -26,6 +30,10 @@ export default async function NewCoursePage() {
       </main>
     );
   }
+
+  const resolvedSearch = (await searchParams) ?? {};
+  const rawFrom = resolvedSearch.from;
+  const safeFrom = rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : undefined;
 
   const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines, teacherFavoritesRows] = await Promise.all([
     prisma.user.findMany({
@@ -122,7 +130,7 @@ export default async function NewCoursePage() {
         </p>
         <div className="mt-2 flex w-full justify-end">
           <Link
-            href="/app/teacher/courses"
+            href={safeFrom ?? "/app/teacher/courses"}
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             ← Retour cours
@@ -147,6 +155,7 @@ export default async function NewCoursePage() {
             return acc;
           }, {})}
           studentsWithActiveInjury={studentsWithActiveInjury}
+          cancelHref={safeFrom ?? "/app/teacher/courses"}
           progressByStudent={progresses.map((p) => ({
             studentId: p.studentId,
             positionId: p.positionId,
