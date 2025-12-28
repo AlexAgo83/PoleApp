@@ -1,5 +1,5 @@
 # Backlog — Retours QA S013 (06_QA_S013.md)
-[Compréhension: 100% / Avancement: 75% (P0 en cours de validation)]
+[Compréhension: 100% / Avancement: 80% (P0 en cours de validation)]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -33,6 +33,7 @@
 
 ### Progression
 - [ ] En cours (impl Cloudinary restrict + seed random OK, reste audit affichage + QA)
+- [x] Nettoyage avatar Cloudinary lors de la suppression d’un utilisateur (admin)
 
 ### Tâches additionnelles (avatars affichage)
 - Audit des vues/listes/cartes utilisant encore `avatarUrl` (élève/prof/admin) et passage à `resolveAvatarUrl`/`generateSignedUrl` avec fallback par défaut.
