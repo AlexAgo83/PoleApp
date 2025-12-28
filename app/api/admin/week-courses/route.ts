@@ -44,6 +44,8 @@ export async function GET(req: Request) {
     include: {
       teacher: { select: { name: true, email: true } },
       studio: { select: { name: true } },
+      isVirtual: true,
+      _count: { select: { positions: true } },
     },
     orderBy: { date: "asc" },
   });
@@ -66,6 +68,8 @@ export async function GET(req: Request) {
         teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
         studioName: course.studio?.name ?? "Studio non renseigné",
         past: isPastCourse(course.date, course.durationMinutes),
+        isVirtual: course.isVirtual,
+        positionsCount: course._count.positions,
       }));
     return {
       isoDate: d.toISOString(),
