@@ -204,13 +204,13 @@ export default async function StudentDashboard() {
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Cours
+                  Historique cours
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Historique de cours
+                  Historique des cours réservés
                 </p>
                 <p className="text-sm text-slate-300">
-                  Voir les cours où tu es présent et les positions travaillées.
+                  Voir les cours où tu es inscrit (passés et à venir).
                 </p>
               </div>
             </div>
@@ -229,13 +229,13 @@ export default async function StudentDashboard() {
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  École
+                  Réservation & studios
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Voir la fiche de ton école
+                  Réserver et voir les studios
                 </p>
                 <p className="text-sm text-slate-300">
-                  Studios, partenaires et infos pratiques.
+                  Agenda par studio, filtres multi-studios et infos partenaires.
                 </p>
               </div>
             </div>

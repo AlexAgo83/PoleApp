@@ -6,8 +6,10 @@ import { getServerSession } from "next-auth";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { CircularRedFox } from "@/components/FoxVignette";
 import { FilterPanel } from "@/components/FilterPanel";
+import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
 import { DisciplineMultiSelect } from "@/components/DisciplineMultiSelect";
+import { BuyCreditsButton } from "@/app/app/student/BuyCreditsButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
@@ -122,6 +124,12 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           .then((rows) => new Set(rows.map((p) => p.offerId)))
       : Promise.resolve(new Set<string>()),
   ]);
+  const [packOffers, subscriptionOffers] = isStudent
+    ? await Promise.all([
+        prisma.creditPackOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+        prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+      ])
+    : [[], []];
 
   const activeFilters = [q && q.length > 0, disciplineFilters.length > 0, priceFilter].filter(Boolean).length;
   const hasCredits = studentInfo?.credits ?? 0;
@@ -211,6 +219,12 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           </p>
         )}
       </header>
+
+      {isStudent && (
+        <div className="hidden" aria-hidden="true">
+          <BuyCreditsButton currentCredits={hasCredits} showUpgrade packs={packOffers} subscriptions={subscriptionOffers} />
+        </div>
+      )}
 
       <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -345,19 +359,24 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                           ? `Crédits manquants (${hasCredits}/${cost})`
                           : ""}
                     </div>
-                    <form action={buyPresetAction}>
+                    <form action={buyPresetAction} className="flex items-center gap-2">
                       <input type="hidden" name="presetId" value={preset.id} />
                       <button
                         type="submit"
-                        disabled={disablePurchase}
+                        disabled={disablePurchase || (premiumLocked && isStudent)}
                         className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
-                          disablePurchase
+                          disablePurchase || (premiumLocked && isStudent)
                             ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
                             : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
                         }`}
                       >
                         {cta}
                       </button>
+                      {premiumLocked && isStudent ? (
+                        <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
+                          Passer premium
+                        </PremiumUpsellButton>
+                      ) : null}
                     </form>
                   </div>
                 </div>

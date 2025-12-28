@@ -68,7 +68,6 @@ export default async function StudentCoursesPage({
 }: {
   searchParams?: Promise<{
     page?: string;
-    mine?: string | string[];
     from?: string;
     to?: string;
     teacher?: string;
@@ -88,10 +87,7 @@ export default async function StudentCoursesPage({
   }
   const userKey = session.user.id ?? "anon";
 
-  const mineParam = paramValue(resolvedParams.mine);
-  const onlyMine = Boolean(
-    mineParam && (mineParam === "true" || mineParam === "1" || mineParam === "on" || mineParam === "")
-  );
+  const onlyMine = true;
   const teacherFilter =
     typeof paramValue(resolvedParams.teacher) === "string" &&
     paramValue(resolvedParams.teacher)?.length
@@ -109,7 +105,7 @@ export default async function StudentCoursesPage({
           .split(",")
           .map((v) => v.trim())
           .filter(Boolean)
-      : ["past", "attending", "waitlist", "open"];
+      : ["past", "attending", "waitlist"];
   const fromStr = paramValue(resolvedParams.from);
   const toStr = paramValue(resolvedParams.to);
   const fromDate = fromStr ? new Date(fromStr) : undefined;
@@ -132,9 +128,8 @@ export default async function StudentCoursesPage({
     studioFilter,
     withNotes ? "notes" : null,
     sort === "date_asc" ? "sort" : null,
-    onlyMine ? "mine" : null,
     disciplineFilters.length > 0 ? "discipline" : null,
-    selectedStatuses.length !== 4 ? "statuses" : null,
+    selectedStatuses.length !== 3 ? "statuses" : null,
   ].filter(Boolean).length;
 
   const courseFilters = {
@@ -159,52 +154,18 @@ export default async function StudentCoursesPage({
 
   const [countsAndData, teachers, studios, courseDisciplinesRaw, disciplinesRaw] = await Promise.all([
     (async () => {
-      if (onlyMine) {
-        const mineWhere = {
-          ...courseWhere,
-          attendances: { some: { studentId: session.user.id } },
-        };
-        const totalCount = await prisma.course.count({ where: mineWhere });
-        const totalPages = Math.max(1, Math.ceil(totalCount / 10));
-        const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
-        const skip = (currentPage - 1) * 10;
-
-        const courses = await prisma.course.findMany({
-          where: mineWhere,
-          orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
-          skip,
-          take: 10,
-          include: {
-            teacher: { select: { id: true, name: true, email: true } },
-            positions: { include: { position: true } },
-            studio: { select: { name: true } },
-            notes: {
-              where: { studentId: session.user.id },
-              include: { position: true },
-            },
-            attendances: {
-              select: { id: true, studentId: true, status: true, waitlistRank: true },
-            },
-            _count: { select: { attendances: true } },
-          },
-        });
-        return { totalCount, totalPages, currentPage, items: courses };
-      }
-
-      if (!session.user.schoolId) {
-        return { totalCount: 0, totalPages: 1, currentPage: 1, items: [] };
-      }
-
-      const totalCount = await prisma.course.count({
-        where: courseWhere,
-      });
+      const mineWhere = {
+        ...courseWhere,
+        attendances: { some: { studentId: session.user.id } },
+      };
+      const totalCount = await prisma.course.count({ where: mineWhere });
       const totalPages = Math.max(1, Math.ceil(totalCount / 10));
       const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
       const skip = (currentPage - 1) * 10;
 
       const courses = await prisma.course
         .findMany({
-          where: courseWhere,
+          where: mineWhere,
           orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
           skip,
           take: 10,
@@ -228,12 +189,12 @@ export default async function StudentCoursesPage({
             message.includes("maxSeats") || message.includes("costCredits");
           if (missingColumns) {
             return prisma.course.findMany({
-              where: courseWhere,
+              where: mineWhere,
               orderBy: { date: sort === "date_desc" ? "desc" : "asc" },
               skip,
               take: 10,
               include: {
-            teacher: { select: { id: true, name: true, email: true } },
+                teacher: { select: { id: true, name: true, email: true } },
                 positions: { include: { position: true } },
                 studio: { select: { name: true } },
                 notes: {
@@ -325,7 +286,6 @@ export default async function StudentCoursesPage({
   if (studioFilter) queryParams.set("studio", studioFilter);
   if (withNotes) queryParams.set("withNotes", "true");
   if (sort === "date_asc") queryParams.set("sort", "date_asc");
-  if (onlyMine) queryParams.set("mine", "true");
   if (disciplineFilters.length > 0) queryParams.set("discipline", disciplineFilters.join(","));
   const qs = queryParams.toString();
   const legendItems = [
@@ -341,10 +301,6 @@ export default async function StudentCoursesPage({
       label: "Liste d’attente (rang, quota 14) — à brancher",
       className: "border border-purple-300/70 bg-purple-500/25 text-purple-50",
     },
-    {
-      label: "Disponible (non inscrit)",
-      className: "border border-white/20 bg-white/10 text-slate-300",
-    },
   ];
 
   return (
@@ -352,9 +308,9 @@ export default async function StudentCoursesPage({
       <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
-          <h1 className="text-3xl font-semibold text-white">Mes cours</h1>
+          <h1 className="text-3xl font-semibold text-white">Historique des cours</h1>
           <p className="text-sm text-slate-200">
-            Historique des cours suivis.
+            Uniquement les cours réservés (passés et à venir).
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
@@ -399,7 +355,7 @@ export default async function StudentCoursesPage({
           userKey={userKey}
         >
           <form
-          key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${onlyMine ? "mine" : "all"}-${disciplineFilters.join("|") || "all"}`}
+          key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${disciplineFilters.join("|") || "all"}`}
           method="get"
           className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
         >
@@ -520,17 +476,6 @@ export default async function StudentCoursesPage({
               />
               Avec notes
             </label>
-            <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
-              <input
-                type="checkbox"
-                name="mine"
-                value="true"
-                defaultChecked={onlyMine}
-                key={onlyMine ? "mine-true" : "mine-false"}
-                className="h-4 w-4 rounded border-white/20 bg-white/5"
-              />
-              Mes cours
-            </div>
             <fieldset className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
               <legend className="px-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Statuts affichés</legend>
               <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-200">
@@ -538,7 +483,6 @@ export default async function StudentCoursesPage({
                   { key: "past", label: "Passé" },
                   { key: "attending", label: "Inscrit (à venir)" },
                   { key: "waitlist", label: "Attente" },
-                  { key: "open", label: "Disponible" },
                 ].map((s) => (
                   <label key={s.key} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1">
                     <input

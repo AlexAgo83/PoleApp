@@ -173,8 +173,16 @@ export default async function StudentSchoolPage({
     typeof params.month === "string" && params.month.length > 0 ? params.month : undefined;
   const weekParam =
     typeof params.week === "string" && params.week.length > 0 ? params.week : undefined;
-  const studioFilter =
-    typeof params.studio === "string" && params.studio.length > 0 ? params.studio : undefined;
+  const studioParam = params.studio;
+  const studioFilters =
+    typeof studioParam === "string"
+      ? studioParam
+          .split(",")
+          .map((d) => d.trim())
+          .filter(Boolean)
+      : Array.isArray(studioParam)
+      ? studioParam.flatMap((d) => d.split(",")).map((d) => d.trim()).filter(Boolean)
+      : [];
   const teacherFilter =
     typeof params.teacher === "string" && params.teacher.length > 0 ? params.teacher : undefined;
   const disciplineFilters =
@@ -198,7 +206,7 @@ export default async function StudentSchoolPage({
     view,
     monthParam,
     weekParam,
-    studioFilter,
+    studioFilters.length ? "studio" : null,
     teacherFilter,
     disciplineFilters.length > 0 ? "discipline" : null,
     fromParam,
@@ -251,7 +259,7 @@ export default async function StudentSchoolPage({
       where: {
         schoolId: session.user.schoolId,
         date: { gte: rangeStart, lte: rangeEnd },
-        ...(studioFilter ? { studioId: studioFilter } : {}),
+        ...(studioFilters.length ? { studioId: { in: studioFilters } } : {}),
         ...(teacherFilter ? { teacherId: teacherFilter } : {}),
         ...(onlyMine ? { attendances: { some: { studentId: session.user.id } } } : {}),
         ...(disciplineFilters.length > 0
@@ -324,7 +332,7 @@ export default async function StudentSchoolPage({
   const hasMonthFilter = Boolean(monthParam);
 
   const paramsForLinks = new URLSearchParams();
-  if (studioFilter) paramsForLinks.set("studio", studioFilter);
+  if (studioFilters.length) paramsForLinks.set("studio", studioFilters.join(","));
   if (teacherFilter) paramsForLinks.set("teacher", teacherFilter);
   if (onlyMine) paramsForLinks.set("mine", "true");
   if (fromParam) paramsForLinks.set("from", fromParam);
@@ -365,8 +373,11 @@ export default async function StudentSchoolPage({
     <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel flex flex-wrap items-start justify-between gap-3 border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30">
         <div className="flex-1">
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
-          <h1 className="text-3xl font-semibold text-white">{school.name}</h1>
+          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Réservation & studios</p>
+          <h1 className="text-3xl font-semibold text-white">Agenda · {school.name}</h1>
+          <p className="text-sm text-slate-200">
+            Réserve tes cours par studio, filtre plusieurs studios et retrouve les infos partenaires de l’école.
+          </p>
           {school.website ? (
             <a
               href={school.website}
@@ -524,21 +535,26 @@ export default async function StudentSchoolPage({
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
-            <label className="text-sm text-slate-200">
-              Studio
-              <select
-                name="studio"
-                defaultValue={studioFilter ?? ""}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              >
-                <option value="">Tous les studios</option>
+            <fieldset className="text-sm text-slate-200">
+              <legend className="mb-1">Studios (multi-sélection)</legend>
+              <div className="flex flex-wrap gap-2">
                 {school.studios.map((s) => (
-                  <option key={s.id} value={s.id}>
+                  <label
+                    key={s.id}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="studio"
+                      value={s.id}
+                      defaultChecked={studioFilters.includes(s.id)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
                     {s.name}
-                  </option>
+                  </label>
                 ))}
-              </select>
-            </label>
+              </div>
+            </fieldset>
             <label className="text-sm text-slate-200">
               Professeur
               <select
@@ -770,7 +786,9 @@ export default async function StudentSchoolPage({
                 <input type="hidden" name="month" value={prevMonthValue} />
                 {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
                 {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+                {studioFilters.map((id) => (
+                  <input key={`prev-studio-${id}`} type="hidden" name="studio" value={id} />
+                ))}
                 {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
                 {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
                 {q ? <input type="hidden" name="q" value={q} /> : null}
@@ -785,7 +803,9 @@ export default async function StudentSchoolPage({
                 <input type="hidden" name="month" value={nextMonthValue} />
                 {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
                 {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+                {studioFilters.map((id) => (
+                  <input key={`next-studio-${id}`} type="hidden" name="studio" value={id} />
+                ))}
                 {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
                 {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
                 {q ? <input type="hidden" name="q" value={q} /> : null}
@@ -928,7 +948,9 @@ export default async function StudentSchoolPage({
                 {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
                 {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
                 {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+                {studioFilters.map((id) => (
+                  <input key={`prev-week-studio-${id}`} type="hidden" name="studio" value={id} />
+                ))}
                 {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
                 {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
                 {q ? <input type="hidden" name="q" value={q} /> : null}
@@ -945,7 +967,9 @@ export default async function StudentSchoolPage({
                 {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
                 {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
                 {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
+                {studioFilters.map((id) => (
+                  <input key={`next-week-studio-${id}`} type="hidden" name="studio" value={id} />
+                ))}
                 {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
                 {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
                 {q ? <input type="hidden" name="q" value={q} /> : null}

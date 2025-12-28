@@ -259,6 +259,24 @@ const defaultSubscriptionOffers = [
     sortOrder: 1,
     defaultTerm: "MONTHLY",
   },
+  {
+    name: "Abonnement mensuel 2000",
+    monthlyPriceCents: 1799,
+    annualPriceCents: 9990,
+    monthlyCredits: 2000,
+    vatPercent: 20,
+    sortOrder: 2,
+    defaultTerm: "MONTHLY",
+  },
+  {
+    name: "Abonnement mensuel 5000",
+    monthlyPriceCents: 3499,
+    annualPriceCents: 19990,
+    monthlyCredits: 5000,
+    vatPercent: 20,
+    sortOrder: 3,
+    defaultTerm: "MONTHLY",
+  },
 ];
 
 const defaultCreditPacks = [
