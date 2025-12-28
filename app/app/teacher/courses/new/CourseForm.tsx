@@ -254,23 +254,26 @@ export function CourseForm({
       </div>
 
       {teachers.length > 0 && (
-        <label className="block text-sm text-slate-200">
-          Professeur (admin)
-          <select
-            name="teacherId"
-            value={selectedTeacherId}
-            onChange={(e) => setSelectedTeacherId(e.target.value)}
-            required
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          >
-            {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
-            {teachers.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name ?? t.email}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="text-sm text-slate-200 md:col-span-1">
+            Professeur (admin)
+            <select
+              name="teacherId"
+              value={selectedTeacherId}
+              onChange={(e) => setSelectedTeacherId(e.target.value)}
+              required
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            >
+              {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
+              {teachers.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name ?? t.email}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="hidden md:block" />
+        </div>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
