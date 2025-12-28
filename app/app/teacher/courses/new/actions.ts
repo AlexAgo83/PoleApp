@@ -16,9 +16,9 @@ const courseSchema = z.object({
   studentIds: z.array(z.string().cuid()).default([]),
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
-  studioId: z.string().cuid().optional().nullable(),
+  studioId: z.string().cuid(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
-  discipline: z.string().trim().min(1).default("Danse"),
+  discipline: z.string().trim().min(1),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -53,9 +53,9 @@ export async function createCourseAction(formData: FormData) {
     studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
-    studioId: formData.get("studioId") || null,
+    studioId: formData.get("studioId"),
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
-    discipline: formData.get("discipline")?.toString().trim() || "Danse",
+    discipline: formData.get("discipline")?.toString().trim(),
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
     waitlistQuota: formData.get("waitlistQuota") ?? 0,
@@ -89,14 +89,12 @@ export async function createCourseAction(formData: FormData) {
     }
   }
 
-  if (parsed.data.studioId) {
-    const studioValid = await prisma.studio.findFirst({
-      where: { id: parsed.data.studioId, schoolId: session.user.schoolId },
-      select: { id: true },
-    });
-    if (!studioValid) {
-      redirect("/access-denied");
-    }
+  const studioValid = await prisma.studio.findFirst({
+    where: { id: parsed.data.studioId, schoolId: session.user.schoolId },
+    select: { id: true },
+  });
+  if (!studioValid) {
+    redirect("/access-denied");
   }
 
   const courseId = await prisma.$transaction(async (tx) => {
@@ -108,8 +106,8 @@ export async function createCourseAction(formData: FormData) {
           date: parsed.data.date,
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
-          studioId: parsed.data.studioId ?? null,
-          discipline: parsed.data.discipline || "Danse",
+          studioId: parsed.data.studioId,
+          discipline: parsed.data.discipline,
           durationMinutes: parsed.data.durationMinutes,
           maxSeats: parsed.data.maxSeats ?? 30,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
@@ -128,8 +126,8 @@ export async function createCourseAction(formData: FormData) {
           date: parsed.data.date,
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
-          studioId: parsed.data.studioId ?? null,
-          discipline: parsed.data.discipline || "Danse",
+          studioId: parsed.data.studioId,
+          discipline: parsed.data.discipline,
           durationMinutes: parsed.data.durationMinutes,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
           photoUrl: parsed.data.photoUrl ?? null,

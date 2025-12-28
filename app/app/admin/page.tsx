@@ -93,8 +93,10 @@ export default async function AdminDashboard({
   const startWeek = new Date(weekBase);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
+  startWeek.setHours(0, 0, 0, 0);
   const endWeek = new Date(startWeek);
   endWeek.setDate(endWeek.getDate() + 6);
+  endWeek.setHours(23, 59, 59, 999);
   const formatWeekKey = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const prevWeek = new Date(startWeek);

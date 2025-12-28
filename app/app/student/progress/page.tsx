@@ -72,7 +72,7 @@ function hexToRgba(color: string, alpha: number) {
 export default async function StudentProgressPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; type?: string; level?: string; q?: string }>;
+  searchParams?: Promise<{ page?: string; type?: string; level?: string; q?: string; discipline?: string; progress?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
@@ -94,8 +94,13 @@ export default async function StudentProgressPage({
     Object.values(PositionLevel).includes(resolvedParams.level as PositionLevel)
       ? (resolvedParams.level as PositionLevel)
       : undefined;
+  const disciplineFilter = resolvedParams.discipline?.toString().trim() || "";
+  const onlyInProgress =
+    resolvedParams.progress === "1" ||
+    resolvedParams.progress === "true" ||
+    resolvedParams.progress === "on";
   const q = resolvedParams.q?.toString().trim() || "";
-  const activeFilters = [typeFilter, levelFilter, q && q.length > 0 ? "q" : null].filter(
+  const activeFilters = [typeFilter, levelFilter, disciplineFilter, onlyInProgress ? "progress" : null, q && q.length > 0 ? "q" : null].filter(
     Boolean
   ).length;
 
@@ -116,9 +121,22 @@ export default async function StudentProgressPage({
     ...(visibleIds ? { id: { in: visibleIds } } : {}),
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
+    ...(disciplineFilter
+      ? { discipline: { contains: disciplineFilter, mode: Prisma.QueryMode.insensitive } }
+      : {}),
     ...(q
       ? {
           name: { contains: q, mode: "insensitive" as Prisma.QueryMode },
+        }
+      : {}),
+    ...(onlyInProgress
+      ? {
+          progress: {
+            some: {
+              studentId: session.user.id,
+              learningStatus: LearningStatus.IN_PROGRESS,
+            },
+          },
         }
       : {}),
   };
@@ -176,6 +194,8 @@ export default async function StudentProgressPage({
   const queryParams = new URLSearchParams();
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
+  if (disciplineFilter) queryParams.set("discipline", disciplineFilter);
+  if (onlyInProgress) queryParams.set("progress", "1");
   if (q) queryParams.set("q", q);
   const qs = queryParams.toString();
 
@@ -216,7 +236,7 @@ export default async function StudentProgressPage({
           <form
             key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${q || "all"}`}
             method="get"
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Recherche
@@ -227,6 +247,21 @@ export default async function StudentProgressPage({
                 placeholder="Nom de la position"
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplineRows.map((d) => (
+                  <option key={d.name} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="text-sm text-slate-200">
               Type
@@ -257,24 +292,36 @@ export default async function StudentProgressPage({
                       ? "Beginner"
                       : lvl === "INTERMEDIATE"
                       ? "Intermédiaire"
-                      : "Avancé"}
+                    : "Avancé"}
                   </option>
                 ))}
               </select>
             </label>
-            <div className="md:col-span-3 flex flex-wrap items-center justify-end gap-2">
-              <button
-                type="submit"
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-              >
-                Filtrer
-              </button>
-              <Link
-                href="/app/student/progress"
-                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                Réinitialiser
-              </Link>
+            <div className="flex flex-col justify-end gap-2 text-sm text-slate-200">
+              <label className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="progress"
+                  value="1"
+                  defaultChecked={onlyInProgress}
+                  className="h-4 w-4"
+                />
+                <span>En progression</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="submit"
+                  className="flex-1 rounded-full bg-cyan-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+                >
+                  Filtrer
+                </button>
+                <Link
+                  href="/app/student/progress"
+                  className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Réinitialiser
+                </Link>
+              </div>
             </div>
           </form>
         </FilterPanel>

@@ -120,8 +120,10 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const weekStart = new Date(agendaWeekBase);
   const dayOffset = weekStart.getDay() === 0 ? 6 : weekStart.getDay() - 1; // Monday=0
   weekStart.setDate(weekStart.getDate() - dayOffset);
+  weekStart.setHours(0, 0, 0, 0);
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
   const prevWeek = new Date(weekStart);
   prevWeek.setDate(weekStart.getDate() - 7);
   const nextWeek = new Date(weekStart);

@@ -70,7 +70,7 @@ export function CourseForm({
   defaultWaitlistQuota = 0,
   defaultCostCredits = 100,
   defaultPhotoUrl = "",
-  defaultDiscipline = "Danse",
+  defaultDiscipline = "",
   progressByStudent = [],
   disciplines = [],
 }: Props) {
@@ -81,6 +81,7 @@ export function CourseForm({
   );
   const [notes, setNotes] = useState<Record<string, Note>>(defaultNotes);
   const [lastGeneratedCount, setLastGeneratedCount] = useState(0);
+  const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
 
   const masteryOptions = useMemo(
     () => [
@@ -100,6 +101,18 @@ export function CourseForm({
       ),
     [notes]
   );
+  const hasDefaultDisciplineInList =
+    defaultDiscipline &&
+    disciplines.some(
+      (d) => d.name.toLowerCase() === defaultDiscipline.toLowerCase()
+    );
+  const resolvedDefaultDate = useMemo(() => {
+    const dateValue = defaultDate ? new Date(defaultDate) : new Date();
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${dateValue.getFullYear()}-${pad(dateValue.getMonth() + 1)}-${pad(
+      dateValue.getDate()
+    )}T${pad(dateValue.getHours())}:${pad(dateValue.getMinutes())}`;
+  }, [defaultDate]);
 
   return (
     <form action={action} className="space-y-4">
@@ -110,7 +123,7 @@ export function CourseForm({
             type="datetime-local"
             name="date"
             required
-            defaultValue={defaultDate ?? new Date().toISOString().slice(0, 16)}
+            defaultValue={resolvedDefaultDate}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
         </label>
@@ -128,17 +141,19 @@ export function CourseForm({
           Discipline
           <select
             name="discipline"
-            defaultValue={defaultDiscipline ?? "Danse"}
+            defaultValue={defaultDiscipline ?? ""}
+            required
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           >
+            <option value="">Sélectionner une discipline</option>
             {disciplines.map((d) => (
               <option key={d.name} value={d.name}>
                 {d.name}
               </option>
             ))}
-            {!disciplines.find((d) => d.name.toLowerCase() === (defaultDiscipline ?? "Danse").toLowerCase()) && (
-              <option value={defaultDiscipline ?? "Danse"}>{defaultDiscipline ?? "Danse"}</option>
-            )}
+            {!hasDefaultDisciplineInList && defaultDiscipline ? (
+              <option value={defaultDiscipline}>{defaultDiscipline}</option>
+            ) : null}
           </select>
         </label>
       </div>
@@ -164,13 +179,13 @@ export function CourseForm({
 
       {studios.length > 0 && (
         <label className="block text-sm text-slate-200">
-          Studio (optionnel)
+          Studio
           <select
             name="studioId"
-            defaultValue={defaultStudioId ?? ""}
+            required
+            defaultValue={resolvedStudioId}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           >
-            <option value="">(Aucun studio)</option>
             {studios.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}

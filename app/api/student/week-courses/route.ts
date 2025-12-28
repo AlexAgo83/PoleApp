@@ -48,8 +48,10 @@ export async function GET(req: Request) {
   const startWeek = new Date(weekBase);
   const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
   startWeek.setDate(startWeek.getDate() - dayOffset);
+  startWeek.setHours(0, 0, 0, 0);
   const endWeek = new Date(startWeek);
   endWeek.setDate(startWeek.getDate() + 6);
+  endWeek.setHours(23, 59, 59, 999);
 
   const prevWeek = new Date(startWeek);
   prevWeek.setDate(startWeek.getDate() - 7);
