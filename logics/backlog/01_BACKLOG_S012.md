@@ -38,7 +38,7 @@
 - Audit des vues/listes/cartes utilisant encore `avatarUrl` (élève/prof/admin) et passage à `resolveAvatarUrl`/`generateSignedUrl` avec fallback par défaut.
 - Vérifier placeholders et delivery type `authenticated` pour les avatars (URL signées, pas de 404).
 
-## P1 — Wording: “Positions coups de cœur”
+## P1 — Wording: “Positions coups de cœur” (DONE)
 ### User stories
 - En tant qu’utilisateur, je vois partout “Positions coups de cœur” au lieu de “Positions préférées”.
 ### Critères d’acceptation
@@ -48,9 +48,9 @@
 - Recherche/replace contrôlé, revue UI rapide.
 - Tests manuels sur modules positions/agenda/cours.
 ### Progression
-- [ ] Not started
+- [x] DONE (libellés UI mis à jour)
 
-## P1 — Historique élève : filtre “Mes cours” par défaut
+## P1 — Historique élève : filtre “Mes cours” par défaut (DONE)
 ### User stories
 - En tant qu’élève, en ouvrant l’historique, le filtre “Mes cours” est actif par défaut.
 ### Critères d’acceptation
@@ -61,7 +61,7 @@
 - Tests manuels sur desktop/mobile.
 - Pas de régression sur autres filtres.
 ### Progression
-- [ ] Not started
+- [x] DONE (par défaut activé, décochable, pas de persistance)
 
 ## P1 — Création de cours récurrents (bêta)
 ### User stories
@@ -98,7 +98,7 @@
 - Tests manuels (ICS téléchargé + ouvert).
 - Compatibilité desktop/mobile.
 ### Progression
-- [ ] Not started
+- [ ] En cours (route ICS + bouton OK, reste timezone/alerte)
 
 ### À clarifier (global)
 - P1 récurrence : planifier plus tard la gestion d’exceptions (sauter une date) et l’édition série vs futures occurrences.
