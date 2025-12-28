@@ -275,7 +275,7 @@ export default async function TeacherDashboard() {
           </Link>
           <Link
             href="/app/teacher/billing"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-400/70 hover:bg-white/10"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
@@ -286,7 +286,7 @@ export default async function TeacherDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-emerald-200">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
                   Facturation
                 </p>
                 <p className="text-base font-semibold text-white">
