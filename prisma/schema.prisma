@@ -73,6 +73,7 @@ enum ManualFinancialStatus {
 
 enum RecurrenceFrequency {
   DAILY
+  WEEKLY
   BIWEEKLY
   MONTHLY
 }
