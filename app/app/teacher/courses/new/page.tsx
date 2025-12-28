@@ -35,7 +35,7 @@ export default async function NewCoursePage() {
     }),
     prisma.position.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, name: true, type: true },
+      select: { id: true, name: true, type: true, discipline: true },
     }),
     session.user.role === "SCHOOL_ADMIN"
       ? prisma.user.findMany({

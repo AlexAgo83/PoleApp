@@ -4,7 +4,7 @@ import { MasteryLevel } from "@prisma/client";
 import { useMemo, useState } from "react";
 
 type Student = { id: string; name: string | null; email: string };
-type Position = { id: string; name: string; type: string };
+type Position = { id: string; name: string; type: string; discipline?: string | null };
 type Teacher = { id: string; name: string | null; email: string };
 type Studio = { id: string; name: string };
 type ProgressRecord = {
@@ -82,6 +82,7 @@ export function CourseForm({
   const [notes, setNotes] = useState<Record<string, Note>>(defaultNotes);
   const [lastGeneratedCount, setLastGeneratedCount] = useState(0);
   const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
+  const [selectedDiscipline, setSelectedDiscipline] = useState(defaultDiscipline ?? "");
 
   const masteryOptions = useMemo(
     () => [
@@ -106,6 +107,12 @@ export function CourseForm({
     disciplines.some(
       (d) => d.name.toLowerCase() === defaultDiscipline.toLowerCase()
     );
+  const filteredPositions = useMemo(() => {
+    if (!selectedDiscipline) return positions;
+    return positions.filter(
+      (p) => (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase()
+    );
+  }, [positions, selectedDiscipline]);
   const resolvedDefaultDate = useMemo(() => {
     const dateValue = defaultDate ? new Date(defaultDate) : new Date();
     const pad = (n: number) => n.toString().padStart(2, "0");
@@ -141,7 +148,8 @@ export function CourseForm({
           Discipline
           <select
             name="discipline"
-            defaultValue={defaultDiscipline ?? ""}
+            value={selectedDiscipline}
+            onChange={(e) => setSelectedDiscipline(e.target.value)}
             required
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           >
@@ -328,7 +336,7 @@ export function CourseForm({
                 .sort((a, b) => b[1].score - a[1].score || a[1].name.localeCompare(b[1].name))
                 .map(([positionId]) => positionId);
 
-              const fallbackPool = positions.map((p) => p.id);
+              const fallbackPool = filteredPositions.map((p) => p.id);
               const proposed = (sorted.length > 0 ? sorted : fallbackPool).slice(
                 0,
                 6
@@ -355,7 +363,7 @@ export function CourseForm({
           )}
         </div>
         <div className="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-          {positions.map((position) => {
+          {filteredPositions.map((position) => {
             const checked = selectedPositions.includes(position.id);
             return (
               <label
