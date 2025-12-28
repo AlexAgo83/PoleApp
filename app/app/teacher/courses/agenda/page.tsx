@@ -82,6 +82,7 @@ export default async function CoursesAgendaPage({
       : Array.isArray(resolved.discipline)
       ? resolved.discipline.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean)
       : [];
+  const disciplineParam = disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined;
   const levelFilter =
     typeof resolved.level === "string" && resolved.level.length > 0
       ? resolved.level
