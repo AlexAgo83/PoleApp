@@ -1,7 +1,8 @@
 "use client";
 
 import { MasteryLevel } from "@prisma/client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string; discipline?: string | null };
@@ -93,6 +94,11 @@ export function CourseForm({
   const [showConfirm, setShowConfirm] = useState(false);
   const [allowSubmit, setAllowSubmit] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const masteryOptions = useMemo(
     () => [
@@ -483,32 +489,35 @@ export function CourseForm({
         </button>
       </div>
 
-      {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/90 p-5 shadow-2xl shadow-cyan-900/40">
-            <h3 className="text-lg font-semibold text-white">Confirmer la création</h3>
-            <p className="mt-2 text-sm text-slate-200">
-              Tu as inscrit au moins un élève manuellement sur ce cours. Confirmer la création avec ces inscriptions forcées ?
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowConfirm(false)}
-                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/10"
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                onClick={confirmSubmit}
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-cyan-400"
-              >
-                Confirmer
-              </button>
+      {mounted &&
+        showConfirm &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/95 p-5 shadow-2xl shadow-cyan-900/40">
+              <h3 className="text-lg font-semibold text-white">Confirmer la création</h3>
+              <p className="mt-2 text-sm text-slate-200">
+                Tu as inscrit au moins un élève manuellement sur ce cours. Confirmer la création avec ces inscriptions forcées ?
+              </p>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(false)}
+                  className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/10"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmSubmit}
+                  className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-cyan-400"
+                >
+                  Confirmer
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </form>
   );
 }
