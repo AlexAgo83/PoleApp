@@ -1,5 +1,5 @@
 # Backlog — Retours QA S012 (06_QA_S012.md)
-[Compréhension: 100% / Avancement: 6/6]
+[Compréhension: 100% / Avancement: 5/6]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -36,18 +36,18 @@
 - Progression: DONE (redir premium en place sur dalles protégées, accès normal sinon)
 - Priorité: P0
 
-## F5 – Facturation école : annulation/remboursement + ajustements crédits **(DONE)**
+## F5 – Facturation école : annulation/remboursement + ajustements crédits **(IN PROGRESS)**
 - User stories: 1) Admin peut « Annuler et rembourser » un achat de pack/abonnement. 2) Admin peut modifier manuellement les crédits d’un élève (ajout/retrait) avec application immédiate et traçabilité.
 - Critères d’acceptation: action annuler/rembourser disponible sur achats packs/abos; solde crédits mis à jour immédiatement; ajout/retrait de crédits possible avec justification loggée; historique/trace interne créé; pas de blocage sur autres statuts.
 - DoD: tests manuels sur packs/abos; vérification solde avant/après; log/trace présent; QA permissions.
-- Progression: DONE (remboursement pack/abo, rollback crédits restants, ledger/log opérateur, ajustements crédits manuels avec justification et mise à jour immédiate du solde)
+- Progression: remboursement facture cours en place (statut REFUNDED, note + opérateur, annulation paidAt) ; reste à couvrir packs/abos + ajustements crédits manuels (ledger + mise à jour immédiate du solde élève)
 - Priorité: P0
 
 ## F6 – Vue professeur : statuts financiers manuels **(DONE)**
 - User stories: En tant que professeur/admin, je peux définir un statut financier manuel sur les éléments concernés (cours/factures ?) avec les statuts « Payé » ou « En retard », visibles et persistants.
 - Critères d’acceptation: statuts manuels accessibles et modifiables; persistance DB; visibilité claire dans la vue prof; pas d’écrasement par les flux automatiques existants.
 - DoD: tests manuels création/modification; revue modèle/DB; QA affichage.
-- Progression: DONE (statuts manuels Payé/En retard sur factures/achats, modale d’édition prof/admin, persistance DB et badges visibles sans écraser l’auto)
+- Progression: DONE (statut manuel PAID/LATE + note depuis admin, champs DB + historisation opérateur/date, affichage badges + notes sur admin/prof)
 - Priorité: P1
 
 ### Décisions / clarifications

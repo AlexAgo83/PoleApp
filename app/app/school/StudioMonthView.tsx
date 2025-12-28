@@ -18,6 +18,7 @@ type Course = {
 
 type MonthCell = {
   day?: number;
+  isoDate?: string;
   courses: Course[];
 };
 

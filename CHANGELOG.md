@@ -1,5 +1,7 @@
 # Changelog
 
+## 2026-12-28 - Release v0.9.0
+
 ## 2025-12-28 — Release v0.8.2 (thème renforcé + panels super-admin)
 - Thème global : palette accent fuchsia (remap des couleurs “cyan”), texte éclairci, fond lilas/bleu atténué, overlays panels assombris pour lisibilité.
 - Super admin : formulaires “Nouvelle offre abonnement”, “Nouveau pack crédits” et “Créer une école” alignés sur les autres panels (fond glassy sombre, bordure visible), repli mémorisé conservé.

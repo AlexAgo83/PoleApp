@@ -7,6 +7,7 @@ import {
   PrismaClient,
   Role,
   InvoiceStatus,
+  ManualFinancialStatus,
   MasteryLevel,
   LearningStatus,
 } from "@prisma/client";
@@ -570,6 +571,7 @@ async function seedSchoolsAndUsers() {
 
   const teachers: { id: string; schoolId: string; email?: string }[] = [];
   const students: { id: string; schoolId: string }[] = [];
+  const admins: { id: string; schoolId: string }[] = [];
 
   for (const acc of fixedAccounts) {
     const created = await prisma.user.create({
@@ -590,6 +592,9 @@ async function seedSchoolsAndUsers() {
     }
     if (acc.role === Role.STUDENT) {
       students.push({ id: created.id, schoolId: schools[acc.schoolIdx].id });
+    }
+    if (acc.role === Role.SCHOOL_ADMIN) {
+      admins.push({ id: created.id, schoolId: schools[acc.schoolIdx].id });
     }
   }
 
@@ -647,7 +652,7 @@ async function seedSchoolsAndUsers() {
     }
   }
 
-  return { schools, teachers, students };
+  return { schools, teachers, students, admins };
 }
 
 function buildSchedule(options: { daysPast: number; daysFuture: number; total: number }) {
@@ -686,11 +691,12 @@ async function seedCourses(schoolsData: {
   schools: { id: string; name: string }[];
   teachers: { id: string; schoolId: string; email?: string }[];
   students: { id: string; schoolId: string }[];
+  admins: { id: string; schoolId: string }[];
   positions: { id: string }[];
   disciplinesBySchool: Record<string, { name: string; color?: string | null }[]>;
   positionsByTeacher: Record<string, string[]>;
 }) {
-  const { schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher } = schoolsData;
+  const { schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher } = schoolsData;
   let courseImageIdx = 0;
   let courseNameIdx = 0;
   const euro = "EUR";
@@ -698,6 +704,7 @@ async function seedCourses(schoolsData: {
   for (const school of schools) {
     const schoolTeachers = teachers.filter((t) => t.schoolId === school.id);
     const schoolStudents = students.filter((s) => s.schoolId === school.id);
+    const schoolAdmin = admins.find((a) => a.schoolId === school.id);
     const teacherUsage = new Map<string, number>();
     const disciplinePool =
       disciplinesBySchool[school.id] && disciplinesBySchool[school.id].length > 0
@@ -832,13 +839,31 @@ async function seedCourses(schoolsData: {
 
       const confirmedCount = attendees.length;
       const defaultAmountCents = computeDefaultInvoiceAmountCents(confirmedCount, course.maxSeats);
+      const roll = Math.random();
+      const isRefunded = Boolean(schoolAdmin) && roll < 0.12;
+      const hasManualStatus = Boolean(schoolAdmin) && !isRefunded && roll >= 0.12 && roll < 0.3;
+      const manualStatus =
+        hasManualStatus && roll < 0.2 ? ManualFinancialStatus.PAID : hasManualStatus ? ManualFinancialStatus.LATE : ManualFinancialStatus.NONE;
+
       await prisma.invoice.create({
         data: {
           courseId: course.id,
           amountCents: defaultAmountCents,
           currency: euro,
-          status: InvoiceStatus.GENERATED,
+          status: isRefunded ? InvoiceStatus.REFUNDED : InvoiceStatus.GENERATED,
           issuedAt: new Date(),
+          refundedAt: isRefunded ? new Date() : null,
+          refundedById: isRefunded ? schoolAdmin?.id : null,
+          refundNote: isRefunded ? "Remboursement seed (cours annulé)" : null,
+          manualStatus,
+          manualNote:
+            manualStatus === ManualFinancialStatus.PAID
+              ? "Marqué payé manuellement (seed)"
+              : manualStatus === ManualFinancialStatus.LATE
+              ? "Relance manuelle (seed)"
+              : null,
+          manualSetById: hasManualStatus ? schoolAdmin?.id : null,
+          manualSetAt: hasManualStatus ? new Date() : null,
         },
       });
     }
@@ -1122,7 +1147,7 @@ async function main() {
   await seedGlobalSettingsAndOffers();
   await seedInjuryTypes();
   const muscles = await seedMuscles();
-  const { schools, teachers, students } = await seedSchoolsAndUsers();
+  const { schools, teachers, students, admins } = await seedSchoolsAndUsers();
   const disciplinesBySchool = await seedDisciplines(schools);
   await seedPartners(schools);
   const elzaTeacher = teachers.find((t) => t.email === "teacher@poleapp.test");
@@ -1135,7 +1160,7 @@ async function main() {
   await seedStudentInjuries(students);
   await seedPresets({ schools, positions, teachers });
   await seedPurchases(students);
-  await seedCourses({ schools, teachers, students, positions, disciplinesBySchool, positionsByTeacher });
+  await seedCourses({ schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);
 }
 

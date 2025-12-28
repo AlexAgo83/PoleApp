@@ -110,6 +110,8 @@ export async function GET(request: Request) {
             _count: { select: { attendances: true } },
           },
         },
+        manualSetBy: { select: { id: true, name: true, email: true } },
+        refundedBy: { select: { id: true, name: true, email: true } },
       },
     }),
     prisma.user.findMany({

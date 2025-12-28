@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { InvoiceStatus, Prisma } from "@prisma/client";
+import { InvoiceStatus, ManualFinancialStatus, Prisma } from "@prisma/client";
 
 import { FilterPanel } from "@/components/FilterPanel";
 import { authOptions } from "@/lib/auth";
@@ -27,6 +27,7 @@ const statusLabels: Record<InvoiceStatus, string> = {
   PAID: "Payée",
   LATE: "En retard",
   CANCELLED: "Annulée",
+  REFUNDED: "Remboursée",
 };
 
 const statusClasses: Record<InvoiceStatus, string> = {
@@ -35,6 +36,13 @@ const statusClasses: Record<InvoiceStatus, string> = {
   PAID: "border-emerald-300/60 bg-emerald-500/20 text-emerald-50",
   LATE: "border-amber-300/70 bg-amber-500/20 text-amber-50",
   CANCELLED: "border-red-300/60 bg-red-500/15 text-red-50",
+  REFUNDED: "border-cyan-300/70 bg-cyan-500/20 text-cyan-50",
+};
+
+const manualLabels: Record<ManualFinancialStatus, string> = {
+  NONE: "Statut auto",
+  PAID: "Payé (manuel)",
+  LATE: "En retard (manuel)",
 };
 
 function paramValue(value?: string | string[]) {
@@ -286,6 +294,10 @@ export default async function TeacherBillingPage({
             const course = invoice.course;
             const badgeClass = statusClasses[invoice.status];
             const badgeLabel = statusLabels[invoice.status];
+            const manualBadge =
+              invoice.manualStatus && invoice.manualStatus !== ManualFinancialStatus.NONE
+                ? manualLabels[invoice.manualStatus]
+                : null;
             const attendees = course._count.attendances;
             const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
               year: "numeric",
@@ -294,6 +306,10 @@ export default async function TeacherBillingPage({
               hour: "2-digit",
               minute: "2-digit",
             });
+            const formattedPaidAt = invoice.paidAt ? new Date(invoice.paidAt).toLocaleDateString("fr-FR") : null;
+            const formattedRefundedAt = invoice.refundedAt
+              ? new Date(invoice.refundedAt).toLocaleDateString("fr-FR")
+              : null;
             return (
               <article key={invoice.id} className="flex flex-col gap-2 py-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -303,6 +319,11 @@ export default async function TeacherBillingPage({
                     >
                       {badgeLabel}
                     </span>
+                    {manualBadge && (
+                      <span className="inline-flex items-center rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1 text-[12px] font-semibold text-amber-50">
+                        {manualBadge}
+                      </span>
+                    )}
                     <p className="text-base font-semibold text-white">
                       {course.title ?? "Cours"} · {formattedDate}
                     </p>
@@ -320,14 +341,25 @@ export default async function TeacherBillingPage({
                   <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
                     Présences : {attendees}
                   </span>
-                  {invoice.paidAt && (
+                  {formattedPaidAt && (
                     <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2 py-1 text-[12px] text-emerald-50">
-                      Payée le {new Date(invoice.paidAt).toLocaleDateString("fr-FR")}
+                      Payée le {formattedPaidAt}
+                    </span>
+                  )}
+                  {formattedRefundedAt && (
+                    <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-1 text-[12px] text-cyan-50">
+                      Remboursée le {formattedRefundedAt}
                     </span>
                   )}
                 </div>
-                {invoice.note && (
-                  <p className="text-sm text-slate-300">Note : {invoice.note}</p>
+                {invoice.note && <p className="text-sm text-slate-300">Note : {invoice.note}</p>}
+                {invoice.manualNote && (
+                  <p className="text-xs text-amber-100">
+                    Note manuelle : {invoice.manualNote}
+                  </p>
+                )}
+                {invoice.refundNote && (
+                  <p className="text-xs text-cyan-100">Note remboursement : {invoice.refundNote}</p>
                 )}
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
@@ -340,7 +372,12 @@ export default async function TeacherBillingPage({
                     <input type="hidden" name="invoiceId" value={invoice.id} />
                     <button
                       type="submit"
-                      disabled={invoice.status === "SENT" || invoice.status === "PAID" || invoice.status === "CANCELLED"}
+                      disabled={
+                        invoice.status === "SENT" ||
+                        invoice.status === "PAID" ||
+                        invoice.status === "CANCELLED" ||
+                        invoice.status === "REFUNDED"
+                      }
                       className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-1 font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-slate-400"
                     >
                       Envoyer à l&apos;école

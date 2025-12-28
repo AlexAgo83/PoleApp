@@ -62,6 +62,13 @@ enum InvoiceStatus {
   PAID
   LATE
   CANCELLED
+  REFUNDED
+}
+
+enum ManualFinancialStatus {
+  NONE
+  PAID
+  LATE
 }
 
 model School {
@@ -121,6 +128,8 @@ model User {
   partnerEvents    PartnerEvent[]
   purchases        Purchase[]
   createdPresets   Preset[]
+  manualSetInvoices Invoice[] @relation("InvoiceManualSetBy")
+  refundedInvoices  Invoice[] @relation("InvoiceRefundedBy")
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -440,14 +449,24 @@ model Invoice {
   amountCents Int
   currency    String        @default("EUR")
   status      InvoiceStatus @default(GENERATED)
+  manualStatus ManualFinancialStatus @default(NONE)
+  manualNote  String?
+  manualSetById String?
+  manualSetAt  DateTime?
   issuedAt    DateTime      @default(now())
   paidAt      DateTime?
+  refundedAt  DateTime?
+  refundedById String?
+  refundNote  String?
   note        String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   course      Course        @relation(fields: [courseId], references: [id])
+  manualSetBy User?         @relation("InvoiceManualSetBy", fields: [manualSetById], references: [id], onDelete: SetNull)
+  refundedBy  User?         @relation("InvoiceRefundedBy", fields: [refundedById], references: [id], onDelete: SetNull)
 
   @@index([status])
+  @@index([manualStatus])
   @@index([issuedAt])
 }
 
