@@ -59,6 +59,40 @@ type Note = {
   comment?: string;
 };
 
+type PanelProps = {
+  children: ReactNode;
+  groupedPanels: boolean;
+  title?: string;
+  collapsible?: boolean;
+  collapsed?: boolean;
+  onToggle?: () => void;
+};
+
+function Panel({ children, groupedPanels, title, collapsible = false, collapsed, onToggle }: PanelProps) {
+  if (!groupedPanels) {
+    return <section className="space-y-2 text-sm text-slate-200">{children}</section>;
+  }
+  return (
+    <section className="panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
+      {title ? (
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-base font-semibold text-white">{title}</h3>
+          {collapsible && (
+            <button
+              type="button"
+              onClick={onToggle}
+              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+            >
+              {collapsed ? "Afficher" : "Masquer"}
+            </button>
+          )}
+        </div>
+      ) : null}
+      {!collapsible || !collapsed ? children : null}
+    </section>
+  );
+}
+
 export function CourseForm({
   students,
   positions,
@@ -270,43 +304,6 @@ export function CourseForm({
     });
   };
 
-  const Panel = ({
-    children,
-    title,
-    collapsible = false,
-    collapsed,
-    onToggle,
-  }: {
-    children: ReactNode;
-    title?: string;
-    collapsible?: boolean;
-    collapsed?: boolean;
-    onToggle?: () => void;
-  }) => {
-    if (!groupedPanels) {
-      return <section className="space-y-2 text-sm text-slate-200">{children}</section>;
-    }
-    return (
-      <section className="panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
-        {title ? (
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-base font-semibold text-white">{title}</h3>
-            {collapsible && (
-              <button
-                type="button"
-                onClick={onToggle}
-                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-              >
-                {collapsed ? "Afficher" : "Masquer"}
-              </button>
-            )}
-          </div>
-        ) : null}
-        {!collapsible || !collapsed ? children : null}
-      </section>
-    );
-  };
-
   return (
     <form
       id={formId}
@@ -318,104 +315,104 @@ export function CourseForm({
         lastFocusedRef.current = e.target as HTMLElement;
       }}
     >
-      <Panel title={groupedPanels ? "Infos du cours" : undefined}>
+      <Panel groupedPanels={groupedPanels} title={groupedPanels ? "Infos du cours" : undefined}>
         <div className="grid gap-4 md:grid-cols-2">
-        <label className="text-sm text-slate-200">
-          Date
-          <input
-            type="datetime-local"
-            name="date"
-            required
-            value={dateValue}
-            onChange={(e) => {
-              needsRefocus.current = true;
-              setDateValue(e.target.value);
-            }}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-        </label>
-        <label className="text-sm text-slate-200">
-          Titre
-          <input
-            type="text"
-            name="title"
-            required
-            placeholder="Cours du soir - Spins inter"
-            value={titleValue}
-            onChange={(e) => {
-              needsRefocus.current = true;
-              setTitleValue(e.target.value);
-            }}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-        </label>
-        <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
           <label className="text-sm text-slate-200">
-            Discipline
-            <select
-              name="discipline"
-              value={selectedDiscipline}
-              onChange={(e) => setSelectedDiscipline(e.target.value)}
+            Date
+            <input
+              type="datetime-local"
+              name="date"
               required
+              value={dateValue}
+              onChange={(e) => {
+                needsRefocus.current = true;
+                setDateValue(e.target.value);
+              }}
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            >
-              <option value="">Sélectionner une discipline</option>
-              {disciplines.map((d) => (
-                <option key={d.name} value={d.name}>
-                  {d.name}
-                </option>
-              ))}
-              {!hasDefaultDisciplineInList && defaultDiscipline ? (
-                <option value={defaultDiscipline}>{defaultDiscipline}</option>
-              ) : null}
-            </select>
+            />
           </label>
-          {studios.length > 0 && (
-            <label className="text-sm text-slate-200">
-              Studio
-              <select
-              name="studioId"
+          <label className="text-sm text-slate-200">
+            Titre
+            <input
+              type="text"
+              name="title"
               required
-              value={studioValue}
-              onChange={(e) => setStudioValue(e.target.value)}
+              placeholder="Cours du soir - Spins inter"
+              value={titleValue}
+              onChange={(e) => {
+                needsRefocus.current = true;
+                setTitleValue(e.target.value);
+              }}
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            >
-                {studios.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
+            />
+          </label>
+          <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                value={selectedDiscipline}
+                onChange={(e) => setSelectedDiscipline(e.target.value)}
+                required
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              >
+                <option value="">Sélectionner une discipline</option>
+                {disciplines.map((d) => (
+                  <option key={d.name} value={d.name}>
+                    {d.name}
                   </option>
                 ))}
+                {!hasDefaultDisciplineInList && defaultDiscipline ? (
+                  <option value={defaultDiscipline}>{defaultDiscipline}</option>
+                ) : null}
               </select>
             </label>
-          )}
-          <label className="text-sm text-slate-200">
-            Durée (minutes)
-            <input
-              type="number"
-              name="durationMinutes"
-              min={30}
-              step={15}
-              value={durationValue}
-              onChange={(e) => setDurationValue(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-            <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
-          </label>
-          <label className="text-sm text-slate-200">
-            Coût en crédits
-            <input
-              type="number"
-              name="costCredits"
-              min={0}
-              step={10}
-              value={costValue}
-              onChange={(e) => setCostValue(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-            <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0.</p>
-          </label>
+            {studios.length > 0 && (
+              <label className="text-sm text-slate-200">
+                Studio
+                <select
+                  name="studioId"
+                  required
+                  value={studioValue}
+                  onChange={(e) => setStudioValue(e.target.value)}
+                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                >
+                  {studios.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label className="text-sm text-slate-200">
+              Durée (minutes)
+              <input
+                type="number"
+                name="durationMinutes"
+                min={30}
+                step={15}
+                value={durationValue}
+                onChange={(e) => setDurationValue(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              />
+              <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
+            </label>
+            <label className="text-sm text-slate-200">
+              Coût en crédits
+              <input
+                type="number"
+                name="costCredits"
+                min={0}
+                step="any"
+                value={costValue}
+                onChange={(e) => setCostValue(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+              />
+              <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0, pas de contrainte de multiple.</p>
+            </label>
+          </div>
         </div>
-      </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm text-slate-200">
@@ -450,34 +447,35 @@ export function CourseForm({
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-        <label className="text-sm text-slate-200">
-          Places maximum
-          <input
-            type="number"
-            name="maxSeats"
-            min={1}
-            value={maxSeatsValue}
-            onChange={(e) => setMaxSeatsValue(e.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-          <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
-        </label>
-        <label className="text-sm text-slate-200">
-          Quota liste d&apos;attente
-          <input
-            type="number"
-            name="waitlistQuota"
-            min={0}
-            value={waitlistValue}
-            onChange={(e) => setWaitlistValue(e.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
+          <label className="text-sm text-slate-200">
+            Places maximum
+            <input
+              type="number"
+              name="maxSeats"
+              min={1}
+              value={maxSeatsValue}
+              onChange={(e) => setMaxSeatsValue(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
+          </label>
+          <label className="text-sm text-slate-200">
+            Quota liste d&apos;attente
+            <input
+              type="number"
+              name="waitlistQuota"
+              min={0}
+              value={waitlistValue}
+              onChange={(e) => setWaitlistValue(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
             <p className="mt-1 text-xs text-slate-400">0 = illimité. Si plein et quota atteint, inscription refusée.</p>
           </label>
         </div>
       </Panel>
 
       <Panel
+        groupedPanels={groupedPanels}
         title={
           groupedPanels
             ? `Élèves présents${selectedStudents.length > 0 ? ` (${selectedStudents.length})` : ""}`
@@ -546,6 +544,7 @@ export function CourseForm({
       </Panel>
 
       <Panel
+        groupedPanels={groupedPanels}
         title={
           groupedPanels
             ? `Positions abordées${selectedPositions.length > 0 ? ` (${selectedPositions.length})` : ""}`
