@@ -1,4 +1,4 @@
-import { generateSignedUrl, isCloudinaryEnabled } from "./cloudinary";
+import { generateSignedUrl, isCloudinaryEnabled, isDefaultAvatarPublicId } from "./cloudinary";
 
 type AvatarParams = {
   avatarPublicId?: string | null;
@@ -13,11 +13,14 @@ export function resolveAvatarUrl({
   placeholder,
   deliveryType = "authenticated",
 }: AvatarParams) {
+  const effectiveDelivery =
+    avatarPublicId && isDefaultAvatarPublicId(avatarPublicId) ? "upload" : deliveryType;
+
   if (avatarPublicId && isCloudinaryEnabled()) {
     const signed = generateSignedUrl({
       publicId: avatarPublicId,
       resourceType: "image",
-      deliveryType,
+      deliveryType: effectiveDelivery,
       expiresInSeconds: 3600,
     });
     if (signed) return signed;
