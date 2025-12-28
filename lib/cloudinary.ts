@@ -22,6 +22,10 @@ const defaultAvatarIds = (process.env.CLOUDINARY_AVATAR_DEFAULT_IDS ?? "")
   .map((v) => v.trim())
   .filter(Boolean);
 
+export function getDefaultAvatarPublicIds() {
+  return defaultAvatarIds;
+}
+
 export function randomDefaultAvatarPublicId() {
   if (defaultAvatarIds.length === 0) return null;
   const idx = Math.floor(Math.random() * defaultAvatarIds.length);

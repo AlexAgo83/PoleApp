@@ -179,6 +179,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
                           avatarPublicId: teacher.avatarPublicId,
                           avatarUrl: teacher.avatarUrl,
                           placeholder: TEACHER_AVATAR_PLACEHOLDER,
+                          seedKey: teacher.id,
                         }) || TEACHER_AVATAR_PLACEHOLDER
                       }
                       alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}

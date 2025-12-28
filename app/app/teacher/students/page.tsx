@@ -307,6 +307,7 @@ export default async function TeacherStudentsPage({
                       avatarPublicId: student.avatarPublicId,
                       avatarUrl: student.avatarUrl,
                       placeholder: STUDENT_AVATAR_PLACEHOLDER,
+                      seedKey: student.id,
                     }) || STUDENT_AVATAR_PLACEHOLDER
                   }
                   alt={`Avatar de ${student.name ?? student.email}`}
