@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
 
 const updateProgressSchema = z.object({
   studentId: z.string().cuid(),
@@ -89,6 +90,7 @@ const updateProfileSchema = z.object({
     .url("URL invalide")
     .max(2048, "URL trop longue")
     .optional(),
+  avatarPublicId: z.string().trim().max(512).optional(),
 });
 
 export async function updateStudentProfileAction(formData: FormData) {
@@ -106,6 +108,7 @@ export async function updateStudentProfileAction(formData: FormData) {
     lastName: (formData.get("lastName") as string | null)?.trim() || "",
     age: (formData.get("age") as string | null)?.trim() || undefined,
     avatarUrl: (formData.get("avatarUrl") as string | null)?.trim() || undefined,
+    avatarPublicId: (formData.get("avatarPublicId") as string | null)?.trim() || undefined,
   });
 
   if (!parsed.success) {
@@ -114,7 +117,7 @@ export async function updateStudentProfileAction(formData: FormData) {
 
   const student = await prisma.user.findUnique({
     where: { id: parsed.data.studentId },
-    select: { schoolId: true },
+    select: { schoolId: true, avatarPublicId: true },
   });
   if (!student || student.schoolId !== session.user.schoolId) {
     redirect("/access-denied");
@@ -124,9 +127,30 @@ export async function updateStudentProfileAction(formData: FormData) {
 
   await prisma.user.update({
     where: { id: parsed.data.studentId },
-    data: { name, age: parsed.data.age ?? null, avatarUrl: parsed.data.avatarUrl ?? null },
+    data: {
+      name,
+      age: parsed.data.age ?? null,
+      avatarUrl: parsed.data.avatarUrl ?? null,
+      avatarPublicId: parsed.data.avatarPublicId ?? null,
+    },
   });
 
   const targetPath = `/app/teacher/students/${parsed.data.studentId}`;
   revalidatePath(targetPath);
+
+  const previousPublicId = student.avatarPublicId;
+  const newPublicId = parsed.data.avatarPublicId ?? null;
+  if (
+    previousPublicId &&
+    previousPublicId !== newPublicId &&
+    !isDefaultAvatarPublicId(previousPublicId) &&
+    isCloudinaryEnabled()
+  ) {
+    try {
+      await destroyAsset(previousPublicId, "image", "authenticated");
+    } catch (error) {
+      console.error("[student-profile] failed to destroy previous avatar", error);
+    }
+  }
+  redirect(targetPath);
 }

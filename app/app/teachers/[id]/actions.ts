@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
 
 const schema = z.object({
   teacherId: z.string().cuid(),
@@ -24,6 +25,7 @@ const schema = z.object({
     .url("URL invalide")
     .max(2048, "URL trop longue")
     .optional(),
+  avatarPublicId: z.string().trim().max(512).optional(),
   diplomas: z.string().trim().max(2000, "Texte trop long").optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
   returnTo: z.string().trim().optional(),
@@ -44,6 +46,7 @@ export async function updateTeacherProfileAction(formData: FormData) {
     lastName: (formData.get("lastName") as string | null)?.trim() || "",
     age: (formData.get("age") as string | null)?.trim() || undefined,
     avatarUrl: (formData.get("avatarUrl") as string | null)?.trim() || undefined,
+    avatarPublicId: (formData.get("avatarPublicId") as string | null)?.trim() || undefined,
     diplomas: (formData.get("diplomas") as string | null)?.trim() || undefined,
     favoritePositions: formData.getAll("favoritePositions").map((value) => value.toString()),
     returnTo: (formData.get("returnTo") as string | null)?.trim() || undefined,
@@ -55,7 +58,7 @@ export async function updateTeacherProfileAction(formData: FormData) {
 
   const teacher = await prisma.user.findUnique({
     where: { id: parsed.data.teacherId },
-    select: { schoolId: true, role: true },
+    select: { schoolId: true, role: true, avatarPublicId: true },
   });
   if (!teacher || teacher.role !== "TEACHER" || teacher.schoolId !== session.user.schoolId) {
     redirect("/access-denied");
@@ -70,6 +73,7 @@ export async function updateTeacherProfileAction(formData: FormData) {
         name,
         age: parsed.data.age ?? null,
         avatarUrl: parsed.data.avatarUrl ?? null,
+        avatarPublicId: parsed.data.avatarPublicId ?? null,
         diplomas: parsed.data.diplomas ?? null,
       },
     });
@@ -93,6 +97,20 @@ export async function updateTeacherProfileAction(formData: FormData) {
   const targetPath = `/app/teachers/${parsed.data.teacherId}${
     safeReturn ? `?from=${encodeURIComponent(safeReturn)}` : ""
   }`;
+  const previousPublicId = teacher.avatarPublicId;
+  const newPublicId = parsed.data.avatarPublicId ?? null;
+  if (
+    previousPublicId &&
+    previousPublicId !== newPublicId &&
+    !isDefaultAvatarPublicId(previousPublicId) &&
+    isCloudinaryEnabled()
+  ) {
+    try {
+      await destroyAsset(previousPublicId, "image", "authenticated");
+    } catch (error) {
+      console.error("[teacher-profile] failed to destroy previous avatar", error);
+    }
+  }
   revalidatePath(targetPath);
   redirect(targetPath);
 }

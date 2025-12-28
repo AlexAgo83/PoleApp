@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
 const USER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
@@ -87,6 +88,7 @@ export default async function AdminUsersPage({
       email: true,
       name: true,
       avatarUrl: true,
+      avatarPublicId: true,
       role: true,
       isPremium: true,
       createdAt: true,
@@ -280,7 +282,13 @@ export default async function AdminUsersPage({
             >
               <div className="flex items-center gap-3">
                 <SafeImage
-                  src={user.avatarUrl?.trim() || USER_AVATAR_PLACEHOLDER}
+                  src={
+                    resolveAvatarUrl({
+                      avatarPublicId: user.avatarPublicId,
+                      avatarUrl: user.avatarUrl,
+                      placeholder: USER_AVATAR_PLACEHOLDER,
+                    }) || USER_AVATAR_PLACEHOLDER
+                  }
                   alt={`Avatar de ${user.name ?? user.email}`}
                   width={48}
                   height={48}

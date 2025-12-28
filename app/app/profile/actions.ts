@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
 
 const schema = z.object({
   firstName: z
@@ -30,6 +31,11 @@ const schema = z.object({
     .trim()
     .url("URL invalide")
     .max(2048, "URL trop longue")
+    .optional(),
+  avatarPublicId: z
+    .string()
+    .trim()
+    .max(512, "public_id trop long")
     .optional(),
   diplomas: z
     .string()
@@ -55,6 +61,7 @@ export async function updateProfileAction(formData: FormData) {
       const raw = formData.get("avatarUrl")?.toString().trim();
       return raw ? raw : undefined;
     })(),
+    avatarPublicId: formData.get("avatarPublicId")?.toString().trim() || undefined,
     diplomas: isTeacher
       ? formData.get("diplomas")?.toString().trim() || undefined
       : undefined,
@@ -65,8 +72,13 @@ export async function updateProfileAction(formData: FormData) {
     throw new Error("Formulaire invalide");
   }
 
-  const { firstName, lastName, age, avatarUrl, diplomas, favoritePositions = [] } = parsed.data;
+  const { firstName, lastName, age, avatarUrl, avatarPublicId, diplomas, favoritePositions = [] } = parsed.data;
   const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || null;
+
+  const previous = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { avatarPublicId: true },
+  });
 
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
@@ -75,6 +87,7 @@ export async function updateProfileAction(formData: FormData) {
         name: displayName,
         age: age ?? null,
         avatarUrl: avatarUrl ?? null,
+        avatarPublicId: avatarPublicId ?? null,
         diplomas: isTeacher ? diplomas ?? null : undefined,
       },
     });
@@ -107,6 +120,21 @@ export async function updateProfileAction(formData: FormData) {
       }
     }
   });
+
+  const previousPublicId = previous?.avatarPublicId;
+  const newPublicId = avatarPublicId ?? null;
+  if (
+    previousPublicId &&
+    previousPublicId !== newPublicId &&
+    !isDefaultAvatarPublicId(previousPublicId) &&
+    isCloudinaryEnabled()
+  ) {
+    try {
+      await destroyAsset(previousPublicId, "image", "authenticated");
+    } catch (error) {
+      console.error("[profile] failed to destroy previous avatar", error);
+    }
+  }
 
   revalidatePath("/app/profile");
   redirect("/app/profile?saved=1");

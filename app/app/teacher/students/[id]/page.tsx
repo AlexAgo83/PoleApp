@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { resolveAvatarUrl } from "@/lib/avatar";
+import { AvatarUploadField } from "@/components/AvatarUploadField";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
@@ -79,6 +81,7 @@ export default async function TeacherStudentDetailPage({
       email: true,
       name: true,
       avatarUrl: true,
+      avatarPublicId: true,
       age: true,
       isPremium: true,
       injuries: {
@@ -140,7 +143,12 @@ export default async function TeacherStudentDetailPage({
       ? rawFrom
       : undefined;
   const backHref = safeFrom ?? "/app/teacher/students";
-  const avatarUrl = student.avatarUrl?.trim() || STUDENT_AVATAR_PLACEHOLDER;
+  const avatarUrl = resolveAvatarUrl({
+    avatarPublicId: student.avatarPublicId,
+    avatarUrl: student.avatarUrl,
+    placeholder: STUDENT_AVATAR_PLACEHOLDER,
+  });
+  const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -187,12 +195,11 @@ export default async function TeacherStudentDetailPage({
                 defaultValue={student.name?.split(" ").slice(1).join(" ") ?? ""}
                 className="w-32 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
               />
-              <input
-                name="avatarUrl"
-                type="url"
-                placeholder="Photo (URL)"
-                defaultValue={student.avatarUrl ?? ""}
-                className="w-52 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
+              <AvatarUploadField
+                folder={avatarFolder}
+                currentUrl={student.avatarUrl ?? undefined}
+                currentPublicId={student.avatarPublicId ?? undefined}
+                maxSizeMB={2}
               />
               <input
                 name="age"

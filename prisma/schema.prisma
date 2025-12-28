@@ -108,6 +108,7 @@ model User {
   name          String?
   age           Int?
   avatarUrl     String?
+  avatarPublicId String?
   diplomas      String?
   passwordHash  String
   role          Role

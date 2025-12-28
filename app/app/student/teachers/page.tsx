@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { FilterPanel } from "@/components/FilterPanel";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 const TEACHER_AVATAR_PLACEHOLDER =
   AVATAR_PLACEHOLDER;
@@ -65,6 +66,7 @@ export default async function StudentTeachersPage({
       name: true,
       email: true,
       avatarUrl: true,
+      avatarPublicId: true,
       diplomas: true,
     },
     orderBy: { name: "asc" },
@@ -151,7 +153,12 @@ export default async function StudentTeachersPage({
         ) : (
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {teachers.map((teacher) => {
-              const avatar = teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER;
+              const avatar =
+                resolveAvatarUrl({
+                  avatarPublicId: teacher.avatarPublicId,
+                  avatarUrl: teacher.avatarUrl,
+                  placeholder: TEACHER_AVATAR_PLACEHOLDER,
+                }) || TEACHER_AVATAR_PLACEHOLDER;
               return (
                 <article
                   key={teacher.id}

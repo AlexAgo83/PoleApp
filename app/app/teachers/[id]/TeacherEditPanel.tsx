@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { updateTeacherProfileAction } from "./actions";
+import { AvatarUploadField } from "@/components/AvatarUploadField";
 
 type PositionOption = { id: string; name: string; type: string | null };
 
@@ -13,6 +14,7 @@ type Props = {
     lastName: string;
     age?: number | null;
     avatarUrl?: string | null;
+    avatarPublicId?: string | null;
     diplomas?: string | null;
     favoritePositionIds: string[];
   };
@@ -23,6 +25,7 @@ type Props = {
 export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: Props) {
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
+  const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
 
   const handleCancel = () => {
     setOpen(false);
@@ -84,16 +87,15 @@ export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: P
               className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
           </label>
-          <label className="space-y-2 text-sm text-slate-200">
-            Photo (URL)
-            <input
-              type="url"
-              name="avatarUrl"
-              defaultValue={defaults.avatarUrl ?? ""}
-              placeholder="https://…"
-              className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+          <div className="space-y-2 text-sm text-slate-200">
+            <span>Photo de profil</span>
+            <AvatarUploadField
+              folder={avatarFolder}
+              currentUrl={defaults.avatarUrl ?? undefined}
+              currentPublicId={defaults.avatarPublicId ?? undefined}
+              maxSizeMB={2}
             />
-          </label>
+          </div>
           <label className="md:col-span-2 space-y-2 text-sm text-slate-200">
             Diplômes (texte libre)
             <textarea

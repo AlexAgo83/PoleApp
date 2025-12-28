@@ -7,6 +7,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 const PAGE_SIZE = 10;
 const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
@@ -146,6 +147,7 @@ export default async function TeacherStudentsPage({
       name: true,
       age: true,
       avatarUrl: true,
+      avatarPublicId: true,
       isPremium: true,
       injuries: {
         include: { injuryType: true },
@@ -300,7 +302,13 @@ export default async function TeacherStudentsPage({
             >
               <div className="flex flex-1 items-center gap-4">
                 <SafeImage
-                  src={student.avatarUrl?.trim() || STUDENT_AVATAR_PLACEHOLDER}
+                  src={
+                    resolveAvatarUrl({
+                      avatarPublicId: student.avatarPublicId,
+                      avatarUrl: student.avatarUrl,
+                      placeholder: STUDENT_AVATAR_PLACEHOLDER,
+                    }) || STUDENT_AVATAR_PLACEHOLDER
+                  }
                   alt={`Avatar de ${student.name ?? student.email}`}
                   width={48}
                   height={48}

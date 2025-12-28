@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 10;
@@ -70,7 +71,15 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
 
   const teachers = await prisma.user.findMany({
     where: whereClause,
-    select: { id: true, name: true, email: true, avatarUrl: true, isPremium: true, createdAt: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatarUrl: true,
+      avatarPublicId: true,
+      isPremium: true,
+      createdAt: true,
+    },
     orderBy: { createdAt: "desc" },
     skip,
     take: PAGE_SIZE,
@@ -165,7 +174,13 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
                 >
                   <div className="flex flex-1 items-center gap-4">
                     <SafeImage
-                      src={teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER}
+                      src={
+                        resolveAvatarUrl({
+                          avatarPublicId: teacher.avatarPublicId,
+                          avatarUrl: teacher.avatarUrl,
+                          placeholder: TEACHER_AVATAR_PLACEHOLDER,
+                        }) || TEACHER_AVATAR_PLACEHOLDER
+                      }
                       alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
                       width={56}
                       height={56}
