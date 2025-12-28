@@ -341,7 +341,7 @@ export function CourseForm({
       </label>
 
       <label className="block text-sm text-slate-200">
-        Positions abordées
+        Positions abordées (Filtrées par discipline)
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {selectedStudents.length > 0 && (
             <button
