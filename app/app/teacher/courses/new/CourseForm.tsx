@@ -159,7 +159,7 @@ export function CourseForm({
   };
 
   return (
-    <form ref={formRef} action={action} className="space-y-4" onSubmit={handleSubmit}>
+    <form ref={formRef} action={action} className="space-y-5" onSubmit={handleSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
           Date
@@ -306,14 +306,14 @@ export function CourseForm({
 
       <label className="block text-sm text-slate-200">
         Élèves présents (Forcer l'inscription / Pre-filtrer & générer)
-        <div className="mt-2 grid gap-2 md:grid-cols-2">
+        <div className="mt-2 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {students.map((student) => {
             const checked = selectedStudents.includes(student.id);
             const hasInjury = Boolean(studentsWithActiveInjury[student.id]);
             return (
               <label
                 key={student.id}
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="flex items-center justify-between gap-2 rounded-xl border border-white/12 bg-white/8 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/20"
               >
                 <input
                   type="checkbox"
@@ -329,7 +329,10 @@ export function CourseForm({
                 <span className="flex items-center gap-2">
                   {student.name ?? student.email}
                   {hasInjury ? (
-                    <span className="rounded-full border border-amber-400/60 bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold text-amber-100">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-100">
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
+                        <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-.75 5.5a.75.75 0 011.5 0v5a.75.75 0 01-1.5 0v-5zm.75 9a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
                       Blessure active
                     </span>
                   ) : null}
@@ -342,7 +345,7 @@ export function CourseForm({
 
       <label className="block text-sm text-slate-200">
         Positions abordées (Filtrées par discipline)
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-3">
           {selectedStudents.length > 0 && (
             <button
               type="button"
@@ -411,14 +414,14 @@ export function CourseForm({
             </span>
           )}
         </div>
-        <div className="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filteredPositions.map((position) => {
             const checked = selectedPositions.includes(position.id);
             const isFavorite = favoritePositionsForTeacher.has(position.id);
             return (
               <label
                 key={position.id}
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="flex items-center justify-between gap-2 rounded-xl border border-white/12 bg-gradient-to-br from-white/10 via-slate-900/10 to-indigo-900/20 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/30"
               >
                 <input
                   type="checkbox"
@@ -431,13 +434,16 @@ export function CourseForm({
                   );
                 }}
               />
-                <span className="flex items-center gap-2">
-                  {position.name} ({position.type})
-                  {isFavorite ? (
-                    <span className="text-rose-200" title="Position favorite du professeur">
-                      ♥
-                    </span>
-                  ) : null}
+                <span className="flex flex-col text-sm leading-tight">
+                  <span className="flex items-center gap-2">
+                    {position.name}
+                    {isFavorite ? (
+                      <span className="text-rose-200" title="Position favorite du professeur">
+                        ♥
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="text-[11px] text-cyan-100">{position.type}</span>
                 </span>
               </label>
             );
@@ -474,18 +480,18 @@ export function CourseForm({
         <input type="hidden" name="teacherId" value={selectedTeacherId} />
       )}
 
-      <div className="mt-4 flex flex-wrap justify-end gap-3">
+      <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-white/10 pt-4">
         {cancelHref && (
           <a
             href={cancelHref}
-            className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+            className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
           >
             Annuler
           </a>
         )}
         <button
           type="submit"
-          className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={selectedPositions.length === 0}
         >
           {submitLabel}
@@ -496,12 +502,21 @@ export function CourseForm({
         showConfirm &&
         createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/95 p-5 shadow-2xl shadow-cyan-900/40">
-              <h3 className="text-lg font-semibold text-white">Confirmer la création</h3>
-              <p className="mt-2 text-sm text-slate-200">
-                Tu as inscrit au moins un élève manuellement sur ce cours. Confirmer la création avec ces inscriptions forcées ?
-              </p>
-              <div className="mt-4 flex justify-end gap-2">
+            <div className="w-full max-w-lg rounded-2xl border border-cyan-300/20 bg-slate-900/95 p-6 shadow-2xl shadow-cyan-900/40">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 rounded-full bg-amber-500/15 p-2 text-amber-200">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+                    <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-.75 5.5a.75.75 0 011.5 0v5a.75.75 0 01-1.5 0v-5zm.75 9a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-semibold text-white">Confirmer la création</h3>
+                  <p className="text-sm text-slate-200">
+                    Au moins un élève est inscrit manuellement sur ce cours. Confirme que tu souhaites valider le cours avec ces inscriptions forcées.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowConfirm(false)}
@@ -512,7 +527,7 @@ export function CourseForm({
                 <button
                   type="button"
                   onClick={confirmSubmit}
-                  className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-cyan-400"
+                  className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110"
                 >
                   Confirmer
                 </button>
