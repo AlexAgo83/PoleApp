@@ -364,9 +364,25 @@ export function CourseForm({
         </div>
       </section>
 
-      <label className="block text-sm text-slate-200">
-        Positions abordées (Filtrées par discipline)
-        <div className="mt-2 flex flex-wrap items-center gap-3">
+      <section className="space-y-2 text-sm text-slate-200">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span>Positions abordées (Filtrées par discipline)</span>
+          {selectedPositions.length > 0 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setSelectedPositions([]);
+                setLastGeneratedCount(0);
+              }}
+              className="ml-auto rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+            >
+              Tout désélectionner
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-wrap items-center gap-2">
             {selectedStudents.length > 0 && (
               <button
@@ -425,20 +441,6 @@ export function CourseForm({
               </span>
             )}
           </div>
-          {selectedPositions.length > 0 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setSelectedPositions([]);
-                setLastGeneratedCount(0);
-              }}
-              className="ml-auto rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-            >
-              Tout désélectionner
-            </button>
-          )}
         </div>
         <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filteredPositions.map((position) => {
@@ -475,7 +477,7 @@ export function CourseForm({
             );
           })}
         </div>
-      </label>
+      </section>
 
       {selectedStudents.length > 0 && selectedPositions.length > 0 && (
         <NotesMatrix
