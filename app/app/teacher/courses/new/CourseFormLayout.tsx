@@ -61,6 +61,12 @@ export function CourseFormLayout({
             </p>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
+            <Link
+              href={safeFrom}
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/15"
+            >
+              ← Retour cours
+            </Link>
             <button
               type="submit"
               form={formId}
@@ -68,12 +74,6 @@ export function CourseFormLayout({
             >
               Créer le cours
             </button>
-            <Link
-              href={safeFrom}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/15"
-            >
-              ← Retour cours
-            </Link>
           </div>
         </div>
       </header>

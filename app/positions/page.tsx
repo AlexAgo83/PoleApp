@@ -265,7 +265,29 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               Catalogue des positions avec filtres et détail. Visible selon tes droits.
             </p>
           </div>
-          <div className="flex w-full justify-end md:w-auto">
+          <div className="flex w-full flex-wrap justify-end gap-3 md:w-auto">
+            {session.user.role === "SCHOOL_ADMIN" ? (
+              <Link
+                href="/app/admin"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                ← Retour dashboard
+              </Link>
+            ) : session.user.role === "TEACHER" ? (
+              <Link
+                href="/app/teacher"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                ← Retour accueil
+              </Link>
+            ) : (
+              <Link
+                href="/app/student"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                ← Retour accueil
+              </Link>
+            )}
             {canManage ? (
               <Link
                 href="/teacher/positions/new"
@@ -275,30 +297,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               </Link>
             ) : null}
           </div>
-        </div>
-        <div className="flex w-full justify-end">
-          {session.user.role === "SCHOOL_ADMIN" ? (
-            <Link
-              href="/app/admin"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour dashboard
-            </Link>
-          ) : session.user.role === "TEACHER" ? (
-            <Link
-              href="/app/teacher"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour accueil
-            </Link>
-          ) : (
-            <Link
-              href="/app/student"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour accueil
-            </Link>
-          )}
         </div>
       </header>
 

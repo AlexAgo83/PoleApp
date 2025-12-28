@@ -86,16 +86,16 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
         </p>
         <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
           <Link
-            href="/app/admin/users?role=TEACHER"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Gérer via utilisateurs
-          </Link>
-          <Link
             href="/app/admin"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             ← Retour dashboard
+          </Link>
+          <Link
+            href="/app/admin/users?role=TEACHER"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Gérer via utilisateurs
           </Link>
         </div>
       </header>
