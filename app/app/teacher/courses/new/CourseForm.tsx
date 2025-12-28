@@ -1,7 +1,7 @@
 "use client";
 
 import { MasteryLevel } from "@prisma/client";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string; discipline?: string | null };
@@ -90,6 +90,9 @@ export function CourseForm({
     defaultTeacherId ?? teachers[0]?.id ?? ""
   );
   const [selectedDiscipline, setSelectedDiscipline] = useState(defaultDiscipline ?? "");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [allowSubmit, setAllowSubmit] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const masteryOptions = useMemo(
     () => [
@@ -132,18 +135,25 @@ export function CourseForm({
   }, [defaultDate]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (selectedStudents.length > 0) {
-      const ok = window.confirm(
-        "Au moins un élève est inscrit de force sur ce cours. Confirmer la création ?"
-      );
-      if (!ok) {
-        e.preventDefault();
-      }
+    if (!allowSubmit && selectedStudents.length > 0) {
+      e.preventDefault();
+      setShowConfirm(true);
+      return;
     }
+    setAllowSubmit(false);
+  };
+
+  const confirmSubmit = () => {
+    setAllowSubmit(true);
+    setShowConfirm(false);
+    // requestSubmit relance le submit avec allowSubmit=true
+    requestAnimationFrame(() => {
+      formRef.current?.requestSubmit();
+    });
   };
 
   return (
-    <form action={action} className="space-y-4" onSubmit={handleSubmit}>
+    <form ref={formRef} action={action} className="space-y-4" onSubmit={handleSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
           Date
@@ -472,6 +482,33 @@ export function CourseForm({
           {submitLabel}
         </button>
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/90 p-5 shadow-2xl shadow-cyan-900/40">
+            <h3 className="text-lg font-semibold text-white">Confirmer la création</h3>
+            <p className="mt-2 text-sm text-slate-200">
+              Tu as inscrit au moins un élève manuellement sur ce cours. Confirmer la création avec ces inscriptions forcées ?
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowConfirm(false)}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/10"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={confirmSubmit}
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-cyan-400"
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
