@@ -9,7 +9,12 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { randomDefaultAvatarPublicId } from "@/lib/cloudinary";
+import {
+  destroyAsset,
+  isCloudinaryEnabled,
+  isDefaultAvatarPublicId,
+  randomDefaultAvatarPublicId,
+} from "@/lib/cloudinary";
 
 const basePath = "/app/admin/users";
 
@@ -119,7 +124,7 @@ export async function updateUserAction(formData: FormData) {
 
   const user = await prisma.user.findUnique({
     where: { id: data.userId },
-    select: { schoolId: true },
+    select: { schoolId: true, avatarPublicId: true },
   });
   if (!user || user.schoolId !== admin.schoolId) {
     redirect("/access-denied");
@@ -200,8 +205,16 @@ export async function deleteUserAction(formData: FormData) {
     );
   }
 
+  const avatarToDelete =
+    user.avatarPublicId && !isDefaultAvatarPublicId(user.avatarPublicId) ? user.avatarPublicId : null;
+
   try {
     await prisma.user.delete({ where: { id: data.userId } });
+    if (avatarToDelete && isCloudinaryEnabled()) {
+      destroyAsset(avatarToDelete, "image", "authenticated").catch((err) => {
+        console.warn("[admin-user-delete] failed to destroy avatar", err);
+      });
+    }
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
       redirectWithMessage(
