@@ -451,7 +451,11 @@ export function CourseForm({
       </Panel>
 
       <Panel
-        title={groupedPanels ? "Élèves présents" : undefined}
+        title={
+          groupedPanels
+            ? `Élèves présents${selectedStudents.length > 0 ? ` (${selectedStudents.length})` : ""}`
+            : undefined
+        }
         collapsible={groupedPanels}
         collapsed={collapsedPanels.students}
         onToggle={() => preserveScroll(() => updateCollapsed("students", !collapsedPanels.students))}
@@ -648,7 +652,13 @@ export function CourseForm({
       </Panel>
 
       {selectedStudents.length > 0 && selectedPositions.length > 0 && (
-        <section className="panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
+        <section
+          className={
+            groupedPanels
+              ? "panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6"
+              : ""
+          }
+        >
           <NotesMatrix
             students={students.filter((s) => selectedStudents.includes(s.id))}
             positions={positions.filter((p) => selectedPositions.includes(p.id))}
@@ -755,7 +765,7 @@ function NotesMatrix({
   setNotes: React.Dispatch<React.SetStateAction<Record<string, Note>>>;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+    <div className="space-y-4">
       <h3 className="text-base font-semibold text-white">
         Notes par élève × position
       </h3>
