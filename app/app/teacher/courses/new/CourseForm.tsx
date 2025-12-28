@@ -253,28 +253,36 @@ export function CourseForm({
         </div>
       </div>
 
-      {teachers.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="text-sm text-slate-200 md:col-span-1">
-            Professeur (admin)
-            <select
-              name="teacherId"
-              value={selectedTeacherId}
-              onChange={(e) => setSelectedTeacherId(e.target.value)}
-              required
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            >
-              {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
-              {teachers.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name ?? t.email}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="hidden md:block" />
-        </div>
-      )}
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="text-sm text-slate-200">
+          Professeur (admin)
+          <select
+            name="teacherId"
+            value={selectedTeacherId}
+            onChange={(e) => setSelectedTeacherId(e.target.value)}
+            required
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          >
+            {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
+            {teachers.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name ?? t.email}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm text-slate-200">
+          Photo (URL, optionnelle)
+          <input
+            type="url"
+            name="photoUrl"
+            placeholder="https://…"
+            defaultValue={defaultPhotoUrl ?? ""}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+          />
+          <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
+        </label>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
@@ -301,18 +309,6 @@ export function CourseForm({
         </label>
       </div>
 
-      <label className="block text-sm text-slate-200">
-        Photo (URL, optionnelle)
-        <input
-          type="url"
-          name="photoUrl"
-          placeholder="https://…"
-          defaultValue={defaultPhotoUrl ?? ""}
-          className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-        />
-        <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
-      </label>
-
       <section className="space-y-2 text-sm text-slate-200">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span>Élèves présents (Forcer l'inscription / Pre-filtrer & générer)</span>
@@ -337,7 +333,7 @@ export function CourseForm({
             return (
               <label
                 key={student.id}
-                className="flex items-center justify-between gap-2 rounded-xl border border-white/12 bg-white/8 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/20"
+                className="flex items-center gap-2 rounded-xl border border-white/12 bg-white/8 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/20"
               >
                 <input
                   type="checkbox"
@@ -452,7 +448,7 @@ export function CourseForm({
             return (
               <label
                 key={position.id}
-                className="flex items-center justify-between gap-2 rounded-xl border border-white/12 bg-gradient-to-br from-white/10 via-slate-900/10 to-indigo-900/20 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/30"
+                className="flex items-center gap-2 rounded-xl border border-white/12 bg-gradient-to-br from-white/10 via-slate-900/10 to-indigo-900/20 px-3 py-2 text-sm text-white shadow-inner shadow-slate-900/30"
               >
                 <input
                   type="checkbox"
