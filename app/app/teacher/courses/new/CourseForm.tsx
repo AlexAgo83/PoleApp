@@ -310,20 +310,24 @@ export function CourseForm({
         <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
       </label>
 
-      <label className="block text-sm text-slate-200">
+      <section className="space-y-2 text-sm text-slate-200">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span>Élèves présents (Forcer l'inscription / Pre-filtrer & générer)</span>
           {selectedStudents.length > 0 && (
             <button
               type="button"
-              onClick={() => setSelectedStudents([])}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setSelectedStudents([]);
+              }}
               className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
             >
               Tout désélectionner
             </button>
           )}
         </div>
-        <div className="mt-2 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {students.map((student) => {
             const checked = selectedStudents.includes(student.id);
             const hasInjury = Boolean(studentsWithActiveInjury[student.id]);
@@ -358,7 +362,7 @@ export function CourseForm({
             );
           })}
         </div>
-      </label>
+      </section>
 
       <label className="block text-sm text-slate-200">
         Positions abordées (Filtrées par discipline)
