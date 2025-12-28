@@ -44,8 +44,7 @@ export async function GET(req: Request) {
   const fromParam = searchParams.get("from") || undefined;
   const toParam = searchParams.get("to") || undefined;
 
-  const isTeacher = session.user.role === "TEACHER";
-  const effectiveTeacher = isTeacher ? session.user.id : teacherParam;
+  const effectiveTeacher = teacherParam || undefined;
 
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(baseDate);

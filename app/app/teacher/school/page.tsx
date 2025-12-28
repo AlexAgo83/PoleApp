@@ -169,7 +169,7 @@ export default async function TeacherSchoolPage() {
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-base font-semibold text-white">{studio.name}</p>
                   <Link
-                    href={`/app/school/${studio.id}`}
+                    href={`/app/school/${studio.id}?view=agenda&range=month`}
                     className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                   >
                     Voir le studio
