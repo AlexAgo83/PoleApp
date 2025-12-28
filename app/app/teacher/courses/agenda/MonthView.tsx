@@ -174,7 +174,11 @@ export function MonthView({
                       key={course.id}
                       href={`/app/teacher/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
                       className={`relative mt-1 block w-full rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                        past
+                        course.isVirtual
+                          ? past
+                            ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
+                            : "border-amber-300/70 bg-amber-500/20 text-white"
+                          : past
                           ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                           : "border-white/10 bg-white/10 text-white"
                       }`}
@@ -193,13 +197,13 @@ export function MonthView({
                         <p className="truncate text-[10px] text-slate-200">
                           {course.studioName}
                         </p>
+                        {course.isVirtual && (
+                          <p className="truncate text-[10px] text-amber-100">
+                            Occurrence virtuelle (positions à définir)
+                          </p>
+                        )}
                       </div>
                       <div className="absolute bottom-1 right-1 flex flex-col items-end gap-1">
-                        {course.isVirtual && (
-                          <span className="inline-flex items-center rounded-full border border-amber-300/60 bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-50">
-                            Virtuel
-                          </span>
-                        )}
                         <span
                           className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
                         >
