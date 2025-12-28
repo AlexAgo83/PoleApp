@@ -27,11 +27,15 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
   }
 
+  const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
+  const shouldForceAuthenticated =
+    parsed.data.resourceType === "video" || parsed.data.publicId.startsWith(avatarFolder);
+
   try {
     const res = await destroyAsset(
       parsed.data.publicId,
       parsed.data.resourceType ?? "image",
-      parsed.data.deliveryType ?? "upload",
+      shouldForceAuthenticated ? "authenticated" : parsed.data.deliveryType ?? "upload",
     );
     return NextResponse.json({ ok: true, result: res });
   } catch (error) {

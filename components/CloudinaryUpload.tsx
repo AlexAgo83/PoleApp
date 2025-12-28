@@ -121,7 +121,11 @@ export function CloudinaryUpload({
       await fetch("/api/uploads", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ publicId: currentPublicId, resourceType }),
+        body: JSON.stringify({
+          publicId: currentPublicId,
+          resourceType,
+          deliveryType: forceAuthenticated ? "authenticated" : deliveryType,
+        }),
       });
       onChange(null, null);
     } catch (e) {
