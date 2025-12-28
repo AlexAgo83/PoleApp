@@ -10,7 +10,7 @@ import { WeekView as TeacherWeekView } from "@/app/app/teacher/courses/agenda/We
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
-import { StudioMonthView } from "./StudioMonthView";
+import { StudioMonthView } from "../StudioMonthView";
 
 export const dynamic = "force-dynamic";
 
@@ -493,9 +493,9 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 >
                   Réinitialiser
                 </Link>
-                </div>
-              </form>
-            </FilterPanel>
+              </div>
+            </form>
+          </FilterPanel>
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
             <div className="flex flex-wrap items-center gap-2">
               <Link
@@ -535,6 +535,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                   initialDays={studentWeekDays}
                   filters={agendaFilters}
                   baseFrom={agendaBaseFrom}
+                  compact
                 />
               ) : null}
               {!isStudentRole && staffWeekDays ? (
@@ -545,6 +546,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                   initialDays={staffWeekDays}
                   filters={agendaFilters}
                   baseFrom={agendaBaseFrom}
+                  compact
                 />
               ) : null}
             </>

@@ -231,15 +231,18 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  const directParsed = updateNotesSchema.safeParse({
-    courseId: formData.get("courseId"),
-    notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
-  });
+  const hasNotesField = formData.has("notes");
+  const directParsed = hasNotesField
+    ? updateNotesSchema.safeParse({
+        courseId: formData.get("courseId"),
+        notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
+      })
+    : null;
 
   let parsedNotes: z.infer<typeof updateNotesSchema>["notes"] = [];
   let courseId: string | undefined;
 
-  if (directParsed.success) {
+  if (directParsed?.success) {
     parsedNotes = directParsed.data.notes;
     courseId = directParsed.data.courseId;
   } else {

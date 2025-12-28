@@ -143,9 +143,10 @@ export function StudioMonthView({
             ? dateObj.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")
             : "";
 
+          const key = cell.day ? `${month}-${cell.day}` : `${month}-empty-${idx}`;
           return (
             <div
-              key={`${month}-${cell.day ?? idx}`}
+              key={key}
               className="rounded-xl border border-white/10 bg-white/5 p-2 text-left"
             >
               <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
