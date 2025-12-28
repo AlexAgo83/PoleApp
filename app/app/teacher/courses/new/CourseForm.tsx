@@ -366,7 +366,65 @@ export function CourseForm({
 
       <label className="block text-sm text-slate-200">
         Positions abordées (Filtrées par discipline)
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {selectedStudents.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const selectedSet = new Set(selectedStudents);
+                  const weights: Record<string, number> = {
+                    NOT_STARTED: 3,
+                    IN_PROGRESS: 2,
+                    PASSED: 1,
+                    MASTERED: 0,
+                  };
+                  const scores = new Map<string, { score: number; name: string; type?: string | null }>();
+
+                  progressByStudent
+                    .filter((r) => selectedSet.has(r.studentId))
+                    .forEach((r) => {
+                      const base = weights[r.learningStatus ?? "IN_PROGRESS"] ?? 1;
+                      const masteryPenalty = r.masteryLevel === MasteryLevel.FLUID_CHOREO ? -1 : 0;
+                      const score = base + masteryPenalty;
+                      if (score <= 0) return;
+                      const existing = scores.get(r.positionId);
+                      const nextScore = (existing?.score ?? 0) + score;
+                      scores.set(r.positionId, {
+                        score: nextScore,
+                        name: r.positionName,
+                        type: r.positionType,
+                      });
+                    });
+
+                  const sorted = Array.from(scores.entries())
+                    .sort((a, b) => b[1].score - a[1].score || a[1].name.localeCompare(b[1].name))
+                    .map(([positionId]) => positionId);
+
+                  const fallbackPool = filteredPositions.map((p) => p.id);
+                  const proposed = (sorted.length > 0 ? sorted : fallbackPool).slice(0, 6);
+                  setSelectedPositions((prev) => {
+                    const merged = [...proposed, ...prev];
+                    return Array.from(new Set(merged));
+                  });
+                  setLastGeneratedCount(proposed.length);
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+              >
+                Générer (auto)
+              </button>
+            )}
+            {lastGeneratedCount > 0 && (
+              <span className="text-xs text-emerald-100">
+                +{lastGeneratedCount} proposées selon les élèves
+              </span>
+            )}
+            {selectedPositions.length > 0 && (
+              <span className="text-xs text-slate-300">
+                {selectedPositions.length} sélectionnée(s)
+              </span>
+            )}
+          </div>
           {selectedPositions.length > 0 && (
             <button
               type="button"
@@ -376,66 +434,10 @@ export function CourseForm({
                 setSelectedPositions([]);
                 setLastGeneratedCount(0);
               }}
-              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+              className="ml-auto rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
             >
               Tout désélectionner
             </button>
-          )}
-          {selectedStudents.length > 0 && (
-            <button
-              type="button"
-              onClick={() => {
-                const selectedSet = new Set(selectedStudents);
-                const weights: Record<string, number> = {
-                  NOT_STARTED: 3,
-                  IN_PROGRESS: 2,
-                  PASSED: 1,
-                  MASTERED: 0,
-                };
-                const scores = new Map<string, { score: number; name: string; type?: string | null }>();
-
-                progressByStudent
-                  .filter((r) => selectedSet.has(r.studentId))
-                  .forEach((r) => {
-                    const base = weights[r.learningStatus ?? "IN_PROGRESS"] ?? 1;
-                    const masteryPenalty = r.masteryLevel === MasteryLevel.FLUID_CHOREO ? -1 : 0;
-                    const score = base + masteryPenalty;
-                    if (score <= 0) return;
-                    const existing = scores.get(r.positionId);
-                    const nextScore = (existing?.score ?? 0) + score;
-                    scores.set(r.positionId, {
-                      score: nextScore,
-                      name: r.positionName,
-                      type: r.positionType,
-                    });
-                  });
-
-                const sorted = Array.from(scores.entries())
-                  .sort((a, b) => b[1].score - a[1].score || a[1].name.localeCompare(b[1].name))
-                  .map(([positionId]) => positionId);
-
-                const fallbackPool = filteredPositions.map((p) => p.id);
-                const proposed = (sorted.length > 0 ? sorted : fallbackPool).slice(0, 6);
-                setSelectedPositions((prev) => {
-                  const merged = [...proposed, ...prev];
-                  return Array.from(new Set(merged));
-                });
-                setLastGeneratedCount(proposed.length);
-              }}
-              className="inline-flex items-center gap-2 rounded-full border border-cyan-400/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-            >
-              Générer (auto)
-            </button>
-          )}
-          {lastGeneratedCount > 0 && (
-            <span className="text-xs text-emerald-100">
-              +{lastGeneratedCount} proposées selon les élèves
-            </span>
-          )}
-          {selectedPositions.length > 0 && (
-            <span className="text-xs text-slate-300">
-              {selectedPositions.length} sélectionnée(s)
-            </span>
           )}
         </div>
         <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
