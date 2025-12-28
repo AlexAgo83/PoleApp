@@ -118,7 +118,7 @@ export default async function NewCoursePage({
   }, {});
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4 px-2 py-6 md:gap-5 md:px-6 md:py-10">
+    <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel border-indigo-400/25 bg-gradient-to-br from-slate-900/70 via-slate-900/60 to-indigo-900/40 p-6 shadow-indigo-900/40 md:p-8">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-2">
