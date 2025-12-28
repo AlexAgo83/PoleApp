@@ -145,6 +145,8 @@ export default async function AdminDashboard({
         teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
         studioName: course.studio?.name ?? "Studio non renseigné",
         past: isPastCourse(course.date, course.durationMinutes),
+        isVirtual: course.isVirtual,
+        positionsCount: (course as any)?._count?.positions ?? 0,
       })),
     };
   });

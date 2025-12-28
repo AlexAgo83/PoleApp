@@ -11,6 +11,8 @@ type DayCourse = {
   teacherName: string;
   studioName: string;
   past: boolean;
+  isVirtual?: boolean;
+  positionsCount?: number;
 };
 
 type Day = {
@@ -190,11 +192,25 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                         <p className="truncate text-[10px] text-slate-200">
                           {course.studioName}
                         </p>
+                        {course.isVirtual && (
+                          <p className="truncate text-[10px] text-amber-200">
+                            Occurrence virtuelle (positions à définir)
+                          </p>
+                        )}
                       </div>
                       <span
-                        className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
+                        className="absolute bottom-1 right-1 flex flex-col items-end gap-1"
                       >
-                        {statusLabel}
+                        <span
+                          className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
+                        >
+                          {statusLabel}
+                        </span>
+                        {course.isVirtual && (
+                          <span className="inline-flex items-center justify-center rounded-full border border-amber-300/60 bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-50">
+                            Virtuel
+                          </span>
+                        )}
                       </span>
                     </Link>
                   );
