@@ -465,6 +465,9 @@ export function CourseForm({
         name="positionIds"
         value={JSON.stringify(selectedPositions)}
       />
+      {cancelHref && (
+        <input type="hidden" name="from" value={cancelHref} />
+      )}
       {courseId && <input type="hidden" name="courseId" value={courseId} />}
       <input type="hidden" name="notes" value={JSON.stringify(notesArray)} />
       {teachers.length === 0 && (
