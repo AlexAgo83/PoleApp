@@ -33,6 +33,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       attendances: true,
       positions: { include: { position: true } },
       notes: true,
+      isVirtual: true,
     },
   });
   if (!course) {
@@ -273,6 +274,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
             positionName: p.position.name,
             positionType: p.position.type,
           }))}
+          isVirtual={course.isVirtual}
         />
       </section>
 

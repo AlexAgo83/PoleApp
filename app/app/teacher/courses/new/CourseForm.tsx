@@ -50,6 +50,7 @@ type Props = {
     students?: boolean;
     positions?: boolean;
   };
+  isVirtual?: boolean;
 };
 
 type Note = {
@@ -123,6 +124,7 @@ export function CourseForm({
   hideFooterActions = false,
   groupedPanels = false,
   defaultCollapsed,
+  isVirtual = false,
 }: Props) {
   const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
   const resolvedDefaultDate = useMemo(() => {
@@ -355,6 +357,11 @@ export function CourseForm({
       }}
     >
       <Panel groupedPanels={groupedPanels} title={groupedPanels ? "Infos du cours" : undefined}>
+        {isVirtual && (
+          <div className="mb-2 rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100">
+            Occurrence virtuelle : ajoute au moins une position pour la rendre “réelle” et ouvrir l’inscription élève.
+          </div>
+        )}
         <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm text-slate-200">
             Date
