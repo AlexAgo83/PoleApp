@@ -106,6 +106,11 @@ export function StudioMonthView({
 
   const handlePrev = () => fetchMonth(prev);
   const handleNext = () => fetchMonth(next);
+  const handleReset = () => {
+    const current = new Date();
+    const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`;
+    fetchMonth(key);
+  };
 
   return (
     <div className="space-y-3">
@@ -123,7 +128,15 @@ export function StudioMonthView({
             disabled={isPending}
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
-            ← Mois précédent
+            ← Précédent
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            disabled={isPending}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
+          >
+            Actuel
           </button>
           <button
             type="button"
@@ -131,7 +144,7 @@ export function StudioMonthView({
             disabled={isPending}
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
-            Mois suivant →
+            Suivant →
           </button>
         </div>
       </div>
