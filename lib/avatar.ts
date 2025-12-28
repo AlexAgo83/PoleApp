@@ -35,24 +35,5 @@ export function resolveAvatarUrl({
   const cleanedAvatarUrl = avatarUrl?.trim();
   if (cleanedAvatarUrl) return cleanedAvatarUrl;
 
-  const defaultIds = getDefaultAvatarPublicIds();
-  if (defaultIds.length > 0 && isCloudinaryEnabled()) {
-    const pickFromSeed = (() => {
-      if (!seedKey) return defaultIds[0];
-      let hash = 0;
-      for (let i = 0; i < seedKey.length; i += 1) {
-        hash = (hash * 31 + seedKey.charCodeAt(i)) >>> 0;
-      }
-      return defaultIds[hash % defaultIds.length];
-    })();
-    const signedDefault = generateSignedUrl({
-      publicId: pickFromSeed,
-      resourceType: "image",
-      deliveryType: "upload",
-      expiresInSeconds: 3600,
-    });
-    if (signedDefault) return signedDefault;
-  }
-
   return placeholder;
 }
