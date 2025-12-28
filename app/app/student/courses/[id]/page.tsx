@@ -138,6 +138,7 @@ export default async function StudentCourseDetailPage({
   const isAttending = Boolean(myAttendance);
   const endTime =
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
+  const icsHref = `/api/courses/${course.id}/ics`;
   const canBuy =
     !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
@@ -257,6 +258,13 @@ export default async function StudentCourseDetailPage({
                 </button>
               </form>
             )}
+            <Link
+              href={icsHref}
+              prefetch={false}
+              className="rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
+            >
+              Ajouter à mon agenda
+            </Link>
             <Link
               href={backHref}
               className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
