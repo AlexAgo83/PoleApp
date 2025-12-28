@@ -5,6 +5,8 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { isCloudinaryEnabled, signUpload } from "@/lib/cloudinary";
 
+const AVATAR_FOLDER = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
+
 const schema = z.object({
   folder: z.string().trim().min(1),
   publicId: z.string().trim().optional(),
@@ -33,12 +35,19 @@ export async function POST(request: Request) {
   }
 
   try {
+    const resourceType = parsed.data.resourceType ?? "image";
+    const isAvatar = parsed.data.folder.startsWith(AVATAR_FOLDER);
+    const isVideo = resourceType === "video";
+    const forceAuthenticated = isAvatar || isVideo;
+    const deliveryType = forceAuthenticated ? "authenticated" : parsed.data.deliveryType;
+    const accessMode = forceAuthenticated ? "authenticated" : parsed.data.accessMode;
+
     const data = signUpload({
       folder: parsed.data.folder,
       publicId: parsed.data.publicId,
-      resourceType: parsed.data.resourceType,
-      deliveryType: parsed.data.deliveryType,
-      accessMode: parsed.data.accessMode,
+      resourceType,
+      deliveryType,
+      accessMode,
       transformation: parsed.data.transformation,
     });
 

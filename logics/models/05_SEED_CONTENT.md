@@ -140,16 +140,9 @@ Exemple (format libre, tronqué) :
 - Homme : https://i.postimg.cc/VLD38nbM/Gemini-Generated-Image-i27lxyi27lxyi27l.png
 - Homme : https://i.postimg.cc/7Ympk0T0/Gemini-Generated-Image-apgygfapgygfapgy.png
 
-## (à utiliser pour le seed) Liens images à utiliser pour les "Professeurs" (ne peut être utiliser qu'une fois)
-- Femme : https://i.postimg.cc/ZqkLhNWN/Gemini-Generated-Image-ir90ejir90ejir90.png
-- Femme : https://i.postimg.cc/wBKkdN1s/Gemini-Generated-Image-yf123byf123byf12.png
-- Femme : https://i.postimg.cc/JhwQWXsH/Gemini-Generated-Image-xdf05vxdf05vxdf0.png
-- Femme : https://i.postimg.cc/8C8bVv7L/Gemini-Generated-Image-hrrbcvhrrbcvhrrb.png
-- Femme : https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png
-- Femme : https://i.postimg.cc/R0cLC0t2/Gemini-Generated-Image-7xe2nm7xe2nm7xe2.png
-- Femme : https://i.postimg.cc/prdSnjYK/Gemini-Generated-Image-gu94adgu94adgu94.png
-- Homme : https://i.postimg.cc/wMBrsNcR/Gemini-Generated-Image-yhp3byhp3byhp3by.png
-- Homme : https://i.postimg.cc/1XYj0zJX/Gemini-Generated-Image-b3b57vb3b57vb3b5.png
+## (à utiliser pour le seed) Avatars par défaut Cloudinary (public_id)
+- Femmes : fe_16_vdbrvw, fe_18_b6yctx, fe_17_uce9aq, fe_15_b1wpzd, fe_14_h7ovmd, fe_13_i0s5g4, fe_11_hlv19o, fe_09_dfnky5, fe_12_gd47yw, fe_10_heju31, fe_08_nmnsdm, fe_07_hncwlg, fe_06_vggogo, fe_05_asx9f9, fe_04_qgwvmz, fe_03_e1enmb, fe_02_tjm96i, fe_01_beubee
+- Hommes : ma_15_d36r97, ma_14_zcdohg, ma_13_u2c7cw, ma_12_xnoskm, ma_11_f20med, ma_10_xog2ex, ma_09_ceanzu, ma_08_lybazn, ma_07_fcy3ff, ma_06_fyicwi, ma_05_sdohme, ma_04_wpxs4c, ma_03_weca1r, ma_02_abukow, ma_01_vcgj9u
 
 ## Partenaires seed
 - Amazon (SERVICE) avec liens sponsorisés :
