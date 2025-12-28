@@ -13,6 +13,7 @@ import {
 } from "./actions";
 import { MasteryLevel } from "@prisma/client";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
+import { LocalDateTime } from "@/components/LocalDateTime";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -230,8 +231,20 @@ export default async function TeacherCourseDetailPage({
               />
               <div className="space-y-1 text-sm text-slate-200">
                 <p className="text-base text-white">{teacherName}</p>
-                <p>
-                  {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
+                <p className="flex flex-wrap items-center gap-1">
+                  <LocalDateTime
+                    iso={course.date.toISOString()}
+                    fallback={formattedDate}
+                    options={{
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }}
+                  />
+                  <span className="mx-1">·</span>
+                  Durée : {formatDuration(course.durationMinutes ?? 60)}
                 </p>
                 <p>
                   {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits

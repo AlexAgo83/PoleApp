@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "../actions";
 import { SafeImage } from "@/components/SafeImage";
+import { LocalDateTime } from "@/components/LocalDateTime";
+import { LocalDateTime } from "@/components/LocalDateTime";
 
 const NOW_MS = Date.now();
 
@@ -187,8 +189,14 @@ export default async function StudentCourseDetailPage({
                     teacherName
                   )}
                 </p>
-                <p>
-                  {formattedDate} · Durée : {formatDuration(course.durationMinutes ?? 60)}
+                <p className="flex flex-wrap items-center gap-1">
+                  <LocalDateTime
+                    iso={course.date.toISOString()}
+                    fallback={formattedDate}
+                    options={{ year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }}
+                  />
+                  <span className="mx-1">·</span>
+                  Durée : {formatDuration(course.durationMinutes ?? 60)}
                 </p>
                 {course.discipline && (
                   <p className="text-sm text-cyan-100">
