@@ -123,6 +123,8 @@ export function CourseForm({
   const [formError, setFormError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [mounted, setMounted] = useState(false);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
+  const needsRefocus = useRef(false);
   const preserveScroll = (cb: () => void) => {
     const y = typeof window !== "undefined" ? window.scrollY : 0;
     cb();
@@ -220,6 +222,16 @@ export function CourseForm({
     setAllowSubmit(false);
   };
 
+  useEffect(() => {
+    if (!needsRefocus.current) return;
+    const active = typeof document !== "undefined" ? document.activeElement : null;
+    const last = lastFocusedRef.current;
+    if (last && formRef.current?.contains(last) && active && !formRef.current.contains(active)) {
+      last.focus({ preventScroll: true });
+    }
+    needsRefocus.current = false;
+  }, [titleValue, dateValue, studioValue, durationValue, maxSeatsValue, waitlistValue, costValue, photoValue, selectedDiscipline]);
+
   const confirmSubmit = () => {
     setAllowSubmit(true);
     setShowConfirm(false);
@@ -296,7 +308,16 @@ export function CourseForm({
   };
 
   return (
-    <form id={formId} ref={formRef} action={action} className="space-y-5" onSubmit={handleSubmit}>
+    <form
+      id={formId}
+      ref={formRef}
+      action={action}
+      className="space-y-5"
+      onSubmit={handleSubmit}
+      onFocusCapture={(e) => {
+        lastFocusedRef.current = e.target as HTMLElement;
+      }}
+    >
       <Panel title={groupedPanels ? "Infos du cours" : undefined}>
         <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
@@ -306,7 +327,10 @@ export function CourseForm({
             name="date"
             required
             value={dateValue}
-            onChange={(e) => setDateValue(e.target.value)}
+            onChange={(e) => {
+              needsRefocus.current = true;
+              setDateValue(e.target.value);
+            }}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
         </label>
@@ -318,7 +342,10 @@ export function CourseForm({
             required
             placeholder="Cours du soir - Spins inter"
             value={titleValue}
-            onChange={(e) => setTitleValue(e.target.value)}
+            onChange={(e) => {
+              needsRefocus.current = true;
+              setTitleValue(e.target.value);
+            }}
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
         </label>
