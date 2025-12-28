@@ -465,7 +465,29 @@ export default async function StudentCoursesAgendaPage({
             Navigation hebdo/mensuelle sans rechargement. Les jours avec cours suivis sont marqués.
           </p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={buildViewHref("week")}
+              className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                view === "week"
+                  ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
+                  : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
+              }`}
+            >
+              Hebdo
+            </Link>
+            <Link
+              href={buildViewHref("month")}
+              className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                view === "month"
+                  ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
+                  : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
+              }`}
+            >
+              Mensuelle
+            </Link>
+          </div>
           <Link
             href="/app/student/courses"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -689,28 +711,6 @@ export default async function StudentCoursesAgendaPage({
             </div>
           </form>
         </FilterPanel>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-          <Link
-            href={buildViewHref("week")}
-            className={`rounded-full px-3 py-1.5 font-semibold transition ${
-              view === "week"
-                ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-                : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-            }`}
-          >
-            Hebdo
-          </Link>
-          <Link
-            href={buildViewHref("month")}
-            className={`rounded-full px-3 py-1.5 font-semibold transition ${
-              view === "month"
-                ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-                : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-            }`}
-          >
-            Mensuelle
-          </Link>
-        </div>
       </section>
 
       {view === "month" && (
