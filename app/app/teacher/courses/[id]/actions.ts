@@ -17,9 +17,9 @@ const updateSchema = z.object({
   studentIds: z.array(z.string().cuid()).default([]),
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
-  studioId: z.string().cuid().optional().nullable(),
+  studioId: z.string().cuid(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
-  discipline: z.string().trim().min(1).default("Danse"),
+  discipline: z.string().trim().min(1),
   durationMinutes: z
     .coerce.number()
     .min(30)
@@ -69,9 +69,9 @@ export async function updateCourseAction(formData: FormData) {
     studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
-    studioId: formData.get("studioId") || null,
+    studioId: formData.get("studioId"),
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
-    discipline: formData.get("discipline")?.toString().trim() || "Danse",
+    discipline: formData.get("discipline")?.toString().trim(),
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
     waitlistQuota: formData.get("waitlistQuota") ?? 0,
@@ -98,14 +98,12 @@ export async function updateCourseAction(formData: FormData) {
   if (data.maxSeats < existingAttendanceCount) {
     throw new Error("Places max inférieures aux élèves déjà inscrits");
   }
-  if (data.studioId) {
-    const studioValid = await prisma.studio.findFirst({
-      where: { id: data.studioId, schoolId: session.user.schoolId },
-      select: { id: true },
-    });
-    if (!studioValid) {
-      redirect("/access-denied");
-    }
+  const studioValid = await prisma.studio.findFirst({
+    where: { id: data.studioId, schoolId: session.user.schoolId },
+    select: { id: true },
+  });
+  if (!studioValid) {
+    redirect("/access-denied");
   }
 
   let teacherId: string | null = null;
@@ -143,8 +141,8 @@ export async function updateCourseAction(formData: FormData) {
           title: data.title || null,
           date: data.date,
           teacherId: teacherToConnect,
-          studioId: data.studioId ?? null,
-          discipline: data.discipline || "Danse",
+          studioId: data.studioId,
+          discipline: data.discipline,
           durationMinutes: data.durationMinutes,
           maxSeats: data.maxSeats ?? 30,
           waitlistQuota: data.waitlistQuota ?? 0,
@@ -167,8 +165,8 @@ export async function updateCourseAction(formData: FormData) {
           title: data.title || null,
           date: data.date,
           teacherId: teacherToConnect,
-          studioId: data.studioId ?? null,
-          discipline: data.discipline || "Danse",
+          studioId: data.studioId,
+          discipline: data.discipline,
           durationMinutes: data.durationMinutes,
           waitlistQuota: data.waitlistQuota ?? 0,
           photoUrl: data.photoUrl ?? null,
