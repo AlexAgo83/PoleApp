@@ -169,6 +169,7 @@ export default async function TeacherCourseDetailPage({
     hour: "2-digit",
     minute: "2-digit",
   });
+  const icsHref = `/api/courses/${course.id}/ics`;
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
@@ -197,6 +198,13 @@ export default async function TeacherCourseDetailPage({
                     Notes : {course.notes.length}
                   </span>
                 )}
+                <Link
+                  href={icsHref}
+                  prefetch={false}
+                  className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
+                >
+                  Ajouter à mon agenda
+                </Link>
               </div>
             </div>
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
