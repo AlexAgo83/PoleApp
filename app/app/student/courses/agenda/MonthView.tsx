@@ -1,0 +1,241 @@
+"use client";
+
+import Link from "next/link";
+import { useState, useTransition } from "react";
+
+import { MonthNav } from "@/components/MonthNav";
+
+type MonthCourse = {
+  id: string;
+  courseId: string;
+  title: string | null;
+  discipline?: string | null;
+  date: string;
+  durationMinutes: number | null;
+  teacherName: string;
+  studioName: string;
+  myStatus: "CONFIRMED" | "WAITLIST" | null;
+  waitlistRank: number | null;
+  past?: boolean;
+};
+
+type MonthCell = {
+  day?: number;
+  courses: MonthCourse[];
+};
+
+type Filters = {
+  teacher?: string;
+  studio?: string;
+  discipline?: string;
+  mine?: boolean;
+  schools?: boolean;
+  q?: string;
+  statuses?: string;
+  from?: string;
+  to?: string;
+};
+
+type Props = {
+  initialMonth: string;
+  currentMonth: string;
+  initialPrev: string;
+  initialNext: string;
+  initialCells: MonthCell[];
+  hasCourses: boolean;
+  filters: Filters;
+  baseFrom: string;
+};
+
+function formatDuration(minutes: number) {
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hrs > 0) return `${hrs}h${mins.toString().padStart(2, "0")}`;
+  return `${mins} min`;
+}
+
+function isPastCourse(courseDate: string, durationMinutes?: number | null) {
+  const endMs = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
+  return endMs < Date.now();
+}
+
+export function MonthView({
+  initialMonth,
+  currentMonth,
+  initialPrev,
+  initialNext,
+  initialCells,
+  hasCourses,
+  filters,
+  baseFrom,
+}: Props) {
+  const [month, setMonth] = useState(initialMonth);
+  const [prev, setPrev] = useState(initialPrev);
+  const [next, setNext] = useState(initialNext);
+  const [cells, setCells] = useState<MonthCell[]>(initialCells);
+  const [hasAnyCourse, setHasAnyCourse] = useState(hasCourses);
+  const [isPending, startTransition] = useTransition();
+  const monthLabel = new Date(`${month}-01T00:00:00`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+  const fetchMonth = (target: string) => {
+    startTransition(async () => {
+      const params = new URLSearchParams();
+      params.set("month", target);
+      if (filters.teacher) params.set("teacher", filters.teacher);
+      if (filters.studio) params.set("studio", filters.studio);
+      if (filters.discipline) params.set("discipline", filters.discipline);
+      if (filters.mine) params.set("mine", "true");
+      if (filters.schools) params.set("schools", "all");
+      if (filters.q) params.set("q", filters.q);
+      if (filters.statuses) params.set("statuses", filters.statuses);
+      if (filters.from) params.set("from", filters.from);
+      if (filters.to) params.set("to", filters.to);
+      const res = await fetch(`/api/student/month-courses?${params.toString()}`, { cache: "no-store" });
+      if (!res.ok) return;
+      const data = (await res.json()) as {
+        monthValue: string;
+        prevMonth: string;
+        nextMonth: string;
+        cells: MonthCell[];
+        hasCourses: boolean;
+      };
+      setMonth(data.monthValue ?? target);
+      setPrev(data.prevMonth);
+      setNext(data.nextMonth);
+      setCells(data.cells ?? []);
+      setHasAnyCourse(Boolean(data.hasCourses));
+    });
+  };
+
+  const handleSelect = (value: string) => {
+    fetchMonth(value);
+  };
+
+  return (
+    <section className="panel p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+            {monthLabel}
+          </span>
+          <MonthNav
+            prev={prev}
+            current={currentMonth}
+            next={next}
+            onSelect={handleSelect}
+            loading={isPending}
+          />
+        </div>
+      </div>
+      <div className="mt-3">
+        <div className="grid grid-cols-2 gap-1.5 text-sm text-slate-200 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
+          {cells.map((cell, idx) => {
+            const weekDayIndex = (idx % 7) + 1; // 1-based
+            const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
+            const cellDate = cell.day ? new Date(`${month}-${String(cell.day).padStart(2, "0")}T00:00:00`) : null;
+            const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
+
+            return (
+              <div
+                key={`${month}-${idx}`}
+                className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${
+                  !cell.courses || cell.courses.length === 0 ? "min-h-[56px] md:min-h-[80px]" : "min-h-[80px]"
+                }`}
+              >
+                <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+                  <span className="flex items-center gap-1">
+                    <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
+                      {label}
+                    </span>
+                    <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? ""}</span>
+                  </span>
+                  <span className="text-[11px] text-cyan-100">
+                    {(cell.courses?.length ?? 0)} cours
+                  </span>
+                </div>
+                {cell.courses &&
+                  cell.courses.slice(0, 3).map((course) => {
+                    const past = course.past ?? isPastCourse(course.date, course.durationMinutes);
+                    const isMineConfirmed = Boolean(course.myStatus === "CONFIRMED");
+                    const isWaitlist = Boolean(course.myStatus === "WAITLIST");
+                    const badgeClass = isWaitlist
+                      ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
+                      : isMineConfirmed
+                      ? past
+                        ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
+                        : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                      : "border border-white/20 bg-white/10 text-slate-300";
+                    const statusLabel = past
+                      ? "Passé"
+                      : isWaitlist
+                      ? "Attente"
+                      : isMineConfirmed
+                      ? "À venir"
+                      : "Ouvert";
+                    return (
+                      <Link
+                        key={course.id}
+                        href={`/app/student/courses/${course.courseId}?from=${encodeURIComponent(baseFrom)}`}
+                        className={`relative mt-1 flex items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
+                          past
+                            ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
+                            : "border-white/10 bg-white/10 text-white"
+                        }`}
+                      >
+                        <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
+                          <p className="text-[9px] text-cyan-100 whitespace-nowrap">
+                            {new Date(course.date).toLocaleTimeString("fr-FR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            })}{" "}
+                            - {formatDuration(course.durationMinutes ?? 60)}
+                          </p>
+                          <p className="truncate text-[11px] font-semibold text-white">
+                            {course.title ?? "Cours"}
+                          </p>
+                          <p className="truncate text-[10px] text-cyan-100">
+                            {course.teacherName}
+                          </p>
+                          <p className="truncate text-[10px] text-slate-200">
+                            {course.studioName}
+                          </p>
+                        </div>
+                        <span
+                          className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                            isMineConfirmed || isWaitlist
+                              ? badgeClass
+                              : "border border-white/20 bg-white/10 text-slate-300"
+                          }`}
+                          title={
+                            isWaitlist
+                              ? "Liste d'attente"
+                              : isMineConfirmed
+                              ? past
+                                ? "Cours déjà suivi"
+                                : "Inscrit"
+                              : "Non inscrit"
+                          }
+                        >
+                          {course.waitlistRank ? `#${course.waitlistRank}` : statusLabel}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                {cell.courses && cell.courses.length > 3 && (
+                  <div className="mt-1 text-[11px] text-slate-300">
+                    +{cell.courses.length - 3} autres
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {!hasAnyCourse && (
+        <p className="mt-4 text-sm text-slate-200">Aucun cours prévu pour ce mois.</p>
+      )}
+    </section>
+  );
+}

@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { prisma } from "@/lib/prisma";
 import { WeekView } from "./WeekView";
+import { MonthView } from "./MonthView";
 
 export const dynamic = "force-dynamic";
 const NOW_MS = Date.now();
@@ -187,25 +188,32 @@ export default async function CoursesAgendaPage({
     calendarCells.push({ day, courses: dayCourses });
   }
 
-  const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}`;
+  const currentMonthValue = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
   const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
     const end = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
     return end < NOW_MS;
   };
   const teacherParamForNav = teacherFilter ?? (isTeacher ? session.user.id : undefined);
-  const disciplineParam = disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined;
-  const baseParams = new URLSearchParams();
-  if (teacherParamForNav) baseParams.set("teacher", teacherParamForNav);
-  if (studioFilter) baseParams.set("studio", studioFilter);
-  if (disciplineParam) baseParams.set("discipline", disciplineParam);
-  if (levelFilter) baseParams.set("level", levelFilter);
   const prevMonth = new Date(monthStart);
   prevMonth.setMonth(prevMonth.getMonth() - 1);
   const nextMonth = new Date(monthStart);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
+  const initialMonthCells = calendarCells.map((cell) => ({
+    day: cell.day,
+    courses: (cell.courses ?? []).map((course) => ({
+      id: course.id,
+      title: course.title,
+      date: course.date instanceof Date ? course.date.toISOString() : course.date,
+      durationMinutes: course.durationMinutes,
+      teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
+      studioName: course.studio?.name ?? "Studio non renseigné",
+      past: isPastCourse(course.date, course.durationMinutes),
+    })),
+  }));
+  const hasMonthCourses = courses.length > 0;
   const activeFilters = [
     studioFilter,
     teacherFilter,
@@ -272,7 +280,7 @@ export default async function CoursesAgendaPage({
           </p>
           <h1 className="text-3xl font-semibold text-white">Agenda des cours</h1>
           <p className="text-sm text-slate-200">
-            Mois courant : {monthLabel}. Les journées avec cours sont signalées.
+            Navigation hebdo/mensuelle sans rechargement. Les journées avec cours sont signalées.
           </p>
         </div>
         <div className="flex w-full flex-wrap items-center justify-end gap-2">
@@ -511,125 +519,24 @@ export default async function CoursesAgendaPage({
       </section>
 
       {view === "month" && (
-        <section className="panel p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
-          </div>
-          <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
-            {calendarCells.map((cell, idx) => {
-              const weekDayIndex = (idx % 7) + 1;
-              const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
-              const cellDate = cell.day
-                ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day)
-                : null;
-              const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
-              const hideOnMobileMonth =
-                !cell.courses || cell.courses.length === 0 ? "hidden sm:block" : "";
-              return (
-                <div
-                  key={idx}
-                  className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
-                    !cell.courses || cell.courses.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
-                  }`}
-                >
-                  <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                    <span className="flex items-center gap-1">
-                      <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
-                        {label}
-                      </span>
-                      <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
-                    </span>
-                    <span className="text-[11px] text-cyan-100">{(cell.courses?.length ?? 0)} cours</span>
-                  </div>
-                  {cell.courses &&
-                    cell.courses.slice(0, 3).map((course) => {
-                      const past = isPastCourse(course.date, course.durationMinutes);
-                      const statusLabel = past ? "Passé" : "À venir";
-                      const badgeClass = past
-                        ? "border border-blue-400/60 bg-blue-500/20 text-blue-50"
-                        : "border border-emerald-400/60 bg-emerald-500/20 text-emerald-50";
-                      return (
-                        <Link
-                          key={course.id}
-                          href={`/app/teacher/courses/${course.id}?from=/app/teacher/courses/agenda`}
-                          className={`relative mt-1 block w-full rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                            past
-                              ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                              : "border-white/10 bg-white/10 text-white"
-                          }`}
-                        >
-                          <div className="space-y-0.5 overflow-hidden pr-6">
-                            <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                              {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
-                              - {formatDuration(course.durationMinutes ?? 60)}
-                            </p>
-                            <p className="truncate text-[11px] font-semibold text-white">
-                              {course.title ?? "Cours"}
-                            </p>
-                            <p className="truncate text-[10px] text-cyan-100">
-                              {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                            </p>
-                            <p className="truncate text-[10px] text-slate-200">
-                              {course.studio?.name ?? "Studio non renseigné"}
-                            </p>
-                          </div>
-                          <span
-                            className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
-                          >
-                            {statusLabel}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  {cell.courses && cell.courses.length > 3 && (
-                    <div className="mt-1 text-[11px] text-slate-300">
-                      +{cell.courses.length - 3} autres
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-            <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
-              <input type="hidden" name="month" value={prevMonthValue} />
-              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-              {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
-              {q ? <input type="hidden" name="q" value={q} /> : null}
-              {disciplineParam ? <input type="hidden" name="discipline" value={disciplineParam} /> : null}
-              {levelFilter ? <input type="hidden" name="level" value={levelFilter} /> : null}
-              <button
-                type="submit"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                ← Mois précédent
-              </button>
-            </form>
-            <form action="/app/teacher/courses/agenda" method="get" className="inline-flex">
-              <input type="hidden" name="month" value={nextMonthValue} />
-              {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-              {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-              {studioFilter ? <input type="hidden" name="studio" value={studioFilter} /> : null}
-              {teacherParamForNav ? <input type="hidden" name="teacher" value={teacherParamForNav} /> : null}
-              {q ? <input type="hidden" name="q" value={q} /> : null}
-              {disciplineParam ? <input type="hidden" name="discipline" value={disciplineParam} /> : null}
-              {levelFilter ? <input type="hidden" name="level" value={levelFilter} /> : null}
-              <button
-                type="submit"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                Mois suivant →
-              </button>
-            </form>
-          </div>
-          {courses.length === 0 && (
-            <p className="mt-4 text-sm text-slate-200">
-              Aucun cours prévu pour ce mois.
-            </p>
-          )}
-        </section>
+        <MonthView
+          initialMonth={monthValue}
+          currentMonth={currentMonthValue}
+          initialPrev={prevMonthValue}
+          initialNext={nextMonthValue}
+          initialCells={initialMonthCells}
+          hasCourses={hasMonthCourses}
+          filters={{
+            teacher: teacherParamForNav,
+            studio: studioFilter,
+            discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
+            level: levelFilter,
+            q,
+            from: fromParam,
+            to: toParam,
+          }}
+          baseFrom="/app/teacher/courses/agenda"
+        />
       )}
 
       {view === "week" && (

@@ -273,14 +273,19 @@ export default async function StudentCourseDetailPage({
           {course.positions.map((cp) => (
             <li
               key={cp.id}
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200"
+              className="rounded-xl border border-white/10 bg-white/5 text-slate-200"
             >
-              <span className="font-semibold text-white">{cp.position.name}</span>
-              {cp.position.type ? (
-                <span className="ml-2 text-xs uppercase tracking-[0.12em] text-cyan-200">
-                  {cp.position.type}
-                </span>
-              ) : null}
+              <Link
+                href={`/positions/${cp.position.id}?from=${encodeURIComponent(backHref)}`}
+                className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 transition hover:border-cyan-300/70 hover:bg-white/10"
+              >
+                <span className="font-semibold text-white">{cp.position.name}</span>
+                {cp.position.type ? (
+                  <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
+                    {cp.position.type}
+                  </span>
+                ) : null}
+              </Link>
             </li>
           ))}
           {course.positions.length === 0 && (
