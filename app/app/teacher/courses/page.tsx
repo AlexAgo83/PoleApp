@@ -166,7 +166,7 @@ export default async function TeacherCoursesPage({
         positions: true,
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true } },
-        _count: { select: { notes: true, attendances: true } },
+        _count: { select: { notes: true, attendances: true, positions: true } },
       },
     })
     .catch((error) => {
@@ -184,7 +184,7 @@ export default async function TeacherCoursesPage({
             positions: true,
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
-            _count: { select: { notes: true, attendances: true } },
+            _count: { select: { notes: true, attendances: true, positions: true } },
           },
         });
       }
@@ -514,6 +514,11 @@ export default async function TeacherCoursesPage({
                       <span>
                         {course.attendances.length} élèves · {course.positions.length} positions
                       </span>
+                      {course.isVirtual && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/70 bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-100">
+                          Virtuel (positions à définir)
+                        </span>
+                      )}
                       <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
                         Notes : {course._count.notes}
                       </span>

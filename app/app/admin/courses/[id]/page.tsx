@@ -40,6 +40,7 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
         },
       },
       _count: { select: { attendances: true } },
+      isVirtual: true,
     },
   });
 
@@ -100,6 +101,11 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
             <p className="text-sm text-slate-300">
               {teacherName} · {course.studio?.name ?? "Studio non renseigné"} · {course._count.attendances} élève(s) · {cost} crédits
             </p>
+            {course.isVirtual && (
+              <p className="mt-1 inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
+                Occurrence virtuelle : positions à définir (inscription élève bloquée)
+              </p>
+            )}
           </div>
           <Link
             href={backHref}
