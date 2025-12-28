@@ -138,6 +138,8 @@ export function CourseForm({
   const [selectedPositions, setSelectedPositions] = useState<string[]>(
     defaultSelectedPositions
   );
+  const defaultsHydrated = useRef(false);
+  const defaultStudentsSet = useMemo(() => new Set(defaultSelectedStudents), [defaultSelectedStudents]);
   const [titleValue, setTitleValue] = useState(defaultTitle ?? "");
   const [dateValue, setDateValue] = useState(resolvedDefaultDate);
   const [studioValue, setStudioValue] = useState(resolvedStudioId);
@@ -159,6 +161,7 @@ export function CourseForm({
   const [mounted, setMounted] = useState(false);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const needsRefocus = useRef(false);
+  const skipDisciplineReset = useRef(true);
   const preserveScroll = (cb: () => void) => {
     const y = typeof window !== "undefined" ? window.scrollY : 0;
     cb();
@@ -197,8 +200,33 @@ export function CourseForm({
     setMounted(true);
   }, []);
 
+  // Ensure defaults are applied on mount for edit forms (guards against a reset caused by other effects)
+  useEffect(() => {
+    if (defaultsHydrated.current) return;
+    const hasDefaults = defaultSelectedStudents.length > 0 || defaultSelectedPositions.length > 0;
+    if (!hasDefaults) return;
+    setSelectedStudents(defaultSelectedStudents);
+    setSelectedPositions(defaultSelectedPositions);
+    defaultsHydrated.current = true;
+  }, [defaultSelectedStudents, defaultSelectedPositions]);
+
+  // Safety net: in edit mode, if selections vanish (e.g., after discipline filter), reapply defaults
+  useEffect(() => {
+    if (!courseId) return;
+    if (defaultSelectedPositions.length > 0 && selectedPositions.length === 0) {
+      setSelectedPositions(defaultSelectedPositions);
+    }
+    if (defaultSelectedStudents.length > 0 && selectedStudents.length === 0) {
+      setSelectedStudents(defaultSelectedStudents);
+    }
+  }, [courseId, defaultSelectedPositions, defaultSelectedStudents, selectedPositions.length, selectedStudents.length]);
+
   // Reset positions when switching discipline to avoid incoherent selections
   useEffect(() => {
+    if (skipDisciplineReset.current) {
+      skipDisciplineReset.current = false;
+      return;
+    }
     setSelectedPositions([]);
     setLastGeneratedCount(0);
   }, [selectedDiscipline]);
@@ -231,10 +259,16 @@ export function CourseForm({
   }, [teacherFavorites, selectedTeacherId]);
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions;
-    return positions.filter(
+    const base = positions.filter(
       (p) => (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase()
     );
-  }, [positions, selectedDiscipline]);
+    // Ensure already sélectionnées restent visibles même si leur discipline ne matche pas (édition d'un cours avec valeurs legacy)
+    if (selectedPositions.length === 0) return base;
+    const extra = positions.filter(
+      (p) => selectedPositions.includes(p.id) && !base.some((b) => b.id === p.id)
+    );
+    return [...extra, ...base];
+  }, [positions, selectedDiscipline, selectedPositions]);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const invalid: string[] = [];
     if (!selectedDiscipline) invalid.push("discipline");
@@ -248,7 +282,8 @@ export function CourseForm({
       return;
     }
     setFormError(null);
-    if (!allowSubmit && selectedStudents.length > 0) {
+    const hasNewStudent = selectedStudents.some((id) => !defaultStudentsSet.has(id));
+    if (!allowSubmit && hasNewStudent) {
       e.preventDefault();
       setShowConfirm(true);
       return;
@@ -425,6 +460,9 @@ export function CourseForm({
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             >
               {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
+              {teachers.length === 0 && selectedTeacherId ? (
+                <option value={selectedTeacherId}>Vous (professeur actuel)</option>
+              ) : null}
               {teachers.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name ?? t.email}
@@ -747,7 +785,9 @@ export function CourseForm({
                   </svg>
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-semibold text-white">Confirmer la création</h3>
+                  <h3 className="text-lg font-semibold text-white">
+                    {courseId ? "Confirmer l'édition" : "Confirmer la création"}
+                  </h3>
                   <p className="text-sm text-slate-200">
                     Au moins un élève est inscrit manuellement sur ce cours. Confirme que tu souhaites valider le cours avec ces inscriptions forcées.
                   </p>
