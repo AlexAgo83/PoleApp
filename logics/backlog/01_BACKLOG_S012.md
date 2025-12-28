@@ -1,5 +1,5 @@
 # Backlog — Retours QA S013 (06_QA_S013.md)
-[Compréhension: 100% / Avancement: 70% (P0 en cours de validation)]
+[Compréhension: 100% / Avancement: 75% (P0 en cours de validation)]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -87,6 +87,7 @@
 - Édition série : prévoir un mode “modifier cette occurrence uniquement” vs “modifier les futures” ?
 ### Progression
 - [ ] En cours (modèle série + occurrences virtuelles générées, UI récurrence ajoutée ; reste édition occurrence, affichage spécifique, QA)
+- [x] Timezone/alerte ICS configurables dans la page super-admin (global settings)
 
 ## P2 — Ajouter un cours à son agenda système (DONE)
 ### User stories
