@@ -451,7 +451,7 @@ export default async function StudentCoursesAgendaPage({
   const legendItems = [
     { key: "past", label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
     { key: "attending", label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
-    { key: "waitlist", label: "Liste d’attente (rang, quota 14)", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+    { key: "waitlist", label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
     { key: "open", label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
   ];
 
@@ -521,9 +521,6 @@ export default async function StudentCoursesAgendaPage({
             </span>
           ))}
         </div>
-        <p className="mt-2 text-xs text-slate-300">
-          Le rang s’affiche si fourni (quota 14 élèves, statut WAITLIST requis).
-        </p>
       </section>
 
       <section className="panel p-4 md:p-6">

@@ -8,6 +8,8 @@ import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { MonthView } from "../courses/agenda/MonthView";
+import { WeekView as StudentWeekView } from "../courses/agenda/WeekView";
 
 export const dynamic = "force-dynamic";
 const NOW_MS = Date.now();
@@ -37,6 +39,7 @@ function isPastCourse(courseDate: Date, durationMinutes?: number | null) {
 type SchoolCourse = {
   id: string;
   title: string | null;
+  discipline?: string | null;
   date: Date;
   durationMinutes: number | null;
   maxSeats: number | null;
@@ -276,6 +279,7 @@ export default async function StudentSchoolPage({
       select: {
         id: true,
         title: true,
+        discipline: true,
         date: true,
         durationMinutes: true,
         maxSeats: true,
@@ -297,16 +301,40 @@ export default async function StudentSchoolPage({
     courseId: string;
     course: SchoolCourse;
     myAttendance: SchoolCourse["attendances"][number] | undefined;
-  }> = courses.map((course) => ({
-    id: course.id,
-    courseId: course.id,
-    course,
-    myAttendance: course.attendances?.[0],
-  }));
+  }> = courses.map((course) => {
+    const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
+    return {
+      id: course.id,
+      courseId: course.id,
+      course,
+      myAttendance,
+    };
+  });
 
   const attendancesByDay = weekDays.map((d) => {
     const dayStr = d.toDateString();
     return agendaItems.filter((a) => new Date(a.course.date).toDateString() === dayStr);
+  });
+  const weekDaysData = weekDays.map((d, idx) => {
+    const dayAttendances = attendancesByDay[idx];
+    return {
+      isoDate: d.toISOString(),
+      label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+      day: d.getDate(),
+      isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
+      courses: dayAttendances.map((a) => ({
+        id: a.course.id,
+        title: a.course.title,
+        discipline: a.course.discipline ?? undefined,
+        date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
+        durationMinutes: a.course.durationMinutes,
+        teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
+        studioName: a.course.studio?.name ?? "Studio non renseigné",
+        past: isPastCourse(a.course.date, a.course.durationMinutes),
+        myStatus: a.myAttendance?.status ?? null,
+        waitlistRank: a.myAttendance?.waitlistRank ?? null,
+      })),
+    };
   });
 
   const daysInMonth = monthEnd.getDate();
@@ -329,6 +357,7 @@ export default async function StudentSchoolPage({
 
   const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}`;
+  const currentMonthValue = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
   const hasMonthFilter = Boolean(monthParam);
 
   const paramsForLinks = new URLSearchParams();
@@ -344,6 +373,22 @@ export default async function StudentSchoolPage({
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
+  const monthCells = cells.map((cell) => ({
+    day: cell.day,
+    courses: (cell.attendances ?? []).map((a) => ({
+      id: a.course.id,
+      courseId: a.courseId,
+      title: a.course.title,
+      discipline: a.course.discipline ?? undefined,
+      date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
+      durationMinutes: a.course.durationMinutes,
+      teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
+      studioName: a.course.studio?.name ?? "Studio non renseigné",
+      myStatus: a.myAttendance?.status ?? null,
+      waitlistRank: a.myAttendance?.waitlistRank ?? null,
+      past: isPastCourse(a.course.date, a.course.durationMinutes),
+    })),
+  }));
   const legendItems = [
     { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
     { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
@@ -361,6 +406,11 @@ export default async function StudentSchoolPage({
     }
     return `/app/student/school${nextParams.toString() ? `?${nextParams}` : ""}`;
   };
+  const baseFromParams = new URLSearchParams(paramsForLinks);
+  baseFromParams.set("view", view);
+  if (view === "week" && weekValue) baseFromParams.set("week", weekValue);
+  if (view === "month" && monthValue) baseFromParams.set("month", monthValue);
+  const baseFrom = `/app/student/school${baseFromParams.toString() ? `?${baseFromParams.toString()}` : ""}`;
   const agendaHref = `/app/student/courses/agenda${paramsForLinks.toString() ? `?${paramsForLinks}` : ""}`;
   const listHref = `/app/student/courses${paramsForLinks.toString() ? `?${paramsForLinks}` : ""}`;
 
@@ -646,347 +696,41 @@ export default async function StudentSchoolPage({
         </div>
 
         {view === "month" && (
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Vue mensuelle · {monthLabel}</h3>
-            </div>
-            <div className="mt-3">
-              <div className="grid grid-cols-2 gap-1.5 text-sm text-slate-200 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
-                {cells.map((cell, idx) => {
-                  const weekDayIndex = (idx % 7) + 1;
-                  const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
-                  const cellDate = cell.day
-                    ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day)
-                    : null;
-                  const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
-                  return (
-                    <div
-                      key={idx}
-                      className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${
-                        !cell.attendances || cell.attendances.length === 0 ? "min-h-[56px] md:min-h-[80px]" : "min-h-[80px]"
-                      }`}
-                    >
-                      <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                        <span className="flex items-center gap-1">
-                          <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
-                            {label}
-                          </span>
-                          <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? ""}</span>
-                        </span>
-                        <span className="text-[11px] text-cyan-100">
-                          {(cell.attendances?.length ?? 0)} cours
-                        </span>
-                      </div>
-                    {cell.attendances &&
-                      cell.attendances.slice(0, 3).map((a) => {
-                        const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                        const isMineConfirmed = Boolean(a.myAttendance?.status === "CONFIRMED");
-                        const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
-                        const waitlistCount = a.course.attendances.filter((att) => att.status === "WAITLIST").length;
-                        const waitlistQuota = a.course.waitlistQuota ?? 0;
-                        const waitlistFull = waitlistQuota > 0 && waitlistCount >= waitlistQuota;
-                        const badgeClass = isWaitlist
-                          ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
-                          : isMineConfirmed
-                          ? past
-                            ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                              : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
-                            : "border border-white/20 bg-white/10 text-slate-300";
-                        const statusLabel = past
-                          ? "Passé"
-                          : isWaitlist
-                          ? "Attente"
-                          : waitlistFull
-                          ? "Attente complète"
-                          : isMineConfirmed
-                          ? "À venir"
-                          : "Ouvert";
-                        const quotaLabel =
-                          waitlistQuota > 0 ? `Liste d’attente : ${waitlistCount}/${waitlistQuota}` : null;
-                        const rankLabel =
-                          isWaitlist && a.myAttendance?.waitlistRank
-                            ? `#${a.myAttendance.waitlistRank}`
-                            : null;
-                          return (
-                            <Link
-                              key={a.id}
-                              href={`/app/student/courses/${a.courseId}?from=/app/student/school`}
-                              className={`relative mt-1 flex items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                                past
-                                  ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                                  : "border-white/10 bg-white/10 text-white"
-                              }`}
-                            >
-                              <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
-                                <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                  {new Date(a.course.date).toLocaleTimeString("fr-FR", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: false,
-                                  })}{" "}
-                                  - {formatDuration(a.course.durationMinutes ?? 60)}
-                                </p>
-                                <p className="truncate text-[11px] font-semibold text-white">
-                                  {a.course.title ?? "Cours"}
-                                </p>
-                                <p className="truncate text-[10px] text-cyan-100">
-                                  {a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur"}
-                                </p>
-                                <p className="truncate text-[10px] text-slate-200">
-                                  {a.course.studio?.name ?? "Studio non renseigné"}
-                                </p>
-                                {quotaLabel ? (
-                                  <p className="truncate text-[10px] text-purple-200">{quotaLabel}</p>
-                                ) : null}
-                                {a.course.positions?.length ? (
-                                  <p className="truncate text-[10px] text-cyan-100">
-                                    Tricks :{" "}
-                                    {a.course.positions
-                                      .map((p) => p.position?.name)
-                                      .filter(Boolean)
-                                      .slice(0, 3)
-                                      .join(", ")}
-                                    {a.course.positions.length > 3 ? ` +${a.course.positions.length - 3}` : ""}
-                                  </p>
-                                ) : null}
-                              </div>
-                              <span
-                                className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                  isMineConfirmed || isWaitlist
-                                    ? badgeClass
-                                    : "border border-white/20 bg-white/10 text-slate-300"
-                                }`}
-                                title={
-                                  isWaitlist
-                                    ? "Liste d'attente"
-                                    : isMineConfirmed
-                                    ? past
-                                      ? "Cours déjà suivi"
-                                      : "Inscrit"
-                                    : "Non inscrit"
-                                }
-                              >
-                                {rankLabel ?? statusLabel}
-                              </span>
-                            </Link>
-                          );
-                        })}
-                      {cell.attendances && cell.attendances.length > 3 && (
-                        <div className="mt-1 text-[11px] text-slate-300">
-                          +{cell.attendances.length - 3} autres
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-white">
-              <form action="/app/student/school" method="get" className="inline-flex">
-                <input type="hidden" name="month" value={prevMonthValue} />
-                {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-                {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilters.map((id) => (
-                  <input key={`prev-studio-${id}`} type="hidden" name="studio" value={id} />
-                ))}
-                {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-                {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-                {q ? <input type="hidden" name="q" value={q} /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  ← Mois précédent
-                </button>
-              </form>
-              <form action="/app/student/school" method="get" className="inline-flex">
-                <input type="hidden" name="month" value={nextMonthValue} />
-                {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-                {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilters.map((id) => (
-                  <input key={`next-studio-${id}`} type="hidden" name="studio" value={id} />
-                ))}
-                {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-                {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-                {q ? <input type="hidden" name="q" value={q} /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Mois suivant →
-                </button>
-              </form>
-            </div>
-            {agendaItems.length === 0 && (
-              <p className="mt-4 text-sm text-slate-200">
-                Aucun cours prévu pour ce mois.
-              </p>
-            )}
-          </section>
+          <MonthView
+            initialMonth={monthValue}
+            currentMonth={currentMonthValue}
+            initialPrev={prevMonthValue}
+            initialNext={nextMonthValue}
+            initialCells={monthCells}
+            hasCourses={agendaItems.length > 0}
+            filters={{
+              teacher: teacherFilter,
+              studio: studioFilters[0],
+              discipline: disciplineFilters.length ? disciplineFilters.join(",") : undefined,
+              mine: onlyMine,
+              q: q || undefined,
+            }}
+            baseFrom={baseFrom}
+            compact
+          />
         )}
 
         {view === "week" && (
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
-            <div className="flex items-center justify-between text-lg font-semibold text-white">
-              <span>Vue semaine</span>
-            </div>
-            <div className="mt-3">
-              <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
-                {weekDays.map((day, idx) => {
-                  const dayAttendances = attendancesByDay[idx];
-                  const isPastDay = day < new Date(new Date().setHours(0, 0, 0, 0));
-                  return (
-                    <div
-                      key={day.toISOString()}
-                      className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200"
-                    >
-                      <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
-                        <span className="flex items-center gap-1">
-                          <span
-                            className={`text-[10px] uppercase tracking-wide md:text-xs ${
-                              isPastDay ? "text-slate-400" : "text-cyan-100"
-                            }`}
-                          >
-                            {day.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
-                          </span>
-                          <span className={isPastDay ? "text-slate-400" : undefined}>{day.getDate()}</span>
-                        </span>
-                        <span className="text-[11px] text-cyan-100">{dayAttendances.length} cours</span>
-                      </div>
-                      <div className="flex flex-col gap-1.5 md:gap-2">
-                        {dayAttendances.map((a) => {
-                          const past = isPastCourse(a.course.date, a.course.durationMinutes);
-                          const isMineConfirmed = Boolean(a.myAttendance?.status === "CONFIRMED");
-                          const isWaitlist = Boolean(a.myAttendance?.status === "WAITLIST");
-                          const waitlistRank = a.myAttendance?.waitlistRank;
-                          const badgeClass = past
-                            ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                            : isWaitlist
-                            ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
-                            : isMineConfirmed
-                            ? "border border-amber-300/70 bg-amber-500/25 text-amber-50"
-                            : "border border-white/20 bg-white/10 text-slate-300";
-                          const statusLabel = past
-                            ? "Passé"
-                            : isWaitlist
-                            ? "Attente"
-                            : isMineConfirmed
-                            ? "À venir"
-                            : "Ouvert";
-                          return (
-                            <Link
-                              key={a.id}
-                              href={`/app/student/courses/${a.courseId}?from=/app/student/school`}
-                              className={`relative inline-flex w-full items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                                past
-                                  ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
-                                  : "border-white/10 bg-white/10 text-white"
-                              }`}
-                              title={`Durée : ${formatDuration(a.course.durationMinutes ?? 60)}`}
-                            >
-                              <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
-                                <p className="text-[9px] text-cyan-100 whitespace-nowrap">
-                                  {new Date(a.course.date).toLocaleTimeString("fr-FR", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: false,
-                                  })}{" "}
-                                  - {formatDuration(a.course.durationMinutes ?? 60)}
-                                </p>
-                                <p className="truncate text-[11px] font-semibold text-white">
-                                  {a.course.title ?? "Cours"}
-                                </p>
-                                <p className="truncate text-[10px] text-cyan-100">
-                                  {a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur"}
-                                </p>
-                                <p className="truncate text-[10px] text-slate-200">
-                                  {a.course.studio?.name ?? "Studio non renseigné"}
-                                </p>
-                                {a.course.positions?.length ? (
-                                  <p className="truncate text-[10px] text-cyan-100">
-                                    Tricks :{" "}
-                                    {a.course.positions
-                                      .map((p) => p.position?.name)
-                                      .filter(Boolean)
-                                      .slice(0, 3)
-                                      .join(", ")}
-                                    {a.course.positions.length > 3 ? ` +${a.course.positions.length - 3}` : ""}
-                                  </p>
-                                ) : null}
-                              </div>
-                              <span
-                                className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                  isWaitlist || isMineConfirmed
-                                    ? badgeClass
-                                    : "border border-white/20 bg-white/10 text-slate-300"
-                                }`}
-                                title={
-                                  isWaitlist
-                                    ? "Liste d'attente"
-                                    : isMineConfirmed
-                                    ? past
-                                      ? "Cours déjà suivi"
-                                      : "Inscrit"
-                                    : "Non inscrit"
-                                }
-                              >
-                                {isWaitlist && waitlistRank ? `#${waitlistRank}` : statusLabel}
-                              </span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-white">
-              <form action="/app/student/school" method="get" className="inline-flex">
-                <input type="hidden" name="view" value="week" />
-                <input type="hidden" name="week" value={prevWeekValue} />
-                {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
-                {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-                {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilters.map((id) => (
-                  <input key={`prev-week-studio-${id}`} type="hidden" name="studio" value={id} />
-                ))}
-                {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-                {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-                {q ? <input type="hidden" name="q" value={q} /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  ← Semaine précédente
-                </button>
-              </form>
-              <form action="/app/student/school" method="get" className="inline-flex">
-                <input type="hidden" name="view" value="week" />
-                <input type="hidden" name="week" value={nextWeekValue} />
-                {monthParam ? <input type="hidden" name="month" value={monthParam} /> : null}
-                {fromParam ? <input type="hidden" name="from" value={fromParam} /> : null}
-                {toParam ? <input type="hidden" name="to" value={toParam} /> : null}
-                {studioFilters.map((id) => (
-                  <input key={`next-week-studio-${id}`} type="hidden" name="studio" value={id} />
-                ))}
-                {teacherFilter ? <input type="hidden" name="teacher" value={teacherFilter} /> : null}
-                {onlyMine ? <input type="hidden" name="mine" value="true" /> : null}
-                {q ? <input type="hidden" name="q" value={q} /> : null}
-                <button
-                  type="submit"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Semaine suivante →
-                </button>
-              </form>
-            </div>
-            {agendaItems.length === 0 && (
-              <p className="mt-4 text-sm text-slate-200">
-                Aucun cours prévu sur cette plage.
-              </p>
-            )}
-          </section>
+          <StudentWeekView
+            initialWeek={weekValue}
+            initialPrev={prevWeekValue}
+            initialNext={nextWeekValue}
+            initialDays={weekDaysData}
+            filters={{
+              teacher: teacherFilter,
+              studio: studioFilters[0],
+              discipline: disciplineFilters.length ? disciplineFilters.join(",") : undefined,
+              mine: onlyMine,
+              q: q || undefined,
+            }}
+            baseFrom={baseFrom}
+            compact
+          />
         )}
       </section>
 
