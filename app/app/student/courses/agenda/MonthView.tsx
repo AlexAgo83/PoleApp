@@ -45,6 +45,7 @@ type Props = {
   hasCourses: boolean;
   filters: Filters;
   baseFrom: string;
+  compact?: boolean;
 };
 
 function formatDuration(minutes: number) {
@@ -68,6 +69,7 @@ export function MonthView({
   hasCourses,
   filters,
   baseFrom,
+  compact,
 }: Props) {
   const [month, setMonth] = useState(initialMonth);
   const [prev, setPrev] = useState(initialPrev);
@@ -111,8 +113,10 @@ export function MonthView({
     fetchMonth(value);
   };
 
+  const containerClass = compact ? "rounded-2xl border border-white/0 bg-transparent p-0" : "panel p-6";
+
   return (
-    <section className="panel p-6">
+    <section className={containerClass}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
         <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">

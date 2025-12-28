@@ -298,7 +298,7 @@ export default async function StudentCoursesPage({
       className: "border border-amber-300/70 bg-amber-500/25 text-amber-50",
     },
     {
-      label: "Liste d’attente (rang, quota 14) — à brancher",
+      label: "Liste d’attente",
       className: "border border-purple-300/70 bg-purple-500/25 text-purple-50",
     },
   ];
@@ -342,9 +342,6 @@ export default async function StudentCoursesPage({
             </span>
           ))}
         </div>
-        <p className="mt-2 text-xs text-slate-300">
-          Le rang s’affiche si fourni (quota 14 élèves, statut WAITLIST requis).
-        </p>
       </section>
 
       <section className="panel space-y-4 border-indigo-400/15 p-6">
