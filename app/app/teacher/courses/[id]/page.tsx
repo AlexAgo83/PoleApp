@@ -95,9 +95,6 @@ export default async function TeacherCourseDetailPage({
   if (!course) {
     return notFound();
   }
-  if (session.user.role === "TEACHER" && course.teacherId !== session.user.id) {
-    return notFound();
-  }
 
   const resolvedSearch = (await searchParams) ?? {};
   const forceDiscovery = resolvedSearch.forceDiscovery === "1";
