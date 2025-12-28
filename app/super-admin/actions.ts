@@ -107,6 +107,8 @@ export async function backfillDisciplinesAction() {
 const settingsSchema = z.object({
   vatPercent: z.coerce.number().min(0).max(100),
   currency: z.string().min(1).max(8),
+  timezone: z.string().trim().min(1),
+  icsDefaultAlarmMinutes: z.coerce.number().min(0).max(10_080).default(30), // max 7 jours
 });
 
 export async function updateSettingsAction(formData: FormData) {
@@ -114,6 +116,8 @@ export async function updateSettingsAction(formData: FormData) {
   const parsed = settingsSchema.safeParse({
     vatPercent: formData.get("vatPercent"),
     currency: formData.get("currency"),
+    timezone: formData.get("timezone"),
+    icsDefaultAlarmMinutes: formData.get("icsDefaultAlarmMinutes"),
   });
   if (!parsed.success) throw new Error("Paramètres invalides");
   await prisma.globalSetting.upsert({
@@ -121,11 +125,15 @@ export async function updateSettingsAction(formData: FormData) {
     update: {
       defaultVatPercent: parsed.data.vatPercent,
       currency: parsed.data.currency.trim().toUpperCase(),
+      timezone: parsed.data.timezone.trim(),
+      icsDefaultAlarmMinutes: parsed.data.icsDefaultAlarmMinutes,
     },
     create: {
       id: "global",
       defaultVatPercent: parsed.data.vatPercent,
       currency: parsed.data.currency.trim().toUpperCase(),
+      timezone: parsed.data.timezone.trim(),
+      icsDefaultAlarmMinutes: parsed.data.icsDefaultAlarmMinutes,
     },
   });
   await logAudit("settings:update", "global", parsed.data);

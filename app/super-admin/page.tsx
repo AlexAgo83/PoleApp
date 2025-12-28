@@ -71,7 +71,13 @@ export default async function SuperAdminPage({
     prisma.globalSetting.upsert({
       where: { id: "global" },
       update: {},
-      create: { id: "global", defaultVatPercent: 20, currency: "EUR" },
+      create: {
+        id: "global",
+        defaultVatPercent: 20,
+        currency: "EUR",
+        timezone: process.env.GLOBAL_TIMEZONE || "Europe/Paris",
+        icsDefaultAlarmMinutes: 30,
+      },
     }),
     prisma.school.findMany({
       orderBy: { name: "asc" },
@@ -238,7 +244,7 @@ export default async function SuperAdminPage({
           </dl>
         </div>
 
-        <form action={updateSettingsAction} className="mt-4 grid gap-3 md:grid-cols-3">
+        <form action={updateSettingsAction} className="mt-4 grid gap-3 md:grid-cols-4">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-slate-200">Devise</span>
             <input
@@ -255,6 +261,29 @@ export default async function SuperAdminPage({
               min={0}
               max={100}
               defaultValue={settings.defaultVatPercent}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white focus:border-cyan-400/70 focus:outline-none"
+            />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-semibold text-slate-200">Timezone globale</span>
+            <input
+              name="timezone"
+              defaultValue={settings.timezone || "Europe/Paris"}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white focus:border-cyan-400/70 focus:outline-none"
+              placeholder="Europe/Paris"
+            />
+            <p className="text-xs text-slate-400">
+              Utilisée pour les exports ICS / affichages serveur (les utilisateurs voient l&apos;horaire converti).
+            </p>
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-semibold text-slate-200">Alerte ICS par défaut (min)</span>
+            <input
+              name="icsDefaultAlarmMinutes"
+              type="number"
+              min={0}
+              max={10_080}
+              defaultValue={settings.icsDefaultAlarmMinutes ?? 30}
               className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white focus:border-cyan-400/70 focus:outline-none"
             />
           </label>

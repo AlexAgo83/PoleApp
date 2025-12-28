@@ -53,6 +53,7 @@ export default async function TeacherCourseDetailPage({
       include: {
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true, address: true } },
+        isVirtual: true,
         attendances: {
           include: { student: { select: { id: true, name: true, email: true } } },
         },
@@ -185,6 +186,11 @@ export default async function TeacherCourseDetailPage({
                 <h1 className="text-3xl font-semibold text-white">
                   {course.title ?? "Cours sans titre"}
                 </h1>
+                {course.isVirtual && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
+                    Occurrence virtuelle (positions à définir)
+                  </span>
+                )}
                 <Link
                   href={`/app/teacher/courses/${course.id}/edit${
                     safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
