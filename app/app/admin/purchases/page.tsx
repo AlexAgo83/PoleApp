@@ -75,12 +75,20 @@ export default async function AdminPurchasesPage({ searchParams }: { searchParam
             <h1 className="text-2xl font-semibold">Achats (packs / abonnements)</h1>
             <p className="text-sm text-slate-300">Achats des élèves de l’école : packs crédits et abonnements.</p>
           </div>
-          <Link
-            href="/app/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/app/admin"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+            <Link
+              href="/app/admin/billing"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
+            >
+              Facturation
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -106,10 +106,10 @@ export default async function AdminBillingPage({ searchParams }: { searchParams?
         </div>
         <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
           <Link
-            href="/app/admin/purchases"
-            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-2 text-sm font-semibold text-cyan-50 transition hover:border-cyan-200 hover:bg-cyan-500/25"
+            href="/app/admin"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            Voir achats (packs/abos/presets)
+            ← Retour dashboard
           </Link>
           <form action={backfillInvoicesAction} className="inline-flex">
             <input type="hidden" name="redirectTo" value={backfillRedirect} />
@@ -121,10 +121,10 @@ export default async function AdminBillingPage({ searchParams }: { searchParams?
             </button>
           </form>
           <Link
-            href="/app/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            href="/app/admin/purchases"
+            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-2 text-sm font-semibold text-cyan-50 transition hover:border-cyan-200 hover:bg-cyan-500/25"
           >
-            ← Retour dashboard
+            Voir achats (packs/abos/presets)
           </Link>
         </div>
       </header>
