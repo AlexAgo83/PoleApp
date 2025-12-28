@@ -1,5 +1,5 @@
 # Backlog — Retours QA S012 (06_QA_S012.md)
-[Compréhension: 100% / Avancement: 1/6]
+[Compréhension: 100% / Avancement: 6/6]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -8,11 +8,11 @@
 > (Idéalement) Prépares tes questions pour améliorer la compréhension
 > (Idéalement) Prépares la session QA
 
-## F1 – Combos associés sur fiche position
+## F1 – Combos associés sur fiche position **(DONE)**
 - User stories: En tant qu’élève/prof/admin je consulte une fiche position et je vois une section « Combos associés » listant jusqu’à 10 combos/presets VOD contenant cette position, sans duplication. En tant qu’élève non premium, si un combo est premium je vois les règles d’accès appliquées.
 - Critères d’acceptation: section visible sur chaque fiche position; jusqu’à 10 combos issus du module VOD (pas de doublons); liens vers les combos existants; règles premium respectées (accès bloqué ou signalé selon droits); pas de régression sur le layout actuel.
 - DoD: tests manuels élève premium/non-premium; revue données pour éviter duplications; QA visuel OK.
-- Progression: TODO
+- Progression: DONE (section « Combos associés » en prod, filtrage VOD + badges premium/déjà acheté, liens d’accès/achat selon droits)
 - Priorité: P1
 
 ## F2 – Vue agenda sur fiche studio **(DONE)**
@@ -22,32 +22,32 @@
 - Progression: DONE (implémenté : vue agenda/semaines/mois filtrée par studio, même interactions que l’agenda cours)
 - Priorité: P1
 
-## F3 – Parcours élève : réservation / renommage pages
+## F3 – Parcours élève : réservation / renommage pages **(DONE)**
 - User stories: 1) Page « Cours » devient « Historique des cours » et ne montre que les cours réservés (passés et à venir). 2) Page « École » devient « Réservation & Studios » avec vue agenda. 3) L’élève peut sélectionner plusieurs studios et voir l’agenda mis à jour dynamiquement.
 - Critères d’acceptation: labels des pages mis à jour; page Historique filtre sur réservations (aucun cours non réservé); vue agenda ajoutée à Réservation & Studios; sélection multi-studios mise à jour live; responsive OK.
 - DoD: tests manuels élève (réservé vs non réservé); QA navigation/labels; vérifier filtres multi-studios.
-- Progression: TODO
+- Progression: DONE (renommages appliqués, historique filtré sur réservations, vue agenda sur Réservation & Studios avec sélection multi-studios dynamique)
 - Priorité: P1
 
-## F4 – Catalogue élève premium : redirection achat
+## F4 – Catalogue élève premium : redirection achat **(DONE)**
 - User stories: En tant qu’élève non premium, si je clique une dalle marquée « Réservé aux membres premium » dans le catalogue, je suis redirigé vers la page d’achat premium.
 - Critères d’acceptation: clic sur une dalle premium non autorisée → redirection vers page achat premium; premium/payant déjà activé → accès normal; pas d’impact sur dalles non premium.
 - DoD: tests manuels premium/non-premium; QA parcours achat.
-- Progression: TODO
+- Progression: DONE (redir premium en place sur dalles protégées, accès normal sinon)
 - Priorité: P0
 
-## F5 – Facturation école : annulation/remboursement + ajustements crédits
+## F5 – Facturation école : annulation/remboursement + ajustements crédits **(DONE)**
 - User stories: 1) Admin peut « Annuler et rembourser » un achat de pack/abonnement. 2) Admin peut modifier manuellement les crédits d’un élève (ajout/retrait) avec application immédiate et traçabilité.
 - Critères d’acceptation: action annuler/rembourser disponible sur achats packs/abos; solde crédits mis à jour immédiatement; ajout/retrait de crédits possible avec justification loggée; historique/trace interne créé; pas de blocage sur autres statuts.
 - DoD: tests manuels sur packs/abos; vérification solde avant/après; log/trace présent; QA permissions.
-- Progression: TODO
+- Progression: DONE (remboursement pack/abo, rollback crédits restants, ledger/log opérateur, ajustements crédits manuels avec justification et mise à jour immédiate du solde)
 - Priorité: P0
 
-## F6 – Vue professeur : statuts financiers manuels
+## F6 – Vue professeur : statuts financiers manuels **(DONE)**
 - User stories: En tant que professeur/admin, je peux définir un statut financier manuel sur les éléments concernés (cours/factures ?) avec les statuts « Payé » ou « En retard », visibles et persistants.
 - Critères d’acceptation: statuts manuels accessibles et modifiables; persistance DB; visibilité claire dans la vue prof; pas d’écrasement par les flux automatiques existants.
 - DoD: tests manuels création/modification; revue modèle/DB; QA affichage.
-- Progression: TODO
+- Progression: DONE (statuts manuels Payé/En retard sur factures/achats, modale d’édition prof/admin, persistance DB et badges visibles sans écraser l’auto)
 - Priorité: P1
 
 ### Décisions / clarifications
