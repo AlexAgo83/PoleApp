@@ -247,6 +247,28 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 Éditer (admin)
               </Link>
             )}
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={listHref}
+                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                  viewMode === "list"
+                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                }`}
+              >
+                Liste
+              </Link>
+              <Link
+                href={agendaHref}
+                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                  viewMode === "agenda"
+                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                }`}
+              >
+                Agenda
+              </Link>
+            </div>
             <Link
               href={returnHref}
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -277,28 +299,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             )}
           </div>
         )}
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <Link
-            href={listHref}
-            className={`rounded-full border px-3 py-1.5 font-semibold transition ${
-              viewMode === "list"
-                ? "border-cyan-300/70 bg-cyan-500/20 text-white"
-                : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
-            }`}
-          >
-            Liste
-          </Link>
-          <Link
-            href={agendaHref}
-            className={`rounded-full border px-3 py-1.5 font-semibold transition ${
-              viewMode === "agenda"
-                ? "border-cyan-300/70 bg-cyan-500/20 text-white"
-                : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
-            }`}
-          >
-            Agenda
-          </Link>
-        </div>
         {studio.photoUrl && (
           <div className="w-full">
             <SafeImage

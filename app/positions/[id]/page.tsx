@@ -469,11 +469,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               </div>
               {canViewContent ? (
                 video ? (
-                  <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                  <div
+                    className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/30"
+                    style={{ aspectRatio: "16 / 9" }}
+                  >
                     <video
                       controls
                       poster={videoPoster}
-                      className="h-64 w-full bg-black object-cover"
+                      className="h-full w-full bg-black object-contain"
                       src={videoSrc}
                     >
                       Votre navigateur ne supporte pas la vidéo.
