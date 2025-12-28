@@ -34,6 +34,7 @@ export default async function NewCoursePage({
   const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
   const safeFrom = rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/app/teacher/courses/agenda?view=month";
+  const formId = "new-course-form";
 
   const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines, teacherFavoritesRows] = await Promise.all([
     prisma.user.findMany({
@@ -124,49 +125,68 @@ export default async function NewCoursePage({
           <div className="space-y-2">
             <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
               Professeur / Admin
-            </p>
-            <h1 className="text-3xl font-semibold text-white">Créer un cours</h1>
-            <p className="text-sm text-slate-200 max-w-2xl">
-              Sélectionne la date, les élèves présents, les positions abordées, puis ajoute des notes par élève/position pour mettre à jour la progression.
-            </p>
+              </p>
+              <h1 className="text-3xl font-semibold text-white">Créer un cours</h1>
+              <p className="text-sm text-slate-200 max-w-2xl">
+                Sélectionne la date, les élèves présents, les positions abordées, puis ajoute des notes par élève/position pour mettre à jour la progression.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={safeFrom ?? "/app/teacher/courses"}
+                className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Annuler
+              </Link>
+              <button
+                type="submit"
+                form={formId}
+                className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110"
+              >
+                Créer le cours
+              </button>
+              <Link
+                href={safeFrom ?? "/app/teacher/courses"}
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/15"
+              >
+                ← Retour cours
+              </Link>
+            </div>
           </div>
-          <Link
-            href={safeFrom ?? "/app/teacher/courses"}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/15"
-          >
-            ← Retour cours
-          </Link>
-        </div>
-      </header>
+        </header>
 
-      <section className="panel space-y-6 border-white/10 bg-slate-900/70 p-6 shadow-inner shadow-slate-900/40 md:p-8">
-        <CourseForm
-          students={students}
-          positions={positions}
-          action={createCourseAction}
-          teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : []}
-          defaultTeacherId={session.user.role === "TEACHER" ? teacherId : teachers[0]?.id}
-          studios={studios}
-          defaultStudioId={studios[0]?.id ?? null}
-          defaultPhotoUrl=""
-          disciplines={mergedDisciplines}
-          teacherFavorites={filteredTeacherFavorites.reduce<Record<string, string[]>>((acc, row) => {
-            if (!acc[row.teacherId]) acc[row.teacherId] = [];
-            acc[row.teacherId].push(row.positionId);
-            return acc;
-          }, {})}
-          studentsWithActiveInjury={studentsWithActiveInjury}
-          cancelHref={safeFrom ?? "/app/teacher/courses"}
-          progressByStudent={progresses.map((p) => ({
-            studentId: p.studentId,
-            positionId: p.positionId,
-            masteryLevel: p.masteryLevel,
-            learningStatus: p.learningStatus,
-            positionName: p.position.name,
-            positionType: p.position.type,
-          }))}
-        />
-      </section>
+        <div className="space-y-6 p-4 md:p-0">
+          <CourseForm
+            formId={formId}
+            groupedPanels
+            hideFooterActions
+            students={students}
+            positions={positions}
+            action={createCourseAction}
+            teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : []}
+            defaultTeacherId={session.user.role === "TEACHER" ? teacherId : teachers[0]?.id}
+            studios={studios}
+            defaultStudioId={studios[0]?.id ?? null}
+            defaultPhotoUrl=""
+            disciplines={mergedDisciplines}
+            teacherFavorites={filteredTeacherFavorites.reduce<Record<string, string[]>>((acc, row) => {
+              if (!acc[row.teacherId]) acc[row.teacherId] = [];
+              acc[row.teacherId].push(row.positionId);
+              return acc;
+            }, {})}
+            studentsWithActiveInjury={studentsWithActiveInjury}
+            cancelHref={safeFrom ?? "/app/teacher/courses"}
+            progressByStudent={progresses.map((p) => ({
+              studentId: p.studentId,
+              positionId: p.positionId,
+              masteryLevel: p.masteryLevel,
+              learningStatus: p.learningStatus,
+              positionName: p.position.name,
+              positionType: p.position.type,
+            }))}
+          />
+        </div>
+     
     </main>
   );
 }

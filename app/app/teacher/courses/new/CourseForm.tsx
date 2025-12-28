@@ -1,7 +1,7 @@
 "use client";
 
 import { MasteryLevel } from "@prisma/client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 type Student = { id: string; name: string | null; email: string };
@@ -43,6 +43,9 @@ type Props = {
   disciplines?: { name: string; color?: string }[];
   teacherFavorites?: Record<string, string[]>;
   studentsWithActiveInjury?: Record<string, number>;
+  formId?: string;
+  hideFooterActions?: boolean;
+  groupedPanels?: boolean;
 };
 
 type Note = {
@@ -78,6 +81,9 @@ export function CourseForm({
   disciplines = [],
   teacherFavorites = {},
   studentsWithActiveInjury = {},
+  formId,
+  hideFooterActions = false,
+  groupedPanels = false,
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -164,9 +170,20 @@ export function CourseForm({
     });
   };
 
+  const Panel = ({ children, title }: { children: ReactNode; title?: string }) =>
+    groupedPanels ? (
+      <section className="panel space-y-4 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
+        {title ? <h3 className="text-base font-semibold text-white">{title}</h3> : null}
+        {children}
+      </section>
+    ) : (
+      <section className="space-y-2 text-sm text-slate-200">{children}</section>
+    );
+
   return (
-    <form ref={formRef} action={action} className="space-y-5" onSubmit={handleSubmit}>
-      <div className="grid gap-4 md:grid-cols-2">
+    <form id={formId} ref={formRef} action={action} className="space-y-5" onSubmit={handleSubmit}>
+      <Panel title={groupedPanels ? "Infos du cours" : undefined}>
+        <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
           Date
           <input
@@ -253,63 +270,64 @@ export function CourseForm({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="text-sm text-slate-200">
-          Professeur (admin)
-          <select
-            name="teacherId"
-            value={selectedTeacherId}
-            onChange={(e) => setSelectedTeacherId(e.target.value)}
-            required
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          >
-            {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
-            {teachers.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name ?? t.email}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm text-slate-200">
-          Photo (URL, optionnelle)
-          <input
-            type="url"
-            name="photoUrl"
-            placeholder="https://…"
-            defaultValue={defaultPhotoUrl ?? ""}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-          <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
-        </label>
-      </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="text-sm text-slate-200">
+            Professeur (admin)
+            <select
+              name="teacherId"
+              value={selectedTeacherId}
+              onChange={(e) => setSelectedTeacherId(e.target.value)}
+              required
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            >
+              {!defaultTeacherId && <option value="">Sélectionner un professeur</option>}
+              {teachers.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name ?? t.email}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm text-slate-200">
+            Photo (URL, optionnelle)
+            <input
+              type="url"
+              name="photoUrl"
+              placeholder="https://…"
+              defaultValue={defaultPhotoUrl ?? ""}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
+          </label>
+        </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="text-sm text-slate-200">
-          Places maximum
-          <input
-            type="number"
-            name="maxSeats"
-            min={1}
-            defaultValue={defaultMaxSeats}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-          <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
-        </label>
-        <label className="text-sm text-slate-200">
-          Quota liste d&apos;attente
-          <input
-            type="number"
-            name="waitlistQuota"
-            min={0}
-            defaultValue={defaultWaitlistQuota ?? 0}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-          <p className="mt-1 text-xs text-slate-400">0 = illimité. Si plein et quota atteint, inscription refusée.</p>
-        </label>
-      </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="text-sm text-slate-200">
+            Places maximum
+            <input
+              type="number"
+              name="maxSeats"
+              min={1}
+              defaultValue={defaultMaxSeats}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">Par défaut 30 places.</p>
+          </label>
+          <label className="text-sm text-slate-200">
+            Quota liste d&apos;attente
+            <input
+              type="number"
+              name="waitlistQuota"
+              min={0}
+              defaultValue={defaultWaitlistQuota ?? 0}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">0 = illimité. Si plein et quota atteint, inscription refusée.</p>
+          </label>
+        </div>
+      </Panel>
 
-      <section className="space-y-2 text-sm text-slate-200">
+      <Panel title={groupedPanels ? "Élèves présents" : undefined}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span>Élèves présents (Forcer l'inscription / Pre-filtrer & générer)</span>
           {selectedStudents.length > 0 && (
@@ -361,9 +379,9 @@ export function CourseForm({
             );
           })}
         </div>
-      </section>
+      </Panel>
 
-      <section className="space-y-2 text-sm text-slate-200">
+      <Panel title={groupedPanels ? "Positions abordées" : undefined}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span>Positions abordées (Filtrées par discipline)</span>
           {selectedPositions.length > 0 && (
@@ -456,11 +474,11 @@ export function CourseForm({
                   onChange={(e) => {
                     setSelectedPositions((prev) =>
                       e.target.checked
-                      ? [...prev, position.id]
-                      : prev.filter((id) => id !== position.id)
-                  );
-                }}
-              />
+                        ? [...prev, position.id]
+                        : prev.filter((id) => id !== position.id)
+                    );
+                  }}
+                />
                 <span className="flex flex-col text-sm leading-tight">
                   <span className="flex items-center gap-2">
                     {position.name}
@@ -476,7 +494,7 @@ export function CourseForm({
             );
           })}
         </div>
-      </section>
+      </Panel>
 
       {selectedStudents.length > 0 && selectedPositions.length > 0 && (
         <NotesMatrix
@@ -507,23 +525,25 @@ export function CourseForm({
         <input type="hidden" name="teacherId" value={selectedTeacherId} />
       )}
 
-      <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-white/10 pt-4">
-        {cancelHref && (
-          <a
-            href={cancelHref}
-            className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+      {!hideFooterActions && (
+        <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-white/10 pt-4">
+          {cancelHref && (
+            <a
+              href={cancelHref}
+              className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+            >
+              Annuler
+            </a>
+          )}
+          <button
+            type="submit"
+            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={selectedPositions.length === 0}
           >
-            Annuler
-          </a>
-        )}
-        <button
-          type="submit"
-          className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={selectedPositions.length === 0}
-        >
-          {submitLabel}
-        </button>
-      </div>
+            {submitLabel}
+          </button>
+        </div>
+      )}
 
       {mounted &&
         showConfirm &&
