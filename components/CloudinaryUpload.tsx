@@ -42,6 +42,8 @@ export function CloudinaryUpload({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isVideo = resourceType === "video";
+  const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
+  const forceAuthenticated = resourceType === "video" || folder.startsWith(avatarFolder);
 
   const handleSelect = async (file?: File | null) => {
     if (!file) return;
@@ -65,8 +67,8 @@ export function CloudinaryUpload({
           folder,
           publicId: currentPublicId ?? undefined,
           resourceType,
-          deliveryType,
-          accessMode: deliveryType === "authenticated" ? "authenticated" : undefined,
+          deliveryType: forceAuthenticated ? "authenticated" : deliveryType,
+          accessMode: forceAuthenticated || deliveryType === "authenticated" ? "authenticated" : undefined,
           transformation,
         }),
       });
