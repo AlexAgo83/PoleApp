@@ -37,6 +37,7 @@
 - [x] Audit affichage avatars : vues principales élève/prof/admin passent par `resolveAvatarUrl` + fallback signé par défaut
 - [x] Upload avatars : taille max 4 Mo, dimensions 2160x2160 max, formats jpg/png/webp contrôlés côté client
 - [x] Uploads forcés en mode authenticated (images/vidéos) pour éviter les assets publics
+- [x] Suppression avatar : si `avatarPublicId` est nul, on reste sur le placeholder (pas de fallback seed)
 
 ### Tâches additionnelles (avatars affichage)
 - Audit des vues/listes/cartes utilisant encore `avatarUrl` (élève/prof/admin) et passage à `resolveAvatarUrl`/`generateSignedUrl` avec fallback par défaut.
