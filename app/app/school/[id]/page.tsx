@@ -17,6 +17,10 @@ function formatWeekKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+function formatMonthKey(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 type PageProps =
   | { params: { id: string }; searchParams?: Promise<Record<string, string | string[] | undefined>> }
   | { params: Promise<{ id?: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> };
@@ -37,7 +41,10 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const disciplineFilter = resolvedSearch?.discipline?.toString().trim() ?? "";
   const viewParam = resolvedSearch?.view?.toString() ?? "";
   const viewMode: "list" | "agenda" = viewParam === "agenda" ? "agenda" : "list";
+  const rangeParam = resolvedSearch?.range?.toString();
+  const agendaRange: "week" | "month" = rangeParam === "month" ? "month" : "week";
   const weekParam = resolvedSearch?.week?.toString();
+  const monthParam = resolvedSearch?.month?.toString();
   const q = typeof qRaw === "string" ? qRaw.trim() : "";
   const currentPage = Math.max(1, Number.isFinite(Number(pageRaw)) ? Number(pageRaw) : 1);
   const pageSize = 5;
@@ -127,7 +134,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
     return d;
   });
   const agendaCourses =
-    viewMode === "agenda"
+    viewMode === "agenda" && agendaRange === "week"
       ? await prisma.course.findMany({
           where: {
             ...baseWhere,
@@ -206,15 +213,91 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
     discipline: disciplineFilter || undefined,
     q: q || undefined,
   };
-  const agendaBaseFrom = `/app/school/${studioId}?view=agenda${teacherFilter ? `&teacher=${teacherFilter}` : ""}${disciplineFilter ? `&discipline=${encodeURIComponent(disciplineFilter)}` : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
-  const toggleParams = new URLSearchParams();
-  if (q) toggleParams.set("q", q);
-  if (teacherFilter) toggleParams.set("teacher", teacherFilter);
-  if (disciplineFilter) toggleParams.set("discipline", disciplineFilter);
-  const listHref = `/app/school/${studioId}${toggleParams.toString() ? `?${toggleParams.toString()}` : ""}`;
-  const agendaParams = new URLSearchParams(toggleParams);
+  const monthBase = monthParam && /^\d{4}-\d{2}$/.test(monthParam) ? monthParam : formatMonthKey(new Date());
+  const monthDate = new Date(`${monthBase}-01T00:00:00`);
+  const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0, 23, 59, 59, 999);
+  const daysInMonth = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0).getDate();
+  const monthValue = formatMonthKey(monthStart);
+  const prevMonthDate = new Date(monthStart);
+  prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+  const prevMonthValue = formatMonthKey(prevMonthDate);
+  const nextMonthDate = new Date(monthStart);
+  nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+  const nextMonthValue = formatMonthKey(nextMonthDate);
+  const agendaMonthCourses =
+    viewMode === "agenda" && agendaRange === "month"
+      ? await prisma.course.findMany({
+          where: {
+            ...baseWhere,
+            date: { gte: monthStart, lte: monthEnd },
+          },
+          include: {
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true } },
+            ...(isStudentRole
+              ? {
+                  attendances: {
+                    where: { studentId: session.user.id },
+                    select: { status: true, waitlistRank: true },
+                  },
+                }
+              : {}),
+          },
+          orderBy: { date: "asc" },
+        })
+      : [];
+  const monthDays =
+    agendaRange === "month"
+      ? Array.from({ length: daysInMonth }).map((_, idx) => {
+          const date = new Date(monthStart);
+          date.setDate(idx + 1);
+          const dayCourses = agendaMonthCourses.filter((c) => new Date(c.date).toDateString() === date.toDateString());
+          return { date, courses: dayCourses };
+        })
+      : [];
+  const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const courseBasePath = userRole === "STUDENT" ? "/app/student/courses" : "/app/teacher/courses";
+  const baseParams = new URLSearchParams();
+  if (q) baseParams.set("q", q);
+  if (teacherFilter) baseParams.set("teacher", teacherFilter);
+  if (disciplineFilter) baseParams.set("discipline", disciplineFilter);
+  const listHref = `/app/school/${studioId}${baseParams.toString() ? `?${baseParams.toString()}` : ""}`;
+  const agendaParams = new URLSearchParams(baseParams);
   agendaParams.set("view", "agenda");
+  agendaParams.set("range", agendaRange);
+  if (agendaRange === "month") {
+    agendaParams.set("month", monthValue);
+  } else {
+    agendaParams.set("week", weekValue);
+  }
   const agendaHref = `/app/school/${studioId}?${agendaParams.toString()}`;
+  const weekRangeParams = new URLSearchParams(baseParams);
+  weekRangeParams.set("view", "agenda");
+  weekRangeParams.set("range", "week");
+  weekRangeParams.set("week", weekValue);
+  const weekRangeHref = `/app/school/${studioId}?${weekRangeParams.toString()}`;
+  const monthRangeParams = new URLSearchParams(baseParams);
+  monthRangeParams.set("view", "agenda");
+  monthRangeParams.set("range", "month");
+  monthRangeParams.set("month", monthValue);
+  const monthRangeHref = `/app/school/${studioId}?${monthRangeParams.toString()}`;
+  const monthNavHref = (targetMonth: string) => {
+    const params = new URLSearchParams(baseParams);
+    params.set("view", "agenda");
+    params.set("range", "month");
+    params.set("month", targetMonth);
+    return `/app/school/${studioId}?${params.toString()}`;
+  };
+  const agendaBaseFromParams = new URLSearchParams(baseParams);
+  agendaBaseFromParams.set("view", "agenda");
+  agendaBaseFromParams.set("range", agendaRange);
+  if (agendaRange === "month") {
+    agendaBaseFromParams.set("month", monthValue);
+  } else {
+    agendaBaseFromParams.set("week", weekValue);
+  }
+  const agendaBaseFrom = `/app/school/${studioId}?${agendaBaseFromParams.toString()}`;
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -324,6 +407,12 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
           >
             <form method="get" className="space-y-3">
               <input type="hidden" name="view" value="agenda" />
+              <input type="hidden" name="range" value={agendaRange} />
+              {agendaRange === "week" ? (
+                <input type="hidden" name="week" value={weekValue} />
+              ) : (
+                <input type="hidden" name="month" value={monthValue} />
+              )}
               <label className="block text-sm text-slate-200">
                 Recherche (titre)
                 <input
@@ -381,29 +470,149 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 >
                   Réinitialiser
                 </Link>
+                </div>
+              </form>
+            </FilterPanel>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={weekRangeHref}
+                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                  agendaRange === "week"
+                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                }`}
+              >
+                Vue semaine
+              </Link>
+              <Link
+                href={monthRangeHref}
+                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                  agendaRange === "month"
+                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                }`}
+              >
+                Vue mois
+              </Link>
+            </div>
+            {agendaRange === "month" ? (
+              <span className="text-slate-200">
+                {agendaMonthCourses.length} cours sur le mois affiché
+              </span>
+            ) : null}
+          </div>
+          {agendaRange === "week" ? (
+            <>
+              {isStudentRole && studentWeekDays ? (
+                <StudentWeekView
+                  initialWeek={weekValue}
+                  initialPrev={prevWeekValue}
+                  initialNext={nextWeekValue}
+                  initialDays={studentWeekDays}
+                  filters={agendaFilters}
+                  baseFrom={agendaBaseFrom}
+                />
+              ) : null}
+              {!isStudentRole && staffWeekDays ? (
+                <TeacherWeekView
+                  initialWeek={weekValue}
+                  initialPrev={prevWeekValue}
+                  initialNext={nextWeekValue}
+                  initialDays={staffWeekDays}
+                  filters={agendaFilters}
+                  baseFrom={agendaBaseFrom}
+                />
+              ) : null}
+            </>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white">
+                    {monthLabel}
+                  </span>
+                  <span className="text-slate-200">{agendaMonthCourses.length} cours ce mois</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <Link
+                    href={monthNavHref(prevMonthValue)}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10"
+                  >
+                    ← Mois précédent
+                  </Link>
+                  <Link
+                    href={monthNavHref(nextMonthValue)}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10"
+                  >
+                    Mois suivant →
+                  </Link>
+                </div>
               </div>
-            </form>
-          </FilterPanel>
-          {isStudentRole && studentWeekDays ? (
-            <StudentWeekView
-              initialWeek={weekValue}
-              initialPrev={prevWeekValue}
-              initialNext={nextWeekValue}
-              initialDays={studentWeekDays}
-              filters={agendaFilters}
-              baseFrom={agendaBaseFrom}
-            />
-          ) : null}
-          {!isStudentRole && staffWeekDays ? (
-            <TeacherWeekView
-              initialWeek={weekValue}
-              initialPrev={prevWeekValue}
-              initialNext={nextWeekValue}
-              initialDays={staffWeekDays}
-              filters={agendaFilters}
-              baseFrom={agendaBaseFrom}
-            />
-          ) : null}
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
+                {monthDays.map((day) => {
+                  const isPastDay = day.date < new Date(new Date().setHours(0, 0, 0, 0));
+                  return (
+                    <div
+                      key={day.date.toISOString()}
+                      className="rounded-xl border border-white/10 bg-white/5 p-2 text-left"
+                    >
+                      <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+                        <span className="flex items-center gap-1">
+                          <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
+                            {day.date.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
+                          </span>
+                          <span className={isPastDay ? "text-slate-400" : undefined}>{day.date.getDate()}</span>
+                        </span>
+                        <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
+                      </div>
+                      {day.courses.length === 0 ? (
+                        <p className="text-[11px] text-slate-400">Aucun cours</p>
+                      ) : (
+                        <>
+                          {day.courses.slice(0, 3).map((course) => {
+                            const past = isPastCourse(course.date as Date, course.durationMinutes);
+                            const courseDate = new Date(course.date);
+                            return (
+                              <Link
+                                key={course.id}
+                                href={`${courseBasePath}/${course.id}?from=${encodeURIComponent(agendaBaseFrom)}`}
+                                className={`relative mt-1 flex items-start gap-2 rounded-lg border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/10 ${
+                                  past ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80" : "border-white/10 bg-white/10 text-white"
+                                }`}
+                              >
+                                <div className="flex-1 space-y-0.5 overflow-hidden pr-4">
+                                  <p className="text-[10px] text-cyan-100">
+                                    {courseDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
+                                    {course.durationMinutes ? `${course.durationMinutes} min` : "60 min"}
+                                  </p>
+                                  <p className="truncate text-[11px] font-semibold text-white">
+                                    {course.title ?? "Cours"}
+                                  </p>
+                                  <p className="truncate text-[10px] text-cyan-100">
+                                    {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                                  </p>
+                                  <p className="truncate text-[10px] text-slate-200">
+                                    {course.studio?.name ?? "Studio"}
+                                  </p>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                          {day.courses.length > 3 && (
+                            <p className="mt-1 text-[10px] text-slate-300">+{day.courses.length - 3} autres</p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {agendaMonthCourses.length === 0 && (
+                <p className="text-sm text-slate-200">Aucun cours prévu pour ce mois.</p>
+              )}
+            </div>
+          )}
         </section>
       ) : (
         <section className="panel p-4 md:p-6">
