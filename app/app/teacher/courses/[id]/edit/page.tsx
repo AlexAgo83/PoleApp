@@ -134,6 +134,13 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
     }
     return merged.length > 0 ? merged : fallbackDisciplines;
   })();
+  const studentsWithActiveInjury = (await prisma.studentInjury.findMany({
+    where: { studentId: { in: students.map((s) => s.id) }, isActive: true },
+    select: { studentId: true },
+  })).reduce<Record<string, number>>((acc, row) => {
+    acc[row.studentId] = (acc[row.studentId] ?? 0) + 1;
+    return acc;
+  }, {});
 
   const defaultSelectedStudents = course.attendances.map((a) => a.studentId);
   const defaultSelectedPositions = course.positions.map((p) => p.positionId);
