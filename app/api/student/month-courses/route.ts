@@ -113,6 +113,8 @@ export async function GET(req: Request) {
                 discipline: true,
                 date: true,
                 durationMinutes: true,
+                isVirtual: true,
+                _count: { select: { positions: true } },
                 teacher: { select: { name: true, email: true } },
                 studio: { select: { name: true } },
               },
@@ -135,6 +137,8 @@ export async function GET(req: Request) {
           include: {
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
+            isVirtual: true,
+            _count: { select: { positions: true } },
             attendances: {
               where: { studentId: session.user.id },
               select: { id: true, status: true, waitlistRank: true },
@@ -184,6 +188,8 @@ export async function GET(req: Request) {
       durationMinutes: a.course.durationMinutes,
       teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
       studioName: a.course.studio?.name ?? "Studio non renseigné",
+      isVirtual: a.course.isVirtual,
+      positionsCount: a.course._count.positions,
       myStatus: a.myAttendance?.status ?? null,
       waitlistRank: a.myAttendance?.waitlistRank ?? null,
       past: isPastCourse(a.course.date, a.course.durationMinutes),
