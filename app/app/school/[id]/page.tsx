@@ -10,6 +10,7 @@ import { WeekView as TeacherWeekView } from "@/app/app/teacher/courses/agenda/We
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { StudioMonthView } from "./StudioMonthView";
 
 export const dynamic = "force-dynamic";
 
@@ -256,7 +257,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
           return { date, courses: dayCourses };
         })
       : [];
-  const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const courseBasePath = userRole === "STUDENT" ? "/app/student/courses" : "/app/teacher/courses";
   const baseParams = new URLSearchParams();
   if (q) baseParams.set("q", q);
@@ -282,13 +282,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   monthRangeParams.set("range", "month");
   monthRangeParams.set("month", monthValue);
   const monthRangeHref = `/app/school/${studioId}?${monthRangeParams.toString()}`;
-  const monthNavHref = (targetMonth: string) => {
-    const params = new URLSearchParams(baseParams);
-    params.set("view", "agenda");
-    params.set("range", "month");
-    params.set("month", targetMonth);
-    return `/app/school/${studioId}?${params.toString()}`;
-  };
   const agendaBaseFromParams = new URLSearchParams(baseParams);
   agendaBaseFromParams.set("view", "agenda");
   agendaBaseFromParams.set("range", agendaRange);
@@ -298,6 +291,36 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
     agendaBaseFromParams.set("week", weekValue);
   }
   const agendaBaseFrom = `/app/school/${studioId}?${agendaBaseFromParams.toString()}`;
+  const monthCells =
+    agendaRange === "month"
+      ? [
+          ...Array.from({ length: (monthStart.getDay() === 0 ? 7 : monthStart.getDay()) - 1 }).map(() => ({
+            day: undefined,
+            courses: [],
+          })),
+          ...monthDays.map((day) => {
+            const attendance = (course: (typeof agendaMonthCourses)[number]) =>
+              isStudentRole
+                ? (course as { attendances?: { status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[] }).attendances?.[0]
+                : undefined;
+            return {
+              day: day.date.getDate(),
+              courses: day.courses.map((course) => ({
+                id: course.id,
+                courseId: course.id,
+                title: course.title,
+                date: course.date instanceof Date ? course.date.toISOString() : course.date,
+                durationMinutes: course.durationMinutes,
+                teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
+                studioName: course.studio?.name ?? "Studio",
+                myStatus: attendance(course)?.status ?? null,
+                waitlistRank: attendance(course)?.waitlistRank ?? null,
+                past: isPastCourse(course.date as Date, course.durationMinutes),
+              })),
+            };
+          }),
+        ]
+      : [];
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -526,92 +549,22 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               ) : null}
             </>
           ) : (
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white">
-                    {monthLabel}
-                  </span>
-                  <span className="text-slate-200">{agendaMonthCourses.length} cours ce mois</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <Link
-                    href={monthNavHref(prevMonthValue)}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10"
-                  >
-                    ← Mois précédent
-                  </Link>
-                  <Link
-                    href={monthNavHref(nextMonthValue)}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10"
-                  >
-                    Mois suivant →
-                  </Link>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
-                {monthDays.map((day) => {
-                  const isPastDay = day.date < new Date(new Date().setHours(0, 0, 0, 0));
-                  return (
-                    <div
-                      key={day.date.toISOString()}
-                      className="rounded-xl border border-white/10 bg-white/5 p-2 text-left"
-                    >
-                      <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                        <span className="flex items-center gap-1">
-                          <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
-                            {day.date.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
-                          </span>
-                          <span className={isPastDay ? "text-slate-400" : undefined}>{day.date.getDate()}</span>
-                        </span>
-                        <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
-                      </div>
-                      {day.courses.length === 0 ? (
-                        <p className="text-[11px] text-slate-400">Aucun cours</p>
-                      ) : (
-                        <>
-                          {day.courses.slice(0, 3).map((course) => {
-                            const past = isPastCourse(course.date as Date, course.durationMinutes);
-                            const courseDate = new Date(course.date);
-                            return (
-                              <Link
-                                key={course.id}
-                                href={`${courseBasePath}/${course.id}?from=${encodeURIComponent(agendaBaseFrom)}`}
-                                className={`relative mt-1 flex items-start gap-2 rounded-lg border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/10 ${
-                                  past ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80" : "border-white/10 bg-white/10 text-white"
-                                }`}
-                              >
-                                <div className="flex-1 space-y-0.5 overflow-hidden pr-4">
-                                  <p className="text-[10px] text-cyan-100">
-                                    {courseDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
-                                    {course.durationMinutes ? `${course.durationMinutes} min` : "60 min"}
-                                  </p>
-                                  <p className="truncate text-[11px] font-semibold text-white">
-                                    {course.title ?? "Cours"}
-                                  </p>
-                                  <p className="truncate text-[10px] text-cyan-100">
-                                    {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                                  </p>
-                                  <p className="truncate text-[10px] text-slate-200">
-                                    {course.studio?.name ?? "Studio"}
-                                  </p>
-                                </div>
-                              </Link>
-                            );
-                          })}
-                          {day.courses.length > 3 && (
-                            <p className="mt-1 text-[10px] text-slate-300">+{day.courses.length - 3} autres</p>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              {agendaMonthCourses.length === 0 && (
-                <p className="text-sm text-slate-200">Aucun cours prévu pour ce mois.</p>
-              )}
-            </div>
+            <StudioMonthView
+              initialMonth={monthValue}
+              initialPrev={prevMonthValue}
+              initialNext={nextMonthValue}
+              initialCells={monthCells}
+              hasCourses={agendaMonthCourses.length > 0}
+              baseFrom={agendaBaseFrom}
+              courseBasePath={courseBasePath}
+              role={userRole}
+              filters={{
+                teacher: teacherFilter || undefined,
+                studio: studioId,
+                discipline: disciplineFilter || undefined,
+                q: q || undefined,
+              }}
+            />
           )}
         </section>
       ) : (
