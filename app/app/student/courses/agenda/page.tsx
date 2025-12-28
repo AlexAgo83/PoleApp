@@ -43,7 +43,7 @@ export default async function StudentCoursesAgendaPage({
     month?: string;
     studio?: string;
     teacher?: string;
-    mine?: string;
+    mine?: string | string[];
     view?: string;
     schools?: string;
     week?: string;
@@ -75,12 +75,13 @@ export default async function StudentCoursesAgendaPage({
   const weekParam =
     typeof resolved.week === "string" && resolved.week.length > 0 ? resolved.week : undefined;
   const schoolsParam = resolved.schools === "all";
-  const mineFilter =
-    resolved.mine === "true" ||
-    resolved.mine === "1" ||
-    resolved.mine === "on" ||
-    resolved.mine === "";
-  const onlyMine = mineFilter;
+  const mineRaw = resolved.mine;
+  const mineValues = Array.isArray(mineRaw) ? mineRaw : mineRaw ? [mineRaw] : [];
+  const mineLast = mineValues.length > 0 ? mineValues[mineValues.length - 1] : undefined;
+  const onlyMine =
+    mineLast === undefined
+      ? true
+      : mineLast === "true" || mineLast === "1" || mineLast === "on" || mineLast === "";
   const fromParam = typeof resolved.from === "string" ? resolved.from : undefined;
   const toParam = typeof resolved.to === "string" ? resolved.to : undefined;
   const q = resolved.q?.toString().trim() ?? "";
@@ -656,6 +657,7 @@ export default async function StudentCoursesAgendaPage({
               </select>
             </label>
             <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input type="hidden" name="mine" value="false" />
               <input
                 type="checkbox"
                 name="mine"

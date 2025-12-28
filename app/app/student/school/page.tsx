@@ -60,7 +60,7 @@ export default async function StudentSchoolPage({
     week?: string;
     studio?: string | string[];
     teacher?: string;
-    mine?: string;
+    mine?: string | string[];
     from?: string;
     to?: string;
     q?: string;
@@ -200,11 +200,13 @@ export default async function StudentSchoolPage({
   const fromParam = typeof params.from === "string" ? params.from : undefined;
   const toParam = typeof params.to === "string" ? params.to : undefined;
   const q = params.q?.toString().trim() ?? "";
+  const mineRaw = params.mine;
+  const mineValues = Array.isArray(mineRaw) ? mineRaw : mineRaw ? [mineRaw] : [];
+  const mineLast = mineValues.length > 0 ? mineValues[mineValues.length - 1] : undefined;
   const onlyMine =
-    params.mine === "true" ||
-    params.mine === "1" ||
-    params.mine === "on" ||
-    params.mine === "";
+    mineLast === undefined
+      ? true
+      : mineLast === "true" || mineLast === "1" || mineLast === "on" || mineLast === "";
   const activeFilters = [
     view,
     monthParam,
@@ -650,6 +652,7 @@ export default async function StudentSchoolPage({
               />
             </label>
             <label className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200">
+              <input type="hidden" name="mine" value="false" />
               <input
                 type="checkbox"
                 name="mine"
