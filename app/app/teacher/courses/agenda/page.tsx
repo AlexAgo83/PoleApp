@@ -204,6 +204,10 @@ export default async function CoursesAgendaPage({
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
   const initialMonthCells = calendarCells.map((cell) => ({
     day: cell.day,
+    isoDate:
+      typeof cell.day === "number"
+        ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString()
+        : undefined,
     courses: (cell.courses ?? []).map((course) => ({
       id: course.id,
       title: course.title,
@@ -508,14 +512,6 @@ export default async function CoursesAgendaPage({
           >
             Mensuelle
           </Link>
-          {view === "week" && (
-            <Link
-              href={buildViewHref("week", formatWeekKey(new Date()))}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-slate-200 transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Semaine actuelle
-            </Link>
-          )}
         </div>
       </section>
 

@@ -400,6 +400,8 @@ export async function deleteCourseAction(formData: FormData) {
     await tx.courseAttendance.deleteMany({ where: { courseId: parsed.data.courseId } });
     await tx.coursePosition.deleteMany({ where: { courseId: parsed.data.courseId } });
     await tx.courseNote.deleteMany({ where: { courseId: parsed.data.courseId } });
+    // cleanup invoices linked to the course to avoid FK errors
+    await tx.invoice.deleteMany({ where: { courseId: parsed.data.courseId } });
     await tx.course.delete({ where: { id: parsed.data.courseId } });
   });
 

@@ -26,6 +26,7 @@ type Props = {
   initialPrev: string;
   initialNext: string;
   initialDays: Day[];
+  compact?: boolean;
 };
 
 function formatDuration(minutes: number) {
@@ -37,12 +38,13 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
-export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays }: Props) {
+export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays, compact }: Props) {
   const [days, setDays] = useState<Day[]>(initialDays);
   const [week, setWeek] = useState<string | null>(initialWeek);
   const [prev, setPrev] = useState(initialPrev);
   const [next, setNext] = useState(initialNext);
   const [isPending, startTransition] = useTransition();
+  const totalCourses = useMemo(() => days.reduce((acc, d) => acc + d.courses.length, 0), [days]);
 
   const currentWeekKey = useMemo(() => {
     const d = new Date();
@@ -90,26 +92,70 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
     return `Semaine du ${d.toLocaleDateString("fr-FR")} au ${end.toLocaleDateString("fr-FR")}`;
   }, [week]);
 
+  const containerClass = compact ? "rounded-2xl border border-white/0 bg-transparent p-0" : "panel p-6";
+
   return (
-    <section className="panel p-6">
-      <div className="flex items-center justify-between text-lg font-semibold text-white">
+    <section className={containerClass}>
+      <div className="flex flex-wrap items-center justify-between gap-2 text-lg font-semibold text-white">
         <span>Vue semaine</span>
-        <span className="text-sm font-normal text-slate-300">{label}</span>
+        <span className="text-sm font-normal text-slate-200">{label}</span>
+      </div>
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-sm text-white">
+        <form onSubmit={handlePrev} className="inline-flex">
+          <input type="hidden" name="week" value={prev} />
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
+            disabled={isPending}
+          >
+            Précédente
+          </button>
+        </form>
+        <form onSubmit={handleReset} className="inline-flex">
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
+            disabled={isPending || week === currentWeekKey}
+          >
+            Actuelle
+          </button>
+        </form>
+        <form onSubmit={handleNext} className="inline-flex">
+          <input type="hidden" name="week" value={next} />
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
+            disabled={isPending}
+          >
+            Suivante
+          </button>
+        </form>
+        <span className="text-xs font-normal text-cyan-100">{totalCourses} cours sur la semaine affichée</span>
       </div>
       <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
         {days.map((day) => {
+          const isToday =
+            new Date(day.isoDate).toDateString() === new Date(new Date().setHours(0, 0, 0, 0)).toDateString();
           const hideOnMobile = day.courses.length === 0 ? "hidden md:block" : "";
           return (
             <div
               key={day.isoDate}
-              className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
+              className={`rounded-xl p-2 text-sm text-slate-200 ${
+                isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
+              } ${hideOnMobile}`}
             >
               <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                 <span className="flex items-center gap-1">
-                  <span className={`text-[10px] uppercase tracking-wide md:text-xs ${day.isPast ? "text-slate-400" : "text-cyan-100"}`}>
+                  <span
+                    className={`text-[10px] uppercase tracking-wide md:text-xs ${
+                      day.isPast && !isToday ? "text-slate-400" : "text-cyan-100"
+                    } ${isToday ? "font-semibold" : ""}`}
+                  >
                     {day.label}
                   </span>
-                  <span className={day.isPast ? "text-slate-400" : undefined}>{day.day}</span>
+                  <span className={`${day.isPast && !isToday ? "text-slate-400" : ""} ${isToday ? "font-bold text-white" : ""}`}>
+                    {day.day}
+                  </span>
                 </span>
                 <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
               </div>
@@ -155,39 +201,8 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                 })}
               </div>
             </div>
-          );
-        })}
-      </div>
-      <div className="mt-4 flex items-center justify-center gap-3 text-sm text-white">
-        <form onSubmit={handlePrev} className="inline-flex">
-          <input type="hidden" name="week" value={prev} />
-          <button
-            type="submit"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
-            disabled={isPending}
-          >
-            ← Semaine précédente
-          </button>
-        </form>
-        <form onSubmit={handleReset} className="inline-flex">
-          <button
-            type="submit"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
-            disabled={isPending || week === currentWeekKey}
-          >
-            Semaine actuelle
-          </button>
-        </form>
-        <form onSubmit={handleNext} className="inline-flex">
-          <input type="hidden" name="week" value={next} />
-          <button
-            type="submit"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
-            disabled={isPending}
-          >
-            Semaine suivante →
-          </button>
-        </form>
+            );
+          })}
       </div>
       {isPending && (
         <div className="mt-2 text-center text-xs text-slate-300">Chargement…</div>

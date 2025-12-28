@@ -140,18 +140,28 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
       </div>
       <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
         {days.map((day) => {
+          const isToday =
+            new Date(day.isoDate).toDateString() === new Date(new Date().setHours(0, 0, 0, 0)).toDateString();
           const hideOnMobile = !showEmptyDays && day.courses.length === 0 ? "hidden md:block" : "";
           return (
             <div
               key={day.isoDate}
-              className={`rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200 ${hideOnMobile}`}
+              className={`rounded-xl p-2 text-sm text-slate-200 ${
+                isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
+              } ${hideOnMobile}`}
             >
               <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                 <span className="flex items-center gap-1">
-                  <span className={`text-[10px] uppercase tracking-wide md:text-xs ${day.isPast ? "text-slate-400" : "text-cyan-100"}`}>
+                  <span
+                    className={`text-[10px] uppercase tracking-wide md:text-xs ${
+                      day.isPast && !isToday ? "text-slate-400" : "text-cyan-100"
+                    } ${isToday ? "font-semibold" : ""}`}
+                  >
                     {day.label}
                   </span>
-                  <span className={day.isPast ? "text-slate-400" : undefined}>{day.day}</span>
+                  <span className={`${day.isPast && !isToday ? "text-slate-400" : ""} ${isToday ? "font-bold text-white" : ""}`}>
+                    {day.day}
+                  </span>
                 </span>
                 <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
               </div>

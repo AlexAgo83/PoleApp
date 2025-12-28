@@ -375,6 +375,10 @@ export default async function StudentSchoolPage({
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
   const monthCells = cells.map((cell) => ({
     day: cell.day,
+    isoDate:
+      typeof cell.day === "number"
+        ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString()
+        : undefined,
     courses: (cell.attendances ?? []).map((a) => ({
       id: a.course.id,
       courseId: a.courseId,
@@ -392,7 +396,7 @@ export default async function StudentSchoolPage({
   const legendItems = [
     { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
     { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
-    { label: "Liste d’attente (rang, quota 14)", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+    { label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
     { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
   ];
   const buildViewHref = (mode: "week" | "month") => {
@@ -484,7 +488,7 @@ export default async function StudentSchoolPage({
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-base font-semibold text-white">{studio.name}</p>
                   <Link
-                    href={`/app/school/${studio.id}`}
+                    href={`/app/school/${studio.id}?view=agenda&range=month`}
                     className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                   >
                     Voir le studio

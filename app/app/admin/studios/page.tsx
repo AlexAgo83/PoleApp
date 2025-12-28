@@ -252,7 +252,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                             ✏️ Éditer
                           </Link>
                           <Link
-                            href={`/app/school/${studio.id}`}
+                            href={`/app/school/${studio.id}?view=agenda&range=month`}
                             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                           >
                             Voir la fiche

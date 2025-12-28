@@ -171,6 +171,10 @@ export async function GET(req: Request) {
   const monthValue = formatMonthKey(monthStart);
   const responseCells = cells.map((cell) => ({
     day: cell.day,
+    isoDate:
+      typeof cell.day === "number"
+        ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString()
+        : undefined,
     courses: (cell.attendances ?? []).map((a) => ({
       id: a.id,
       courseId: a.courseId,

@@ -17,6 +17,7 @@ type MonthCourse = {
 
 type MonthCell = {
   day?: number;
+  isoDate?: string;
   courses: MonthCourse[];
 };
 
@@ -124,23 +125,38 @@ export function MonthView({
         {cells.map((cell, idx) => {
           const weekDayIndex = (idx % 7) + 1;
           const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
-          const cellDate = cell.day ? new Date(`${month}-${String(cell.day).padStart(2, "0")}T00:00:00`) : null;
+          const cellDate = cell.isoDate
+            ? new Date(cell.isoDate)
+            : cell.day
+              ? new Date(`${month}-${String(cell.day).padStart(2, "0")}T00:00:00`)
+              : null;
           const isPastDay = cellDate ? cellDate < new Date(new Date().setHours(0, 0, 0, 0)) : false;
+          const isToday = cellDate?.toDateString() === new Date(new Date().setHours(0, 0, 0, 0)).toDateString();
           const hideOnMobileMonth = !cell.courses || cell.courses.length === 0 ? "hidden sm:block" : "";
 
           return (
             <div
               key={`${month}-${idx}`}
-              className={`rounded-xl border border-white/10 bg-white/5 p-2 text-left ${hideOnMobileMonth} ${
+              className={`rounded-xl p-2 text-left ${hideOnMobileMonth} ${
                 !cell.courses || cell.courses.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
+              } ${
+                isToday
+                  ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30"
+                  : "border border-white/10 bg-white/5"
               }`}
             >
               <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
                 <span className="flex items-center gap-1">
-                  <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
+                  <span
+                    className={`text-[10px] uppercase tracking-wide md:text-xs ${
+                      isPastDay && !isToday ? "text-slate-400" : "text-cyan-100"
+                    } ${isToday ? "font-semibold" : ""}`}
+                  >
                     {label}
                   </span>
-                  <span className={isPastDay ? "text-slate-400" : undefined}>{cell.day ?? "—"}</span>
+                  <span className={`${isPastDay && !isToday ? "text-slate-400" : ""} ${isToday ? "font-bold text-white" : ""}`}>
+                    {cell.day ?? "—"}
+                  </span>
                 </span>
                 <span className="text-[11px] text-cyan-100">{(cell.courses?.length ?? 0)} cours</span>
               </div>

@@ -139,21 +139,27 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
       <div className="mt-4">
         <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
           {days.map((day) => {
+            const isToday =
+              new Date(day.isoDate).toDateString() === new Date(new Date().setHours(0, 0, 0, 0)).toDateString();
             return (
               <div
                 key={day.isoDate}
-                className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-slate-200"
+                className={`rounded-xl p-2 text-sm text-slate-200 ${
+                  isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
+                }`}
               >
                 <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
                   <span className="flex items-center gap-1">
                     <span
                       className={`text-[10px] uppercase tracking-wide md:text-xs ${
-                        day.isPast ? "text-slate-400" : "text-cyan-100"
-                      }`}
+                        day.isPast && !isToday ? "text-slate-400" : "text-cyan-100"
+                      } ${isToday ? "font-semibold" : ""}`}
                     >
                       {day.label}
                     </span>
-                    <span className={day.isPast ? "text-slate-400" : undefined}>{day.day}</span>
+                    <span className={`${day.isPast && !isToday ? "text-slate-400" : ""} ${isToday ? "font-bold text-white" : ""}`}>
+                      {day.day}
+                    </span>
                   </span>
                   <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
                 </div>
