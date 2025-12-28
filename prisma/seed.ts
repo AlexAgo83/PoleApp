@@ -999,13 +999,20 @@ async function seedGameSessions(students: { id: string; schoolId: string }[]) {
 }
 
 async function seedGlobalSettingsAndOffers() {
+  const timezone = process.env.GLOBAL_TIMEZONE || "Europe/Paris";
+  const icsAlarm = Number.parseInt(process.env.GLOBAL_ICS_ALARM_MINUTES || "30", 10);
   await prisma.globalSetting.upsert({
     where: { id: "global" },
-    update: {},
+    update: {
+      timezone,
+      icsDefaultAlarmMinutes: Number.isFinite(icsAlarm) ? icsAlarm : 30,
+    },
     create: {
       id: "global",
       defaultVatPercent: 20,
       currency: "EUR",
+      timezone,
+      icsDefaultAlarmMinutes: Number.isFinite(icsAlarm) ? icsAlarm : 30,
     },
   });
 

@@ -9,6 +9,31 @@ function formatUtc(date: Date) {
   return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 }
 
+function formatWithTz(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("fr-FR", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+    .formatToParts(date)
+    .reduce<Record<string, string>>((acc, part) => {
+      if (part.type !== "literal") acc[part.type] = part.value;
+      return acc;
+    }, {});
+  const y = parts.year ?? "1970";
+  const m = parts.month ?? "01";
+  const d = parts.day ?? "01";
+  const h = parts.hour ?? "00";
+  const min = parts.minute ?? "00";
+  const s = parts.second ?? "00";
+  return `${y}${m}${d}T${h}${min}${s}`;
+}
+
 export async function GET(
   _req: Request,
   context: { params: { id?: string } } | Promise<{ params: { id?: string } }>,
@@ -37,6 +62,10 @@ export async function GET(
     },
   });
 
+  const globalSettings = await prisma.globalSetting.findFirst({
+    select: { timezone: true, icsDefaultAlarmMinutes: true },
+  });
+
   if (!course) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
@@ -52,9 +81,15 @@ export async function GET(
   const role = session.user.role;
   const coursePath =
     role === "STUDENT"
-      ? `/app/student/courses/${course.id}`
-      : `/app/teacher/courses/${course.id}`;
+    ? `/app/student/courses/${course.id}`
+    : `/app/teacher/courses/${course.id}`;
   const courseUrl = `${baseUrl}${coursePath}`;
+  const tz = globalSettings?.timezone || "Europe/Paris";
+  const alarmMinutes = Number.isFinite(globalSettings?.icsDefaultAlarmMinutes)
+    ? globalSettings?.icsDefaultAlarmMinutes ?? 30
+    : 30;
+  const dtStart = formatWithTz(start, tz);
+  const dtEnd = formatWithTz(end, tz);
 
   const lines = [
     "BEGIN:VCALENDAR",
@@ -64,12 +99,17 @@ export async function GET(
     "BEGIN:VEVENT",
     `UID:${course.id}@poleapp`,
     `DTSTAMP:${formatUtc(new Date())}`,
-    `DTSTART:${formatUtc(start)}`,
-    `DTEND:${formatUtc(end)}`,
+    `DTSTART;TZID=${tz}:${dtStart}`,
+    `DTEND;TZID=${tz}:${dtEnd}`,
     `SUMMARY:${summary}`,
     course.discipline ? `CATEGORIES:${course.discipline}` : undefined,
     location ? `LOCATION:${location}` : undefined,
     `DESCRIPTION:Cours avec ${teacher}\\n${courseUrl}`,
+    "BEGIN:VALARM",
+    `TRIGGER:-PT${alarmMinutes}M`,
+    "ACTION:DISPLAY",
+    "DESCRIPTION:Reminder",
+    "END:VALARM",
     "END:VEVENT",
     "END:VCALENDAR",
   ].filter(Boolean);

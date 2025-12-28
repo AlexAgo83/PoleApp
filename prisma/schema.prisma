@@ -475,6 +475,8 @@ model GlobalSetting {
   id               String   @id @default("global")
   defaultVatPercent Int     @default(20)
   currency          String  @default("EUR")
+  timezone          String  @default("Europe/Paris")
+  icsDefaultAlarmMinutes Int @default(30)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
