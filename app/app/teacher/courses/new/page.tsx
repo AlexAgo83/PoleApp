@@ -33,7 +33,7 @@ export default async function NewCoursePage({
 
   const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
-  const safeFrom = rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : undefined;
+  const safeFrom = rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/app/teacher/courses/agenda?view=month";
 
   const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines, teacherFavoritesRows] = await Promise.all([
     prisma.user.findMany({
