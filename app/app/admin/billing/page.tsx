@@ -30,6 +30,7 @@ const statusLabels: Record<InvoiceStatus, string> = {
   PAID: "Payée",
   LATE: "En retard",
   CANCELLED: "Annulée",
+  REFUNDED: "Remboursée",
 };
 
 const statusClasses: Record<InvoiceStatus, string> = {
@@ -38,6 +39,7 @@ const statusClasses: Record<InvoiceStatus, string> = {
   PAID: "border-emerald-300/60 bg-emerald-500/20 text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.4)]",
   LATE: "border-amber-300/70 bg-amber-500/20 text-amber-50 shadow-[0_0_14px_rgba(251,191,36,0.6)] animate-[pulse_1.8s_ease-in-out_infinite]",
   CANCELLED: "border-red-300/60 bg-red-500/15 text-red-50",
+  REFUNDED: "border-cyan-300/70 bg-cyan-500/20 text-cyan-50 shadow-[0_0_12px_rgba(59,130,246,0.35)]",
 };
 
 function paramValue(value?: string | string[]) {

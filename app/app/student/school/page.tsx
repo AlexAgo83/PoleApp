@@ -58,7 +58,7 @@ export default async function StudentSchoolPage({
     view?: string;
     month?: string;
     week?: string;
-    studio?: string;
+    studio?: string | string[];
     teacher?: string;
     mine?: string;
     from?: string;

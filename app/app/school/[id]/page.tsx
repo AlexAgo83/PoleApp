@@ -34,6 +34,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
   const userRole = session.user.role;
+  const agendaRole = (userRole === "SUPER_ADMIN" ? "SCHOOL_ADMIN" : userRole) as "STUDENT" | "TEACHER" | "SCHOOL_ADMIN";
 
   const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
   const qRaw = resolvedSearch?.q;
@@ -561,7 +562,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               hasCourses={agendaMonthCourses.length > 0}
               baseFrom={agendaBaseFrom}
               courseBasePath={courseBasePath}
-              role={userRole}
+              role={agendaRole}
               filters={{
                 teacher: teacherFilter || undefined,
                 studio: studioId,
@@ -648,8 +649,11 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
           ) : (
             <ul className="mt-3 flex flex-col divide-y divide-white/5">
               {studio.courses?.map((course) => {
+                const courseWithCount = course as Prisma.CourseGetPayload<{
+                  include: { _count: { select: { attendances: true; positions: true; notes: true } }; teacher: true };
+                }>;
                 const courseDate = new Date(course.date);
-                const seatsUsed = course._count?.attendances ?? 0;
+                const seatsUsed = courseWithCount._count?.attendances ?? 0;
                 const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
                 const formattedDate = courseDate.toLocaleString("fr-FR", {
                   hour12: false,
@@ -681,7 +685,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                         />
                         <div className="min-w-[220px] flex-1 space-y-1">
                           <p className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
-                            {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                            {courseWithCount.teacher?.name ?? courseWithCount.teacher?.email ?? "Professeur"}
                             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
                               Studio · {studio.name}
                             </span>
@@ -700,9 +704,9 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                       <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-sm font-semibold text-slate-200">
                         <div className="flex flex-wrap items-center gap-2">
                           <span>{seatsUsed} élèves</span>
-                          <span>· {course._count?.positions ?? 0} positions</span>
+                          <span>· {courseWithCount._count?.positions ?? 0} positions</span>
                           <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
-                            Notes : {course._count?.notes ?? 0}
+                            Notes : {courseWithCount._count?.notes ?? 0}
                           </span>
                         </div>
                         <Link

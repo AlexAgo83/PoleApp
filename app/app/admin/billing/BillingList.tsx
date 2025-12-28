@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { InvoiceStatus } from "@prisma/client";
+import { InvoiceStatus, ManualFinancialStatus } from "@prisma/client";
 
 import { FilterPanel } from "@/components/FilterPanel";
 
@@ -11,6 +11,13 @@ type InvoiceDTO = {
   amountCents: number;
   currency: string;
   status: InvoiceStatus;
+  manualStatus: ManualFinancialStatus;
+  manualNote: string | null;
+  manualSetAt: string | null;
+  manualSetBy: { id: string; name: string | null; email: string | null } | null;
+  refundedAt: string | null;
+  refundNote: string | null;
+  refundedBy: { id: string; name: string | null; email: string | null } | null;
   paidAt: string | null;
   issuedAt: string | null;
   course: {
@@ -115,7 +122,29 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
 
   const filteredQs = qs ? `?${qs}` : "";
 
-  const applyUpdate = async (payload: { invoiceId: string; status: InvoiceStatus; amount?: string }) => {
+  type UpdatePayload = {
+    invoiceId: string;
+    status?: InvoiceStatus;
+    amount?: string;
+    manualStatus?: ManualFinancialStatus;
+    manualNote?: string;
+    refund?: boolean;
+    refundNote?: string;
+  };
+
+  const manualLabels: Record<ManualFinancialStatus, string> = {
+    NONE: "Statut auto",
+    PAID: "Payé (manuel)",
+    LATE: "En retard (manuel)",
+  };
+
+  const manualClasses: Record<ManualFinancialStatus, string> = {
+    NONE: "",
+    PAID: "border-emerald-300/60 bg-emerald-500/15 text-emerald-50",
+    LATE: "border-amber-300/60 bg-amber-500/20 text-amber-50",
+  };
+
+  const applyUpdate = async (payload: UpdatePayload) => {
     setMutatingId(payload.invoiceId);
     setFlash(null);
     try {
@@ -411,6 +440,9 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
           {data?.invoices.map((invoice) => {
             const badgeClass = statusClasses[invoice.status];
             const badgeLabel = statusLabels[invoice.status];
+            const manualBadgeClass =
+              invoice.manualStatus !== ManualFinancialStatus.NONE ? manualClasses[invoice.manualStatus] : null;
+            const manualBadgeLabel = manualLabels[invoice.manualStatus];
             const attendees = invoice.course._count.attendances;
             const vatPercent = data.vatPercent ?? 20;
             const vatAmountCents = Math.round(invoice.amountCents * vatPercent * 0.01);
@@ -423,23 +455,55 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
               minute: "2-digit",
             });
             const formattedPaidAt = invoice.paidAt ? new Date(invoice.paidAt).toLocaleDateString("fr-FR") : null;
+            const formattedRefundedAt = invoice.refundedAt
+              ? new Date(invoice.refundedAt).toLocaleDateString("fr-FR")
+              : null;
+            const formattedManualSetAt = invoice.manualSetAt
+              ? new Date(invoice.manualSetAt).toLocaleDateString("fr-FR")
+              : null;
             return (
               <article id={`invoice-${invoice.id}`} key={invoice.id} className="flex flex-col gap-3 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                  <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-semibold ${badgeClass}`}
-                  >
-                    {badgeLabel}
-                  </span>
-                  <div className="space-y-1">
-                    <p className="text-base font-semibold text-white">
-                      {invoice.course.title ?? "Cours"}
-                    </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-semibold ${badgeClass}`}
+                    >
+                      {badgeLabel}
+                    </span>
+                    {manualBadgeClass && (
+                      <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-semibold ${manualBadgeClass}`}
+                      >
+                        {manualBadgeLabel}
+                      </span>
+                    )}
+                    {invoice.refundedAt && (
+                      <span className="inline-flex items-center rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-1 text-[12px] font-semibold text-cyan-50">
+                        Remboursée {formattedRefundedAt ? `le ${formattedRefundedAt}` : ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-1 text-right">
+                    <p className="text-base font-semibold text-white">{invoice.course.title ?? "Cours"}</p>
                     <p className="text-sm text-slate-200">{formattedDate}</p>
                     <p className="text-xs text-slate-300">ID cours : {invoice.course.id}</p>
                   </div>
                 </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
+                      Prof : {invoice.course.teacher?.name ?? invoice.course.teacher?.email ?? "N/A"}
+                    </span>
+                    {invoice.course.studio?.name && (
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
+                        Studio : {invoice.course.studio.name}
+                      </span>
+                    )}
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
+                      Présences : {attendees}
+                    </span>
+                  </div>
                   <div className="flex flex-col items-end gap-1 text-right">
                     <div className="text-lg font-semibold text-white">
                       {(invoice.amountCents / 100).toFixed(2)} {invoice.currency}
@@ -455,21 +519,12 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                         Payée le {formattedPaidAt}
                       </span>
                     )}
+                    {formattedRefundedAt && (
+                      <span className="inline-flex items-center rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5 text-[12px] text-cyan-50">
+                        Remboursée le {formattedRefundedAt}
+                      </span>
+                    )}
                   </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
-                    Prof : {invoice.course.teacher?.name ?? invoice.course.teacher?.email ?? "N/A"}
-                  </span>
-                  {invoice.course.studio?.name && (
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
-                      Studio : {invoice.course.studio.name}
-                    </span>
-                  )}
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px]">
-                    Présences : {attendees}
-                  </span>
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-indigo-900/20">
@@ -523,36 +578,131 @@ export function BillingList({ initialQuery, teachers, studios, statusClasses, st
                       </button>
                     </form>
                   </div>
-                  <div className="mt-3 flex flex-wrap items-center justify-end gap-2 text-[11px]">
-                    {[InvoiceStatus.SENT, InvoiceStatus.PAID, InvoiceStatus.CANCELLED, InvoiceStatus.LATE].map(
-                      (target) => (
-                        <button
-                          key={target}
-                          type="button"
-                          onClick={() =>
-                            applyUpdate({
-                              invoiceId: invoice.id,
-                              status: target,
-                              amount: (invoice.amountCents / 100).toFixed(2),
-                            })
-                          }
-                          className={`rounded-full border px-2 py-1 font-semibold text-white transition shadow-sm ${
-                            target === InvoiceStatus.PAID
-                              ? "border-emerald-400/80 bg-emerald-500/40 hover:bg-emerald-400/70"
-                              : target === InvoiceStatus.SENT
-                              ? "border-cyan-400/80 bg-cyan-500/30 hover:bg-cyan-400/60"
-                              : target === InvoiceStatus.LATE
-                              ? "border-amber-400/80 bg-amber-500/30 hover:bg-amber-400/60"
-                              : "border-red-400/80 bg-red-500/30 hover:bg-red-400/60"
-                          } ${mutatingId === invoice.id ? "opacity-60" : ""}`}
-                          title={`Marquer ${statusLabels[target]}`}
-                          disabled={mutatingId === invoice.id}
+
+                  <div className="mt-3 grid gap-2 md:grid-cols-[1.1fr_1fr] md:items-center">
+                    <form
+                      className="flex flex-wrap items-center gap-2"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const fd = new FormData(e.currentTarget);
+                        const nextStatus = fd.get("manualStatus")?.toString() as ManualFinancialStatus | null;
+                        const note = (fd.get("manualNote")?.toString() ?? "").trim();
+                        void applyUpdate({
+                          invoiceId: invoice.id,
+                          manualStatus: (nextStatus ?? undefined) as ManualFinancialStatus | undefined,
+                          manualNote: note.length > 0 ? note : undefined,
+                        });
+                      }}
+                    >
+                      <label className="text-xs text-slate-300">
+                        Statut manuel
+                        <select
+                          name="manualStatus"
+                          defaultValue={invoice.manualStatus}
+                          className="ml-2 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
                         >
-                          {statusLabels[target]}
-                        </button>
-                      )
-                    )}
+                          <option value={ManualFinancialStatus.NONE}>Automatique</option>
+                          <option value={ManualFinancialStatus.PAID}>Payé (manuel)</option>
+                          <option value={ManualFinancialStatus.LATE}>En retard (manuel)</option>
+                        </select>
+                      </label>
+                      <label className="text-xs text-slate-300">
+                        Note
+                        <input
+                          type="text"
+                          name="manualNote"
+                          defaultValue={invoice.manualNote ?? ""}
+                          placeholder="Motif interne"
+                          className="ml-2 w-44 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
+                        />
+                      </label>
+                      <button
+                        type="submit"
+                        className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-amber-200 hover:bg-amber-500/30 disabled:opacity-60"
+                        disabled={mutatingId === invoice.id}
+                      >
+                        Appliquer
+                      </button>
+                    </form>
+                    <div className="flex flex-wrap items-center justify-end gap-2 text-[11px]">
+                      {[InvoiceStatus.SENT, InvoiceStatus.PAID, InvoiceStatus.CANCELLED, InvoiceStatus.LATE].map(
+                        (target) => (
+                          <button
+                            key={target}
+                            type="button"
+                            onClick={() =>
+                              applyUpdate({
+                                invoiceId: invoice.id,
+                                status: target,
+                                amount: (invoice.amountCents / 100).toFixed(2),
+                              })
+                            }
+                            className={`rounded-full border px-2 py-1 font-semibold text-white transition shadow-sm ${
+                              target === InvoiceStatus.PAID
+                                ? "border-emerald-400/80 bg-emerald-500/40 hover:bg-emerald-400/70"
+                                : target === InvoiceStatus.SENT
+                                ? "border-cyan-400/80 bg-cyan-500/30 hover:bg-cyan-400/60"
+                                : target === InvoiceStatus.LATE
+                                ? "border-amber-400/80 bg-amber-500/30 hover:bg-amber-400/60"
+                                : "border-red-400/80 bg-red-500/30 hover:bg-red-400/60"
+                            } ${mutatingId === invoice.id ? "opacity-60" : ""}`}
+                            title={`Marquer ${statusLabels[target]}`}
+                            disabled={mutatingId === invoice.id}
+                          >
+                            {statusLabels[target]}
+                          </button>
+                        )
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const confirmRefund = window.confirm("Confirmer l'annulation et le remboursement de la facture ?");
+                          if (!confirmRefund) return;
+                          const note = window.prompt("Note de remboursement (optionnelle)") ?? undefined;
+                          void applyUpdate({
+                            invoiceId: invoice.id,
+                            refund: true,
+                            refundNote: note && note.trim().length > 0 ? note : undefined,
+                          });
+                        }}
+                        className={`rounded-full border border-cyan-300/70 bg-cyan-500/25 px-2 py-1 font-semibold text-white transition hover:border-cyan-200 hover:bg-cyan-500/40 ${
+                          mutatingId === invoice.id ? "opacity-60" : ""
+                        }`}
+                        disabled={mutatingId === invoice.id}
+                        title="Annuler et rembourser"
+                      >
+                        Annuler + rembourser
+                      </button>
+                    </div>
                   </div>
+
+                  {(invoice.manualNote || invoice.manualStatus !== ManualFinancialStatus.NONE || invoice.refundNote) && (
+                    <div className="mt-3 grid gap-2 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200 md:grid-cols-2">
+                      {invoice.manualStatus !== ManualFinancialStatus.NONE && (
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-[0.12em] text-amber-100">Statut manuel</p>
+                          <p className="font-semibold text-white">{manualBadgeLabel}</p>
+                          {invoice.manualNote && <p className="text-sm text-slate-200">Note : {invoice.manualNote}</p>}
+                          {invoice.manualSetBy && formattedManualSetAt && (
+                            <p className="text-xs text-slate-300">
+                              Par {invoice.manualSetBy.name ?? invoice.manualSetBy.email} le {formattedManualSetAt}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {invoice.refundNote && (
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-[0.12em] text-cyan-100">Remboursement</p>
+                          <p className="text-sm text-slate-200">{invoice.refundNote}</p>
+                          {invoice.refundedBy && formattedRefundedAt && (
+                            <p className="text-xs text-slate-300">
+                              Par {invoice.refundedBy.name ?? invoice.refundedBy.email} le {formattedRefundedAt}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </article>
             );
