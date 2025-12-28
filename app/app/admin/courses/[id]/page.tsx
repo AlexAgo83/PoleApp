@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCourseSuggestions } from "@/lib/courseGenerator";
+import { LocalDateTime } from "@/components/LocalDateTime";
 
 export const dynamic = "force-dynamic";
 
@@ -96,7 +97,18 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin école</p>
             <h1 className="text-3xl font-semibold text-white">
-              {course.title ?? "Cours"} · {formattedDate}
+              {course.title ?? "Cours"} ·{" "}
+              <LocalDateTime
+                iso={course.date.toISOString()}
+                fallback={formattedDate}
+                options={{
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }}
+              />
             </h1>
             <p className="text-sm text-slate-300">
               {teacherName} · {course.studio?.name ?? "Studio non renseigné"} · {course._count.attendances} élève(s) · {cost} crédits
