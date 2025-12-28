@@ -26,6 +26,7 @@ type SignatureResponse = {
   publicId?: string;
   resourceType: "image" | "video";
   deliveryType?: "upload" | "authenticated";
+  accessMode?: "authenticated";
   transformation?: string;
 };
 
@@ -38,7 +39,7 @@ export function CloudinaryUpload({
   accept = "image/jpeg,image/png,image/webp",
   maxSizeMB = 5,
   transformPreset,
-  deliveryType = "upload",
+  deliveryType = "authenticated",
   maxWidth,
   maxHeight,
   onChange,
@@ -112,7 +113,7 @@ export function CloudinaryUpload({
       if (sig.publicId) form.append("public_id", sig.publicId);
       if (sig.deliveryType && sig.deliveryType !== "upload") {
         form.append("type", sig.deliveryType);
-        form.append("access_mode", "authenticated");
+        form.append("access_mode", sig.accessMode ?? "authenticated");
       }
       if (sig.transformation) {
         form.append("transformation", sig.transformation);
