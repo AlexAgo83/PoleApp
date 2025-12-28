@@ -17,6 +17,16 @@ export function isCloudinaryEnabled() {
   return Boolean(cloudName && apiKey && apiSecret);
 }
 
+const defaultAvatarIds = (process.env.CLOUDINARY_AVATAR_DEFAULT_IDS ?? "")
+  .split(",")
+  .map((v) => v.trim())
+  .filter(Boolean);
+
+export function isDefaultAvatarPublicId(publicId?: string | null) {
+  if (!publicId) return false;
+  return defaultAvatarIds.includes(publicId);
+}
+
 export function signUpload(options: {
   folder: string;
   publicId?: string;

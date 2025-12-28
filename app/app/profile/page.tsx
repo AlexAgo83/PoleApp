@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { resolveAvatarUrl } from "@/lib/avatar";
+import { AvatarUploadField } from "@/components/AvatarUploadField";
 import { updateProfileAction } from "./actions";
 
 const roleLabels: Record<string, string> = {
@@ -69,12 +71,16 @@ export default async function ProfilePage({
   const displayName = user.name?.trim() || user.email;
   const currentDisplay = [firstNameDefault, lastNameDefault].filter(Boolean).join(" ") || displayName;
   const ageLabel = user.age ? `${user.age} ans` : "Non renseigné";
-  const avatarUrl =
-    user.avatarUrl?.trim() ||
-    (isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER);
+  const avatarPlaceholder = isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER;
+  const avatarUrl = resolveAvatarUrl({
+    avatarPublicId: user.avatarPublicId,
+    avatarUrl: user.avatarUrl,
+    placeholder: avatarPlaceholder,
+  });
 
   const resolvedSearch = (await searchParams) ?? {};
   const saved = resolvedSearch.saved === "1";
+  const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -173,19 +179,18 @@ export default async function ProfilePage({
             />
           </label>
 
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-200">Photo (URL)</span>
-            <input
-              type="url"
-              name="avatarUrl"
-              defaultValue={user.avatarUrl ?? ""}
-              placeholder="https://…"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+          <div className="space-y-2">
+            <span className="text-sm font-medium text-slate-200">Photo de profil</span>
+            <AvatarUploadField
+              folder={avatarFolder}
+              currentUrl={user.avatarUrl ?? undefined}
+              currentPublicId={user.avatarPublicId ?? undefined}
+              maxSizeMB={2}
             />
             <p className="text-xs text-slate-400">
-              Laisse vide pour utiliser l’avatar neutre ({isTeacher ? "prof" : "élève"}).
+              Upload signé Cloudinary (restrict), formats jpg/png/webp, 2 Mo max. Laisse vide pour utiliser l’avatar neutre ({isTeacher ? "prof" : "élève"}).
             </p>
-          </label>
+          </div>
 
           {isTeacher && (
             <label className="block space-y-2">

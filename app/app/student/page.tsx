@@ -4,6 +4,8 @@ import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { BuyCreditsButton } from "./BuyCreditsButton";
 import { PartnerProductsCarousel } from "./PartnerProductsCarousel";
 
@@ -14,7 +16,7 @@ export default async function StudentDashboard() {
   }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarUrl: true },
+    select: { name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarUrl: true, avatarPublicId: true },
   });
   const isPremium = Boolean(user?.isPremium);
   const nameParts =
@@ -26,7 +28,11 @@ export default async function StudentDashboard() {
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
   const displayName = firstName ?? lastName ?? user?.email ?? "élève";
   const credits = user?.credits ?? 0;
-  const avatarUrl = user?.avatarUrl ?? session.user.image ?? null;
+  const avatarUrl = resolveAvatarUrl({
+    avatarPublicId: user?.avatarPublicId,
+    avatarUrl: user?.avatarUrl ?? session.user.image ?? null,
+    placeholder: AVATAR_PLACEHOLDER,
+  });
   const avatarInitial = (displayName?.[0] ?? "É").toUpperCase();
   const partners =
     user?.schoolId

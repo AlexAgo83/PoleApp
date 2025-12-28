@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { TeacherEditPanel } from "./TeacherEditPanel";
 
 const TEACHER_AVATAR_PLACEHOLDER =
@@ -52,6 +53,7 @@ export default async function TeacherPublicProfilePage({
       email: true,
       age: true,
       avatarUrl: true,
+      avatarPublicId: true,
       diplomas: true,
       school: { select: { name: true } },
       favoritePositions: {
@@ -83,7 +85,11 @@ export default async function TeacherPublicProfilePage({
       })
     : [];
 
-  const avatarUrl = teacher.avatarUrl?.trim() || TEACHER_AVATAR_PLACEHOLDER;
+  const avatarUrl = resolveAvatarUrl({
+    avatarPublicId: teacher.avatarPublicId,
+    avatarUrl: teacher.avatarUrl,
+    placeholder: TEACHER_AVATAR_PLACEHOLDER,
+  });
   const favoritePositions =
     teacher.favoritePositions
       .map((fp) => fp.position)
@@ -174,6 +180,7 @@ export default async function TeacherPublicProfilePage({
             lastName: lastNameDefault,
             age: teacher.age,
             avatarUrl: teacher.avatarUrl,
+            avatarPublicId: teacher.avatarPublicId,
             diplomas: teacher.diplomas,
             favoritePositionIds,
           }}

@@ -3,13 +3,15 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveAvatarUrl } from "@/lib/avatar";
+import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
   const teacherUser = session?.user?.id
     ? await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { avatarUrl: true, name: true, email: true },
+        select: { avatarUrl: true, avatarPublicId: true, name: true, email: true },
       })
     : null;
   const nameParts =
@@ -20,7 +22,11 @@ export default async function TeacherDashboard() {
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
   const displayName = firstName ?? lastName ?? teacherUser?.email ?? session?.user?.email ?? "professeur";
-  const avatarUrl = teacherUser?.avatarUrl ?? session?.user?.image ?? null;
+  const avatarUrl = resolveAvatarUrl({
+    avatarPublicId: teacherUser?.avatarPublicId,
+    avatarUrl: teacherUser?.avatarUrl ?? session?.user?.image ?? null,
+    placeholder: AVATAR_PLACEHOLDER,
+  }) || null;
   const avatarInitial = (displayName?.[0] ?? "P").toUpperCase();
   const teacherProfileHref = session?.user?.id ? `/app/teachers/${session.user.id}` : "/app/profile";
   const partners =
