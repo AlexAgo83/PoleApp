@@ -32,7 +32,8 @@ type CourseWithCounts = {
   maxSeats?: number | null;
   costCredits?: number | null;
   waitlistQuota?: number | null;
-  _count: { attendances: number };
+  isVirtual?: boolean;
+  _count: { attendances: number; positions: number };
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
 };
 
@@ -47,7 +48,8 @@ type CourseWithCounts = {
         maxSeats: true,
         costCredits: true,
         waitlistQuota: true,
-        _count: { select: { attendances: true } },
+        isVirtual: true,
+        _count: { select: { attendances: true, positions: true } },
         attendances: {
           where: { studentId: session.user.id },
           select: { id: true, status: true, waitlistRank: true },
@@ -67,7 +69,7 @@ type CourseWithCounts = {
           durationMinutes: true,
           maxSeats: true,
           costCredits: true,
-          _count: { select: { attendances: true } },
+          _count: { select: { attendances: true, positions: true } },
           attendances: {
             where: { studentId: session.user.id },
             select: { id: true, status: true, waitlistRank: true },
@@ -82,6 +84,10 @@ type CourseWithCounts = {
 
   if (!course) {
     throw new Error("Cours introuvable ou non accessible");
+  }
+
+  if (course.isVirtual || course._count.positions === 0) {
+    throw new Error("Inscription indisponible tant que les positions ne sont pas définies");
   }
 
   if (course.attendances.length > 0) {

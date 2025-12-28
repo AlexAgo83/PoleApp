@@ -71,6 +71,12 @@ enum ManualFinancialStatus {
   LATE
 }
 
+enum RecurrenceFrequency {
+  DAILY
+  BIWEEKLY
+  MONTHLY
+}
+
 model School {
   id        String   @id @default(cuid())
   name      String
@@ -86,6 +92,7 @@ model School {
   disciplines Discipline[]
   gameSessions GameSession[]
   presets  Preset[]
+  recurrenceSeries CourseRecurrenceSeries[]
 
   @@unique([name])
 }
@@ -131,6 +138,7 @@ model User {
   createdPresets   Preset[]
   manualSetInvoices Invoice[] @relation("InvoiceManualSetBy")
   refundedInvoices  Invoice[] @relation("InvoiceRefundedBy")
+  recurrenceSeries  CourseRecurrenceSeries[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -260,6 +268,9 @@ model Course {
   recommendations CourseRecommendation[]
   invoices    Invoice[]
   partnerEvents PartnerEvent[]
+  recurrenceSeriesId String?
+  recurrenceSeries   CourseRecurrenceSeries? @relation(fields: [recurrenceSeriesId], references: [id])
+  isVirtual    Boolean  @default(false)
 
   @@index([schoolId, date])
   @@index([teacherId])
@@ -479,6 +490,23 @@ model GlobalSetting {
   icsDefaultAlarmMinutes Int @default(30)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model CourseRecurrenceSeries {
+  id         String              @id @default(cuid())
+  schoolId   String
+  teacherId  String
+  frequency  RecurrenceFrequency
+  until      DateTime
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  courses    Course[]
+
+  school School @relation(fields: [schoolId], references: [id])
+  teacher User  @relation(fields: [teacherId], references: [id])
+
+  @@index([schoolId])
+  @@index([teacherId])
 }
 
 model SubscriptionOffer {

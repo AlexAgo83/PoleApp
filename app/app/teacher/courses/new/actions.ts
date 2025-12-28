@@ -1,6 +1,6 @@
 "use server";
 
-import { InvoiceStatus, LearningStatus, MasteryLevel, Prisma } from "@prisma/client";
+import { InvoiceStatus, LearningStatus, MasteryLevel, Prisma, RecurrenceFrequency } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -27,6 +27,9 @@ const courseSchema = z.object({
   maxSeats: z.coerce.number().min(1).default(30),
   waitlistQuota: z.coerce.number().min(0).default(0),
   costCredits: z.coerce.number().min(0).default(100),
+  isRecurring: z.coerce.boolean().optional(),
+  recurrenceFrequency: z.nativeEnum(RecurrenceFrequency).optional(),
+  recurrenceUntil: z.coerce.date().optional(),
   notes: z
     .array(
       z.object({
@@ -63,6 +66,9 @@ export async function createCourseAction(formData: FormData) {
     costCredits: formData.get("costCredits") ?? 100,
     notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
     from: formData.get("from")?.toString(),
+    isRecurring: formData.get("isRecurring"),
+    recurrenceFrequency: formData.get("recurrenceFrequency"),
+    recurrenceUntil: formData.get("recurrenceUntil"),
   });
 
   if (!parsed.success) {
@@ -99,7 +105,58 @@ export async function createCourseAction(formData: FormData) {
     redirect("/access-denied");
   }
 
+  if (parsed.data.isRecurring) {
+    if (!parsed.data.recurrenceFrequency) {
+      throw new Error("Fréquence de récurrence requise");
+    }
+    if (!parsed.data.recurrenceUntil) {
+      throw new Error("Date de fin de récurrence requise");
+    }
+    if (parsed.data.recurrenceUntil < parsed.data.date) {
+      throw new Error("La date de fin de série doit être après la date de début");
+    }
+  }
+
+  const occurrences =
+    parsed.data.isRecurring && parsed.data.recurrenceFrequency && parsed.data.recurrenceUntil
+      ? generateOccurrences(parsed.data.date, parsed.data.recurrenceUntil, parsed.data.recurrenceFrequency)
+      : [parsed.data.date];
+
+  const existing = await prisma.course.findMany({
+    where: {
+      studioId: parsed.data.studioId,
+      date: {
+        gte: occurrences[0],
+        lte: parsed.data.recurrenceUntil ?? parsed.data.date,
+      },
+    },
+    select: { id: true, date: true, durationMinutes: true },
+  });
+  const hasCollision = occurrences.some((start) => {
+    const end = new Date(start.getTime() + (parsed.data.durationMinutes ?? 60) * 60_000);
+    return existing.some((ex) => {
+      const exEnd = new Date(ex.date.getTime() + (ex.durationMinutes ?? 60) * 60_000);
+      return start < exEnd && ex.date < end;
+    });
+  });
+  if (hasCollision) {
+    throw new Error("Conflit horaire/studio détecté, série non créée");
+  }
+
   const courseId = await prisma.$transaction(async (tx) => {
+    let recurrenceSeriesId: string | null = null;
+    if (parsed.data.isRecurring && parsed.data.recurrenceFrequency && parsed.data.recurrenceUntil) {
+      const series = await tx.courseRecurrenceSeries.create({
+        data: {
+          schoolId: session.user.schoolId!,
+          teacherId: teacherId ?? session.user.id,
+          frequency: parsed.data.recurrenceFrequency,
+          until: parsed.data.recurrenceUntil,
+        },
+      });
+      recurrenceSeriesId = series.id;
+    }
+
     let course;
     try {
       course = await tx.course.create({
@@ -115,6 +172,8 @@ export async function createCourseAction(formData: FormData) {
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
           costCredits: parsed.data.costCredits ?? 100,
           photoUrl: parsed.data.photoUrl ?? null,
+          recurrenceSeriesId: recurrenceSeriesId ?? undefined,
+          isVirtual: false,
         },
       });
     } catch (error) {
@@ -133,6 +192,8 @@ export async function createCourseAction(formData: FormData) {
           durationMinutes: parsed.data.durationMinutes,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
           photoUrl: parsed.data.photoUrl ?? null,
+          recurrenceSeriesId: recurrenceSeriesId ?? undefined,
+          isVirtual: false,
         },
       });
     }
@@ -181,6 +242,39 @@ export async function createCourseAction(formData: FormData) {
       },
     });
 
+    if (recurrenceSeriesId && occurrences.length > 1) {
+      const [, ...futureDates] = occurrences;
+      for (const date of futureDates) {
+        const occ = await tx.course.create({
+          data: {
+            title: parsed.data.title || null,
+            date,
+            schoolId: session.user.schoolId!,
+            teacherId: teacherId ?? session.user.id,
+            studioId: parsed.data.studioId,
+            discipline: parsed.data.discipline,
+            durationMinutes: parsed.data.durationMinutes,
+            maxSeats: parsed.data.maxSeats ?? 30,
+            waitlistQuota: parsed.data.waitlistQuota ?? 0,
+            costCredits: parsed.data.costCredits ?? 100,
+            photoUrl: parsed.data.photoUrl ?? null,
+            recurrenceSeriesId,
+            isVirtual: true,
+          },
+        });
+        const occAmountCents = computeDefaultInvoiceAmountCents(0, parsed.data.maxSeats ?? 30);
+        await tx.invoice.create({
+          data: {
+            courseId: occ.id,
+            amountCents: occAmountCents,
+            currency: "EUR",
+            status: InvoiceStatus.GENERATED,
+            issuedAt: new Date(),
+          },
+        });
+      }
+    }
+
     return course.id;
   });
 
@@ -194,6 +288,28 @@ export async function createCourseAction(formData: FormData) {
   revalidatePath("/app/teacher/courses");
   const detailHref = `/app/teacher/courses/${courseId}`;
   redirect(detailHref);
+}
+
+function generateOccurrences(
+  start: Date,
+  until: Date,
+  frequency: RecurrenceFrequency,
+): Date[] {
+  const occurrences: Date[] = [];
+  let current = new Date(start);
+  while (current <= until) {
+    occurrences.push(new Date(current));
+    if (frequency === RecurrenceFrequency.DAILY) {
+      current = new Date(current.getTime() + 24 * 60 * 60_000);
+    } else if (frequency === RecurrenceFrequency.BIWEEKLY) {
+      current = new Date(current.getTime() + 14 * 24 * 60 * 60_000);
+    } else {
+      const next = new Date(current);
+      next.setMonth(next.getMonth() + 1);
+      current = next;
+    }
+  }
+  return occurrences;
 }
 
 async function upsertProgressFromNotes(

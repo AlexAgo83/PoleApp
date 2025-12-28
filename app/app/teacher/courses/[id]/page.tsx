@@ -200,6 +200,11 @@ export default async function TeacherCourseDetailPage({
                     Notes : {course.notes.length}
                   </span>
                 )}
+                {course.isVirtual && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500/10 px-2 py-1 text-xs font-semibold text-amber-100">
+                    Occurrence virtuelle (positions à définir)
+                  </span>
+                )}
                 <ShareLinkButton path={sharePath} />
                 <Link
                   href={icsHref}
