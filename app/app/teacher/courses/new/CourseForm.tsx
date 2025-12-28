@@ -178,7 +178,7 @@ export function CourseForm({
           />
         </label>
         <label className="text-sm text-slate-200">
-          Titre (optionnel)
+          Titre
           <input
             type="text"
             name="title"
@@ -226,6 +226,30 @@ export function CourseForm({
               </select>
             </label>
           )}
+          <label className="text-sm text-slate-200">
+            Durée (minutes)
+            <input
+              type="number"
+              name="durationMinutes"
+              min={30}
+              step={15}
+              defaultValue={defaultDurationMinutes}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
+          </label>
+          <label className="text-sm text-slate-200">
+            Coût en crédits
+            <input
+              type="number"
+              name="costCredits"
+              min={0}
+              step={10}
+              defaultValue={defaultCostCredits}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0.</p>
+          </label>
         </div>
       </div>
 
@@ -249,37 +273,6 @@ export function CourseForm({
         </label>
       )}
 
-      {studios.length > 0 && (
-        <label className="block text-sm text-slate-200">
-          Studio
-          <select
-            name="studioId"
-            required
-            defaultValue={resolvedStudioId}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          >
-            {studios.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
-
-      <label className="block text-sm text-slate-200">
-        Durée (minutes)
-        <input
-          type="number"
-          name="durationMinutes"
-          min={30}
-          step={15}
-          defaultValue={defaultDurationMinutes}
-          className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-        />
-        <p className="mt-1 text-xs text-slate-400">Par tranches de 15 min, minimum 30 min. Par défaut 60 min.</p>
-      </label>
-
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-slate-200">
           Places maximum
@@ -302,18 +295,6 @@ export function CourseForm({
             className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
           />
           <p className="mt-1 text-xs text-slate-400">0 = illimité. Si plein et quota atteint, inscription refusée.</p>
-        </label>
-        <label className="text-sm text-slate-200">
-          Coût en crédits
-          <input
-            type="number"
-            name="costCredits"
-            min={0}
-            step={10}
-            defaultValue={defaultCostCredits}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-          />
-          <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0.</p>
         </label>
       </div>
 
