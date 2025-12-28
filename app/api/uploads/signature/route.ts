@@ -11,6 +11,7 @@ const schema = z.object({
   resourceType: z.enum(["image", "video"]).optional(),
   deliveryType: z.enum(["upload", "authenticated"]).optional(),
   accessMode: z.enum(["authenticated"]).optional(),
+  transformation: z.string().trim().optional(),
 });
 
 export async function POST(request: Request) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
       resourceType: parsed.data.resourceType,
       deliveryType: parsed.data.deliveryType,
       accessMode: parsed.data.accessMode,
+      transformation: parsed.data.transformation,
     });
 
     return NextResponse.json(data);
