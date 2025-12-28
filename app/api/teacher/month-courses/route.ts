@@ -104,6 +104,10 @@ export async function GET(req: Request) {
 
   const cells = calendarCells.map((cell) => ({
     day: cell.day,
+    isoDate:
+      typeof cell.day === "number"
+        ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString()
+        : undefined,
     courses: (cell.courses ?? []).map((course) => ({
       id: course.id,
       title: course.title,

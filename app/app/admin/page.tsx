@@ -204,7 +204,7 @@ export default async function AdminDashboard({
             Étudiants
           </Link>
           <Link
-            href="/app/teacher/courses"
+            href="/app/teacher/courses/agenda?view=month"
             className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             Cours
@@ -264,9 +264,6 @@ export default async function AdminDashboard({
             <Stat label="Positions" value={positionsCount} />
             <Stat label="Blessures actives" value={activeInjuries} />
           </div>
-          <p className="text-xs text-slate-400">
-            Cours et blessures filtrés sur l’école de l’admin.
-          </p>
         </div>
       </section>
 
@@ -297,7 +294,7 @@ export default async function AdminDashboard({
           <ActionCard
             title="Suivre les cours"
             description="Consulte les cours saisis et l’impact progression."
-            href="/app/teacher/courses"
+            href="/app/teacher/courses/agenda?view=month"
             cta="Voir les cours"
             icon={
               <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

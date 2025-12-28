@@ -431,22 +431,29 @@ export default async function StudentCoursesAgendaPage({
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const prevMonthValue = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
-  const initialMonthCells = cells.map((cell) => ({
-    day: cell.day,
-    courses: (cell.attendances ?? []).map((a) => ({
-      id: a.id,
-      courseId: a.courseId,
-      title: a.course.title,
-      discipline: a.course.discipline,
-      date: a.course.date instanceof Date ? a.course.date.toISOString() : a.course.date,
-      durationMinutes: a.course.durationMinutes,
-      teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
-      studioName: a.course.studio?.name ?? "Studio non renseigné",
-      myStatus: a.myAttendance?.status ?? null,
-      waitlistRank: a.myAttendance?.waitlistRank ?? null,
-      past: isPastCourse(a.course.date, a.course.durationMinutes),
-    })),
-  }));
+  const initialMonthCells = cells.map((cell) => {
+    const isoDate =
+      typeof cell.day === "number"
+        ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString()
+        : undefined;
+    return {
+      day: cell.day,
+      isoDate,
+      courses: (cell.attendances ?? []).map((a) => ({
+        id: a.id,
+        courseId: a.courseId,
+        title: a.course.title,
+        discipline: a.course.discipline,
+        date: a.course.date instanceof Date ? a.course.date.toISOString() : a.course.date,
+        durationMinutes: a.course.durationMinutes,
+        teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
+        studioName: a.course.studio?.name ?? "Studio non renseigné",
+        myStatus: a.myAttendance?.status ?? null,
+        waitlistRank: a.myAttendance?.waitlistRank ?? null,
+        past: isPastCourse(a.course.date, a.course.durationMinutes),
+      })),
+    };
+  });
   const hasMonthCourses = agendaItems.length > 0;
   const legendItems = [
     { key: "past", label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },

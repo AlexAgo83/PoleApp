@@ -237,7 +237,7 @@ export default async function TeacherCoursesPage({
             </Link>
           ) : null}
           <Link
-            href="/app/teacher/courses/agenda"
+            href="/app/teacher/courses/agenda?view=month"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

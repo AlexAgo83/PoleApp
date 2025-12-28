@@ -137,8 +137,13 @@ export function StudioMonthView({
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
         {cells.map((cell, idx) => {
           const dayLabel = cell.day ? String(cell.day) : "";
-          const dateObj = cell.day ? new Date(`${month}-${String(cell.day).padStart(2, "0")}T00:00:00`) : null;
+          const dateObj = cell.isoDate
+            ? new Date(cell.isoDate)
+            : cell.day
+              ? new Date(`${month}-${String(cell.day).padStart(2, "0")}T00:00:00`)
+              : null;
           const isPastDay = dateObj ? dateObj < new Date(new Date().setHours(0, 0, 0, 0)) : false;
+          const isToday = dateObj?.toDateString() === new Date(new Date().setHours(0, 0, 0, 0)).toDateString();
           const weekdayLabel = dateObj
             ? dateObj.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")
             : "";
@@ -147,14 +152,22 @@ export function StudioMonthView({
           return (
             <div
               key={key}
-              className="rounded-xl border border-white/10 bg-white/5 p-2 text-left"
+              className={`rounded-xl p-2 text-left ${
+                isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
+              }`}
             >
               <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
                 <span className="flex items-center gap-1">
-                  <span className={`text-[10px] uppercase tracking-wide md:text-xs ${isPastDay ? "text-slate-400" : "text-cyan-100"}`}>
+                  <span
+                    className={`text-[10px] uppercase tracking-wide md:text-xs ${
+                      isPastDay && !isToday ? "text-slate-400" : "text-cyan-100"
+                    } ${isToday ? "font-semibold" : ""}`}
+                  >
                     {weekdayLabel}
                   </span>
-                  <span className={isPastDay ? "text-slate-400" : undefined}>{dayLabel}</span>
+                  <span className={`${isPastDay && !isToday ? "text-slate-400" : ""} ${isToday ? "font-bold text-white" : ""}`}>
+                    {dayLabel}
+                  </span>
                 </span>
                 <span className="text-[11px] text-cyan-100">
                   {(cell.courses?.length ?? 0)} cours

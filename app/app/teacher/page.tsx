@@ -99,7 +99,7 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
-            href="/app/teacher/courses"
+            href="/app/teacher/courses/agenda?view=month"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <div className="flex items-start gap-3">
