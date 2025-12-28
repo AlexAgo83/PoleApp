@@ -148,6 +148,7 @@ export async function updateCourseAction(formData: FormData) {
           waitlistQuota: data.waitlistQuota ?? 0,
           costCredits: data.costCredits ?? 100,
           photoUrl: data.photoUrl ?? null,
+          isVirtual: false,
         },
       });
     } catch (error) {
@@ -170,6 +171,7 @@ export async function updateCourseAction(formData: FormData) {
           durationMinutes: data.durationMinutes,
           waitlistQuota: data.waitlistQuota ?? 0,
           photoUrl: data.photoUrl ?? null,
+          isVirtual: false,
         },
       });
     }
