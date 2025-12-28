@@ -64,6 +64,7 @@ export default async function StudentCourseDetailPage({
         waitlistQuota: true,
         discipline: true,
         photoUrl: true,
+        isVirtual: true,
         school: { select: { name: true } },
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { name: true, address: true } },
@@ -140,8 +141,10 @@ export default async function StudentCourseDetailPage({
     new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000;
   const icsHref = `/api/courses/${course.id}/ics`;
   const sharePath = `/app/student/courses/${course.id}`;
+  const hasPositions = course.positions.length > 0;
+  const isVirtual = course.isVirtual;
   const canBuy =
-    !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost;
+    !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost && hasPositions && !isVirtual;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
     year: "numeric",
@@ -190,6 +193,11 @@ export default async function StudentCourseDetailPage({
                 {course.discipline && (
                   <p className="text-sm text-cyan-100">
                     Discipline · {course.discipline}
+                  </p>
+                )}
+                {(isVirtual || !hasPositions) && (
+                  <p className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                    Occurrence virtuelle : positions à définir (inscription bloquée)
                   </p>
                 )}
                 <p className="flex flex-wrap items-center gap-2">
@@ -243,6 +251,8 @@ export default async function StudentCourseDetailPage({
                         : waitlistFull
                         ? "Liste d'attente complète"
                         : "Rejoindre la liste d’attente"
+                      : isVirtual || !hasPositions
+                      ? "Inscription bloquée tant que les positions ne sont pas définies"
                       : endTime <= NOW_MS
                       ? "Cours passé"
                       : (session.user.credits ?? 0) < cost

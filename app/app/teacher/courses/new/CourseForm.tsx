@@ -1,6 +1,6 @@
 "use client";
 
-import { MasteryLevel } from "@prisma/client";
+import { MasteryLevel, RecurrenceFrequency } from "@prisma/client";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -132,6 +132,7 @@ export function CourseForm({
       dateValue.getDate()
     )}T${pad(dateValue.getHours())}:${pad(dateValue.getMinutes())}`;
   }, [defaultDate]);
+  const resolvedDefaultDateOnly = useMemo(() => resolvedDefaultDate.slice(0, 10), [resolvedDefaultDate]);
 
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -162,6 +163,9 @@ export function CourseForm({
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const needsRefocus = useRef(false);
   const skipDisciplineReset = useRef(true);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceFrequency>(RecurrenceFrequency.DAILY);
+  const [recurrenceUntil, setRecurrenceUntil] = useState(resolvedDefaultDateOnly);
   const preserveScroll = (cb: () => void) => {
     const y = typeof window !== "undefined" ? window.scrollY : 0;
     cb();
@@ -366,6 +370,47 @@ export function CourseForm({
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             />
           </label>
+          <div className="text-sm text-slate-200 space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
+            <label className="inline-flex items-center gap-2 font-semibold text-white">
+              <input
+                type="checkbox"
+                name="isRecurring"
+                value="true"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+                className="h-4 w-4 rounded border-white/20 bg-white/5"
+              />
+              Récurrent
+            </label>
+            {isRecurring && (
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className="text-sm text-slate-200">
+                  Fréquence
+                  <select
+                    name="recurrenceFrequency"
+                    value={recurrenceFrequency}
+                    onChange={(e) => setRecurrenceFrequency(e.target.value as RecurrenceFrequency)}
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                  >
+                    <option value={RecurrenceFrequency.DAILY}>Quotidienne</option>
+                    <option value={RecurrenceFrequency.BIWEEKLY}>Bi-hebdo</option>
+                    <option value={RecurrenceFrequency.MONTHLY}>Mensuelle</option>
+                  </select>
+                </label>
+                <label className="text-sm text-slate-200">
+                  Fin de série (incluse)
+                  <input
+                    type="date"
+                    name="recurrenceUntil"
+                    min={resolvedDefaultDateOnly}
+                    value={recurrenceUntil}
+                    onChange={(e) => setRecurrenceUntil(e.target.value)}
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                  />
+                </label>
+              </div>
+            )}
+          </div>
           <label className="text-sm text-slate-200">
             Titre
             <input

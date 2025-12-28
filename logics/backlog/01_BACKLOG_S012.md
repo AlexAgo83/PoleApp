@@ -1,5 +1,5 @@
 # Backlog — Retours QA S013 (06_QA_S013.md)
-[Compréhension: 100% / Avancement: 60% (P0 en cours de validation)]
+[Compréhension: 100% / Avancement: 65% (P0 en cours de validation)]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
@@ -29,10 +29,10 @@
 - Seed : documenté dans `05_SEED_CONTENT.md` (liste public_id fournie), distribution random sans doublons par sexe.
 
 ### Questions restantes
-- Reste : implémenter le seed randomisé avec les `public_id` fournis.
+- Reste : audit complet des vues pour l’affichage (default avatars) + QA upload/suppression.
 
 ### Progression
-- [ ] En cours (impl Cloudinary restrict, reste seed + QA)
+- [ ] En cours (impl Cloudinary restrict + seed random OK, reste audit affichage + QA)
 
 ### Tâches additionnelles (avatars affichage)
 - Audit des vues/listes/cartes utilisant encore `avatarUrl` (élève/prof/admin) et passage à `resolveAvatarUrl`/`generateSignedUrl` avec fallback par défaut.
@@ -85,7 +85,7 @@
 - Gestion d’exceptions (sauter une date) — à planifier plus tard.
 - Édition série : prévoir un mode “modifier cette occurrence uniquement” vs “modifier les futures” ?
 ### Progression
-- [ ] Not started
+- [ ] En cours (modèle série + occurrences virtuelles générées, UI récurrence ajoutée ; reste édition occurrence, affichage spécifique, QA)
 
 ## P2 — Ajouter un cours à son agenda système (DONE)
 ### User stories
