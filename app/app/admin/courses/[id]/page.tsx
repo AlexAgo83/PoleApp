@@ -27,7 +27,17 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
 
   const course = await prisma.course.findFirst({
     where: { id, schoolId: session.user.schoolId },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      date: true,
+      durationMinutes: true,
+      maxSeats: true,
+      costCredits: true,
+      waitlistQuota: true,
+      discipline: true,
+      photoUrl: true,
+      isVirtual: true,
       teacher: { select: { id: true, name: true, email: true } },
       studio: { select: { name: true, address: true } },
       attendances: {
@@ -41,7 +51,6 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
         },
       },
       _count: { select: { attendances: true } },
-      isVirtual: true,
     },
   });
 

@@ -51,10 +51,19 @@ export default async function TeacherCourseDetailPage({
   const course = await prisma.course
     .findUnique({
       where: { id, schoolId: session.user.schoolId },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        date: true,
+        durationMinutes: true,
+        maxSeats: true,
+        costCredits: true,
+        waitlistQuota: true,
+        discipline: true,
+        photoUrl: true,
+        isVirtual: true,
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true, address: true } },
-        isVirtual: true,
         attendances: {
           include: { student: { select: { id: true, name: true, email: true } } },
         },
