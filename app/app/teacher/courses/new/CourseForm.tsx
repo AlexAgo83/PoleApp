@@ -46,6 +46,10 @@ type Props = {
   formId?: string;
   hideFooterActions?: boolean;
   groupedPanels?: boolean;
+  defaultCollapsed?: {
+    students?: boolean;
+    positions?: boolean;
+  };
 };
 
 type Note = {
@@ -84,6 +88,7 @@ export function CourseForm({
   formId,
   hideFooterActions = false,
   groupedPanels = false,
+  defaultCollapsed,
 }: Props) {
   const [selectedStudents, setSelectedStudents] =
     useState<string[]>(defaultSelectedStudents);
@@ -170,15 +175,71 @@ export function CourseForm({
     });
   };
 
-  const Panel = ({ children, title }: { children: ReactNode; title?: string }) =>
-    groupedPanels ? (
-      <section className="panel space-y-4 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
-        {title ? <h3 className="text-base font-semibold text-white">{title}</h3> : null}
-        {children}
+  const [collapsedPanels, setCollapsedPanels] = useState<{ students: boolean; positions: boolean }>(() => ({
+    students: groupedPanels ? defaultCollapsed?.students ?? true : false,
+    positions: groupedPanels ? defaultCollapsed?.positions ?? false : false,
+  }));
+
+  useEffect(() => {
+    if (!groupedPanels) return;
+    const saved = localStorage.getItem("course-form:collapsed");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as { students?: boolean; positions?: boolean };
+        setCollapsedPanels((prev) => ({
+          students: parsed.students ?? prev.students,
+          positions: parsed.positions ?? prev.positions,
+        }));
+      } catch (e) {
+        console.warn("Failed to parse collapse state", e);
+      }
+    }
+  }, [groupedPanels]);
+
+  const updateCollapsed = (key: "students" | "positions", value: boolean) => {
+    setCollapsedPanels((prev) => {
+      const next = { ...prev, [key]: value };
+      localStorage.setItem("course-form:collapsed", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const Panel = ({
+    children,
+    title,
+    collapsible = false,
+    collapsed,
+    onToggle,
+  }: {
+    children: ReactNode;
+    title?: string;
+    collapsible?: boolean;
+    collapsed?: boolean;
+    onToggle?: () => void;
+  }) => {
+    if (!groupedPanels) {
+      return <section className="space-y-2 text-sm text-slate-200">{children}</section>;
+    }
+    return (
+      <section className="panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6">
+        {title ? (
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-base font-semibold text-white">{title}</h3>
+            {collapsible && (
+              <button
+                type="button"
+                onClick={onToggle}
+                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+              >
+                {collapsed ? "Afficher" : "Masquer"}
+              </button>
+            )}
+          </div>
+        ) : null}
+        {!collapsible || !collapsed ? children : null}
       </section>
-    ) : (
-      <section className="space-y-2 text-sm text-slate-200">{children}</section>
     );
+  };
 
   return (
     <form id={formId} ref={formRef} action={action} className="space-y-5" onSubmit={handleSubmit}>
@@ -327,9 +388,14 @@ export function CourseForm({
         </div>
       </Panel>
 
-      <Panel title={groupedPanels ? "Élèves présents" : undefined}>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span>Élèves présents (Forcer l'inscription / Pre-filtrer & générer)</span>
+      <Panel
+        title={groupedPanels ? "Élèves présents" : undefined}
+        collapsible={groupedPanels}
+        collapsed={collapsedPanels.students}
+        onToggle={() => updateCollapsed("students", !collapsedPanels.students)}
+      >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+          <span>Forcer l'inscription / Pre-filtrer & générer</span>
           {selectedStudents.length > 0 && (
             <button
               type="button"
@@ -381,9 +447,14 @@ export function CourseForm({
         </div>
       </Panel>
 
-      <Panel title={groupedPanels ? "Positions abordées" : undefined}>
+      <Panel
+        title={groupedPanels ? "Positions abordées" : undefined}
+        collapsible={groupedPanels}
+        collapsed={collapsedPanels.positions}
+        onToggle={() => updateCollapsed("positions", !collapsedPanels.positions)}
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span>Positions abordées (Filtrées par discipline)</span>
+          <span>Filtrées par discipline</span>
           {selectedPositions.length > 0 && (
             <button
               type="button"
@@ -430,7 +501,9 @@ export function CourseForm({
                       });
                     });
 
+                  const allowedIds = new Set(filteredPositions.map((p) => p.id));
                   const sorted = Array.from(scores.entries())
+                    .filter(([positionId]) => allowedIds.has(positionId))
                     .sort((a, b) => b[1].score - a[1].score || a[1].name.localeCompare(b[1].name))
                     .map(([positionId]) => positionId);
 
@@ -497,13 +570,15 @@ export function CourseForm({
       </Panel>
 
       {selectedStudents.length > 0 && selectedPositions.length > 0 && (
-        <NotesMatrix
-          students={students.filter((s) => selectedStudents.includes(s.id))}
-          positions={positions.filter((p) => selectedPositions.includes(p.id))}
-          masteryOptions={masteryOptions}
-          notes={notes}
-          setNotes={setNotes}
-        />
+        <div className={groupedPanels ? "panel space-y-3 border-white/10 bg-slate-900/70 p-4 shadow-inner shadow-slate-900/30 md:p-6" : ""}>
+          <NotesMatrix
+            students={students.filter((s) => selectedStudents.includes(s.id))}
+            positions={positions.filter((p) => selectedPositions.includes(p.id))}
+            masteryOptions={masteryOptions}
+            notes={notes}
+            setNotes={setNotes}
+          />
+        </div>
       )}
 
       <input

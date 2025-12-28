@@ -121,41 +121,33 @@ export default async function NewCoursePage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <header className="panel border-indigo-400/25 bg-gradient-to-br from-slate-900/70 via-slate-900/60 to-indigo-900/40 p-6 shadow-indigo-900/40 md:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-wrap items-start gap-3">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              Professeur / Admin
-              </p>
-              <h1 className="text-3xl font-semibold text-white">Créer un cours</h1>
-              <p className="text-sm text-slate-200 max-w-2xl">
-                Sélectionne la date, les élèves présents, les positions abordées, puis ajoute des notes par élève/position pour mettre à jour la progression.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href={safeFrom ?? "/app/teacher/courses"}
-                className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                Annuler
-              </Link>
-              <button
-                type="submit"
-                form={formId}
-                className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110"
-              >
-                Créer le cours
-              </button>
-              <Link
-                href={safeFrom ?? "/app/teacher/courses"}
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/15"
-              >
-                ← Retour cours
-              </Link>
-            </div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Professeur / Admin</p>
+            <h1 className="text-3xl font-semibold text-white">Créer un cours</h1>
+            <p className="text-sm text-slate-200 max-w-2xl">
+              Sélectionne la date, les élèves présents, les positions abordées, puis ajoute des notes par élève/position pour mettre à jour la progression.
+            </p>
           </div>
-        </header>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="submit"
+              form={formId}
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110"
+            >
+              Créer le cours
+            </button>
+            <Link
+              href={safeFrom ?? "/app/teacher/courses"}
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/15"
+            >
+              ← Retour cours
+            </Link>
+          </div>
+        </div>
+      </header>
 
-        <div className="space-y-6 p-4 md:p-0">
+        <div className="space-y-6">
           <CourseForm
             formId={formId}
             groupedPanels
