@@ -153,6 +153,10 @@ export default async function StudentCoursesAgendaPage({
   const explicitRangeEnd = toParam ? new Date(`${toParam}T23:59:59`) : monthEnd;
   const rangeStart = new Date(Math.min(explicitRangeStart.getTime(), weekRangeStart.getTime()));
   const rangeEnd = new Date(Math.max(explicitRangeEnd.getTime(), weekRangeEnd.getTime()));
+  const baseDateFilter: Prisma.DateTimeFilter = { gte: rangeStart, lte: rangeEnd };
+  if (!selectedStatuses.includes("past")) {
+    baseDateFilter.gte = new Date(Math.max(rangeStart.getTime(), Date.now()));
+  }
 
   const buildViewHref = (mode: "month" | "week") => {
     const params = new URLSearchParams();
@@ -175,24 +179,21 @@ export default async function StudentCoursesAgendaPage({
         where: {
           studentId: session.user.id,
           course: {
-            date: { gte: rangeStart, lte: rangeEnd },
+            date: baseDateFilter,
             ...(teacherFilter ? { teacherId: teacherFilter } : {}),
             ...(studioFilter ? { studioId: studioFilter } : {}),
-    ...(q
-      ? {
-          title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
-        }
-      : {}),
-    ...(disciplineFilters.length > 0
-      ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-          })),
-        }
-      : {}),
-    ...(selectedStatuses.includes("past")
-      ? {}
-      : { date: { gte: new Date() } }),
+            ...(q
+              ? {
+                  title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
+                }
+              : {}),
+            ...(disciplineFilters.length > 0
+              ? {
+                  OR: disciplineFilters.map((d) => ({
+                    discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
+                  })),
+                }
+              : {}),
             ...(allowedSchoolIds && allowedSchoolIds.length > 0
               ? { schoolId: { in: allowedSchoolIds } }
               : session.user.schoolId
@@ -215,6 +216,8 @@ export default async function StudentCoursesAgendaPage({
               maxSeats: true,
               photoUrl: true,
               schoolId: true,
+              isVirtual: true,
+              _count: { select: { positions: true } },
               teacher: { select: { name: true, email: true } },
               studio: { select: { name: true } },
             },
@@ -231,7 +234,7 @@ export default async function StudentCoursesAgendaPage({
             ...(allowedSchoolIds && allowedSchoolIds.length > 0
               ? { schoolId: { in: allowedSchoolIds } }
               : { schoolId: session.user.schoolId }),
-            date: { gte: rangeStart, lte: rangeEnd },
+            date: baseDateFilter,
             ...(teacherFilter ? { teacherId: teacherFilter } : {}),
             ...(studioFilter ? { studioId: studioFilter } : {}),
             ...(q
@@ -246,13 +249,12 @@ export default async function StudentCoursesAgendaPage({
                   })),
                 }
               : {}),
-            ...(selectedStatuses.includes("past")
-              ? {}
-              : { date: { gte: new Date() } }),
           },
           include: {
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
+            isVirtual: true,
+            _count: { select: { positions: true } },
             attendances: {
               where: { studentId: session.user.id },
               select: { id: true, status: true, waitlistRank: true },
@@ -390,6 +392,8 @@ export default async function StudentCoursesAgendaPage({
           durationMinutes: a.course.durationMinutes,
           teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
           studioName: a.course.studio?.name ?? "Studio non renseigné",
+          isVirtual: (a.course as any)?.isVirtual ?? false,
+          positionsCount: (a.course as any)?._count?.positions ?? 0,
           past,
           myStatus: a.myAttendance?.status ?? null,
           waitlistRank: a.myAttendance?.waitlistRank ?? null,
@@ -449,6 +453,8 @@ export default async function StudentCoursesAgendaPage({
         durationMinutes: a.course.durationMinutes,
         teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
         studioName: a.course.studio?.name ?? "Studio non renseigné",
+        isVirtual: (a.course as any)?.isVirtual ?? false,
+        positionsCount: (a.course as any)?._count?.positions ?? 0,
         myStatus: a.myAttendance?.status ?? null,
         waitlistRank: a.myAttendance?.waitlistRank ?? null,
         past: isPastCourse(a.course.date, a.course.durationMinutes),
