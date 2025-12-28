@@ -29,11 +29,22 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
 
   const course = await prisma.course.findFirst({
     where: { id, schoolId },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      date: true,
+      durationMinutes: true,
+      maxSeats: true,
+      costCredits: true,
+      waitlistQuota: true,
+      discipline: true,
+      photoUrl: true,
+      teacherId: true,
+      studioId: true,
+      isVirtual: true,
       attendances: true,
       positions: { include: { position: true } },
       notes: true,
-      isVirtual: true,
     },
   });
   if (!course) {
