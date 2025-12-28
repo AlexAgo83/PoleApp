@@ -251,6 +251,27 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   const hasNav = (isFromPositionsList && navList.length > 0) || (isFromProgress && navList.length > 0);
   const navLabel = isFromPositionsList ? "liste filtrée" : isFromProgress ? "progression" : "positions";
+  const combos =
+    (await prisma.preset.findMany({
+      where: {
+        positions: { some: { positionId: position.id } },
+        ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}),
+      },
+      include: { createdBy: { select: { name: true, email: true } } },
+      orderBy: [{ usageCount: "desc" }, { createdAt: "desc" }],
+      take: 10,
+    })) ?? [];
+  const purchasedPresetIds =
+    isStudent && combos.length > 0
+      ? new Set(
+          (
+            await prisma.purchase.findMany({
+              where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+              select: { offerId: true },
+            })
+          ).map((p) => p.offerId),
+        )
+      : new Set<string>();
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-8 md:py-10">
@@ -505,6 +526,101 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             </div>
           )}
         </aside>
+      </section>
+      <section className="panel space-y-4 border-indigo-400/20 p-4 md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Combos associés</p>
+            <h2 className="text-xl font-semibold text-white">Présélections / combos contenant cette position</h2>
+            <p className="text-sm text-slate-300">Jusqu’à 10 combos/presets liés, filtrés sur ton école.</p>
+          </div>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+            {combos.length} trouvé{combos.length > 1 ? "s" : ""}
+          </span>
+        </div>
+        {combos.length === 0 ? (
+          <p className="text-sm text-slate-300">Aucun combo associé pour le moment.</p>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
+            {combos.map((combo) => {
+              const cost = combo.priceCredits ?? 0;
+              const premiumLocked = isStudent && combo.premiumRequired && !isPremium;
+              const alreadyBought = purchasedPresetIds.has(combo.id);
+              const href =
+                premiumLocked && isStudent
+                  ? `/app/student/premium?from=${encodeURIComponent(`/positions/${position.id}`)}`
+                  : `/presets?highlight=${combo.id}`;
+              return (
+                <Link
+                  key={combo.id}
+                  href={href}
+                  className={`group flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/10 transition hover:border-cyan-300/60 hover:bg-white/10 ${
+                    premiumLocked ? "opacity-80" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+                      {combo.discipline ? (
+                        <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">
+                          {combo.discipline}
+                        </span>
+                      ) : null}
+                      {combo.premiumRequired ? (
+                        <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">
+                          Premium
+                        </span>
+                      ) : cost > 0 ? (
+                        <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">
+                          {cost} crédits
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">
+                          Gratuit
+                        </span>
+                      )}
+                      {combo.createdBy ? (
+                        <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
+                          {combo.createdBy.name ?? combo.createdBy.email}
+                        </span>
+                      ) : null}
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-300">
+                      {combo.usageCount} vue{combo.usageCount > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-lg font-semibold text-white">{combo.title}</p>
+                    <p className="text-sm text-slate-300 line-clamp-2">
+                      {combo.description || "Combo sans description"}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 text-xs font-semibold text-slate-200">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {premiumLocked ? (
+                        <span className="rounded-full border border-amber-400/60 bg-amber-500/15 px-2 py-0.5 text-amber-50">
+                          🔒 Premium requis
+                        </span>
+                      ) : alreadyBought ? (
+                        <span className="rounded-full border border-emerald-400/60 bg-emerald-500/15 px-2 py-0.5 text-emerald-50">
+                          Déjà acheté
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200 group-hover:border-cyan-400/60">
+                          Voir le combo
+                        </span>
+                      )}
+                    </div>
+                    {combo.priceCredits && combo.priceCredits > 0 ? (
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-200">
+                        {combo.priceCredits} crédits
+                      </span>
+                    ) : null}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
       {hasNav && (
         <nav className="panel flex flex-wrap items-center justify-between gap-3 p-4 md:p-5">

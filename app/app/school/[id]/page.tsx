@@ -5,11 +5,17 @@ import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 import { FilterPanel } from "@/components/FilterPanel";
 import { SafeImage } from "@/components/SafeImage";
+import { WeekView as StudentWeekView } from "@/app/app/student/courses/agenda/WeekView";
+import { WeekView as TeacherWeekView } from "@/app/app/teacher/courses/agenda/WeekView";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
+
+function formatWeekKey(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 type PageProps =
   | { params: { id: string }; searchParams?: Promise<Record<string, string | string[] | undefined>> }
@@ -29,11 +35,14 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const pageRaw = resolvedSearch?.page;
   const teacherFilter = typeof resolvedSearch?.teacher === "string" ? resolvedSearch.teacher : "";
   const disciplineFilter = resolvedSearch?.discipline?.toString().trim() ?? "";
+  const viewParam = resolvedSearch?.view?.toString() ?? "";
+  const viewMode: "list" | "agenda" = viewParam === "agenda" ? "agenda" : "list";
+  const weekParam = resolvedSearch?.week?.toString();
   const q = typeof qRaw === "string" ? qRaw.trim() : "";
   const currentPage = Math.max(1, Number.isFinite(Number(pageRaw)) ? Number(pageRaw) : 1);
   const pageSize = 5;
 
-  const where = {
+  const baseWhere: Prisma.CourseWhereInput = {
     studioId,
     ...(teacherFilter ? { teacherId: teacherFilter } : {}),
     ...(disciplineFilter
@@ -48,23 +57,27 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
       : {}),
   };
 
-  const totalCount = await prisma.course.count({ where });
+  const totalCount = await prisma.course.count({ where: baseWhere });
 
   const [studio, teacherOptions, disciplineOptions] = await Promise.all([
     prisma.studio.findUnique({
       where: { id: studioId },
       include: {
         school: { select: { id: true, name: true } },
-        courses: {
-          orderBy: { date: "asc" },
-          skip: (currentPage - 1) * pageSize,
-          take: pageSize,
-          where,
-          include: {
-            teacher: { select: { id: true, name: true, email: true } },
-            _count: { select: { attendances: true, positions: true, notes: true } },
-          },
-        },
+        ...(viewMode === "list"
+          ? {
+              courses: {
+                orderBy: { date: "asc" },
+                skip: (currentPage - 1) * pageSize,
+                take: pageSize,
+                where: baseWhere,
+                include: {
+                  teacher: { select: { id: true, name: true, email: true } },
+                  _count: { select: { attendances: true, positions: true, notes: true } },
+                },
+              },
+            }
+          : {}),
       },
     }),
     prisma.user.findMany({
@@ -94,6 +107,114 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
         ? "/app/teacher/school"
         : "/app/student/school";
   const activeFilters = [q && q.length > 0, teacherFilter, disciplineFilter].filter(Boolean).length;
+  const isStudentRole = userRole === "STUDENT";
+  const agendaWeekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : new Date();
+  const weekStart = new Date(agendaWeekBase);
+  const dayOffset = weekStart.getDay() === 0 ? 6 : weekStart.getDay() - 1; // Monday=0
+  weekStart.setDate(weekStart.getDate() - dayOffset);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const prevWeek = new Date(weekStart);
+  prevWeek.setDate(weekStart.getDate() - 7);
+  const nextWeek = new Date(weekStart);
+  nextWeek.setDate(weekStart.getDate() + 7);
+  const weekValue = formatWeekKey(weekStart);
+  const prevWeekValue = formatWeekKey(prevWeek);
+  const nextWeekValue = formatWeekKey(nextWeek);
+  const weekDays = Array.from({ length: 7 }).map((_, idx) => {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + idx);
+    return d;
+  });
+  const agendaCourses =
+    viewMode === "agenda"
+      ? await prisma.course.findMany({
+          where: {
+            ...baseWhere,
+            date: { gte: weekStart, lte: weekEnd },
+          },
+          include: {
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true } },
+            ...(isStudentRole
+              ? {
+                  attendances: {
+                    where: { studentId: session.user.id },
+                    select: { status: true, waitlistRank: true },
+                  },
+                }
+              : {}),
+          },
+          orderBy: { date: "asc" },
+        })
+      : [];
+  const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
+    const endMs = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
+    return endMs < Date.now();
+  };
+  const studentWeekDays =
+    viewMode === "agenda" && isStudentRole
+      ? weekDays.map((d) => {
+          const dayCourses = agendaCourses.filter((c) => new Date(c.date).toDateString() === d.toDateString());
+          return {
+            isoDate: d.toISOString(),
+            label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+            day: d.getDate(),
+            isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
+            courses: dayCourses.map((course) => {
+              const attendance = (course as { attendances?: { status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[] }).attendances?.[0];
+              return {
+                id: course.id,
+                title: course.title,
+                date: course.date instanceof Date ? course.date.toISOString() : course.date,
+                durationMinutes: course.durationMinutes,
+                discipline: course.discipline,
+                teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
+                studioName: course.studio?.name ?? "Studio",
+                past: isPastCourse(course.date as Date, course.durationMinutes),
+                myStatus: attendance?.status ?? null,
+                waitlistRank: attendance?.waitlistRank ?? null,
+              };
+            }),
+          };
+        })
+      : null;
+  const staffWeekDays =
+    viewMode === "agenda" && !isStudentRole
+      ? weekDays.map((d) => {
+          const dayCourses = agendaCourses.filter((c) => new Date(c.date).toDateString() === d.toDateString());
+          return {
+            isoDate: d.toISOString(),
+            label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""),
+            day: d.getDate(),
+            isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
+            courses: dayCourses.map((course) => ({
+              id: course.id,
+              title: course.title,
+              date: course.date instanceof Date ? course.date.toISOString() : course.date,
+              durationMinutes: course.durationMinutes,
+              teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
+              studioName: course.studio?.name ?? "Studio",
+              past: isPastCourse(course.date as Date, course.durationMinutes),
+            })),
+          };
+        })
+      : null;
+  const agendaFilters = {
+    teacher: teacherFilter || undefined,
+    studio: studioId,
+    discipline: disciplineFilter || undefined,
+    q: q || undefined,
+  };
+  const agendaBaseFrom = `/app/school/${studioId}?view=agenda${teacherFilter ? `&teacher=${teacherFilter}` : ""}${disciplineFilter ? `&discipline=${encodeURIComponent(disciplineFilter)}` : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+  const toggleParams = new URLSearchParams();
+  if (q) toggleParams.set("q", q);
+  if (teacherFilter) toggleParams.set("teacher", teacherFilter);
+  if (disciplineFilter) toggleParams.set("discipline", disciplineFilter);
+  const listHref = `/app/school/${studioId}${toggleParams.toString() ? `?${toggleParams.toString()}` : ""}`;
+  const agendaParams = new URLSearchParams(toggleParams);
+  agendaParams.set("view", "agenda");
+  const agendaHref = `/app/school/${studioId}?${agendaParams.toString()}`;
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -156,6 +277,28 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             )}
           </div>
         )}
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <Link
+            href={listHref}
+            className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+              viewMode === "list"
+                ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+            }`}
+          >
+            Liste
+          </Link>
+          <Link
+            href={agendaHref}
+            className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+              viewMode === "agenda"
+                ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+            }`}
+          >
+            Agenda
+          </Link>
+        </div>
         {studio.photoUrl && (
           <div className="w-full">
             <SafeImage
@@ -170,16 +313,17 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
         )}
       </header>
 
-      <section className="panel p-4 md:p-6">
-        <h2 className="text-lg font-semibold text-white">Cours à venir</h2>
-        <div className="mt-3">
+      {viewMode === "agenda" ? (
+        <section className="panel space-y-4 p-4 md:p-6">
+          <h2 className="text-lg font-semibold text-white">Agenda du studio</h2>
           <FilterPanel
-            storageKey={`filters:studio:${studioId}:courses`}
+            storageKey={`filters:studio:${studioId}:agenda`}
             title="Filtres"
             className="group w-full"
             contentClassName="mt-3"
           >
             <form method="get" className="space-y-3">
+              <input type="hidden" name="view" value="agenda" />
               <label className="block text-sm text-slate-200">
                 Recherche (titre)
                 <input
@@ -232,7 +376,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                   Filtrer
                 </button>
                 <Link
-                  href={`/app/school/${studioId}`}
+                  href={agendaHref}
                   className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                 >
                   Réinitialiser
@@ -240,116 +384,209 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               </div>
             </form>
           </FilterPanel>
-        </div>
-        {studio.courses.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-300">Aucun cours associé pour le moment.</p>
-        ) : (
-          <ul className="mt-3 flex flex-col divide-y divide-white/5">
-            {studio.courses.map((course) => {
-              const courseDate = new Date(course.date);
-              const seatsUsed = course._count?.attendances ?? 0;
-              const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
-              const formattedDate = courseDate.toLocaleString("fr-FR", {
-                hour12: false,
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              });
-              return (
-                <li key={course.id} className="block py-4 first:pt-0 last:pb-0">
-                  <article className="flex flex-col gap-3 px-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-white/10 text-[9px] font-semibold text-slate-300">
-                        ●
-                      </span>
-                      <h3 className="text-xl font-semibold text-white md:text-2xl">
-                        {course.title ?? "Cours"}
-                      </h3>
-                    </div>
-                    <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
-                      <SafeImage
-                        src={course.photoUrl?.trim() || COURSE_PLACEHOLDER}
-                        alt={course.title ?? "Cours"}
-                        width={96}
-                        height={64}
-                        className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
-                        fallbackSrc={COURSE_PLACEHOLDER}
-                      />
-                      <div className="min-w-[220px] flex-1 space-y-1">
-                        <p className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
-                          {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
-                          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
-                            Studio · {studio.name}
-                          </span>
-                        </p>
-                        <div className="space-y-1 text-sm text-slate-300">
-                          <p>
-                            {formattedDate} · Durée : {course.durationMinutes ?? 60} min
+          {isStudentRole && studentWeekDays ? (
+            <StudentWeekView
+              initialWeek={weekValue}
+              initialPrev={prevWeekValue}
+              initialNext={nextWeekValue}
+              initialDays={studentWeekDays}
+              filters={agendaFilters}
+              baseFrom={agendaBaseFrom}
+            />
+          ) : null}
+          {!isStudentRole && staffWeekDays ? (
+            <TeacherWeekView
+              initialWeek={weekValue}
+              initialPrev={prevWeekValue}
+              initialNext={nextWeekValue}
+              initialDays={staffWeekDays}
+              filters={agendaFilters}
+              baseFrom={agendaBaseFrom}
+            />
+          ) : null}
+        </section>
+      ) : (
+        <section className="panel p-4 md:p-6">
+          <h2 className="text-lg font-semibold text-white">Cours à venir</h2>
+          <div className="mt-3">
+            <FilterPanel
+              storageKey={`filters:studio:${studioId}:courses`}
+              title="Filtres"
+              className="group w-full"
+              contentClassName="mt-3"
+            >
+              <form method="get" className="space-y-3">
+                <label className="block text-sm text-slate-200">
+                  Recherche (titre)
+                  <input
+                    type="text"
+                    name="q"
+                    defaultValue={q}
+                    placeholder="Titre du cours"
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <label className="text-sm text-slate-200">
+                    Professeur
+                    <select
+                      name="teacher"
+                      defaultValue={teacherFilter}
+                      className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                    >
+                      <option value="">Tous les professeurs</option>
+                      {teacherOptions.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name ?? t.email}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="text-sm text-slate-200">
+                    Discipline
+                    <select
+                      name="discipline"
+                      defaultValue={disciplineFilter}
+                      className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                    >
+                      <option value="">Toutes disciplines</option>
+                      {disciplineOptions
+                        .filter((d) => d.discipline && d.discipline.trim().length > 0)
+                        .map((d) => (
+                          <option key={d.discipline} value={d.discipline ?? ""}>
+                            {d.discipline}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <button
+                    type="submit"
+                    className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+                  >
+                    Filtrer
+                  </button>
+                  <Link
+                    href={`/app/school/${studioId}`}
+                    className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                  >
+                    Réinitialiser
+                  </Link>
+                </div>
+              </form>
+            </FilterPanel>
+          </div>
+          {studio.courses && studio.courses.length === 0 ? (
+            <p className="mt-2 text-sm text-slate-300">Aucun cours associé pour le moment.</p>
+          ) : (
+            <ul className="mt-3 flex flex-col divide-y divide-white/5">
+              {studio.courses?.map((course) => {
+                const courseDate = new Date(course.date);
+                const seatsUsed = course._count?.attendances ?? 0;
+                const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+                const formattedDate = courseDate.toLocaleString("fr-FR", {
+                  hour12: false,
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                return (
+                  <li key={course.id} className="block py-4 first:pt-0 last:pb-0">
+                    <article className="flex flex-col gap-3 px-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-white/10 text-[9px] font-semibold text-slate-300">
+                          ●
+                        </span>
+                        <h3 className="text-xl font-semibold text-white md:text-2xl">
+                          {course.title ?? "Cours"}
+                        </h3>
+                      </div>
+                      <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
+                        <SafeImage
+                          src={course.photoUrl?.trim() || COURSE_PLACEHOLDER}
+                          alt={course.title ?? "Cours"}
+                          width={96}
+                          height={64}
+                          className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
+                          fallbackSrc={COURSE_PLACEHOLDER}
+                        />
+                        <div className="min-w-[220px] flex-1 space-y-1">
+                          <p className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
+                            {course.teacher?.name ?? course.teacher?.email ?? "Professeur"}
+                            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
+                              Studio · {studio.name}
+                            </span>
                           </p>
-                          <p>
-                            {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30}
-                            {typeof course.costCredits === "number" ? ` · ${course.costCredits} crédits` : ""}
-                          </p>
+                          <div className="space-y-1 text-sm text-slate-300">
+                            <p>
+                              {formattedDate} · Durée : {course.durationMinutes ?? 60} min
+                            </p>
+                            <p>
+                              {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30}
+                              {typeof course.costCredits === "number" ? ` · ${course.costCredits} crédits` : ""}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-sm font-semibold text-slate-200">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span>{seatsUsed} élèves</span>
-                        <span>· {course._count?.positions ?? 0} positions</span>
-                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
-                          Notes : {course._count?.notes ?? 0}
-                        </span>
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-sm font-semibold text-slate-200">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span>{seatsUsed} élèves</span>
+                          <span>· {course._count?.positions ?? 0} positions</span>
+                          <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white">
+                            Notes : {course._count?.notes ?? 0}
+                          </span>
+                        </div>
+                        <Link
+                          href={`${
+                            userRole === "STUDENT"
+                              ? "/app/student/courses"
+                              : "/app/teacher/courses"
+                          }/${course.id}?from=/app/school/${studio.id}`}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                        >
+                          Voir le cours →
+                        </Link>
                       </div>
-                      <Link
-                        href={`${
-                          userRole === "STUDENT"
-                            ? "/app/student/courses"
-                            : "/app/teacher/courses"
-                        }/${course.id}?from=/app/school/${studio.id}`}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                      >
-                        Voir le cours →
-                      </Link>
-                    </div>
-                  </article>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between text-sm text-slate-200">
-            <Link
-              href={`/app/school/${studioId}?page=${Math.max(1, currentPage - 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
-              className={`rounded-full px-3 py-2 font-semibold ${
-                currentPage === 1
-                  ? "cursor-not-allowed border border-white/10 text-slate-500"
-                  : "border border-white/10 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              }`}
-              aria-disabled={currentPage === 1}
-            >
-              Précédent
-            </Link>
-            <span>
-              Page {currentPage} / {totalPages}
-            </span>
-            <Link
-              href={`/app/school/${studioId}?page=${Math.min(totalPages, currentPage + 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
-              className={`rounded-full px-3 py-2 font-semibold ${
-                currentPage === totalPages
-                  ? "cursor-not-allowed border border-white/10 text-slate-500"
-                  : "border border-white/10 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              }`}
-              aria-disabled={currentPage === totalPages}
-            >
-              Suivant
-            </Link>
-          </div>
-        )}
-      </section>
+                    </article>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {studio.courses && studio.courses.length > 0 && totalPages > 1 && (
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-200">
+              <Link
+                href={`/app/school/${studioId}?page=${Math.max(1, currentPage - 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                className={`rounded-full px-3 py-2 font-semibold ${
+                  currentPage === 1
+                    ? "cursor-not-allowed border border-white/10 text-slate-500"
+                    : "border border-white/10 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                }`}
+                aria-disabled={currentPage === 1}
+              >
+                Précédent
+              </Link>
+              <span>
+                Page {currentPage} / {totalPages}
+              </span>
+              <Link
+                href={`/app/school/${studioId}?page=${Math.min(totalPages, currentPage + 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                className={`rounded-full px-3 py-2 font-semibold ${
+                  currentPage === totalPages
+                    ? "cursor-not-allowed border border-white/10 text-slate-500"
+                    : "border border-white/10 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                }`}
+                aria-disabled={currentPage === totalPages}
+              >
+                Suivant
+              </Link>
+            </div>
+          )}
+        </section>
+      )}
     </main>
   );
 }

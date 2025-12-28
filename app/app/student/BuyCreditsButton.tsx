@@ -48,6 +48,14 @@ export function BuyCreditsButton({ currentCredits, showUpgrade, packs, subscript
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    const handler = () => setIsUpgradeOpen(true);
+    window.addEventListener("open-premium-modal", handler);
+    return () => {
+      window.removeEventListener("open-premium-modal", handler);
+    };
+  }, []);
+
   const creditModal = (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
       <div

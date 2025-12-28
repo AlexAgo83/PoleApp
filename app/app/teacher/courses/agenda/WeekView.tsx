@@ -104,6 +104,37 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
         <span>Vue semaine</span>
         <span className="text-sm font-normal text-cyan-100">{totalCourses} cours sur la semaine affichée</span>
       </div>
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm text-white">
+        <form onSubmit={handlePrev} className="inline-flex">
+          <input type="hidden" name="week" value={prev} />
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
+            disabled={isPending}
+          >
+            ← Précédente
+          </button>
+        </form>
+        <form onSubmit={handleReset} className="inline-flex">
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
+            disabled={isPending || week === currentWeekKey}
+          >
+            Actuelle
+          </button>
+        </form>
+        <form onSubmit={handleNext} className="inline-flex">
+          <input type="hidden" name="week" value={next} />
+          <button
+            type="submit"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
+            disabled={isPending}
+          >
+            Suivante →
+          </button>
+        </form>
+      </div>
       <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
         {days.map((day) => {
           const hideOnMobile = !showEmptyDays && day.courses.length === 0 ? "hidden md:block" : "";
@@ -166,37 +197,6 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
           );
         })}
       </div>
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-white">
-        <form onSubmit={handlePrev} className="inline-flex">
-          <input type="hidden" name="week" value={prev} />
-          <button
-            type="submit"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
-            disabled={isPending}
-          >
-            ← Semaine précédente
-          </button>
-        </form>
-        <form onSubmit={handleReset} className="inline-flex">
-          <button
-            type="submit"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
-            disabled={isPending || week === currentWeekKey}
-          >
-            Semaine actuelle
-          </button>
-        </form>
-        <form onSubmit={handleNext} className="inline-flex">
-          <input type="hidden" name="week" value={next} />
-          <button
-            type="submit"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
-            disabled={isPending}
-          >
-            Semaine suivante →
-          </button>
-        </form>
-      </div>
       <div className="mt-2 flex justify-center">
         <button
           type="button"
@@ -206,9 +206,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
           {showEmptyDays ? "Masquer les jours sans cours sur mobile" : "Afficher aussi les jours vides sur mobile"}
         </button>
       </div>
-      {isPending && (
-        <div className="mt-2 text-center text-xs text-slate-300">Chargement…</div>
-      )}
+      {isPending && <div className="mt-2 text-center text-xs text-slate-300">Chargement…</div>}
     </section>
   );
 }

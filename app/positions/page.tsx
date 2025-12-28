@@ -6,7 +6,9 @@ import Link from "next/link";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { CircularRedFox } from "@/components/FoxVignette";
 import { FilterPanel } from "@/components/FilterPanel";
+import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
+import { BuyCreditsButton } from "@/app/app/student/BuyCreditsButton";
 import { authOptions } from "@/lib/auth";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
@@ -130,6 +132,15 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const homeForRole = defaultHomeForRole(session.user.role);
   const isStudent = session.user.role === "STUDENT";
   const isPremium = Boolean(session.user.isPremium);
+  const studentCredits = isStudent
+    ? (await prisma.user.findUnique({ where: { id: session.user.id }, select: { credits: true } }))?.credits ?? 0
+    : 0;
+  const [packOffers, subscriptionOffers] = isStudent
+    ? await Promise.all([
+        prisma.creditPackOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+        prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+      ])
+    : [[], []];
   const disciplineRows = session.user.schoolId
     ? await prisma.discipline.findMany({
         where: { schoolId: session.user.schoolId },
@@ -290,6 +301,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           )}
         </div>
       </header>
+
+      {isStudent && (
+        <div className="hidden" aria-hidden="true">
+          <BuyCreditsButton currentCredits={studentCredits} showUpgrade packs={packOffers} subscriptions={subscriptionOffers} />
+        </div>
+      )}
 
       <section className="panel space-y-4 px-6 py-4 md:py-6">
         <FilterPanel
@@ -524,9 +541,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                           Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
                         </p>
                         <div className="mt-3 flex justify-end">
-                          <span className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
+                          <PremiumUpsellButton className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
                             Devenir premium
-                          </span>
+                          </PremiumUpsellButton>
                         </div>
                       </div>
                     )}
