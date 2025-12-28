@@ -348,14 +348,12 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             )}
           </div>
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm">
-            {isAdmin && (
-              <Link
-                href={`/app/admin/studios?edit=${studio.id}`}
-                className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-amber-300/80 hover:bg-white/10"
-              >
-                Éditer (admin)
-              </Link>
-            )}
+            <Link
+              href={returnHref}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour
+            </Link>
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={listHref}
@@ -378,12 +376,14 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 Agenda
               </Link>
             </div>
-            <Link
-              href={returnHref}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour
-            </Link>
+            {isAdmin && (
+              <Link
+                href={`/app/admin/studios?edit=${studio.id}`}
+                className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-amber-300/80 hover:bg-white/10"
+              >
+                Éditer (admin)
+              </Link>
+            )}
           </div>
         </div>
         {activeFilters > 0 && (

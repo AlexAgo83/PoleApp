@@ -22,8 +22,7 @@ export async function GET(req: Request) {
   const disciplineParam = searchParams.get("discipline")?.trim() || undefined;
   const levelParam = searchParams.get("level")?.trim() || undefined;
 
-  const isTeacher = session.user.role === "TEACHER";
-  const effectiveTeacher = isTeacher ? session.user.id : teacherParam;
+  const effectiveTeacher = teacherParam || undefined;
 
   const weekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : new Date();
   const startWeek = new Date(weekBase);
