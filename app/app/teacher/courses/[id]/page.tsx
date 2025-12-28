@@ -155,7 +155,7 @@ export default async function TeacherCourseDetailPage({
       ? rawFrom
       : undefined;
   const baseHref = `/app/teacher/courses/${course.id}`;
-  const backHref = safeFrom ?? "/app/teacher/courses";
+  const backHref = safeFrom ?? "/app/teacher/courses/agenda?view=month";
   const successToast = resolvedSearch.applied === "1";
   const currentPath = `${baseHref}${
     safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
