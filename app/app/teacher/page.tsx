@@ -211,29 +211,26 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
-            href="/app/teacher/partners"
+            href="/app/teacher/billing"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8a6 6 0 00-9.33-5" />
-                  <path d="M5 22a7 7 0 0010-6.71" />
-                  <path d="M16 8a6 6 0 00-9.33-5" />
-                  <path d="M2 22a7 7 0 0010-6.71" />
-                  <path d="M7 10h10" />
-                  <path d="M7 14h10" />
+                  <path d="M7 4h10a2 2 0 012 2v12l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
+                  <path d="M9 8h6" />
+                  <path d="M9 12h6" />
                 </svg>
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Partenaires
+                  Facturation
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Voir partenaires/links sponsorisés
+                  Suivre tes factures (lecture)
                 </p>
                 <p className="text-sm text-slate-300">
-                  Liste des partenaires de l’école et leurs liens sponsorisés.
+                  Montants, statuts et présences sur tes cours (lecture seule).
                 </p>
               </div>
             </div>
@@ -267,50 +264,29 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
-            href="/app/teacher/billing"
+            href="/app/teacher/partners"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 4h10a2 2 0 012 2v12l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
-                  <path d="M9 8h6" />
-                  <path d="M9 12h6" />
+                  <path d="M18 8a6 6 0 00-9.33-5" />
+                  <path d="M5 22a7 7 0 0010-6.71" />
+                  <path d="M16 8a6 6 0 00-9.33-5" />
+                  <path d="M2 22a7 7 0 0010-6.71" />
+                  <path d="M7 10h10" />
+                  <path d="M7 14h10" />
                 </svg>
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Facturation
+                  Partenaires
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Suivre tes factures (lecture)
+                  Voir partenaires/links sponsorisés
                 </p>
                 <p className="text-sm text-slate-300">
-                  Montants, statuts et présences sur tes cours (lecture seule).
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/app/admin"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 4l7 3v5c0 3.5-2.4 6.7-7 8-4.6-1.3-7-4.5-7-8V7z" />
-                  <path d="M10 11l2 2 4-4" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Admin (si autorisé)
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Gestion école
-                </p>
-                <p className="text-sm text-slate-300">
-                  Dashboard et gestion utilisateurs (réservé School Admin).
+                  Liste des partenaires de l’école et leurs liens sponsorisés.
                 </p>
               </div>
             </div>
