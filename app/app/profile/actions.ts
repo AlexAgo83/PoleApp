@@ -26,17 +26,6 @@ const schema = z.object({
     .min(1, "Âge invalide")
     .max(120, "Âge invalide")
     .optional(),
-  avatarUrl: z
-    .string()
-    .trim()
-    .url("URL invalide")
-    .max(2048, "URL trop longue")
-    .optional(),
-  avatarPublicId: z
-    .string()
-    .trim()
-    .max(512, "public_id trop long")
-    .optional(),
   diplomas: z
     .string()
     .trim()
@@ -72,13 +61,8 @@ export async function updateProfileAction(formData: FormData) {
     throw new Error("Formulaire invalide");
   }
 
-  const { firstName, lastName, age, avatarUrl, avatarPublicId, diplomas, favoritePositions = [] } = parsed.data;
+  const { firstName, lastName, age, diplomas, favoritePositions = [] } = parsed.data;
   const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || null;
-
-  const previous = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { avatarPublicId: true },
-  });
 
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
@@ -86,8 +70,6 @@ export async function updateProfileAction(formData: FormData) {
       data: {
         name: displayName,
         age: age ?? null,
-        avatarUrl: avatarUrl ?? null,
-        avatarPublicId: avatarPublicId ?? null,
         diplomas: isTeacher ? diplomas ?? null : undefined,
       },
     });
@@ -121,6 +103,53 @@ export async function updateProfileAction(formData: FormData) {
     }
   });
 
+  revalidatePath("/app/profile");
+  redirect("/app/profile?saved=1");
+}
+
+const avatarSchema = z.object({
+  avatarUrl: z
+    .string()
+    .trim()
+    .url("URL invalide")
+    .max(2048, "URL trop longue")
+    .optional(),
+  avatarPublicId: z
+    .string()
+    .trim()
+    .max(512, "public_id trop long")
+    .optional(),
+});
+
+export async function updateAvatarAction(payload: { avatarUrl?: string | null; avatarPublicId?: string | null }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    redirect("/login?callbackUrl=/app/profile");
+  }
+
+  const parsed = avatarSchema.safeParse({
+    avatarUrl: payload.avatarUrl ?? undefined,
+    avatarPublicId: payload.avatarPublicId ?? undefined,
+  });
+  if (!parsed.success) {
+    throw new Error("Avatar invalide");
+  }
+
+  const { avatarUrl, avatarPublicId } = parsed.data;
+
+  const previous = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { avatarPublicId: true },
+  });
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      avatarUrl: avatarUrl ?? null,
+      avatarPublicId: avatarPublicId ?? null,
+    },
+  });
+
   const previousPublicId = previous?.avatarPublicId;
   const newPublicId = avatarPublicId ?? null;
   if (
@@ -137,5 +166,5 @@ export async function updateProfileAction(formData: FormData) {
   }
 
   revalidatePath("/app/profile");
-  redirect("/app/profile?saved=1");
+  return { ok: true };
 }

@@ -527,11 +527,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
                     </div>
-                    <p className="text-sm text-slate-300 line-clamp-2">
-                      {canViewPremium
-                        ? p.tips ?? p.description ?? "Aucun détail"
-                        : "Détails réservés aux élèves premium."}
-                    </p>
+                    {canViewPremium && (p.tips || p.description) ? (
+                      <p className="text-sm text-slate-300 line-clamp-2">
+                        {p.tips ?? p.description ?? "Aucun détail"}
+                      </p>
+                    ) : null}
                     {showPremiumBadge && (
                       <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
                         <p className="font-semibold">Accès Premium requis</p>
