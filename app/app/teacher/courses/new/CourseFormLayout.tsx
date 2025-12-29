@@ -21,6 +21,7 @@ type ProgressRecord = {
 type Props = {
   formId: string;
   safeFrom: string;
+  initialError?: string;
   students: Student[];
   positions: Position[];
   teachers: Teacher[];
@@ -48,6 +49,7 @@ export function CourseFormLayout({
   studentsWithActiveInjury,
   progressByStudent,
   action,
+  initialError,
 }: Props) {
   return (
     <div className="flex min-h-screen w-full flex-col gap-4">
@@ -77,6 +79,12 @@ export function CourseFormLayout({
           </div>
         </div>
       </header>
+
+      {initialError === "collision" && (
+        <div className="mx-1 rounded-xl border border-amber-300/50 bg-amber-500/10 p-3 text-sm font-semibold text-amber-100 shadow-lg shadow-amber-900/30 md:mx-0">
+          Conflit horaire/studio détecté : choisis un autre créneau ou studio.
+        </div>
+      )}
 
       <div className="space-y-6">
         <CourseForm

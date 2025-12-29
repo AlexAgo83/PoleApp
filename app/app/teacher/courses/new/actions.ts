@@ -180,7 +180,8 @@ export async function createCourseAction(formData: FormData) {
     });
   });
   if (hasCollision) {
-    throw new Error("Conflit horaire/studio détecté, série non créée");
+    const back = parsed.data.from && parsed.data.from.startsWith("/") ? parsed.data.from : "/app/teacher/courses/new";
+    redirect(`${back}?error=collision`);
   }
 
   const courseId = await prisma.$transaction(async (tx) => {
