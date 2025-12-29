@@ -76,17 +76,18 @@ export default async function AdminSchoolPage({
     prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
   ]);
 
+  const headerBg = schoolPhoto ?? COURSE_PLACEHOLDER;
+
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <header
         className="panel relative overflow-hidden p-6 space-y-4"
         style={{
-          backgroundImage: schoolPhoto ? `url(${schoolPhoto})` : undefined,
+          backgroundImage: `linear-gradient(180deg, rgba(10,14,24,0.78), rgba(10,14,24,0.78)), url(${headerBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[1px]" aria-hidden="true" />
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Admin</p>
@@ -95,27 +96,24 @@ export default async function AdminSchoolPage({
               Modifier les informations visibles par les professeurs et élèves rattachés.
             </p>
           </div>
-        </div>
-        <div className="relative z-10 mt-2 flex flex-wrap justify-end gap-3 text-sm">
           <Link
             href="/app/admin"
-            className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-white transition hover:border-cyan-200/70 hover:bg-white/15"
+            className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:border-cyan-200/70 hover:bg-white/15"
           >
             ← Retour dashboard
           </Link>
         </div>
-        {!schoolPhoto && (
-          <div className="relative z-10">
-            <SafeImage
-              src={schoolPhoto ?? ""}
-              alt={`Photo de l’école ${baseSchool?.name ?? "École"}`}
-              width={1200}
-              height={360}
-              className="h-56 w-full rounded-xl border border-white/10 object-cover shadow"
-              fallbackSrc={COURSE_PLACEHOLDER}
-            />
+
+        <div className="relative z-10 mt-4 space-y-3">
+          <h3 className="text-lg font-semibold text-white">Résumé</h3>
+          <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 md:grid-cols-3">
+            <Stat label="Utilisateurs" value={totalUsers} />
+            <Stat label="Profs" value={teacherCount} />
+            <Stat label="Élèves" value={studentCount} />
+            <Stat label="Studios" value={studioCount} />
+            <Stat label="Partenaires" value={partnerCount} />
           </div>
-        )}
+        </div>
       </header>
 
       {flash && flashMessage && (
@@ -131,133 +129,170 @@ export default async function AdminSchoolPage({
       )}
 
       <section className="panel space-y-4 p-6">
-        <div className="flex flex-col gap-1">
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Identité</p>
-          <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
-          <p className="text-sm text-slate-300">
-            ID : <span className="font-mono text-slate-200">{baseSchool?.id ?? "—"}</span>
-        {schoolWebsite ? (
-          <>
-            {" · "}
-            <Link
-              href={schoolWebsite}
-                  className="text-cyan-200 underline underline-offset-2"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Site web
-                </Link>
-              </>
-            ) : null}
-            {schoolPhoto && (
-              <>
-                {" · "}
-                <span className="text-slate-400">Photo définie</span>
-              </>
-            )}
-          </p>
-        </div>
-        <form action={updateSchoolAction} className="space-y-3">
-          <input type="hidden" name="schoolId" value={session.user.schoolId} />
-          <label className="block text-sm text-slate-200">
-            Nom de l’école
-            <input
-              name="name"
-              defaultValue={baseSchool?.name ?? ""}
-              required
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-          </label>
-          <label className="block text-sm text-slate-200">
-            Photo (URL)
-            <input
-              name="photoUrl"
-              type="url"
-              placeholder="https://..."
-              defaultValue={schoolPhoto ?? ""}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-          </label>
-          <label className="block text-sm text-slate-200">
-            Site web (optionnel)
-            <input
-              name="website"
-              type="url"
-              placeholder="https://..."
-              defaultValue={schoolWebsite ?? ""}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-          </label>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
-            >
-              Sauvegarder
-            </button>
-          </div>
-        </form>
-      </section>
+        <details className="group space-y-4">
+          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
+            <div className="flex flex-col gap-1">
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Identité</p>
+              <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+              <span className="group-open:hidden">Modifier</span>
+              <span className="hidden group-open:inline">Fermer</span>
+            </span>
+          </summary>
 
-      <section className="panel space-y-3 p-6">
-        <h3 className="text-lg font-semibold text-white">Résumé</h3>
-        <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 md:grid-cols-3">
-          <Stat label="Utilisateurs" value={totalUsers} />
-          <Stat label="Profs" value={teacherCount} />
-          <Stat label="Élèves" value={studentCount} />
-          <Stat label="Studios" value={studioCount} />
-          <Stat label="Partenaires" value={partnerCount} />
-        </div>
+          <div className="space-y-4 pt-1">
+            <p className="text-sm text-slate-300">
+              ID : <span className="font-mono text-slate-200">{baseSchool?.id ?? "—"}</span>
+              {schoolWebsite ? (
+                <>
+                  {" · "}
+                  <Link
+                    href={schoolWebsite}
+                    className="text-cyan-200 underline underline-offset-2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Site web
+                  </Link>
+                </>
+              ) : null}
+              {schoolPhoto && (
+                <>
+                  {" · "}
+                  <span className="text-slate-400">Photo définie</span>
+                </>
+              )}
+            </p>
+
+            <form action={updateSchoolAction} className="space-y-3">
+              <input type="hidden" name="schoolId" value={session.user.schoolId} />
+              <label className="block text-sm text-slate-200">
+                Nom de l’école
+                <input
+                  name="name"
+                  defaultValue={baseSchool?.name ?? ""}
+                  required
+                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                />
+              </label>
+              <label className="block text-sm text-slate-200">
+                Photo (URL)
+                <input
+                  name="photoUrl"
+                  type="url"
+                  placeholder="https://..."
+                  defaultValue={schoolPhoto ?? ""}
+                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                />
+              </label>
+              <label className="block text-sm text-slate-200">
+                Site web (optionnel)
+                <input
+                  name="website"
+                  type="url"
+                  placeholder="https://..."
+                  defaultValue={schoolWebsite ?? ""}
+                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                />
+              </label>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+                >
+                  Sauvegarder
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </details>
       </section>
 
       <section className="panel space-y-4 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Disciplines</p>
-            <h3 className="text-xl font-semibold text-white">Liste et création</h3>
-            <p className="text-sm text-slate-300">
-              Gère les disciplines utilisables dans les filtres et la création de cours.
-            </p>
-          </div>
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white">
-            {baseSchool?.disciplines.length ?? 0} discipline(s)
-          </span>
-        </div>
+        <details className="group space-y-4">
+          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Disciplines</p>
+              <h3 className="text-xl font-semibold text-white">Liste et création</h3>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+              <span className="group-open:hidden">Modifier</span>
+              <span className="hidden group-open:inline">Fermer</span>
+            </span>
+          </summary>
 
-        <div className="grid gap-3 md:grid-cols-2">
-          {baseSchool?.disciplines.map((d) => (
-            <div
-              key={d.id}
-              className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="h-4 w-4 rounded-full border border-white/20"
-                    style={{ backgroundColor: d.color }}
-                    aria-hidden="true"
-                  />
-                  <span className="font-semibold text-white">{d.name}</span>
+          <div className="space-y-4 pt-1">
+            <div className="grid gap-3 md:grid-cols-2">
+              {baseSchool?.disciplines.map((d) => (
+                <div
+                  key={d.id}
+                  className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-4 w-4 rounded-full border border-white/20"
+                        style={{ backgroundColor: d.color }}
+                        aria-hidden="true"
+                      />
+                      <span className="font-semibold text-white">{d.name}</span>
+                    </div>
+                    <form action={deleteDisciplineAction}>
+                      <input type="hidden" name="disciplineId" value={d.id} />
+                      <button
+                        type="submit"
+                        className="text-xs font-semibold text-red-200 hover:text-red-100"
+                      >
+                        Supprimer
+                      </button>
+                    </form>
+                  </div>
+                  <form action={updateDisciplineAction} className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-5 md:items-end">
+                    <input type="hidden" name="disciplineId" value={d.id} />
+                    <label className="text-xs text-slate-300 md:col-span-3">
+                      Nom
+                      <input
+                        name="name"
+                        defaultValue={d.name}
+                        required
+                        className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-cyan-400/70"
+                      />
+                    </label>
+                    <label className="text-xs text-slate-300 md:col-span-1">
+                      Couleur
+                      <input
+                        type="color"
+                        name="color"
+                        defaultValue={d.color}
+                        className="mt-1 h-[42px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
+                      />
+                    </label>
+                    <div className="md:col-span-1 flex justify-end">
+                      <button
+                        type="submit"
+                        className="w-full rounded-xl border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
+                      >
+                        Mettre à jour
+                      </button>
+                    </div>
+                  </form>
                 </div>
-                <form action={deleteDisciplineAction}>
-                  <input type="hidden" name="disciplineId" value={d.id} />
-                  <button
-                    type="submit"
-                    className="text-xs font-semibold text-red-200 hover:text-red-100"
-                  >
-                    Supprimer
-                  </button>
-                </form>
-              </div>
-              <form action={updateDisciplineAction} className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-5 md:items-end">
-                <input type="hidden" name="disciplineId" value={d.id} />
+              ))}
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <h4 className="text-sm font-semibold text-white">Créer une discipline</h4>
+              <p className="text-xs text-slate-300">Nom + couleur. Suppression bloquée si utilisée par un cours.</p>
+              <form action={createDisciplineAction} className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-5 md:items-end">
                 <label className="text-xs text-slate-300 md:col-span-3">
                   Nom
                   <input
                     name="name"
-                    defaultValue={d.name}
                     required
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-cyan-400/70"
+                    placeholder="Danse, Pole, Exotic..."
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/70"
                   />
                 </label>
                 <label className="text-xs text-slate-300 md:col-span-1">
@@ -265,55 +300,22 @@ export default async function AdminSchoolPage({
                   <input
                     type="color"
                     name="color"
-                    defaultValue={d.color}
-                    className="mt-1 h-[42px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
+                    defaultValue="#7c3aed"
+                    className="mt-1 h-[44px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
                   />
                 </label>
                 <div className="md:col-span-1 flex justify-end">
                   <button
                     type="submit"
-                    className="w-full rounded-xl border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
+                    className="w-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-xs font-semibold text-white shadow-lg transition hover:brightness-110"
                   >
-                    Mettre à jour
+                    Ajouter
                   </button>
                 </div>
               </form>
             </div>
-          ))}
-        </div>
-
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-          <h4 className="text-sm font-semibold text-white">Créer une discipline</h4>
-          <p className="text-xs text-slate-300">Nom + couleur. Suppression bloquée si utilisée par un cours.</p>
-          <form action={createDisciplineAction} className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-5 md:items-end">
-            <label className="text-xs text-slate-300 md:col-span-3">
-              Nom
-              <input
-                name="name"
-                required
-                placeholder="Danse, Pole, Exotic..."
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/70"
-              />
-            </label>
-            <label className="text-xs text-slate-300 md:col-span-1">
-              Couleur
-              <input
-                type="color"
-                name="color"
-                defaultValue="#7c3aed"
-                className="mt-1 h-[44px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
-              />
-            </label>
-            <div className="md:col-span-1 flex justify-end">
-              <button
-                type="submit"
-                className="w-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-xs font-semibold text-white shadow-lg transition hover:brightness-110"
-              >
-                Ajouter
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+        </details>
       </section>
     </main>
   );
@@ -321,7 +323,7 @@ export default async function AdminSchoolPage({
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+    <div className="rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
       <p className="text-xs uppercase tracking-[0.14em] text-slate-400">{label}</p>
       <p className="text-2xl font-semibold text-white">{value}</p>
     </div>
