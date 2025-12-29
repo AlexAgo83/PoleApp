@@ -318,12 +318,9 @@ export function BuyCreditsButton({
               <p className="text-base font-semibold text-white">
                 {subtitle ?? (mode === "upgrade" ? "Abonnement premium" : "Packs / abonnements")}
               </p>
-              <p className="text-sm text-slate-300">
-                {description ??
-                  (mode === "upgrade"
-                    ? "Ouvre la modal premium (abonnement)."
-                    : "Ouvre la modal d’achat pour simuler un pack ou un abo.")}
-              </p>
+              {description ? (
+                <p className="text-sm text-slate-300">{description}</p>
+              ) : mode === "upgrade" ? null : null}
             </div>
           </div>
         </div>
