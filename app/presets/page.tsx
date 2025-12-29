@@ -183,26 +183,26 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               Parcours filtrable des combos : discipline, premium ou crédits. Les élèves peuvent acheter directement.
             </p>
           </div>
-          <div className="flex w-full justify-end gap-2 md:w-auto">
+          <div className="flex w-full flex-wrap justify-end gap-2 md:w-auto">
             {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
               <Link
                 href="/app/teacher/presets"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
               >
-                Gestion (prof/admin)
+                <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Gestion (prof/admin)</span>
               </Link>
             )}
             <Link
               href={homeForRole}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              ← Retour accueil
+              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">← Retour accueil</span>
             </Link>
             <Link
               href="/positions"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              Positions
+              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Positions</span>
             </Link>
           </div>
         </div>
