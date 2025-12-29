@@ -153,99 +153,6 @@ export default async function AdminDashboard({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel p-3 md:p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          <h1 className="text-3xl font-semibold text-white">
-            {baseSchool?.name ?? "École"},
-          </h1>
-          <Link
-            href="/app/admin/school"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            aria-label="Éditer la fiche école"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/gear.svg" alt="" className="h-4 w-4" />
-            Éditer l&apos;école
-          </Link>
-        </div>
-        {schoolWebsite ? (
-          <a
-            href={schoolWebsite}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
-          >
-            Site web
-          </a>
-        ) : null}
-        <p className="text-sm text-slate-300">
-          Vue synthétique de l’école et accès rapide aux actions admin.
-        </p>
-        <div className="mt-1 flex flex-wrap justify-end gap-2 text-sm">
-          <Link
-            href="/app/admin/studios"
-            className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
-          >
-            Studios
-          </Link>
-          <Link
-            href="/app/admin/partners"
-            className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
-          >
-            Partenaires
-          </Link>
-          <Link
-            href="/app/admin/teachers"
-            className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-2 text-white transition hover:border-amber-300/80 hover:bg-white/10"
-          >
-            Professeurs
-          </Link>
-          <Link
-            href="/app/teacher/students"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Étudiants
-          </Link>
-          <Link
-            href="/app/teacher/courses/agenda?view=month"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Cours
-          </Link>
-          <Link
-          href="/positions"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          Positions
-        </Link>
-        <Link
-          href="/app/admin/presets"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          Combo / Presets
-        </Link>
-        <Link
-          href="/app/student/game"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          Jeux
-          </Link>
-          <Link
-            href="/app/admin/billing"
-            className="rounded-full border border-emerald-400/70 bg-emerald-500/15 px-3 py-2 text-white transition hover:border-emerald-300/80 hover:bg-emerald-500/25"
-          >
-            Facturation
-          </Link>
-          <Link
-            href="/app/admin/users"
-            className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-white transition hover:bg-cyan-400"
-          >
-            Gérer les utilisateurs
-          </Link>
-        </div>
-      </header>
-
       <section className="grid gap-3 md:gap-4 md:grid-cols-2">
         <div className="panel space-y-3 p-6">
           <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
@@ -296,6 +203,62 @@ export default async function AdminDashboard({
             }
           />
           <ActionCard
+            title="Studios"
+            description="Créer, éditer et organiser les studios de l’école."
+            href="/app/admin/studios"
+            cta="Gérer les studios"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 4l8 4-8 4-8-4 8-4z" />
+                <path d="M4 12v5.5A1.5 1.5 0 005.5 19H9v-5.5" />
+                <path d="M20 12v5.5A1.5 1.5 0 0118.5 19H15v-5.5" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Partenaires"
+            description="Gérer les partenaires et liens sponsorisés de l’école."
+            href="/app/admin/partners"
+            cta="Voir partenaires"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8a6 6 0 00-9.33-5" />
+                <path d="M5 22a7 7 0 0010-6.71" />
+                <path d="M16 8a6 6 0 00-9.33-5" />
+                <path d="M2 22a7 7 0 0010-6.71" />
+                <path d="M7 10h10" />
+                <path d="M7 14h10" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Professeurs"
+            description="Liste des profs de l’école et accès fiches."
+            href="/app/admin/teachers"
+            cta="Voir professeurs"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="7" r="3" />
+                <path d="M6.5 20v-1.5A3.5 3.5 0 0110 15h4a3.5 3.5 0 013.5 3.5V20" />
+                <path d="M4 20h16" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Étudiants"
+            description="Consulte les élèves (inscriptions, blessures, progression)."
+            href="/app/teacher/students"
+            cta="Voir élèves"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="8" r="3" />
+                <circle cx="17" cy="9" r="3" />
+                <path d="M17 14c-1.1 0-2.1.3-3 .8A6 6 0 009 13a6 6 0 00-5.9 5" />
+                <path d="M16 16a3 3 0 013 3" />
+              </svg>
+            }
+          />
+          <ActionCard
             title="Suivre les cours"
             description="Consulte les cours saisis et l’impact progression."
             href="/app/teacher/courses/agenda?view=month"
@@ -308,6 +271,21 @@ export default async function AdminDashboard({
                 <path d="M4 11h16" />
                 <path d="M9 15h2" />
                 <path d="M13 15h2" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Positions"
+            description="Catalogue positions, création/édition, médias."
+            href="/positions"
+            cta="Gérer les positions"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5c-2 0-3.5 1.5-3.5 3.5S10 12 12 12s3.5 1.5 3.5 3.5S14 19 12 19" />
+                <path d="M12 5V3" />
+                <path d="M12 21v-2" />
+                <path d="M5 12h2" />
+                <path d="M17 12h2" />
               </svg>
             }
           />
@@ -326,6 +304,19 @@ export default async function AdminDashboard({
             }
           />
           <ActionCard
+            title="Fiche école"
+            description="Photo, adresse, site web et infos générales de l’école."
+            href="/app/admin/school"
+            cta="Voir la fiche"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3l8 5-8 5-8-5z" />
+                <path d="M4 10v7a1 1 0 001 1h14a1 1 0 001-1v-7" />
+                <path d="M12 18v-5" />
+              </svg>
+            }
+          />
+          <ActionCard
             title="Presets / combos"
             description="Crée et gère les presets vidéo premium ou en crédits."
             href="/app/admin/presets"
@@ -336,6 +327,35 @@ export default async function AdminDashboard({
                 <path d="M4 9h16" />
                 <path d="M8 5v14" />
                 <path d="M16 5v14" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Jeux"
+            description="Mini-jeu de révision positions (accès élève)."
+            href="/app/student/game"
+            cta="Ouvrir le jeu"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="7" />
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 5V3" />
+                <path d="M12 21v-2" />
+                <path d="M5 12H3" />
+                <path d="M21 12h-2" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Facturation"
+            description="Factures cours, exports CSV, statuts et montants."
+            href="/app/admin/billing"
+            cta="Gérer la facturation"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 4h10a2 2 0 012 2v12l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
+                <path d="M9 8h6" />
+                <path d="M9 12h6" />
               </svg>
             }
           />
@@ -380,15 +400,10 @@ function ActionCard({
           </span>
         ) : null}
         <div className="flex-1">
-          <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">Action</p>
+          <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">{cta}</p>
           <p className="text-lg font-semibold text-white">{title}</p>
           <p className="text-sm text-slate-300">{description}</p>
         </div>
-      </div>
-      <div className="flex items-center justify-end">
-        <span className="text-sm font-semibold text-cyan-300 group-hover:translate-x-1">
-          {cta} →
-        </span>
       </div>
     </Link>
   );
