@@ -325,7 +325,6 @@ export default async function StudentDashboard() {
               subscriptions={subs}
               title="Passer premium"
               subtitle="Abonnement"
-              description="Ouvre la modal premium (abonnement)."
             />
           )}
           <Link
