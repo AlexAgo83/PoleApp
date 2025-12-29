@@ -223,8 +223,12 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                             </p>
                           )}
                           {course.isVirtual && (
-                            <p className="truncate text-[10px] text-amber-100">
-                              Occurrence virtuelle (positions à définir)
+                            <p
+                              className="truncate text-[12px] text-amber-100"
+                              title="Occurrence programmée · positions à définir"
+                              aria-label="Occurrence programmée"
+                            >
+                              🗓️
                             </p>
                           )}
                         </div>

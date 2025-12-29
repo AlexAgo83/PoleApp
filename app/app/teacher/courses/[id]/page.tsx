@@ -198,7 +198,7 @@ export default async function TeacherCourseDetailPage({
                 </h1>
                 {course.isVirtual && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
-                    Occurrence virtuelle (positions à définir)
+                    Occurrence programmée
                   </span>
                 )}
                 <Link

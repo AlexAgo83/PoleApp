@@ -371,6 +371,10 @@ async function upsertProgressFromNotes(
 
 const deleteSchema = z.object({
   courseId: z.string().cuid(),
+  deleteVirtualOccurrences: z
+    .union([z.literal("true"), z.literal("false"), z.boolean()])
+    .optional()
+    .transform((val) => val === true || val === "true"),
 });
 
 const applySuggestionsSchema = z.object({
@@ -405,27 +409,57 @@ export async function deleteCourseAction(formData: FormData) {
 
   const parsed = deleteSchema.safeParse({
     courseId: formData.get("courseId"),
+    deleteVirtualOccurrences: formData.get("deleteVirtualOccurrences"),
   });
 
   if (!parsed.success) {
     throw new Error("Form invalid");
   }
 
-  const existing = await prisma.course.findFirst({
+  const course = await prisma.course.findFirst({
     where: { id: parsed.data.courseId, schoolId: session.user.schoolId },
-    select: { id: true },
+    select: { id: true, recurrenceSeriesId: true },
   });
-  if (!existing) {
+  if (!course) {
     redirect("/access-denied");
   }
 
+  const deleteVirtualOccurrences = parsed.data.deleteVirtualOccurrences ?? false;
+  const extraVirtualCourses =
+    deleteVirtualOccurrences && course.recurrenceSeriesId
+      ? await prisma.course
+          .findMany({
+            where: {
+              recurrenceSeriesId: course.recurrenceSeriesId,
+              isVirtual: true,
+              id: { not: course.id },
+              schoolId: session.user.schoolId,
+            },
+            select: { id: true },
+          })
+          .then((rows) => rows.map((r) => r.id))
+      : [];
+  const idsToDelete = [course.id, ...extraVirtualCourses];
+
   await prisma.$transaction(async (tx) => {
-    await tx.courseAttendance.deleteMany({ where: { courseId: parsed.data.courseId } });
-    await tx.coursePosition.deleteMany({ where: { courseId: parsed.data.courseId } });
-    await tx.courseNote.deleteMany({ where: { courseId: parsed.data.courseId } });
+    await tx.courseAttendance.deleteMany({ where: { courseId: { in: idsToDelete } } });
+    await tx.coursePosition.deleteMany({ where: { courseId: { in: idsToDelete } } });
+    await tx.courseNote.deleteMany({ where: { courseId: { in: idsToDelete } } });
     // cleanup invoices linked to the course to avoid FK errors
-    await tx.invoice.deleteMany({ where: { courseId: parsed.data.courseId } });
-    await tx.course.delete({ where: { id: parsed.data.courseId } });
+    await tx.invoice.deleteMany({ where: { courseId: { in: idsToDelete } } });
+    try {
+      await tx.courseRecommendation.deleteMany({ where: { courseId: { in: idsToDelete } } });
+    } catch (error) {
+      const message = (error as Error)?.message ?? "";
+      const tableMissing = message.includes("CourseRecommendation") || message.includes("does not exist");
+      if (!tableMissing) throw error;
+    }
+    await tx.course.deleteMany({ where: { id: { in: idsToDelete } } });
+    if (course.recurrenceSeriesId) {
+      await tx.courseRecurrenceSeries.deleteMany({
+        where: { id: course.recurrenceSeriesId, courses: { none: {} } },
+      });
+    }
   });
 
   revalidatePath("/app/teacher/courses");

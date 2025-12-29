@@ -8,7 +8,6 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "../actions";
 import { SafeImage } from "@/components/SafeImage";
 import { LocalDateTime } from "@/components/LocalDateTime";
-import { LocalDateTime } from "@/components/LocalDateTime";
 
 const NOW_MS = Date.now();
 
@@ -205,7 +204,7 @@ export default async function StudentCourseDetailPage({
                 )}
                 {(isVirtual || !hasPositions) && (
                   <p className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-100">
-                    Occurrence virtuelle : positions à définir (inscription bloquée)
+                    Occurrence programmée : positions à définir (inscription bloquée)
                   </p>
                 )}
                 <p className="flex flex-wrap items-center gap-2">

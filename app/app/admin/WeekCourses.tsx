@@ -196,11 +196,15 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                         <p className="truncate text-[10px] text-slate-200">
                           {course.studioName}
                         </p>
-                        {course.isVirtual && (
-                          <p className="truncate text-[10px] text-amber-100">
-                            Occurrence virtuelle (positions à définir)
-                          </p>
-                        )}
+                          {course.isVirtual && (
+                            <p
+                              className="truncate text-[12px] text-amber-100"
+                              title="Occurrence programmée · positions à définir"
+                              aria-label="Occurrence programmée"
+                            >
+                              🗓️
+                            </p>
+                          )}
                       </div>
                       <span
                         className={`absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
