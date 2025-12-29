@@ -91,11 +91,29 @@ export default async function CoursesAgendaPage({
   const viewParam = resolved.view;
   const view: "month" | "week" = viewParam === "week" ? "week" : "month";
   const weekParam = typeof resolved.week === "string" && resolved.week ? resolved.week : undefined;
+  const weekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : new Date();
+  const startWeek = new Date(weekBase);
+  const dayOffsetWeek = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
+  startWeek.setDate(startWeek.getDate() - dayOffsetWeek);
+  startWeek.setHours(0, 0, 0, 0);
+  const endWeek = new Date(startWeek);
+  endWeek.setDate(startWeek.getDate() + 6);
+  endWeek.setHours(23, 59, 59, 999);
   const baseDate = monthParam ? new Date(`${monthParam}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(baseDate);
   const monthEnd = endOfMonth(baseDate);
-  const rangeStart = fromParam ? new Date(`${fromParam}T00:00:00`) : monthStart;
-  const rangeEnd = toParam ? new Date(`${toParam}T23:59:59`) : monthEnd;
+  const rangeStart =
+    view === "week"
+      ? startWeek
+      : fromParam
+      ? new Date(`${fromParam}T00:00:00`)
+      : monthStart;
+  const rangeEnd =
+    view === "week"
+      ? endWeek
+      : toParam
+      ? new Date(`${toParam}T23:59:59`)
+      : monthEnd;
 
   const effectiveTeacherFilter = isTeacher ? teacherFilter ?? session.user.id : teacherFilter;
   const buildViewHref = (mode: "month" | "week", weekValue?: string) => {
@@ -230,11 +248,6 @@ export default async function CoursesAgendaPage({
   ].filter(Boolean).length;
 
   // Vue semaine avec navigation
-  const today = new Date();
-  const weekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : today;
-  const startWeek = new Date(weekBase);
-  const dayOffset = startWeek.getDay() === 0 ? 6 : startWeek.getDay() - 1; // Monday=0
-  startWeek.setDate(startWeek.getDate() - dayOffset);
   const weekDays = Array.from({ length: 7 }).map((_, idx) => {
     const d = new Date(startWeek);
     d.setDate(startWeek.getDate() + idx);
