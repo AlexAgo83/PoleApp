@@ -8,7 +8,6 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
 import { SafeImage } from "@/components/SafeImage";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
@@ -62,7 +61,6 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
     );
   }
 
-  const headerBg = (schoolPhoto ?? "").trim() || COURSE_PLACEHOLDER;
   let totalCount = 0;
   let totalPages = 1;
   let currentPage = 1;
@@ -124,14 +122,6 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
           )}
         </div>
       )}
-      <FoxPageHeader
-        eyebrow="Admin"
-        title="Studios"
-        backgroundImage={headerBg}
-        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
-        foxHref="/"
-      />
-
       <section className="panel p-4 md:p-6">
         <PersistedPanel
           storageKey="panel:admin-studios-create"
@@ -230,9 +220,17 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
         {studios.length === 0 && (
           <p className="text-slate-200">Aucun studio pour le moment.</p>
         )}
-        <div className="divide-y divide-white/5">
+        <div className="grid gap-4 md:grid-cols-2">
           {studios.map((studio) => (
-            <article key={studio.id} className="flex flex-col gap-4 py-4">
+            <article
+              key={studio.id}
+              className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/10"
+              style={{
+                backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.68)), url(${studio.photoUrl ?? COURSE_PLACEHOLDER})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
               {(() => {
                 const baseParams = new URLSearchParams();
                 if (q) baseParams.set("q", q);
@@ -244,7 +242,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                 const isEditing = editId === studio.id;
                 if (!isEditing) {
                   return (
-                    <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/10">
+                    <div className="flex flex-col gap-3 text-sm text-slate-200">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-indigo-100">

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Prisma, Role } from "@prisma/client";
 import { SafeImage } from "@/components/SafeImage";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 import { authOptions } from "@/lib/auth";
 import { createUserAction, deleteUserAction } from "./actions";
@@ -102,24 +101,6 @@ export default async function AdminUsersPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        eyebrow="Admin"
-        title="Utilisateurs"
-        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
-        foxHref="/"
-      >
-        <div className="space-y-2 text-sm text-slate-200">
-          <p>
-            Connecté en <strong>{session.user.email}</strong>
-          </p>
-          {(params?.success || params?.error) && (
-            <p className={params?.error ? "text-amber-300" : "text-emerald-300"}>
-              {params?.error ?? params?.success}
-            </p>
-          )}
-        </div>
-      </FoxPageHeader>
-
       <section className="panel p-4 md:p-6">
         <PersistedPanel
           storageKey="panel:admin-users-create"

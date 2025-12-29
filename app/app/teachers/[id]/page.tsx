@@ -96,13 +96,7 @@ export default async function TeacherPublicProfilePage({
     teacher.favoritePositions
       .map((fp) => fp.position)
       .filter((p): p is NonNullable<typeof p> => Boolean(p)) ?? [];
-  const backHref =
-    safeFrom ??
-    (session.user.role === "SCHOOL_ADMIN"
-      ? "/app/admin/teachers"
-      : session.user.role === "STUDENT"
-        ? "/app/student/teachers"
-        : "/app/teacher");
+  const backHref = safeFrom ?? null;
   const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
   const [firstNameDefault, ...restName] =
     (teacher.name ?? "")
@@ -135,14 +129,7 @@ export default async function TeacherPublicProfilePage({
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={backHref}
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300 hover:text-cyan-200"
-            >
-              ← Retour
-            </Link>
-          </div>
+          <div className="flex flex-wrap items-center gap-2" />
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
