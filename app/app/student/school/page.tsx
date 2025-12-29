@@ -424,10 +424,19 @@ export default async function StudentSchoolPage({
     .filter((item) => !isPastCourse(item.course.date, item.course.durationMinutes))
     .sort((a, b) => new Date(a.course.date).getTime() - new Date(b.course.date).getTime())
     .slice(0, 8);
+  const schoolPhoto = school.photoUrl?.trim() || COURSE_PLACEHOLDER;
+  const headerBgStyle = {
+    backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel flex flex-wrap items-start justify-between gap-3 border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30">
+      <header
+        className="panel relative flex flex-wrap items-start justify-between gap-3 border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30 overflow-hidden"
+        style={headerBgStyle}
+      >
         <div className="flex-1">
           <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Réservation & studios</p>
           <h1 className="text-3xl font-semibold text-white">Agenda · {school.name}</h1>
@@ -451,18 +460,6 @@ export default async function StudentSchoolPage({
         >
           ← Retour accueil
         </Link>
-        {school.photoUrl && (
-          <div className="mt-3 w-full">
-            <SafeImage
-              src={school.photoUrl}
-              alt={`Photo de l’école ${school.name}`}
-              width={1200}
-              height={360}
-              className="h-56 w-full rounded-xl border border-white/10 object-cover shadow"
-              fallbackSrc={COURSE_PLACEHOLDER}
-            />
-          </div>
-        )}
       </header>
 
       <section className="panel p-6">

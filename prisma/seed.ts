@@ -898,8 +898,72 @@ async function seedCourses(schoolsData: {
       });
     }
 
+    // Cours “edge” : tôt/tard, durées variées, coûts/places atypiques, quotas waitlist, quelques virtuels non récurrents
+    const edgeDates = [
+      { hour: 7, minute: 0, duration: 30, cost: 0, seats: 12, waitlist: 5, virtual: false },
+      { hour: 22, minute: 0, duration: 90, cost: 150, seats: 8, waitlist: 3, virtual: false },
+      { hour: 6, minute: 30, duration: 45, cost: 0, seats: 10, waitlist: 2, virtual: true },
+    ];
+    for (const edge of edgeDates) {
+      const edgeDate = new Date();
+      edgeDate.setDate(edgeDate.getDate() + 3);
+      edgeDate.setHours(edge.hour, edge.minute, 0, 0);
+      const studio = createdStudios[Math.floor(Math.random() * createdStudios.length)];
+      const teacher = schoolTeachers[Math.floor(Math.random() * schoolTeachers.length)];
+      if (!studio || !teacher) continue;
+      if (reservedSlots.some((s) => edgeDate < s.end && s.start < new Date(edgeDate.getTime() + edge.duration * 60_000))) {
+        continue;
+      }
+      const disciplineName = disciplinePool[Math.floor(Math.random() * disciplinePool.length)]?.name ?? PRIMARY_DISCIPLINE;
+      const disciplinePositions = positions.filter(
+        (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
+      );
+      const chosenPositions =
+        edge.virtual || disciplinePositions.length === 0
+          ? []
+          : disciplinePositions.slice(0, Math.min(3, disciplinePositions.length));
+
+      const course = await prisma.course.create({
+        data: {
+          title: `Cours edge ${disciplineName}`,
+          date: edgeDate,
+          durationMinutes: edge.duration,
+          teacherId: teacher.id,
+          schoolId: school.id,
+          studioId: studio.id,
+          discipline: disciplineName,
+          maxSeats: edge.seats,
+          costCredits: edge.cost,
+          waitlistQuota: edge.waitlist,
+          isVirtual: edge.virtual,
+          photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
+          positions:
+            edge.virtual || chosenPositions.length === 0
+              ? undefined
+              : {
+                  create: chosenPositions.map((p) => ({ positionId: p.id })),
+                },
+        },
+      });
+      courseImageIdx += 1;
+      studioCourseCount.set(studio.id, (studioCourseCount.get(studio.id) ?? 0) + 1);
+      reservedSlots.push({
+        start: edgeDate,
+        end: new Date(edgeDate.getTime() + edge.duration * 60_000),
+      });
+    }
+
     // Ajouter des cours récurrents hebdo (Pole) sur ~2 mois avec occurrences virtuelles
-    const recurrenceTemplates: { weekday: number; hour: number; minute: number; duration: number; studioIndex: number }[] = [
+    const recurrenceTemplates: {
+      weekday: number;
+      hour: number;
+      minute: number;
+      duration: number;
+      studioIndex: number;
+      discipline?: string;
+      short?: boolean;
+      collision?: boolean;
+    }[] = [
       { weekday: 2, hour: 14, minute: 0, duration: 60, studioIndex: 0 }, // mardi 14h
       { weekday: 4, hour: 15, minute: 0, duration: 90, studioIndex: 0 }, // jeudi 15h
       ...createdStudios.slice(1).map((_, idx) => ({
@@ -909,11 +973,31 @@ async function seedCourses(schoolsData: {
         duration: 60,
         studioIndex: idx + 1,
       })), // vendredis sur les autres studios
+      { weekday: 1, hour: 9, minute: 30, duration: 75, studioIndex: 0, discipline: "Pilates" }, // discipline alternative
+      { weekday: 6, hour: 10, minute: 0, duration: 60, studioIndex: 0, discipline: "Souplesse", short: true }, // série courte
     ];
     const startBase = new Date();
     startBase.setDate(startBase.getDate() + 3); // décale légèrement pour éviter conflits immédiats
     const untilBase = new Date(startBase);
     untilBase.setMonth(untilBase.getMonth() + 2);
+    const shortUntil = new Date(startBase);
+    shortUntil.setDate(shortUntil.getDate() + 20); // série courte pour test conversion virtuel->réel
+    // Slot réservé pour provoquer des collisions
+    const collisionAnchor = new Date(startBase);
+    collisionAnchor.setHours(16, 0, 0, 0);
+    reservedSlots.push({
+      start: collisionAnchor,
+      end: new Date(collisionAnchor.getTime() + 60 * 60_000),
+    });
+    recurrenceTemplates.push({
+      weekday: collisionAnchor.getDay(),
+      hour: 16,
+      minute: 0,
+      duration: 60,
+      studioIndex: 0,
+      discipline: PRIMARY_DISCIPLINE,
+      collision: true,
+    });
 
     for (const tmpl of recurrenceTemplates) {
       const sortedTeachers = [...schoolTeachers].sort((a, b) => {
@@ -927,18 +1011,19 @@ async function seedCourses(schoolsData: {
       if (!teacher || !studio) continue;
       teacherUsage.set(teacher.id, (teacherUsage.get(teacher.id) ?? 0) + 1);
 
+      const until = tmpl.short ? shortUntil : untilBase;
       const series = await prisma.courseRecurrenceSeries.create({
         data: {
           schoolId: school.id,
           teacherId: teacher.id,
           frequency: "WEEKLY",
-          until: untilBase,
+          until,
         },
       });
 
       const occurrences: Date[] = [];
       const cursor = new Date(startBase);
-      while (cursor <= untilBase) {
+      while (cursor <= until) {
         if (cursor.getDay() === tmpl.weekday) {
           const start = new Date(cursor);
           start.setHours(tmpl.hour, tmpl.minute, 0, 0);
@@ -947,7 +1032,7 @@ async function seedCourses(schoolsData: {
         cursor.setDate(cursor.getDate() + 1);
       }
 
-      const disciplineName = PRIMARY_DISCIPLINE;
+      const disciplineName = tmpl.discipline ?? PRIMARY_DISCIPLINE;
       const disciplinePositions = positions.filter(
         (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
       );
