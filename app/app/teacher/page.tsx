@@ -42,38 +42,6 @@ export default async function TeacherDashboard() {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-4 p-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/5 shadow-inner shadow-slate-900/30">
-              {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-base font-semibold text-white/90">{avatarInitial}</span>
-              )}
-            </div>
-            <h2 className="text-xl text-white">
-              Bonjour <span className="font-semibold text-fuchsia-200">{displayName}</span>,
-            </h2>
-          </div>
-          {teacherProfileHref && (
-            <Link
-              href={teacherProfileHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
-              aria-label="Éditer le profil"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/gear.svg" alt="" className="h-4 w-4" />
-              Éditer
-            </Link>
-          )}
-        </div>
-        <p className="text-slate-300">
-          Accès réservé aux profs/admins de l’école pour gérer élèves, cours et progression.
-        </p>
-      </section>
-
       <section className="panel p-6">
         <h3 className="text-lg font-semibold text-white">
           Modules et actions prof
