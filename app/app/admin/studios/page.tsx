@@ -7,6 +7,8 @@ import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
+import { SafeImage } from "@/components/SafeImage";
+import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +39,15 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
+  }
+  let schoolPhoto: string | null = null;
+  try {
+    const rows = await prisma.$queryRawUnsafe<{ photoUrl: string | null }[]>(
+      `SELECT "photoUrl" FROM "School" WHERE "id" = '${session.user.schoolId}' LIMIT 1`
+    );
+    schoolPhoto = rows?.[0]?.photoUrl ?? null;
+  } catch {
+    // Column may not exist; ignore.
   }
   const userKey = session.user.id ?? "anon";
   if (!session.user.schoolId) {
@@ -111,20 +122,42 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
           )}
         </div>
       )}
-      <header className="panel p-4 md:p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">Studios</h1>
-        <p className="text-sm text-slate-300">
-          Gère les studios de l’école (nom, adresse) et associe-les aux cours.
-        </p>
-        <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
-          <Link
-            href="/app/admin"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
+      <header
+        className="panel relative overflow-hidden p-4 md:p-6"
+        style={{
+          backgroundImage: schoolPhoto ? `url(${schoolPhoto})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-slate-900/65 backdrop-blur-[1px]" aria-hidden />
+        <div className="relative z-10 space-y-3">
+          <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Admin</p>
+          <h1 className="text-3xl font-semibold text-white">Studios</h1>
+          <p className="text-sm text-slate-100/90">
+            Gère les studios de l’école (nom, adresse) et associe-les aux cours.
+          </p>
+          <div className="mt-2 flex flex-wrap justify-end gap-3 text-sm">
+            <Link
+              href="/app/admin"
+              className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-white transition hover:border-cyan-200/70 hover:bg-white/15"
+            >
+              ← Retour dashboard
+            </Link>
+          </div>
         </div>
+        {!schoolPhoto && (
+          <div className="relative z-10 mt-3">
+            <SafeImage
+              src={schoolPhoto ?? ""}
+              alt="Photo de l’école"
+              width={1200}
+              height={300}
+              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
+              fallbackSrc={COURSE_PLACEHOLDER}
+            />
+          </div>
+        )}
       </header>
 
       <section className="panel p-4 md:p-6">
