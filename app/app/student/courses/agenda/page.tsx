@@ -253,7 +253,6 @@ export default async function StudentCoursesAgendaPage({
           include: {
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
-            isVirtual: true,
             _count: { select: { positions: true } },
             attendances: {
               where: { studentId: session.user.id },

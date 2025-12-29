@@ -164,7 +164,7 @@ export async function deleteUserAction(formData: FormData) {
 
   const user = await prisma.user.findUnique({
     where: { id: data.userId },
-    select: { schoolId: true },
+    select: { schoolId: true, avatarPublicId: true },
   });
   if (!user || user.schoolId !== admin.schoolId) {
     redirect("/access-denied");

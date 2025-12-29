@@ -16,7 +16,7 @@ export default async function StudentDashboard() {
   }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarUrl: true, avatarPublicId: true },
+    select: { id: true, name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarUrl: true, avatarPublicId: true },
   });
   const isPremium = Boolean(user?.isPremium);
   const nameParts =

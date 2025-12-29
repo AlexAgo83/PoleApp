@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -35,16 +35,13 @@ function formatWithTz(date: Date, timeZone: string) {
 }
 
 export async function GET(
-  req: Request,
-  context:
-    | { params: { id?: string } }
-    | Promise<{ params: { id?: string } }>,
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
-  const resolved = await Promise.resolve(context);
-  const params = "params" in resolved ? await Promise.resolve(resolved.params) : undefined;
+  const { id } = await context.params;
   const url = new URL(req.url);
   const courseIdFromQuery = url.searchParams.get("id") ?? url.searchParams.get("courseId");
-  const courseIdFromPath = params?.id;
+  const courseIdFromPath = id;
   const courseId = courseIdFromPath ?? courseIdFromQuery ?? undefined;
   if (!courseId) {
     return NextResponse.json({ error: "missing id" }, { status: 400 });
