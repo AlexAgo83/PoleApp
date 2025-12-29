@@ -164,9 +164,6 @@ export default async function AdminDashboard({
         <div className="panel space-y-2 p-3 md:p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-200">
-              J+0 focus
-            </span>
           </div>
           <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
@@ -196,33 +193,6 @@ export default async function AdminDashboard({
             }
           />
           <ActionCard
-            title="Studios"
-            description="Créer, éditer et organiser les studios de l’école."
-            href="/app/admin/studios"
-            cta="Gérer les studios"
-            icon={
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 4l8 4-8 4-8-4 8-4z" />
-                <path d="M4 12v5.5A1.5 1.5 0 005.5 19H9v-5.5" />
-                <path d="M20 12v5.5A1.5 1.5 0 0118.5 19H15v-5.5" />
-              </svg>
-            }
-          />
-          <ActionCard
-            title="Étudiants"
-            description="Consulte les élèves (inscriptions, blessures, progression)."
-            href="/app/teacher/students"
-            cta="Voir élèves"
-            icon={
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="8" r="3" />
-                <circle cx="17" cy="9" r="3" />
-                <path d="M17 14c-1.1 0-2.1.3-3 .8A6 6 0 009 13a6 6 0 00-5.9 5" />
-                <path d="M16 16a3 3 0 013 3" />
-              </svg>
-            }
-          />
-          <ActionCard
             title="Professeurs"
             description="Liste des profs de l’école et accès fiches."
             href="/app/admin/teachers"
@@ -246,6 +216,20 @@ export default async function AdminDashboard({
                 <path d="M5 21v-2a5 5 0 0110 0v2" />
                 <path d="M17 11h3" />
                 <path d="M18.5 9.5v3" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Étudiants"
+            description="Consulte les élèves (inscriptions, blessures, progression)."
+            href="/app/teacher/students"
+            cta="Voir élèves"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="8" r="3" />
+                <circle cx="17" cy="9" r="3" />
+                <path d="M17 14c-1.1 0-2.1.3-3 .8A6 6 0 009 13a6 6 0 00-5.9 5" />
+                <path d="M16 16a3 3 0 013 3" />
               </svg>
             }
           />
@@ -281,20 +265,6 @@ export default async function AdminDashboard({
             }
           />
           <ActionCard
-            title="Presets / combos"
-            description="Crée et gère les presets vidéo premium ou en crédits."
-            href="/app/admin/presets"
-            cta="Gérer les presets"
-            icon={
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="4" y="5" width="16" height="14" rx="2" />
-                <path d="M4 9h16" />
-                <path d="M8 5v14" />
-                <path d="M16 5v14" />
-              </svg>
-            }
-          />
-          <ActionCard
             title="Jeux"
             description="Mini-jeu de révision positions (accès élève)."
             href="/app/student/game"
@@ -307,6 +277,20 @@ export default async function AdminDashboard({
                 <path d="M12 21v-2" />
                 <path d="M5 12H3" />
                 <path d="M21 12h-2" />
+              </svg>
+            }
+          />
+          <ActionCard
+            title="Presets / combos"
+            description="Crée et gère les presets vidéo premium ou en crédits."
+            href="/app/admin/presets"
+            cta="Gérer les presets"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="5" width="16" height="14" rx="2" />
+                <path d="M4 9h16" />
+                <path d="M8 5v14" />
+                <path d="M16 5v14" />
               </svg>
             }
           />

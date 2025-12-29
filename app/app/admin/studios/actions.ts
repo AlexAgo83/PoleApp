@@ -9,16 +9,16 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const createSchema = z.object({
-  name: z.string().min(2),
-  address: z.string().optional(),
-  photoUrl: z.string().url().max(2048).optional(),
+  name: z.string().trim().min(1),
+  address: z.string().trim().optional(),
+  photoUrl: z.string().trim().url().max(2048).optional(),
 });
 
 const updateSchema = z.object({
   id: z.string().cuid(),
-  name: z.string().min(2),
-  address: z.string().optional(),
-  photoUrl: z.string().url().max(2048).optional(),
+  name: z.string().trim().min(1),
+  address: z.string().trim().optional(),
+  photoUrl: z.string().trim().url().max(2048).optional(),
 });
 
 const deleteSchema = z.object({
@@ -26,6 +26,12 @@ const deleteSchema = z.object({
 });
 
 const basePath = "/app/admin/studios";
+
+function sanitizeRedirect(redirectTo: unknown): string | null {
+  if (typeof redirectTo !== "string") return null;
+  if (!redirectTo.startsWith("/")) return null;
+  return redirectTo;
+}
 
 async function requireAdminWithSchool() {
   const session = await getServerSession(authOptions);
@@ -37,6 +43,7 @@ async function requireAdminWithSchool() {
 
 export async function createStudioAction(formData: FormData) {
   const schoolId = await requireAdminWithSchool();
+  const redirectTo = sanitizeRedirect(formData.get("redirectTo"));
   const parsed = createSchema.safeParse({
     name: formData.get("name"),
     address: formData.get("address") || undefined,
@@ -56,11 +63,15 @@ export async function createStudioAction(formData: FormData) {
   });
 
   revalidatePath(basePath);
-  redirect(`${basePath}?flash=created`);
+  if (redirectTo && redirectTo !== basePath) {
+    revalidatePath(redirectTo);
+  }
+  redirect(`${redirectTo ?? basePath}?flash=created`);
 }
 
 export async function updateStudioAction(formData: FormData) {
   const schoolId = await requireAdminWithSchool();
+  const redirectTo = sanitizeRedirect(formData.get("redirectTo"));
   const parsed = updateSchema.safeParse({
     id: formData.get("studioId"),
     name: formData.get("name"),
@@ -89,11 +100,15 @@ export async function updateStudioAction(formData: FormData) {
   });
 
   revalidatePath(basePath);
-  redirect(`${basePath}?flash=updated`);
+  if (redirectTo && redirectTo !== basePath) {
+    revalidatePath(redirectTo);
+  }
+  redirect(`${redirectTo ?? basePath}?flash=updated`);
 }
 
 export async function deleteStudioAction(formData: FormData) {
   const schoolId = await requireAdminWithSchool();
+  const redirectTo = sanitizeRedirect(formData.get("redirectTo"));
   const parsed = deleteSchema.safeParse({ id: formData.get("studioId") });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
@@ -114,5 +129,8 @@ export async function deleteStudioAction(formData: FormData) {
   await prisma.studio.delete({ where: { id: parsed.data.id } });
 
   revalidatePath(basePath);
-  redirect(`${basePath}?flash=deleted`);
+  if (redirectTo && redirectTo !== basePath) {
+    revalidatePath(redirectTo);
+  }
+  redirect(`${redirectTo ?? basePath}?flash=deleted`);
 }

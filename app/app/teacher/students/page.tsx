@@ -169,6 +169,9 @@ export default async function TeacherStudentsPage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-4 border-indigo-400/15 p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Élèves de l'école</h2>
+        </div>
         <FilterPanel
           storageKey="filters:teacher-students"
           title="Filtres"
