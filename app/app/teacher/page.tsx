@@ -54,9 +54,6 @@ export default async function TeacherDashboard() {
                 <p className="text-base font-semibold text-white">
                   Liste et fiches élèves
                 </p>
-                <p className="text-sm text-slate-300">
-                  Voir blessures et progression par position, filtré sur ton école.
-                </p>
               </div>
             </div>
           </Link>
@@ -82,9 +79,6 @@ export default async function TeacherDashboard() {
                 <p className="text-base font-semibold text-white">
                   Créer et suivre les cours
                 </p>
-                <p className="text-sm text-slate-300">
-                  Présences, positions, notes élève×position, impact progression.
-                </p>
               </div>
             </div>
           </Link>
@@ -106,10 +100,7 @@ export default async function TeacherDashboard() {
                   Fiche professeur
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Photo, diplômes, positions préférées
-                </p>
-                <p className="text-sm text-slate-300">
-                  Vue partagée avec tes élèves. Édite depuis ton profil.
+                  Photo, diplômes, positions coup de cœur
                 </p>
               </div>
             </div>
@@ -132,9 +123,6 @@ export default async function TeacherDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Fiche école
-                </p>
-                <p className="text-sm text-slate-300">
-                  Studios et partenaires rattachés à ton école.
                 </p>
               </div>
             </div>
@@ -162,9 +150,6 @@ export default async function TeacherDashboard() {
                   Positions
                 </p>
                 <p className="text-base font-semibold text-white">Gérer les positions</p>
-                <p className="text-sm text-slate-300">
-                  Voir/ajouter des positions (types, niveaux, médias) utilisables en cours.
-                </p>
               </div>
             </div>
           </Link>
@@ -184,7 +169,6 @@ export default async function TeacherDashboard() {
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Combos</p>
                 <p className="text-base font-semibold text-white">Créer/ gérer les combos</p>
-                <p className="text-sm text-slate-300">Combos vidéo premium ou en crédits avec positions liées.</p>
               </div>
             </div>
           </Link>
@@ -202,8 +186,7 @@ export default async function TeacherDashboard() {
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Achats élèves</p>
-                <p className="text-base font-semibold text-white">Packs / Abos / Presets</p>
-                <p className="text-sm text-slate-300">Lecture des achats de l’école (packs, abonnements, presets).</p>
+                <p className="text-base font-semibold text-white">Packs / Abos / Combos</p>
               </div>
             </div>
           </Link>
@@ -224,10 +207,7 @@ export default async function TeacherDashboard() {
                   Facturation
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Suivre tes factures (lecture)
-                </p>
-                <p className="text-sm text-slate-300">
-                  Montants, statuts et présences sur tes cours (lecture seule).
+                  Suivre tes factures
                 </p>
               </div>
             </div>
@@ -254,9 +234,6 @@ export default async function TeacherDashboard() {
                 <p className="text-base font-semibold text-white">
                   6 mini-jeux de révision
                 </p>
-                <p className="text-sm text-slate-300">
-                  Photo→nom, nom→type/niveau/grips/intro/tip pour animer tes sessions.
-                </p>
               </div>
             </div>
           </Link>
@@ -281,9 +258,6 @@ export default async function TeacherDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Voir partenaires/links sponsorisés
-                </p>
-                <p className="text-sm text-slate-300">
-                  Liste des partenaires de l’école et leurs liens sponsorisés.
                 </p>
               </div>
             </div>
