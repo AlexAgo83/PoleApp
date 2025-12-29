@@ -149,7 +149,7 @@ export async function updateCourseAction(formData: FormData) {
     return start < cEnd && cStart < end;
   });
   if (hasCollision) {
-    throw new Error("Conflit horaire/studio détecté, mise à jour impossible");
+    redirect(`/app/teacher/courses/${data.id}/edit?error=collision`);
   }
 
   await prisma.$transaction(async (tx) => {
@@ -463,7 +463,7 @@ export async function deleteCourseAction(formData: FormData) {
   });
 
   revalidatePath("/app/teacher/courses");
-  redirect("/app/teacher/courses");
+  redirect("/app/teacher/courses/agenda?view=month");
 }
 
 export async function removeCoursePositionAction(formData: FormData) {

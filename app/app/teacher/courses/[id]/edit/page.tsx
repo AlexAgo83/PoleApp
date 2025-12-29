@@ -10,7 +10,7 @@ import { DeleteCourseDialog } from "../DeleteCourseDialog";
 
 type Props = {
   params: { id: string } | Promise<{ id?: string }>;
-  searchParams?: Promise<{ from?: string }>;
+  searchParams?: Promise<{ from?: string; error?: string }>;
 };
 
 export default async function EditCoursePage({ params, searchParams }: Props) {
@@ -192,6 +192,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
   const resolvedSearch = (await searchParams) ?? {};
   const rawFrom = resolvedSearch.from;
+  const initialError = resolvedSearch.error;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom
@@ -209,6 +210,12 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           Mets à jour la date, les élèves, les positions et les notes pour ce cours.
         </p>
       </header>
+
+      {initialError === "collision" && (
+        <div className="panel border-amber-400/40 bg-amber-500/10 p-4 text-sm font-semibold text-amber-100">
+          Conflit horaire/studio détecté : choisis un autre créneau ou studio.
+        </div>
+      )}
 
       {storedRecommendations.length > 0 && (
         <section className="panel border-indigo-400/15 p-6">

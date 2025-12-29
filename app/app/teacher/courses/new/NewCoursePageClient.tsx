@@ -35,9 +35,10 @@ type NewCourseData = {
 type Props = {
   formId: string;
   safeFrom: string;
+  initialError?: string;
 };
 
-export function NewCoursePageClient({ formId, safeFrom }: Props) {
+export function NewCoursePageClient({ formId, safeFrom, initialError }: Props) {
   const [data, setData] = useState<NewCourseData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -126,6 +127,7 @@ export function NewCoursePageClient({ formId, safeFrom }: Props) {
     <CourseFormLayout
       formId={formId}
       safeFrom={safeFrom}
+      initialError={initialError}
       students={data.students}
       positions={data.positions}
       teachers={data.teachers}
