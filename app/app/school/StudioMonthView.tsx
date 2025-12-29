@@ -11,6 +11,7 @@ type Course = {
   durationMinutes: number | null;
   teacherName?: string | null;
   studioName?: string | null;
+  isVirtual?: boolean;
   myStatus?: "CONFIRMED" | "WAITLIST" | null;
   waitlistRank?: number | null;
   past?: boolean;
@@ -196,13 +197,18 @@ export function StudioMonthView({
                         : new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 < Date.now();
                     const courseDate = new Date(course.date);
                     const courseId = course.courseId ?? course.id;
+                    const isVirtual = Boolean(course.isVirtual);
 
                     return (
                       <Link
                         key={`${course.id}-${courseId}`}
                         href={`${courseBasePath}/${courseId}?from=${encodeURIComponent(baseFrom)}`}
                         className={`relative mt-1 flex items-start gap-2 rounded-lg border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/10 ${
-                          past ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80" : "border-white/10 bg-white/10 text-white"
+                          isVirtual
+                            ? "border-amber-300/70 bg-amber-500/20 text-white"
+                            : past
+                            ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80"
+                            : "border-white/10 bg-white/10 text-white"
                         }`}
                       >
                         <div className="flex-1 space-y-0.5 overflow-hidden pr-4">
@@ -219,6 +225,11 @@ export function StudioMonthView({
                           <p className="truncate text-[10px] text-slate-200">
                             {course.studioName ?? "Studio"}
                           </p>
+                          {isVirtual && (
+                            <p className="text-[12px] text-amber-100" title="Occurrence programmée · positions à définir">
+                              🗓️
+                            </p>
+                          )}
                         </div>
                         {course.myStatus ? (
                           <span

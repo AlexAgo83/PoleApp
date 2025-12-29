@@ -316,6 +316,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 durationMinutes: course.durationMinutes,
                 teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
                 studioName: course.studio?.name ?? "Studio",
+                isVirtual: (course as any).isVirtual ?? false,
                 myStatus: attendance(course)?.status ?? null,
                 waitlistRank: attendance(course)?.waitlistRank ?? null,
                 past: isPastCourse(course.date as Date, course.durationMinutes),

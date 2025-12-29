@@ -125,11 +125,16 @@ export async function GET(req: Request) {
     : await prisma.course
         .findMany({
           where: whereBase,
-          include: {
-            teacher: { select: { name: true, email: true } },
-            studio: { select: { name: true } },
+          select: {
+            id: true,
+            title: true,
+            discipline: true,
+            date: true,
+            durationMinutes: true,
             isVirtual: true,
             _count: { select: { positions: true } },
+            teacher: { select: { name: true, email: true } },
+            studio: { select: { name: true } },
             attendances: {
               where: { studentId: session.user.id },
               select: { id: true, status: true, waitlistRank: true },

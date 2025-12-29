@@ -6,8 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { purchaseCourseAction } from "../actions";
-import { SafeImage } from "@/components/SafeImage";
 import { LocalDateTime } from "@/components/LocalDateTime";
+import { ShareLinkButton } from "@/components/ShareLinkButton";
 
 const NOW_MS = Date.now();
 
@@ -154,11 +154,19 @@ export default async function StudentCourseDetailPage({
     hour: "2-digit",
     minute: "2-digit",
   });
+  const headerBgStyle = {
+    backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${coursePhoto})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <header
+        className="panel relative space-y-4 overflow-hidden border-indigo-400/25 p-6 shadow-indigo-900/30"
+        style={headerBgStyle}
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-stretch md:justify-between">
           <div className="flex flex-col gap-3 md:w-2/3">
             <div className="space-y-2">
               <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
@@ -166,64 +174,50 @@ export default async function StudentCourseDetailPage({
                 {course.title ?? "Cours"}
               </h1>
             </div>
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
-              <SafeImage
-                src={coursePhoto}
-                alt={course.title ?? "Cours"}
-                width={128}
-                height={80}
-                className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
-                fallbackSrc={COURSE_PLACEHOLDER}
-              />
             <div className="space-y-1 text-sm text-slate-200">
-              <p className="text-base text-white">
+              <p className="text-base text-white flex flex-wrap items-center gap-2">
                 {teacherProfileHref ? (
                   <Link
                     href={teacherProfileHref}
-                      className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[12px] font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-white/10"
-                    >
-                      {teacherName}
-                    </Link>
-                  ) : (
-                    teacherName
-                  )}
-                </p>
-                <p className="flex flex-wrap items-center gap-1">
-                  <LocalDateTime
-                    iso={course.date.toISOString()}
-                    fallback={formattedDate}
-                    options={{ year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }}
-                  />
-                  <span className="mx-1">·</span>
-                  Durée : {formatDuration(course.durationMinutes ?? 60)}
-                </p>
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[12px] font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-white/10"
+                  >
+                    {teacherName}
+                  </Link>
+                ) : (
+                  <span>{teacherName}</span>
+                )}
                 {course.discipline && (
-                  <p className="text-sm text-cyan-100">
-                    Discipline · {course.discipline}
-                  </p>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-100">
+                    {course.discipline}
+                  </span>
                 )}
-                {(isVirtual || !hasPositions) && (
-                  <p className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-100">
-                    Occurrence programmée : positions à définir (inscription bloquée)
-                  </p>
+              </p>
+              <p className="flex flex-wrap items-center gap-1">
+                <LocalDateTime
+                  iso={course.date.toISOString()}
+                  fallback={formattedDate}
+                  options={{ year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }}
+                />
+                <span className="mx-1">·</span>
+                Durée : {formatDuration(course.durationMinutes ?? 60)}
+              </p>
+              <p className="flex flex-wrap items-center gap-2">
+                {remainingSeats} place(s) restante(s) · {cost} crédits
+                {isWaitlist && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
+                    Liste d’attente
+                    {typeof myAttendance.waitlistRank === "number"
+                      ? ` · rang #${myAttendance.waitlistRank}`
+                      : ""}
+                    {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
+                  </span>
                 )}
-                <p className="flex flex-wrap items-center gap-2">
-                  {remainingSeats} place(s) restante(s) · {cost} crédits
-                  {isWaitlist && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
-                      Liste d’attente
-                      {typeof myAttendance.waitlistRank === "number"
-                        ? ` · rang #${myAttendance.waitlistRank}`
-                        : ""}
-                      {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
-                    </span>
-                  )}
-                  {!isWaitlist && remainingSeats <= 0 && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
-                      Liste d’attente
-                      {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
-                    </span>
-                  )}
+                {!isWaitlist && remainingSeats <= 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-purple-300/70 bg-purple-500/20 px-2 py-0.5 text-[11px] font-semibold text-purple-50">
+                    Liste d’attente
+                    {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
+                  </span>
+                )}
               </p>
               {course.school?.name && (
                 <p className="text-slate-300">
@@ -235,61 +229,74 @@ export default async function StudentCourseDetailPage({
                   Studio : {course.studio.name}
                   {course.studio.address ? ` — ${course.studio.address}` : ""}
                 </p>
-                )}
-              </div>
+              )}
             </div>
           </div>
-          <div className="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto md:self-start">
-            {!isAttending && (
-              <form action={purchaseCourseAction}>
-                <input type="hidden" name="courseId" value={course.id} />
-                <button
-                  type="submit"
-                  disabled={!canBuy || (remainingSeats <= 0 && waitlistFull)}
-                  className={`rounded-full px-3 py-2 text-sm font-semibold transition ${
-                    canBuy && !(remainingSeats <= 0 && waitlistFull)
-                      ? "border border-cyan-400/70 bg-cyan-500/20 text-white hover:bg-cyan-400/30"
-                      : "border border-white/10 bg-white/5 text-slate-400 cursor-not-allowed"
-                  }`}
-                  title={
-                    canBuy
-                      ? remainingSeats > 0
+          <div className="flex w-full flex-col items-end gap-3 md:w-1/3 md:self-stretch md:justify-end">
+            {(isVirtual || !hasPositions) && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
+                Occurrence programmée
+              </span>
+            )}
+            <div className="flex w-full flex-col items-end gap-3 md:mt-auto">
+              {!isAttending && (
+                <div className="flex w-full flex-wrap items-center justify-end">
+                  <form action={purchaseCourseAction} className="flex">
+                    <input type="hidden" name="courseId" value={course.id} />
+                    <button
+                      type="submit"
+                      disabled={!canBuy || (remainingSeats <= 0 && waitlistFull)}
+                      className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                        canBuy && !(remainingSeats <= 0 && waitlistFull)
+                          ? "border border-cyan-400/70 bg-cyan-500/20 text-white hover:bg-cyan-400/30"
+                          : "border border-white/10 bg-white/5 text-slate-400 cursor-not-allowed"
+                      }`}
+                      title={
+                        canBuy
+                          ? remainingSeats > 0
+                            ? "S'inscrire"
+                            : waitlistFull
+                            ? "Liste d'attente complète"
+                            : "Rejoindre la liste d’attente"
+                          : isVirtual || !hasPositions
+                          ? "Inscription bloquée tant que les positions ne sont pas définies"
+                          : endTime <= NOW_MS
+                          ? "Cours passé"
+                          : (session.user.credits ?? 0) < cost
+                          ? "Crédits insuffisants"
+                          : "Non disponible"
+                      }
+                    >
+                      {remainingSeats > 0
                         ? "S'inscrire"
                         : waitlistFull
-                        ? "Liste d'attente complète"
-                        : "Rejoindre la liste d’attente"
-                      : isVirtual || !hasPositions
-                      ? "Inscription bloquée tant que les positions ne sont pas définies"
-                      : endTime <= NOW_MS
-                      ? "Cours passé"
-                      : (session.user.credits ?? 0) < cost
-                      ? "Crédits insuffisants"
-                      : "Non disponible"
-                  }
+                        ? "Liste d’attente complète"
+                        : "Liste d’attente"}{" "}
+                      ({cost} crédits)
+                    </button>
+                  </form>
+                </div>
+              )}
+              <div className="flex w-full flex-wrap items-center justify-end gap-3 md:flex-nowrap">
+                <Link
+                  href={backHref}
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
                 >
-                  {remainingSeats > 0
-                    ? "S'inscrire"
-                    : waitlistFull
-                    ? "Liste d’attente complète"
-                    : "Liste d’attente"}{" "}
-                  ({cost} crédits)
-                </button>
-              </form>
-            )}
-            <ShareLinkButton path={sharePath} />
-            <Link
-              href={icsHref}
-              prefetch={false}
-              className="rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
-            >
-              Ajouter à mon agenda
-            </Link>
-            <Link
-              href={backHref}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-            >
-              Retour à mes cours
-            </Link>
+                  ← Retour à mes cours
+                </Link>
+                <ShareLinkButton
+                  path={sharePath}
+                  className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-semibold"
+                />
+                <Link
+                  href={icsHref}
+                  prefetch={false}
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
+                >
+                  Ajouter à mon agenda
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </header>
