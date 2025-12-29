@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 import { SafeImage } from "@/components/SafeImage";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
-import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { AVATAR_PLACEHOLDER, COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
 
@@ -68,6 +68,11 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
   const skip = (safePage - 1) * PAGE_SIZE;
+  const school = await prisma.school.findUnique({
+    where: { id: session.user.schoolId },
+    select: { name: true, photoUrl: true },
+  });
+  const schoolPhoto = school?.photoUrl?.trim() || COURSE_PLACEHOLDER;
 
   const teachers = await prisma.user.findMany({
     where: whereClause,
@@ -87,25 +92,39 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel p-4 md:p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
-        <p className="text-sm text-slate-300">
-          Liste des professeurs de l’école. Filtre par recherche et premium.
-        </p>
-        <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
-          <Link
-            href="/app/admin"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
-          <Link
-            href="/app/admin/users?role=TEACHER"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Gérer via utilisateurs
-          </Link>
+      <header
+        className="panel relative overflow-hidden border-indigo-400/25 p-6 shadow-indigo-900/30"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Admin</p>
+            <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
+            <p className="text-sm text-slate-200">
+              Liste des professeurs de l’école. Filtre par recherche et premium.
+            </p>
+            {school?.name ? (
+              <p className="text-xs text-slate-300 mt-1">École : {school.name}</p>
+            ) : null}
+          </div>
+          <div className="flex flex-wrap justify-end gap-3 text-sm md:self-start">
+            <Link
+              href="/app/admin"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+            <Link
+              href="/app/admin/users?role=TEACHER"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Gérer via utilisateurs
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -166,11 +185,11 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-4">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {teachers.map((teacher) => (
                 <article
                   key={teacher.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20 backdrop-blur md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20 backdrop-blur"
                 >
                   <div className="flex flex-1 items-center gap-4">
                     <SafeImage
@@ -203,12 +222,14 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
                       </p>
                     </div>
                   </div>
-                  <Link
-                    href={`/app/teachers/${teacher.id}?from=/app/admin/teachers`}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                  >
-                    Voir la fiche
-                  </Link>
+                  <div className="flex justify-end">
+                    <Link
+                      href={`/app/teachers/${teacher.id}?from=/app/admin/teachers`}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    >
+                      Voir la fiche
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>
