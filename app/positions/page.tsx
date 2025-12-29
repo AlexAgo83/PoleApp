@@ -250,7 +250,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         </div>
       </section>
 
-      <header className="panel space-y-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
@@ -288,6 +288,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ← Retour accueil
               </Link>
             )}
+            <Link
+              href="/presets"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Combos
+            </Link>
             {canManage ? (
               <Link
                 href="/teacher/positions/new"
@@ -298,15 +304,13 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
             ) : null}
           </div>
         </div>
-      </header>
 
-      {isStudent && (
-        <div className="hidden" aria-hidden="true">
-          <BuyCreditsButton currentCredits={studentCredits} showUpgrade packs={packOffers} subscriptions={subscriptionOffers} />
-        </div>
-      )}
+        {isStudent && (
+          <div className="hidden" aria-hidden="true">
+            <BuyCreditsButton currentCredits={studentCredits} showUpgrade packs={packOffers} subscriptions={subscriptionOffers} />
+          </div>
+        )}
 
-      <section className="panel space-y-4 px-6 py-4 md:py-6">
         <FilterPanel
           storageKey="filters:positions"
           title="Filtres"
