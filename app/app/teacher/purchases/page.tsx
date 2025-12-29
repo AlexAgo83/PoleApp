@@ -141,7 +141,7 @@ export default async function TeacherPurchasesPage({
           </form>
         </FilterPanel>
 
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+        <div className="">
           {rows.length === 0 ? (
             <p className="text-slate-300">Aucun achat trouvé.</p>
           ) : (

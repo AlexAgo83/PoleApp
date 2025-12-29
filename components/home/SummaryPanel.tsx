@@ -135,66 +135,67 @@ export default function SummaryPanel({ appVersion }: Props) {
               </span>
             </div>
             <div className="mt-3 grid gap-2">
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S006 — Partenaires & facturation admin</p>
-                  <p className="text-white font-semibold">Filtres persistés, exports CSV, toasts, agenda admin</p>
-                  <p className="text-xs text-slate-400">Avancement 100% (QA validée)</p>
+              {[
+                {
+                  code: "S012 — Occurrences virtuelles & Cloudinary",
+                  desc: "Récurrence cours, blocage inscription sans positions, uploads avatars signés.",
+                  stateLabel: "Livré",
+                  progress: "Livré",
+                  badgeClass:
+                    "border-emerald-400/60 bg-emerald-500/20 text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.45)]",
+                  textClass: "text-slate-400",
+                },
+                {
+                  code: "S013 — Retours QA S012",
+                  desc: "UI agendas/ICS, seed avatars/studios, alignement boutons/labels.",
+                  stateLabel: "En cours",
+                  progress: "En cours (80%)",
+                  badgeClass:
+                    "border-amber-300 bg-amber-400/30 text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]",
+                  textClass: "text-slate-400",
+                },
+                {
+                  code: "S011 — Parcours élève premium/crédits",
+                  desc: "Modules achats/premium, historique achats élève, badge crédits déplacé.",
+                  stateLabel: "En cours",
+                  progress: "En cours (60%)",
+                  badgeClass:
+                    "border-amber-300 bg-amber-400/30 text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]",
+                  textClass: "text-slate-400",
+                },
+                {
+                  code: "S010 — DRY_007 muscles/blessures",
+                  desc: "Muscles/blessures, générateur, reset MDP (QA à finaliser).",
+                  stateLabel: "En cours",
+                  progress: "En cours (75%)",
+                  badgeClass:
+                    "border-amber-300 bg-amber-400/30 text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]",
+                  textClass: "text-slate-400",
+                },
+                {
+                  code: "S009 — Super-admin & audit",
+                  desc: "Audit/logs, promotion/dégradation comptes, harmonisation panels.",
+                  stateLabel: "À faire",
+                  progress: "À faire",
+                  badgeClass:
+                    "border-slate-300 bg-slate-500/30 text-slate-100",
+                  textClass: "text-slate-400",
+                },
+              ].map((item) => (
+                <div
+                  key={item.code}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                >
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">{item.code}</p>
+                    <p className="text-white font-semibold">{item.desc}</p>
+                    <p className={`text-xs ${item.textClass}`}>Avancement {item.progress}</p>
+                  </div>
+                  <span className={`inline-flex min-w-[100px] items-center justify-center rounded-full px-3 py-1 text-[12px] font-semibold ${item.badgeClass}`}>
+                    {item.stateLabel}
+                  </span>
                 </div>
-                <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/20 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.45)]">
-                  Livré
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S005 — Agenda teacher & générateur cours</p>
-                  <p className="text-white font-semibold">Filtres multi, badges appliqué/forcé/exclu, scoring équilibré</p>
-                  <p className="text-xs text-slate-400">Avancement 100% (QA validée)</p>
-                </div>
-                <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/20 px-3 py-1 text-[12px] font-semibold text-emerald-50 shadow-[0_0_10px_rgba(16,185,129,0.45)]">
-                  Livré
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S010 — DRY_007</p>
-                  <p className="text-white font-semibold">Muscles/blessures, générateur, reset MDP</p>
-                  <p className="text-xs text-slate-400">Avancement 75% (P0/P1 quasi livrés, QA à faire)</p>
-                </div>
-                <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
-                  En cours
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S009 — Super-admin & audit</p>
-                  <p className="text-white font-semibold">Audit log/2FA (placeholder), promo/dégrad, panels harmonisés</p>
-                  <p className="text-xs text-slate-400">Avancement 80% (UI harmonisée, reste QA audit/logs)</p>
-                </div>
-                <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
-                  En cours
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S008 — Admin/élève</p>
-                  <p className="text-white font-semibold">Billing, CRUD disciplines, achats élève</p>
-                  <p className="text-xs text-slate-400">Avancement 85% (mail reset prod à finaliser, QA achats/disciplines)</p>
-                </div>
-                <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-amber-300 bg-amber-400/30 px-3 py-1 text-[12px] font-semibold text-amber-50 shadow-[0_0_16px_rgba(251,191,36,0.7)] animate-[pulse_1.5s_ease-in-out_infinite]">
-                  En cours
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.12em] text-slate-400">S011 — Retours QA S012</p>
-                  <p className="text-white font-semibold">Combos associés, agenda studio, parcours élève/premium, facturation, statuts financiers</p>
-                  <p className="text-xs text-slate-400">Avancement 0% (backlog validé, implémentation à planifier)</p>
-                </div>
-                <span className="inline-flex min-w-[86px] items-center justify-center rounded-full border border-slate-300 bg-slate-500/30 px-3 py-1 text-[12px] font-semibold text-slate-100">
-                  À faire
-                </span>
-              </div>
+              ))}
             </div>
           </aside>
         </div>
