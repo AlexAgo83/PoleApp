@@ -2,12 +2,12 @@
 
 import { redirect } from "next/navigation";
 
-import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { prisma } from "@/lib/prisma";
 
 type PurchaseRow = Prisma.PurchaseGetPayload<{
@@ -69,28 +69,15 @@ export default async function AdminPurchasesPage({ searchParams }: { searchParam
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-2 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h1 className="text-2xl font-semibold">Achats (packs / abonnements)</h1>
-            <p className="text-sm text-slate-300">Achats des élèves de l’école : packs crédits et abonnements.</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href="/app/admin"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour dashboard
-            </Link>
-            <Link
-              href="/app/admin/billing"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
-            >
-              Facturation
-            </Link>
-          </div>
-        </div>
-      </section>
+      <FoxPageHeader
+        eyebrow="Admin"
+        title="Achats (packs / abonnements)"
+        buttons={[
+          { label: "Retour dashboard", href: "/app/admin" },
+          { label: "Facturation", href: "/app/admin/billing" },
+        ]}
+        foxHref="/"
+      />
 
       <section className="panel mt-4 space-y-4 p-6">
         <FilterPanel title="Filtres" activeCount={[kind, status, q && q.length > 0].filter(Boolean).length} storageKey="filters:admin-purchases">

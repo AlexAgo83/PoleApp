@@ -8,6 +8,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
 import { SafeImage } from "@/components/SafeImage";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 
 export const dynamic = "force-dynamic";
@@ -123,33 +124,13 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
           )}
         </div>
       )}
-      <header
-        className="panel relative overflow-hidden p-4 md:p-6"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.68)), url(${headerBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]" aria-hidden />
-        <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Admin</p>
-            <h1 className="text-3xl font-semibold text-white">Studios</h1>
-            <p className="text-sm text-slate-100/90">
-              Gère les studios de l’école (nom, adresse) et associe-les aux cours.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-end gap-3 text-sm md:self-start">
-            <Link
-              href="/app/admin"
-              className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-white transition hover:border-cyan-200/70 hover:bg-white/15"
-            >
-              ← Retour dashboard
-            </Link>
-          </div>
-        </div>
-      </header>
+      <FoxPageHeader
+        eyebrow="Admin"
+        title="Studios"
+        backgroundImage={headerBg}
+        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
+        foxHref="/"
+      />
 
       <section className="panel p-4 md:p-6">
         <PersistedPanel

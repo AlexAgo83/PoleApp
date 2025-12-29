@@ -3,8 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { SignOutButton } from "@/components/auth/SignOutButton";
-import { CircularRedFox } from "@/components/FoxVignette";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
@@ -14,6 +12,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { buyPresetAction } from "@/app/app/student/actions";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 9;
@@ -140,71 +139,45 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
   if (priceFilter) queryParams.set("price", priceFilter);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 py-6 md:gap-6 md:px-8 md:py-10">
-      <section className="panel relative overflow-visible border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
-        <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
-          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" href="/" />
-        </div>
-        <div className="relative flex flex-wrap items-center justify-between gap-3 pl-24 md:pl-0 md:pt-6">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              Espace {session.user.role === "SCHOOL_ADMIN" ? "admin" : session.user.role === "TEACHER" ? "prof" : "élève"}
-            </p>
-            <p className="text-sm md:text-base text-slate-200 leading-6">
-              Catalogue des combos / presets vidéo de l’école.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={homeForRole}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/house.svg" alt="" className="h-4 w-4" />
-              Mon espace
-            </Link>
-            <SignOutButton />
-          </div>
-        </div>
-      </section>
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
+      <FoxPageHeader
+        eyebrow={
+          session.user.role === "SCHOOL_ADMIN"
+            ? "Espace admin"
+            : session.user.role === "TEACHER"
+              ? "Espace prof"
+              : "Espace élève"
+        }
+        title="Combos / presets"
+        buttons={[
+          {
+            label: "Mon espace",
+            href: homeForRole,
+            icon: <img src="/house.svg" alt="" className="h-4 w-4" />,
+          },
+          { label: "Déconnexion", href: "/api/auth/signout" },
+        ]}
+        foxHref="/"
+      />
 
       <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              {session.user.role === "SCHOOL_ADMIN"
-                ? "Espace admin"
-                : session.user.role === "TEACHER"
-                  ? "Espace prof"
-                  : "Espace élève"}
-            </p>
-            <h1 className="text-3xl font-semibold text-white">Combos / presets</h1>
-            <p className="text-sm text-slate-200">
-              Parcours filtrable des combos : discipline, premium ou crédits. Les élèves peuvent acheter directement.
-            </p>
-          </div>
-          <div className="flex w-full flex-wrap justify-end gap-2 md:w-auto">
-            {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
-              <Link
-                href="/app/teacher/presets"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Gestion (prof/admin)</span>
-              </Link>
-            )}
+        <div className="flex w-full flex-wrap justify-end gap-2 md:w-auto">
+          {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
             <Link
-              href={homeForRole}
+              href="/app/teacher/presets"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">← Retour accueil</span>
+              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
+                Gestion (prof/admin)
+              </span>
             </Link>
-            <Link
-              href="/positions"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Positions</span>
-            </Link>
-          </div>
+          )}
+          <Link
+            href="/positions"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Positions</span>
+          </Link>
         </div>
         {isStudent ? null : null}
         {flash === "ok" && (

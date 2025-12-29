@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdminAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
@@ -61,20 +62,13 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-6">
+      <FoxPageHeader
+        eyebrow="Espace admin"
+        title="Presets / combos"
+        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
+        foxHref="/"
+      />
       <section className="panel space-y-4 p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Espace admin</p>
-            <h1 className="text-2xl font-semibold text-white md:text-2xl">Presets / combos</h1>
-            <p className="text-sm text-slate-300 leading-6">Crée, assigne et supprime les combos/presets de l’école.</p>
-          </div>
-          <Link
-            href="/app/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
-        </div>
         <h2 className="text-lg font-semibold text-white">Presets existants</h2>
         {presets.length === 0 ? (
           <p className="text-slate-300">Aucun preset pour le moment.</p>

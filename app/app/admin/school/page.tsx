@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SafeImage } from "@/components/SafeImage";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
@@ -80,31 +81,14 @@ export default async function AdminSchoolPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header
-        className="panel relative overflow-hidden p-6 space-y-4"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(10,14,24,0.78), rgba(10,14,24,0.78)), url(${headerBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+      <FoxPageHeader
+        eyebrow="Admin"
+        title="Fiche école"
+        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
+        backgroundImage={headerBg}
+        foxHref="/"
       >
-        <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Admin</p>
-            <h1 className="text-3xl font-semibold text-white">Fiche école</h1>
-            <p className="text-sm text-slate-100/90">
-              Modifier les informations visibles par les professeurs et élèves rattachés.
-            </p>
-          </div>
-          <Link
-            href="/app/admin"
-            className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-sm text-white transition hover:border-cyan-200/70 hover:bg-white/15"
-          >
-            ← Retour dashboard
-          </Link>
-        </div>
-
-        <div className="relative z-10 mt-4 space-y-3">
+        <div className="mt-2 space-y-3">
           <h3 className="text-lg font-semibold text-white">Résumé</h3>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 md:grid-cols-3">
             <Stat label="Utilisateurs" value={totalUsers} />
@@ -114,7 +98,7 @@ export default async function AdminSchoolPage({
             <Stat label="Partenaires" value={partnerCount} />
           </div>
         </div>
-      </header>
+      </FoxPageHeader>
 
       {flash && flashMessage && (
         <div

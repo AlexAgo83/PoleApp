@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Prisma, Role } from "@prisma/client";
 import { SafeImage } from "@/components/SafeImage";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 import { authOptions } from "@/lib/auth";
 import { createUserAction, deleteUserAction } from "./actions";
@@ -101,33 +102,23 @@ export default async function AdminUsersPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel p-4 md:p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin</p>
-        <h1 className="text-3xl font-semibold text-white">Utilisateurs</h1>
-        <p className="text-sm text-slate-300">
-          Crée, met à jour ou supprime des comptes rattachés à ton école.
-        </p>
-        <div className="mt-3 text-sm text-slate-200">
+      <FoxPageHeader
+        eyebrow="Admin"
+        title="Utilisateurs"
+        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
+        foxHref="/"
+      >
+        <div className="space-y-2 text-sm text-slate-200">
           <p>
-            Tu es connecté en <strong>{session.user.email}</strong>
+            Connecté en <strong>{session.user.email}</strong>
           </p>
+          {(params?.success || params?.error) && (
+            <p className={params?.error ? "text-amber-300" : "text-emerald-300"}>
+              {params?.error ?? params?.success}
+            </p>
+          )}
         </div>
-        {(params?.success || params?.error) && (
-          <p
-            className={`mt-3 text-sm ${params?.error ? "text-amber-300" : "text-emerald-300"}`}
-          >
-            {params?.error ?? params?.success}
-          </p>
-        )}
-        <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">
-          <Link
-            href="/app/admin"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
-        </div>
-      </header>
+      </FoxPageHeader>
 
       <section className="panel p-4 md:p-6">
         <PersistedPanel
