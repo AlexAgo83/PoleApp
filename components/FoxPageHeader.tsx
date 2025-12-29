@@ -39,6 +39,10 @@ export function FoxPageHeader({
       : baseOverlay,
     backgroundSize: "cover",
     backgroundPosition: "center",
+    borderRadius: 0,
+    borderTop: "none",
+    borderLeft: "none",
+    borderRight: "none",
   } as React.CSSProperties;
 
   const renderButton = (btn: HeaderButton, idx: number) => {
@@ -65,7 +69,7 @@ export function FoxPageHeader({
   return (
     <section
       className={clsx(
-        "panel relative overflow-hidden border-indigo-400/25 px-2 py-2 shadow-indigo-900/30 md:px-3 md:py-3",
+        "panel relative left-1/2 right-1/2 w-screen max-w-none -mx-[50vw] overflow-hidden border-indigo-400/25 px-2 py-2 shadow-indigo-900/30 rounded-none md:px-3 md:py-3 md:rounded-none",
         className,
       )}
       style={style}
