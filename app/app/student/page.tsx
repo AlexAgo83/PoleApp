@@ -61,10 +61,7 @@ export default async function StudentDashboard() {
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold text-white">
-            Tes modules et actions
-          </h3>
+        <div className="flex flex-wrap items-center justify-end gap-3">
           <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-50 shadow-sm">
             Crédits : {credits}
           </span>

@@ -89,9 +89,21 @@ export default async function AdminDashboard({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="grid gap-3 md:gap-4 md:grid-cols-2">
-        <div className="panel space-y-3 p-6">
-          <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
-          <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
+        <div className="panel space-y-2 p-3 md:p-4">
+          <div className="flex items-start justify-between gap-2">
+            <h2 className="text-lg font-semibold text-white leading-tight">{baseSchool?.name ?? "École"}</h2>
+            {schoolWebsite && (
+              <a
+                href={schoolWebsite}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-semibold text-cyan-200 underline decoration-dotted underline-offset-4 transition hover:text-cyan-100"
+              >
+                Site ↗
+              </a>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Utilisateurs" value={counts.total} />
             <Stat label="Étudiants" value={counts.STUDENT} />
             <Stat label="Professeurs" value={counts.TEACHER} />
@@ -102,9 +114,14 @@ export default async function AdminDashboard({
           </div>
         </div>
 
-        <div className="panel space-y-3 p-6">
-          <h2 className="text-xl font-semibold text-white">Activité</h2>
-          <div className="grid grid-cols-2 gap-3 text-sm text-slate-200">
+        <div className="panel space-y-2 p-3 md:p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
+            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-200">
+              J+0 focus
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Cours" value={coursesCount} />
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
             <Stat label="Positions" value={positionsCount} />
@@ -114,8 +131,7 @@ export default async function AdminDashboard({
       </section>
 
       <section className="panel p-6">
-        <h2 className="text-lg font-semibold text-white">Actions rapides</h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           <ActionCard
             title="Fiche école"
             description="Photo, adresse, site web et infos générales de l’école."
@@ -280,9 +296,16 @@ export default async function AdminDashboard({
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-400">{label}</p>
-      <p className="text-2xl font-semibold text-white">{value}</p>
+    <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 shadow-sm">
+      <div className="absolute inset-0 opacity-20 blur-2xl" aria-hidden>
+        <div className="h-full w-full bg-gradient-to-br from-cyan-500/40 via-white/30 to-transparent" />
+      </div>
+      <div className="relative flex items-center justify-between gap-2">
+        <p className="text-[11px] uppercase tracking-[0.14em] text-slate-300">{label}</p>
+        <span className="inline-flex h-5 min-w-[2.5rem] items-center justify-center rounded-full border border-white/10 bg-white/10 px-2 text-xs font-semibold text-white">
+          {value}
+        </span>
+      </div>
     </div>
   );
 }
