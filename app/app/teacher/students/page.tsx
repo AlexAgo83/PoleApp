@@ -4,7 +4,7 @@ import { AttendanceStatus, Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
-import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { AVATAR_PLACEHOLDER, COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
@@ -62,6 +62,12 @@ export default async function TeacherStudentsPage({
   if (!session?.user?.schoolId) {
     return null;
   }
+  const school = await prisma.school
+    .findUnique({
+      where: { id: session.user.schoolId },
+      select: { name: true, photoUrl: true },
+    })
+    .catch(() => null);
   const courseDistinctDisciplines = await prisma.course.findMany({
     where: { schoolId: session.user.schoolId },
     select: { discipline: true },
@@ -159,15 +165,23 @@ export default async function TeacherStudentsPage({
     take: PAGE_SIZE,
   });
 
+  const schoolPhoto = school?.photoUrl?.trim() || COURSE_PLACEHOLDER;
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30">
+      <header
+        className="panel border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30 relative overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
           Professeur / Admin
         </p>
         <h1 className="text-3xl font-semibold text-white">Élèves</h1>
         <p className="text-sm text-slate-200">
-          Aperçu des élèves de ton école et de leurs blessures déclarées.
+          Aperçu des élèves de ton école{school?.name ? ` (${school.name})` : ""} et de leurs blessures déclarées.
         </p>
         {session.user.role === "SCHOOL_ADMIN" ? (
           <div className="mt-4 flex flex-wrap justify-end gap-3 text-sm">

@@ -1,6 +1,6 @@
-# Pole App — Produit v0.8.2
+# Pole App — Produit v0.9.5
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse) et tag `v0.8.2` en cours. Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias prévus via Cloudinary (cf. backlog dédié).
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse). Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et préparation billing/credits deviennent obligatoires dans chaque Step. Uploads médias via Cloudinary (avatars/photos restreints) activés.
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données. Seed idempotent.
@@ -45,7 +45,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Panneaux de filtres : repliés par défaut avec état mémorisé localement (localStorage).
 
 ## École (élève)
-- Page école `/app/student/school` enrichie : studios/partenaires et agenda de l’école (vues semaine/mensuelle, filtres studio/prof/date/recherche/« mes cours », légende code couleur, prochains cours).
+- Page école `/app/student/school` enrichie : studios/partenaires et agenda de l’école (vues semaine/mensuelle, filtres studio/prof/date/recherche/« mes cours », légende code couleur, prochains cours), header avec photo d’école en fond.
 - Liens rapides vers la liste/agenda élève et navigation mois/semaine sans scroll horizontal en mobile.
 
 ## Positions
@@ -55,16 +55,21 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - CRUD : `/teacher/positions/new` et `/teacher/positions/[id]/edit` (Professeur/Admin).
 - Médias : image placeholder si absent, vignettes 2 colonnes sur la liste.
 
+## Médias / Avatars
+- Cloudinary activé en mode authenticated/restricted pour avatars et médias (images/vidéos) avec signatures serveur.
+- Upload avatars (élève/prof/admin) contrôlé (4 Mo max, 2160x2160, jpg/png/webp), suppression nettoie Cloudinary sauf images seed.
+- Fallback avatars : distribution aléatoire des `public_id` seed (15H/15F) sans doublons, URLs signées, affichage harmonisé sur listes/détails.
+
 ## Blessures & progression
 - Élève : `/app/student/injuries` (CRUD, pagination 10) ; `/app/student/progress` (pagination 10).
 - Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste.
 
 ## Cours / Facturation
-- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new`, détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés + chips actives (discipline/prof/studio/dates/notes/recherche).
+- Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new` (récurrence quotidienne/bi-hebdo/mensuelle en bêta avec occurrences virtuelles), détail, édition, photos optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés + chips actives (discipline/prof/studio/dates/notes/recherche).
 - Facturation admin : `/app/admin/billing` (Invoice par cours, filtres date/prof/studio/statut, export CSV, actions statut/montant/note, backfill factures manquantes, panel filtres stylisé avec compteur en pied).
 - Facturation prof : `/app/teacher/billing` (lecture seule des factures de ses cours, filtres date/studio/statut/recherche, export CSV, lien d’impression HTML par facture).
-- Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA ; agenda semaine/mois dédié (`/app/student/courses/agenda`) aligné mobile/desktop.
-- Détail cours correct par id; updates progression lors de la création/édition.
+- Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA ; agenda semaine/mois dédié (`/app/student/courses/agenda`) aligné mobile/desktop. Inscription bloquée si positions absentes (occurrences virtuelles).
+- Détail cours (prof/élève) : header avec photo en fond, badge “Occurrence programmée” pour les virtuels, boutons alignés (retour/partager/agenda), ICS dynamique (timezone globale + alarme 30 min).
 
 ## Mini-jeu
 - `/app/student/game` : quiz photo → nom sur positions débloquées (ou toutes si premium).
@@ -87,6 +92,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Généré : 2 écoles (photo/URL par défaut), 5 professeurs + 10 élèves/école, 500 crédits par élève, 30 positions + médias, 40 cours (durées par pas de 15 min) avec invoices backfill, blessures types, partenaires Amazon (4 liens produits).
 - Disciplines : catalogue Pole/Pole Exotic/Souplesse/Pilates/Conditioning seeded par école; positions et cours tagués dynamiquement.
 - Muscles/articulations seeded et liés par type de position; positions attribuées à des professeurs seedés (Elza priorisée), favoris prof auto, cours répartis sur les profs avec anti-collisions horaires.
+- Extras : séries récurrentes hebdo (dont disciplines alternatives, série courte), cours “edge” (tôt/tard, virtuels, gratuits/quotas waitlist), cours de secours par studio, notes et attendances variées (attente/inscriptions) pour tester blocage d’inscription sans positions.
 
 ## Déploiement Render
 - Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).

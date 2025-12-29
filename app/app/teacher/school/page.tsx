@@ -105,54 +105,55 @@ export default async function TeacherSchoolPage() {
   if (!school) {
     redirect("/access-denied");
   }
+  const schoolPhoto = school.photoUrl?.trim() || COURSE_PLACEHOLDER;
+  const headerBgStyle = {
+    backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            {session.user.role === "SCHOOL_ADMIN" ? "Admin" : "Professeur"}
-          </p>
-          <h1 className="text-3xl font-semibold text-white">École</h1>
-          <p className="text-sm text-slate-200">{school.name}</p>
-          {school.website ? (
-            <a
-              href={school.website}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
-            >
-              Site web
-            </a>
-          ) : null}
-        </div>
-        {session.user.role === "SCHOOL_ADMIN" ? (
-          <Link
-            href="/app/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour dashboard
-          </Link>
-        ) : (
-          <Link
-            href="/app/teacher"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
-          </Link>
-        )}
-        {school.photoUrl && (
-          <div className="mt-3 w-full">
-            <SafeImage
-              src={school.photoUrl}
-              alt={`Photo de l’école ${school.name}`}
-              width={1200}
-              height={360}
-              className="h-56 w-full rounded-xl border border-white/10 object-cover shadow"
-              fallbackSrc={COURSE_PLACEHOLDER}
-            />
+      <header
+        className="panel relative flex flex-col gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30 overflow-hidden"
+        style={headerBgStyle}
+      >
+        <div className="flex flex-wrap items-start gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+              {session.user.role === "SCHOOL_ADMIN" ? "Admin" : "Professeur"}
+            </p>
+            <h1 className="text-3xl font-semibold text-white">École</h1>
+            <p className="text-sm text-slate-200">{school.name}</p>
+            {school.website ? (
+              <a
+                href={school.website}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
+              >
+                Site web
+              </a>
+            ) : null}
           </div>
-        )}
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {session.user.role === "SCHOOL_ADMIN" ? (
+            <Link
+              href="/app/admin"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/app/teacher"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Retour accueil
+            </Link>
+          )}
+        </div>
       </header>
 
       <section className="panel p-6">

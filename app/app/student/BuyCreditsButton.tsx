@@ -27,13 +27,28 @@ type Props = {
   showUpgrade?: boolean;
   packs: CreditPack[];
   subscriptions: SubscriptionOffer[];
+  asCard?: boolean;
+  mode?: "credits" | "upgrade";
+  title?: string;
+  subtitle?: string;
+  description?: string;
 };
 
 function formatPrice(cents: number) {
   return `${(cents / 100).toFixed(2)} €`;
 }
 
-export function BuyCreditsButton({ currentCredits, showUpgrade, packs, subscriptions }: Props) {
+export function BuyCreditsButton({
+  currentCredits,
+  showUpgrade,
+  packs,
+  subscriptions,
+  asCard,
+  mode = "credits",
+  title,
+  subtitle,
+  description,
+}: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
@@ -252,38 +267,86 @@ export function BuyCreditsButton({ currentCredits, showUpgrade, packs, subscript
     </div>
   );
 
+  const openCredits = () => {
+    setIsUpgradeOpen(false);
+    setIsCreditsOpen(true);
+  };
+  const openUpgrade = () => {
+    if (packs.length > 0) {
+      setSelectedPack(packs[packs.length - 1]);
+    }
+    if (subscriptions.length > 0) {
+      setSelectedSub(subscriptions[0]);
+    }
+    setIsCreditsOpen(false);
+    setIsUpgradeOpen(true);
+  };
+
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          onClick={() => {
-            setIsUpgradeOpen(false);
-            setIsCreditsOpen(true);
+      {asCard ? (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={mode === "upgrade" ? openUpgrade : openCredits}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              mode === "upgrade" ? openUpgrade() : openCredits();
+            }
           }}
+          className="w-full rounded-xl border border-white/10 bg-white/5 p-4 text-left transition hover:border-cyan-400/70 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300/70"
         >
-          Acheter des crédits
-        </button>
-        {showUpgrade ? (
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 1v4" />
+                <path d="M12 19v4" />
+                <path d="M4.22 4.22l2.83 2.83" />
+                <path d="M16.95 16.95l2.83 2.83" />
+                <path d="M1 12h4" />
+                <path d="M19 12h4" />
+                <path d="M4.22 19.78l2.83-2.83" />
+                <path d="M16.95 7.05l2.83-2.83" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+                {title ?? (mode === "upgrade" ? "Passer premium" : "Acheter des crédits")}
+              </p>
+              <p className="text-base font-semibold text-white">
+                {subtitle ?? (mode === "upgrade" ? "Abonnement premium" : "Packs / abonnements")}
+              </p>
+              <p className="text-sm text-slate-300">
+                {description ??
+                  (mode === "upgrade"
+                    ? "Ouvre la modal premium (abonnement)."
+                    : "Ouvre la modal d’achat pour simuler un pack ou un abo.")}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="rounded-full border border-cyan-400/70 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-400/20"
-            onClick={() => {
-              if (packs.length > 0) {
-                setSelectedPack(packs[packs.length - 1]);
-              }
-              if (subscriptions.length > 0) {
-                setSelectedSub(subscriptions[0]);
-              }
-              setIsCreditsOpen(false);
-              setIsUpgradeOpen(true);
-            }}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            onClick={openCredits}
           >
-            Passer premium
+            Acheter des crédits
           </button>
-        ) : null}
-      </div>
+          {showUpgrade ? (
+            <button
+              type="button"
+              className="rounded-full border border-cyan-400/70 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-400/20"
+              onClick={openUpgrade}
+            >
+              Passer premium
+            </button>
+          ) : null}
+        </div>
+      )}
 
       {mounted && isCreditsOpen ? createPortal(creditModal, document.body) : null}
       {mounted && isUpgradeOpen ? createPortal(upgradeModal, document.body) : null}
