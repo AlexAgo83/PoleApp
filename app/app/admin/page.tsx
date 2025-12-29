@@ -52,29 +52,75 @@ export default async function AdminDashboard({
     // Column may not exist yet in the DB; ignore.
   }
 
-  const [users, positionsCount, coursesCount, coursesTodayCount, activeInjuries, studiosCount, partnersCount] =
-    await Promise.all([
-      prisma.user.findMany({
-        where: { schoolId: session.user.schoolId },
-        select: { role: true, isPremium: true },
-      }),
-      prisma.position.count(),
-      prisma.course.count({ where: { schoolId: session.user.schoolId } }),
-      prisma.course.count({
-        where: {
-          schoolId: session.user.schoolId,
-          date: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            lte: new Date(new Date().setHours(23, 59, 59, 999)),
-          },
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+  const endOfWeek = new Date(startOfToday);
+  endOfWeek.setDate(endOfWeek.getDate() + 7);
+  endOfWeek.setHours(23, 59, 59, 999);
+  const startOfMonth = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
+
+  const [
+    users,
+    positionsCount,
+    coursesCount,
+    coursesTodayCount,
+    coursesWeekCount,
+    activeInjuries,
+    studiosCount,
+    partnersCount,
+    disciplinesCount,
+    combosCount,
+    newStudentsWeek,
+    newStudentsMonth,
+  ] = await Promise.all([
+    prisma.user.findMany({
+      where: { schoolId: session.user.schoolId },
+      select: { role: true, isPremium: true, createdAt: true },
+    }),
+    prisma.position.count(),
+    prisma.course.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.course.count({
+      where: {
+        schoolId: session.user.schoolId,
+        date: {
+          gte: startOfToday,
+          lte: endOfToday,
         },
-      }),
-      prisma.studentInjury.count({
-        where: { isActive: true, student: { schoolId: session.user.schoolId } },
-      }),
-      prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
-      prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
-    ]);
+      },
+    }),
+    prisma.course.count({
+      where: {
+        schoolId: session.user.schoolId,
+        date: {
+          gte: startOfToday,
+          lte: endOfWeek,
+        },
+      },
+    }),
+    prisma.studentInjury.count({
+      where: { isActive: true, student: { schoolId: session.user.schoolId } },
+    }),
+    prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.discipline.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.preset.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.user.count({
+      where: {
+        schoolId: session.user.schoolId,
+        role: "STUDENT",
+        createdAt: { gte: startOfToday, lte: endOfWeek },
+      },
+    }),
+    prisma.user.count({
+      where: {
+        schoolId: session.user.schoolId,
+        role: "STUDENT",
+        createdAt: { gte: startOfMonth },
+      },
+    }),
+  ]);
 
   const counts = users.reduce(
     (acc, user) => {
@@ -111,6 +157,7 @@ export default async function AdminDashboard({
             <Stat label="Premium" value={counts.premium} />
             <Stat label="Studios" value={studiosCount} />
             <Stat label="Partenaires" value={partnersCount} />
+            <Stat label="Disciplines" value={disciplinesCount} />
           </div>
         </div>
 
@@ -122,9 +169,12 @@ export default async function AdminDashboard({
             </span>
           </div>
           <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
-            <Stat label="Cours" value={coursesCount} />
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
+            <Stat label="Cours (7 jours)" value={coursesWeekCount} />
             <Stat label="Positions" value={positionsCount} />
+            <Stat label="Combos" value={combosCount} />
+            <Stat label="Élèves (7 jours)" value={newStudentsWeek} />
+            <Stat label="Élèves (mois)" value={newStudentsMonth} />
             <Stat label="Blessures actives" value={activeInjuries} />
           </div>
         </div>
@@ -203,7 +253,7 @@ export default async function AdminDashboard({
             title="Suivre les cours"
             description="Consulte les cours saisis et l’impact progression."
             href="/app/teacher/courses/agenda?view=month"
-            cta="Voir les cours"
+            cta="Planning"
             icon={
               <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="4" y="5" width="16" height="15" rx="2" />

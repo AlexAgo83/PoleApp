@@ -197,12 +197,9 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-xl font-semibold text-white">Catalogue</h2>
-          <p className="text-sm text-slate-300">
-            Page {currentPage} / {totalPages} · {totalCount} presets
-          </p>
-        </div>
+        <p className="text-sm text-slate-300">
+          Page {currentPage} / {totalPages} · {totalCount} presets
+        </p>
 
         <FilterPanel
           storageKey="filters:presets-catalog"

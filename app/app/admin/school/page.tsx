@@ -30,13 +30,14 @@ export default async function AdminSchoolPage({
   const getValue = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v);
   const flash = getValue(resolvedParams.flash);
   const flashMessage = getValue(resolvedParams.flashMessage);
+  const disciplinePageRaw = Number(getValue(resolvedParams.disciplinePage) ?? "1");
+  const disciplinePage = Math.max(1, Number.isFinite(disciplinePageRaw) ? disciplinePageRaw : 1);
 
   const baseSchool = await prisma.school.findUnique({
     where: { id: session.user.schoolId },
     select: {
       id: true,
       name: true,
-      disciplines: { select: { id: true, name: true, color: true }, orderBy: { name: "asc" } },
       studios: { select: { id: true, name: true, address: true } },
       partners: {
         select: {
@@ -76,29 +77,39 @@ export default async function AdminSchoolPage({
     prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
     prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
   ]);
+  const disciplineCount = await prisma.discipline.count({ where: { schoolId: session.user.schoolId } });
+  const disciplineTotalPages = Math.max(1, Math.ceil(disciplineCount / 6));
+  const currentDisciplinePage = Math.min(disciplinePage, disciplineTotalPages);
+  const disciplines = await prisma.discipline.findMany({
+    where: { schoolId: session.user.schoolId },
+    select: { id: true, name: true, color: true },
+    orderBy: { name: "asc" },
+    skip: (currentDisciplinePage - 1) * 6,
+    take: 6,
+  });
 
   const headerBg = schoolPhoto ?? COURSE_PLACEHOLDER;
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        eyebrow="Admin"
-        title="Fiche école"
-        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
-        backgroundImage={headerBg}
-        foxHref="/"
+      <section
+        className="panel space-y-3 p-6"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.85), rgba(15,25,45,0.7)), url(${headerBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
-        <div className="mt-2 space-y-3">
-          <h3 className="text-lg font-semibold text-white">Résumé</h3>
-          <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 md:grid-cols-3">
-            <Stat label="Utilisateurs" value={totalUsers} />
-            <Stat label="Profs" value={teacherCount} />
-            <Stat label="Élèves" value={studentCount} />
-            <Stat label="Studios" value={studioCount} />
-            <Stat label="Partenaires" value={partnerCount} />
-          </div>
+        <h3 className="text-2xl font-semibold text-white">{baseSchool?.name ?? "École"}</h3>
+        <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 md:grid-cols-3">
+          <Stat label="Utilisateurs" value={totalUsers} />
+          <Stat label="Profs" value={teacherCount} />
+          <Stat label="Élèves" value={studentCount} />
+          <Stat label="Studios" value={studioCount} />
+          <Stat label="Partenaires" value={partnerCount} />
+          <Stat label="Disciplines" value={disciplineCount} />
         </div>
-      </FoxPageHeader>
+      </section>
 
       {flash && flashMessage && (
         <div
@@ -115,10 +126,7 @@ export default async function AdminSchoolPage({
       <section className="panel space-y-4 p-6">
         <details className="group space-y-4">
           <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
-            <div className="flex flex-col gap-1">
-              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Identité</p>
-              <h2 className="text-xl font-semibold text-white">{baseSchool?.name ?? "École"}</h2>
-            </div>
+            <h3 className="text-xl font-semibold text-white">Identité</h3>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
               <span className="group-open:hidden">Modifier</span>
               <span className="hidden group-open:inline">Fermer</span>
@@ -197,10 +205,7 @@ export default async function AdminSchoolPage({
       <section className="panel space-y-4 p-6">
         <details className="group space-y-4">
           <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
-            <div>
-              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Disciplines</p>
-              <h3 className="text-xl font-semibold text-white">Liste et création</h3>
-            </div>
+            <h3 className="text-xl font-semibold text-white">Disciplines</h3>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
               <span className="group-open:hidden">Modifier</span>
               <span className="hidden group-open:inline">Fermer</span>
@@ -209,7 +214,7 @@ export default async function AdminSchoolPage({
 
           <div className="space-y-4 pt-1">
             <div className="grid gap-3 md:grid-cols-2">
-              {baseSchool?.disciplines.map((d) => (
+              {disciplines.map((d) => (
                 <div
                   key={d.id}
                   className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200"
@@ -264,6 +269,30 @@ export default async function AdminSchoolPage({
                   </form>
                 </div>
               ))}
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-slate-200">
+              <span>
+                Page {currentDisciplinePage} / {disciplineTotalPages} · {disciplineCount} disciplines
+              </span>
+              <div className="flex gap-2">
+                {currentDisciplinePage > 1 ? (
+                  <Link
+                    href={`?disciplinePage=${currentDisciplinePage - 1}`}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                  >
+                    Précédent
+                  </Link>
+                ) : null}
+                {currentDisciplinePage < disciplineTotalPages ? (
+                  <Link
+                    href={`?disciplinePage=${currentDisciplinePage + 1}`}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                  >
+                    Suivant
+                  </Link>
+                ) : null}
+              </div>
             </div>
 
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">

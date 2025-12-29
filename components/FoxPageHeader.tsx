@@ -1,7 +1,8 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { CircularRedFox } from "@/components/FoxVignette";
 import React from "react";
+import { SignOutModalButton } from "@/components/auth/SignOutModalButton";
+import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 
 type HeaderButton = {
   label: string;
@@ -19,6 +20,10 @@ type Props = {
   foxHref?: string;
   className?: string;
   children?: React.ReactNode;
+  fullWidth?: boolean;
+  flushEdges?: boolean;
+  sticky?: boolean;
+  profileImageUrl?: string | null;
 };
 
 const baseOverlay =
@@ -29,9 +34,13 @@ export function FoxPageHeader({
   eyebrow,
   buttons = [],
   backgroundImage,
-  foxHref = "/",
+  foxHref,
   className,
   children,
+  fullWidth = true,
+  flushEdges = true,
+  sticky = true,
+  profileImageUrl,
 }: Props) {
   const style = {
     backgroundImage: backgroundImage
@@ -39,17 +48,41 @@ export function FoxPageHeader({
       : baseOverlay,
     backgroundSize: "cover",
     backgroundPosition: "center",
-    borderRadius: 0,
-    borderTop: "none",
-    borderLeft: "none",
-    borderRight: "none",
+    border: "none",
+    boxShadow: "none",
+    ...(flushEdges
+      ? {
+          borderRadius: 0,
+          borderTop: "none",
+          borderLeft: "none",
+          borderRight: "none",
+        }
+      : {}),
+    ...(fullWidth
+      ? { width: "100vw", marginLeft: "calc(50% - 50vw)" }
+      : {}),
   } as React.CSSProperties;
+  const avatarSrc = profileImageUrl || AVATAR_PLACEHOLDER;
 
   const renderButton = (btn: HeaderButton, idx: number) => {
+    if (btn.href?.includes("/api/auth/signout") || btn.label.toLowerCase().includes("déconnexion")) {
+      return null;
+    }
+    if (btn.label.toLowerCase().includes("mon espace")) {
+      return null;
+    }
     const variant =
       btn.variant === "primary"
         ? "border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30 text-white"
         : "border-white/10 bg-white/5 hover:border-cyan-400/70 hover:bg-white/10 text-white";
+    if (btn.href === "/api/auth/signout") {
+      return (
+        <SignOutModalButton
+          key={`${btn.href}-${idx}`}
+          label={btn.label}
+        />
+      );
+    }
     return (
       <Link
         key={`${btn.href}-${idx}`}
@@ -69,27 +102,51 @@ export function FoxPageHeader({
   return (
     <section
       className={clsx(
-        "panel relative left-1/2 right-1/2 w-screen max-w-none -mx-[50vw] overflow-hidden border-indigo-400/25 px-2 py-2 shadow-indigo-900/30 rounded-none md:px-3 md:py-3 md:rounded-none",
+        "overflow-hidden px-2 py-2 md:px-3 md:py-3",
+        sticky ? "sticky top-0 z-30" : "",
+        fullWidth ? "w-full" : "w-full max-w-6xl mx-auto",
+        flushEdges ? "rounded-none" : "",
         className,
       )}
       style={style}
     >
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pl-24 md:pl-0 pt-0">
+      <div className="relative z-10 flex w-full flex-wrap items-center justify-between gap-3 pl-0 pt-0">
         <div className="space-y-1">
-          {eyebrow ? (
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              {eyebrow}
-            </p>
-          ) : (
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              {title}
-            </p>
-          )}
+          <Link
+            href={
+              buttons.find((b) => b.label.toLowerCase().includes("espace"))?.href ??
+              buttons[0]?.href ??
+              foxHref ??
+              "/"
+            }
+            className="inline-flex items-center gap-2 rounded-full px-2 py-1 text-indigo-100 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+          >
+            <img src="/house.svg" alt="" className="h-4 w-4" />
+            {eyebrow ? (
+              <span className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+                {eyebrow}
+              </span>
+            ) : (
+              <span className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+                {title}
+              </span>
+            )}
+          </Link>
           <h1 className="sr-only">{title}</h1>
         </div>
         {buttons.length > 0 ? (
           <div className="flex flex-wrap items-center justify-end gap-2 md:self-start">
             {buttons.map(renderButton)}
+            <SignOutModalButton
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 p-0.5 shadow-sm shadow-cyan-900/30 transition hover:border-cyan-300/70 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+              ariaLabel="Se déconnecter"
+            >
+              <img
+                src={avatarSrc}
+                alt="Profil"
+                className="h-8 w-8 rounded-full border border-white/20 object-cover"
+              />
+            </SignOutModalButton>
           </div>
         ) : null}
       </div>

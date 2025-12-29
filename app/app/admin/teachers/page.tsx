@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 import { SafeImage } from "@/components/SafeImage";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { AVATAR_PLACEHOLDER, COURSE_PLACEHOLDER } from "@/lib/placeholders";
@@ -93,21 +92,6 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        eyebrow="Admin"
-        title="Professeurs"
-        backgroundImage={schoolPhoto}
-        buttons={[
-          { label: "Retour dashboard", href: "/app/admin" },
-          { label: "Gérer via utilisateurs", href: "/app/admin/users?role=TEACHER" },
-        ]}
-        foxHref="/"
-      >
-        {school?.name ? (
-          <p className="text-sm text-slate-200">École : {school.name}</p>
-        ) : null}
-      </FoxPageHeader>
-
       <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold text-white">Professeurs de l&apos;école</h2>
@@ -165,7 +149,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
           </div>
         ) : (
           <>
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
               {teachers.map((teacher) => (
                 <article
                   key={teacher.id}

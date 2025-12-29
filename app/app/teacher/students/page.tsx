@@ -168,52 +168,6 @@ export default async function TeacherStudentsPage({
   const schoolPhoto = school?.photoUrl?.trim() || COURSE_PLACEHOLDER;
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header
-        className="panel border-indigo-400/25 p-4 md:p-6 shadow-indigo-900/30 relative overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              Professeur / Admin
-            </p>
-            <h1 className="text-3xl font-semibold text-white">Élèves</h1>
-            <p className="text-sm text-slate-200">
-              Aperçu des élèves de ton école{school?.name ? ` (${school.name})` : ""} et de leurs blessures déclarées.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-end gap-3 text-sm md:self-start">
-            {session.user.role === "SCHOOL_ADMIN" ? (
-              <>
-                <Link
-                  href="/app/admin"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  ← Retour dashboard
-                </Link>
-                <Link
-                  href="/app/admin/users?role=STUDENT"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Gérer via utilisateurs
-                </Link>
-              </>
-            ) : (
-              <Link
-                href="/app/teacher"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                ← Retour accueil
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
-
       <section className="panel space-y-4 border-indigo-400/15 p-6">
         <FilterPanel
           storageKey="filters:teacher-students"

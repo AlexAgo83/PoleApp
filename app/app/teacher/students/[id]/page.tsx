@@ -164,19 +164,6 @@ export default async function TeacherStudentDetailPage({
             {student.isPremium ? "Premium" : "Free"} · Âge :{" "}
             {student.age ? `${student.age} ans` : "non renseigné"}
           </p>
-          <div className="mt-2 flex items-center gap-3">
-            <SafeImage
-              src={avatarUrl}
-              alt={`Avatar de ${student.name ?? student.email}`}
-              width={64}
-              height={64}
-              className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
-              fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
-            />
-            <p className="text-xs text-slate-300">
-              Photo définie par l&apos;élève (ou placeholder).
-            </p>
-          </div>
           <details className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
             <summary className="flex cursor-pointer items-center justify-between gap-2 text-white">
               <span className="font-semibold">Éditer nom / photo / âge</span>
@@ -195,12 +182,6 @@ export default async function TeacherStudentDetailPage({
                 placeholder="Nom"
                 defaultValue={student.name?.split(" ").slice(1).join(" ") ?? ""}
                 className="w-32 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
-              />
-              <AvatarUploadField
-                folder={avatarFolder}
-                currentUrl={student.avatarUrl ?? undefined}
-                currentPublicId={student.avatarPublicId ?? undefined}
-                maxSizeMB={2}
               />
               <input
                 name="age"
@@ -243,6 +224,40 @@ export default async function TeacherStudentDetailPage({
           </Link>
         </div>
       </header>
+
+      <section className="panel border-indigo-400/15 p-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <SafeImage
+              src={avatarUrl}
+              alt={`Avatar de ${student.name ?? student.email}`}
+              width={64}
+              height={64}
+              className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
+              fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
+            />
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-white">Photo de profil</h2>
+              <p className="text-xs text-slate-300">Upload/suppression dédiée (Cloudinary), 2 Mo max.</p>
+            </div>
+          </div>
+          <form action={updateStudentProfileAction} className="flex flex-wrap items-center gap-2">
+            <input type="hidden" name="studentId" value={student.id} />
+            <AvatarUploadField
+              folder={avatarFolder}
+              currentUrl={student.avatarUrl ?? undefined}
+              currentPublicId={student.avatarPublicId ?? undefined}
+              maxSizeMB={2}
+            />
+            <button
+              type="submit"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+            >
+              Sauvegarder
+            </button>
+          </form>
+        </div>
+      </section>
 
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Blessures</h2>
