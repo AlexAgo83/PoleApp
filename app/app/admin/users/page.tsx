@@ -77,9 +77,10 @@ export default async function AdminUsersPage({
   const totalCount = await prisma.user.count({
     where: whereClause,
   });
-  const totalPages = Math.max(1, Math.ceil(totalCount / 10));
+  const pageSize = 12;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
-  const skip = (currentPage - 1) * 10;
+  const skip = (currentPage - 1) * pageSize;
 
   const users = await prisma.user.findMany({
     where: whereClause,
@@ -95,7 +96,7 @@ export default async function AdminUsersPage({
     },
     orderBy: { createdAt: "desc" },
     skip,
-    take: 10,
+    take: pageSize,
   });
 
   return (
@@ -274,11 +275,11 @@ export default async function AdminUsersPage({
             </div>
           </form>
         </FilterPanel>
-        <div className="mt-4 divide-y divide-white/5">
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {users.map((user) => (
             <div
               key={user.id}
-              className="flex flex-col gap-3 py-4"
+              className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
             >
               <div className="flex items-center gap-3">
                 <SafeImage
@@ -320,7 +321,7 @@ export default async function AdminUsersPage({
                   </p>
                 </div>
               </div>
-              <div className="mt-2 flex w-full flex-col items-start gap-2 text-sm">
+              <div className="flex w-full flex-col items-start gap-2 text-sm">
                 <form action={deleteUserAction} className="w-full">
                   <input type="hidden" name="userId" value={user.id} />
                   <button
@@ -345,7 +346,11 @@ export default async function AdminUsersPage({
               </div>
             </div>
           ))}
-          {users.length === 0 && <p className="py-4 text-slate-200">Aucun utilisateur.</p>}
+          {users.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-200 md:col-span-2 xl:col-span-3">
+              Aucun utilisateur.
+            </div>
+          )}
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-sm text-slate-200">
           <Link

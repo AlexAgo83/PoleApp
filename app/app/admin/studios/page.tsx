@@ -61,6 +61,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
     );
   }
 
+  const headerBg = (schoolPhoto ?? "").trim() || COURSE_PLACEHOLDER;
   let totalCount = 0;
   let totalPages = 1;
   let currentPage = 1;
@@ -125,19 +126,21 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       <header
         className="panel relative overflow-hidden p-4 md:p-6"
         style={{
-          backgroundImage: schoolPhoto ? `url(${schoolPhoto})` : undefined,
+          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.68)), url(${headerBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="absolute inset-0 bg-slate-900/65 backdrop-blur-[1px]" aria-hidden />
-        <div className="relative z-10 space-y-3">
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Admin</p>
-          <h1 className="text-3xl font-semibold text-white">Studios</h1>
-          <p className="text-sm text-slate-100/90">
-            Gère les studios de l’école (nom, adresse) et associe-les aux cours.
-          </p>
-          <div className="mt-2 flex flex-wrap justify-end gap-3 text-sm">
+        <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]" aria-hidden />
+        <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Admin</p>
+            <h1 className="text-3xl font-semibold text-white">Studios</h1>
+            <p className="text-sm text-slate-100/90">
+              Gère les studios de l’école (nom, adresse) et associe-les aux cours.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-end gap-3 text-sm md:self-start">
             <Link
               href="/app/admin"
               className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-white transition hover:border-cyan-200/70 hover:bg-white/15"
@@ -146,18 +149,6 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
             </Link>
           </div>
         </div>
-        {!schoolPhoto && (
-          <div className="relative z-10 mt-3">
-            <SafeImage
-              src={schoolPhoto ?? ""}
-              alt="Photo de l’école"
-              width={1200}
-              height={300}
-              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
-              fallbackSrc={COURSE_PLACEHOLDER}
-            />
-          </div>
-        )}
       </header>
 
       <section className="panel p-4 md:p-6">
