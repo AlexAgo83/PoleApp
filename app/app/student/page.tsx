@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { BuyCreditsButton } from "./BuyCreditsButton";
-import { PartnerProductsCarousel } from "./PartnerProductsCarousel";
 
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
@@ -35,36 +34,6 @@ export default async function StudentDashboard() {
     seedKey: user?.id ?? session.user.id,
   });
   const avatarInitial = (displayName?.[0] ?? "É").toUpperCase();
-  const partners =
-    user?.schoolId
-      ? await prisma.partner.findMany({
-          where: { schoolId: user.schoolId },
-          select: {
-            id: true,
-            name: true,
-            kind: true,
-            website: true,
-            description: true,
-            sponsoredLinks: { select: { id: true, category: true, label: true, url: true } },
-          },
-          orderBy: { name: "asc" },
-          take: 4,
-        })
-      : [];
-  const partnerProducts = partners
-    .flatMap((partner) =>
-      partner.sponsoredLinks.map((link) => ({
-        id: link.id,
-        partnerId: partner.id,
-        partnerName: partner.name,
-        partnerKind: partner.kind,
-        category: link.category,
-        label: link.label,
-        url: link.url,
-      }))
-    )
-    .slice(0, 12);
-
   const [packs, subs, purchases] = await Promise.all([
     prisma.creditPackOffer.findMany({
       where: { isActive: true, isOpen: true },
@@ -345,26 +314,6 @@ export default async function StudentDashboard() {
               </div>
             </div>
           </Link>
-          <BuyCreditsButton
-            asCard
-            currentCredits={credits}
-            showUpgrade={!isPremium}
-            packs={packs}
-            subscriptions={subs}
-          />
-          {!isPremium && (
-            <BuyCreditsButton
-              asCard
-              mode="upgrade"
-              currentCredits={credits}
-              showUpgrade={!isPremium}
-              packs={packs}
-              subscriptions={subs}
-              title="Passer premium"
-              subtitle="Abonnement"
-              description="Ouvre la modal premium (abonnement)."
-            />
-          )}
           <Link
             href="/app/student/purchases"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -392,45 +341,57 @@ export default async function StudentDashboard() {
               </div>
             </div>
           </Link>
+          <BuyCreditsButton
+            asCard
+            currentCredits={credits}
+            showUpgrade={!isPremium}
+            packs={packs}
+            subscriptions={subs}
+          />
+          {!isPremium && (
+            <BuyCreditsButton
+              asCard
+              mode="upgrade"
+              currentCredits={credits}
+              showUpgrade={!isPremium}
+              packs={packs}
+              subscriptions={subs}
+              title="Passer premium"
+              subtitle="Abonnement"
+              description="Ouvre la modal premium (abonnement)."
+            />
+          )}
+          <Link
+            href="/app/student/partners"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8a6 6 0 00-9.33-5" />
+                  <path d="M5 22a7 7 0 0010-6.71" />
+                  <path d="M16 8a6 6 0 00-9.33-5" />
+                  <path d="M2 22a7 7 0 0010-6.71" />
+                  <path d="M7 10h10" />
+                  <path d="M7 14h10" />
+                </svg>
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+                  Partenaires
+                </p>
+                <p className="text-base font-semibold text-white">
+                  Offres et liens sponsorisés
+                </p>
+                <p className="text-sm text-slate-300">
+                  Découvre les partenaires de ton école et leurs avantages.
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
       </section>
 
-      {partners.length > 0 && (
-        <section className="panel p-6 overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-lg font-semibold text-white">Partenaires de ton école</h3>
-            <Link
-              href="/app/student/school"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Voir la fiche école
-            </Link>
-          </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {partners.map((partner) => (
-              <div
-                key={partner.id}
-                className="flex min-w-0 flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 transition hover:border-cyan-300/70 hover:bg-white/10"
-              >
-                <p className="text-base font-semibold text-white">{partner.name}</p>
-                {partner.kind && <p className="text-xs uppercase tracking-[0.12em] text-cyan-200">{partner.kind}</p>}
-                {partner.description && <p className="text-sm text-slate-300">{partner.description}</p>}
-                {partner.website && (
-                  <a
-                    href={`/api/partners/redirect?partnerId=${partner.id}&url=${encodeURIComponent(partner.website)}&type=click`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100"
-                  >
-                    Site web ↗
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-          {partnerProducts.length > 0 && <PartnerProductsCarousel items={partnerProducts} />}
-        </section>
-      )}
     </main>
   );
 }
