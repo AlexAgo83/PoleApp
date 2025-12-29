@@ -174,7 +174,6 @@ export default async function StudentCoursesPage({
             teacher: { select: { id: true, name: true, email: true } },
             positions: { include: { position: true } },
             studio: { select: { name: true } },
-            isVirtual: true,
             notes: {
               where: { studentId: session.user.id },
               include: { position: true },
@@ -199,7 +198,6 @@ export default async function StudentCoursesPage({
                 teacher: { select: { id: true, name: true, email: true } },
                 positions: { include: { position: true } },
                 studio: { select: { name: true } },
-                isVirtual: true,
                 notes: {
                   where: { studentId: session.user.id },
                   include: { position: true },

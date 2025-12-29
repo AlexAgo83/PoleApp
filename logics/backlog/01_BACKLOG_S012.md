@@ -29,10 +29,10 @@
 - Seed : documenté dans `05_SEED_CONTENT.md` (liste public_id fournie), distribution random sans doublons par sexe.
 
 ### Questions restantes
-- Reste : audit complet des vues pour l’affichage (default avatars) + QA upload/suppression.
+- (RAS)
 
 ### Progression
-- [ ] En cours (impl Cloudinary restrict + seed random OK, reste QA upload/suppression)
+- [x] DONE (upload/suppression QA OK, audit affichage avatars passé, seed par défaut en place)
 - [x] Nettoyage avatar Cloudinary lors de la suppression d’un utilisateur (admin)
 - [x] Audit affichage avatars : vues principales élève/prof/admin passent par `resolveAvatarUrl` + fallback signé par défaut
 - [x] Upload avatars : taille max 4 Mo, dimensions 2160x2160 max, formats jpg/png/webp contrôlés côté client
@@ -91,7 +91,7 @@
 - Gestion d’exceptions (sauter une date) — à planifier plus tard.
 - Édition série : prévoir un mode “modifier cette occurrence uniquement” vs “modifier les futures” ?
 ### Progression
-- [ ] En cours (modèle série + occurrences virtuelles générées, UI récurrence ajoutée ; reste édition occurrence, affichage spécifique, QA)
+- [ ] En cours (modèle série + occurrences virtuelles générées, UI récurrence ajoutée ; affichage virtuel/badge OK, blocage inscription sans positions en place, ICS/partage OK ; reste QA édition occurrence & gestion exceptions)
 - [x] Édition cours : mise à jour interdit si collision horaire/studio détectée (aligné création)
 - [x] Timezone/alerte ICS configurables dans la page super-admin (global settings)
 - [x] Badge “Virtuel” propagé sur vues agenda/listes (élève/prof/admin) et détail prof/admin

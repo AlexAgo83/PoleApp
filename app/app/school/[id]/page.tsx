@@ -261,6 +261,12 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
         })
       : [];
   const courseBasePath = userRole === "STUDENT" ? "/app/student/courses" : "/app/teacher/courses";
+  const studioPhoto = studio.photoUrl?.trim() || COURSE_PLACEHOLDER;
+  const headerBgStyle = {
+    backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${studioPhoto})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
   const baseParams = new URLSearchParams();
   if (q) baseParams.set("q", q);
   if (teacherFilter) baseParams.set("teacher", teacherFilter);
@@ -328,7 +334,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel p-4 md:p-6 space-y-3">
+      <header className="panel relative overflow-hidden p-4 md:p-6 space-y-3" style={headerBgStyle}>
         <div className="flex flex-wrap items-start gap-2">
           <div className="min-w-[240px] flex-1">
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Studio</p>
@@ -346,44 +352,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                   {studio.address}
                 </a>
               </p>
-            )}
-          </div>
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm">
-            <Link
-              href={returnHref}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour
-            </Link>
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href={listHref}
-                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
-                  viewMode === "list"
-                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
-                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
-                }`}
-              >
-                Liste
-              </Link>
-              <Link
-                href={agendaHref}
-                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
-                  viewMode === "agenda"
-                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
-                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
-                }`}
-              >
-                Agenda
-              </Link>
-            </div>
-            {isAdmin && (
-              <Link
-                href={`/app/admin/studios?edit=${studio.id}`}
-                className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-amber-300/80 hover:bg-white/10"
-              >
-                Éditer (admin)
-              </Link>
             )}
           </div>
         </div>
@@ -409,18 +377,44 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             )}
           </div>
         )}
-        {studio.photoUrl && (
-          <div className="w-full">
-            <SafeImage
-              src={studio.photoUrl}
-              alt={`Photo du studio ${studio.name}`}
-              width={960}
-              height={360}
-              className="h-48 w-full rounded-xl border border-white/10 object-cover shadow"
-              fallbackSrc={COURSE_PLACEHOLDER}
-            />
+        <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
+          <Link
+            href={returnHref}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            ← Retour
+          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={listHref}
+              className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                viewMode === "list"
+                  ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                  : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+              }`}
+            >
+              Liste
+            </Link>
+            <Link
+              href={agendaHref}
+              className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                viewMode === "agenda"
+                  ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                  : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+              }`}
+            >
+              Agenda
+            </Link>
           </div>
-        )}
+          {isAdmin && (
+            <Link
+              href={`/app/admin/studios?edit=${studio.id}`}
+              className="rounded-full border border-amber-400/60 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-amber-300/80 hover:bg-white/10"
+            >
+              Éditer (admin)
+            </Link>
+          )}
+        </div>
       </header>
 
       {viewMode === "agenda" ? (

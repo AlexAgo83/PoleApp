@@ -44,7 +44,6 @@ export async function GET(req: Request) {
     include: {
       teacher: { select: { name: true, email: true } },
       studio: { select: { name: true } },
-      isVirtual: true,
       _count: { select: { positions: true } },
     },
     orderBy: { date: "asc" },
