@@ -312,13 +312,12 @@ function Stat({ label, value }: { label: string; value: number }) {
 
 function ActionCard({
   title,
-  description,
   href,
   cta,
   icon,
 }: {
   title: string;
-  description: string;
+  description?: string;
   href: string;
   cta: string;
   icon?: React.ReactNode;
@@ -337,7 +336,6 @@ function ActionCard({
         <div className="flex-1">
           <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">{cta}</p>
           <p className="text-lg font-semibold text-white">{title}</p>
-          <p className="text-sm text-slate-300">{description}</p>
         </div>
       </div>
     </Link>
