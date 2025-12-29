@@ -10,26 +10,59 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 
+function parseJsonArray<T = unknown>(value: FormDataEntryValue | null): T[] {
+  if (!value) return [];
+  const raw = value.toString();
+  if (!raw.trim()) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseNumber(value: FormDataEntryValue | null, fallback: number) {
+  if (value === null || value === undefined) return fallback;
+  const asString = value.toString().trim();
+  if (!asString) return fallback;
+  const num = Number(asString);
+  return Number.isFinite(num) ? num : fallback;
+}
+
 const courseSchema = z.object({
   title: z.string().trim().min(1, "Titre requis"),
   date: z.coerce.date(),
   studentIds: z.array(z.string().cuid()).default([]),
-  positionIds: z.array(z.string().cuid()).min(1),
+  positionIds: z.array(z.string().cuid()).default([]),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
   discipline: z.string().trim().min(1),
   from: z.string().optional(),
   durationMinutes: z
-    .coerce.number()
+    .number()
     .min(30)
     .refine((n) => n % 15 === 0, { message: "La durée doit être un multiple de 15 minutes" }),
-  maxSeats: z.coerce.number().min(1).default(30),
-  waitlistQuota: z.coerce.number().min(0).default(0),
-  costCredits: z.coerce.number().min(0).default(100),
-  isRecurring: z.coerce.boolean().optional(),
-  recurrenceFrequency: z.nativeEnum(RecurrenceFrequency).optional(),
-  recurrenceUntil: z.coerce.date().optional(),
+  maxSeats: z.number().min(1).default(30),
+  waitlistQuota: z.number().min(0).default(0),
+  costCredits: z.number().min(0).default(100),
+  isRecurring: z
+    .preprocess((v) => (v === "true" || v === true ? true : false), z.boolean().optional())
+    .default(false),
+  recurrenceFrequency: z
+    .preprocess((v) => {
+      if (v === null || v === undefined) return undefined;
+      const raw = v.toString().trim();
+      if (!raw) return undefined;
+      return raw.toUpperCase();
+    }, z.enum(["DAILY", "WEEKLY", "BIWEEKLY", "MONTHLY"]).optional()),
+  recurrenceUntil: z.preprocess((v) => {
+    if (v === null || v === undefined) return undefined;
+    const str = v.toString().trim();
+    if (!str) return undefined;
+    return str;
+  }, z.coerce.date().optional()),
   notes: z
     .array(
       z.object({
@@ -54,17 +87,17 @@ export async function createCourseAction(formData: FormData) {
   const parsed = courseSchema.safeParse({
     title: formData.get("title") || undefined,
     date: formData.get("date"),
-    studentIds: JSON.parse((formData.get("studentIds") as string) ?? "[]"),
-    positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
+    studentIds: parseJsonArray(formData.get("studentIds")),
+    positionIds: parseJsonArray(formData.get("positionIds")),
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId"),
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
     discipline: formData.get("discipline")?.toString().trim(),
-    durationMinutes: formData.get("durationMinutes") ?? 60,
-    maxSeats: formData.get("maxSeats") ?? 30,
-    waitlistQuota: formData.get("waitlistQuota") ?? 0,
-    costCredits: formData.get("costCredits") ?? 100,
-    notes: JSON.parse((formData.get("notes") as string) ?? "[]"),
+    durationMinutes: parseNumber(formData.get("durationMinutes"), 60),
+    maxSeats: parseNumber(formData.get("maxSeats"), 30),
+    waitlistQuota: parseNumber(formData.get("waitlistQuota"), 0),
+    costCredits: parseNumber(formData.get("costCredits"), 100),
+    notes: parseJsonArray(formData.get("notes")),
     from: formData.get("from")?.toString(),
     isRecurring: formData.get("isRecurring"),
     recurrenceFrequency: formData.get("recurrenceFrequency"),
@@ -72,6 +105,7 @@ export async function createCourseAction(formData: FormData) {
   });
 
   if (!parsed.success) {
+    console.error("[course-create] invalid form data", parsed.error.flatten());
     throw new Error("Form invalid");
   }
 
@@ -117,9 +151,15 @@ export async function createCourseAction(formData: FormData) {
     }
   }
 
+  const recurrenceFrequency = parsed.data.recurrenceFrequency
+    ? RecurrenceFrequency[
+        parsed.data.recurrenceFrequency as keyof typeof RecurrenceFrequency
+      ]
+    : undefined;
+
   const occurrences =
-    parsed.data.isRecurring && parsed.data.recurrenceFrequency && parsed.data.recurrenceUntil
-      ? generateOccurrences(parsed.data.date, parsed.data.recurrenceUntil, parsed.data.recurrenceFrequency)
+    parsed.data.isRecurring && recurrenceFrequency && parsed.data.recurrenceUntil
+      ? generateOccurrences(parsed.data.date, parsed.data.recurrenceUntil, recurrenceFrequency)
       : [parsed.data.date];
 
   const existing = await prisma.course.findMany({
@@ -145,12 +185,12 @@ export async function createCourseAction(formData: FormData) {
 
   const courseId = await prisma.$transaction(async (tx) => {
     let recurrenceSeriesId: string | null = null;
-    if (parsed.data.isRecurring && parsed.data.recurrenceFrequency && parsed.data.recurrenceUntil) {
+    if (parsed.data.isRecurring && recurrenceFrequency && parsed.data.recurrenceUntil) {
       const series = await tx.courseRecurrenceSeries.create({
         data: {
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
-          frequency: parsed.data.recurrenceFrequency,
+          frequency: recurrenceFrequency,
           until: parsed.data.recurrenceUntil,
         },
       });
@@ -173,7 +213,7 @@ export async function createCourseAction(formData: FormData) {
           costCredits: parsed.data.costCredits ?? 100,
           photoUrl: parsed.data.photoUrl ?? null,
           recurrenceSeriesId: recurrenceSeriesId ?? undefined,
-          isVirtual: false,
+          isVirtual: parsed.data.positionIds.length === 0,
         },
       });
     } catch (error) {
@@ -193,7 +233,7 @@ export async function createCourseAction(formData: FormData) {
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
           photoUrl: parsed.data.photoUrl ?? null,
           recurrenceSeriesId: recurrenceSeriesId ?? undefined,
-          isVirtual: false,
+          isVirtual: parsed.data.positionIds.length === 0,
         },
       });
     }

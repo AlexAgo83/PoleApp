@@ -5,7 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 import { CourseForm } from "../../new/CourseForm";
-import { deleteCourseAction, updateCourseAction } from "../actions";
+import { updateCourseAction } from "../actions";
+import { DeleteCourseDialog } from "../DeleteCourseDialog";
 
 type Props = {
   params: { id: string } | Promise<{ id?: string }>;
@@ -42,6 +43,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       teacherId: true,
       studioId: true,
       isVirtual: true,
+      recurrenceSeriesId: true,
       attendances: true,
       positions: { include: { position: true } },
       notes: true,
@@ -50,6 +52,18 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   if (!course) {
     notFound();
   }
+
+  const virtualOccurrencesCount =
+    course.recurrenceSeriesId && typeof course.recurrenceSeriesId === "string"
+      ? await prisma.course.count({
+          where: {
+            recurrenceSeriesId: course.recurrenceSeriesId,
+            isVirtual: true,
+            id: { not: course.id },
+            schoolId,
+          },
+        })
+      : 0;
 
   const storedRecommendations =
     (await prisma.courseRecommendation
@@ -294,15 +308,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
         <p className="text-sm text-slate-200">
           Action irréversible. Les présences, positions et notes liées seront supprimées.
         </p>
-        <form action={deleteCourseAction} className="mt-4">
-          <input type="hidden" name="courseId" value={course.id} />
-          <button
-            type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
-          >
-            Supprimer
-          </button>
-        </form>
+        <DeleteCourseDialog courseId={course.id} virtualOccurrencesCount={virtualOccurrencesCount} />
       </section>
     </main>
   );

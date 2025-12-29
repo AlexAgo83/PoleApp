@@ -359,7 +359,7 @@ export function CourseForm({
       <Panel groupedPanels={groupedPanels} title={groupedPanels ? "Infos du cours" : undefined}>
         {isVirtual && (
           <div className="mb-2 rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100">
-            Occurrence virtuelle : ajoute au moins une position pour la rendre “réelle” et ouvrir l’inscription élève.
+            Occurrence programmée : ajoute au moins une position pour la rendre “réelle” et ouvrir l’inscription élève.
           </div>
         )}
         <div className="grid gap-4 md:grid-cols-2">

@@ -124,7 +124,7 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
             </p>
             {course.isVirtual && (
               <p className="mt-1 inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
-                Occurrence virtuelle : positions à définir (inscription élève bloquée)
+                Occurrence programmée : positions à définir (inscription élève bloquée)
               </p>
             )}
           </div>
