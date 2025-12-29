@@ -98,12 +98,15 @@ export default async function TeacherPublicProfilePage({
       .filter((p): p is NonNullable<typeof p> => Boolean(p)) ?? [];
   const backHref = safeFrom ?? null;
   const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
-  const [firstNameDefault, ...restName] =
-    (teacher.name ?? "")
-      .trim()
-      .split(" ")
-      .filter(Boolean);
-  const lastNameDefault = restName.join(" ");
+  const nameParts = (teacher.name ?? "")
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+  let firstNameDefault = nameParts[0] ?? "";
+  let lastNameDefault = nameParts.slice(1).join(" ");
+  if (!firstNameDefault && teacher.email) {
+    firstNameDefault = teacher.email.split("@")[0] ?? "";
+  }
   const favoritePositionIds = teacher.favoritePositions.map((fp) => fp.positionId);
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
 

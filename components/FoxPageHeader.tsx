@@ -5,6 +5,8 @@ import React from "react";
 import { SignOutModalButton } from "@/components/auth/SignOutModalButton";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { authOptions } from "@/lib/auth";
+import { resolveAvatarUrl } from "@/lib/avatar";
+import { prisma } from "@/lib/prisma";
 
 type HeaderButton = {
   label: string;
@@ -45,6 +47,17 @@ export async function FoxPageHeader({
   profileImageUrl,
 }: Props) {
   const session = await getServerSession(authOptions).catch(() => null);
+  let dbAvatar: { avatarUrl: string | null; avatarPublicId: string | null } | null = null;
+  if (!profileImageUrl && session?.user?.id) {
+    try {
+      dbAvatar = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { avatarUrl: true, avatarPublicId: true },
+      });
+    } catch {
+      // ignore db errors for header rendering
+    }
+  }
   const style = {
     backgroundImage: backgroundImage
       ? `${baseOverlay}, url(${backgroundImage})`
@@ -65,7 +78,19 @@ export async function FoxPageHeader({
       ? { width: "100vw", marginLeft: "calc(50% - 50vw)" }
       : {}),
   } as React.CSSProperties;
-  const avatarSrc = profileImageUrl || session?.user?.avatarUrl || AVATAR_PLACEHOLDER;
+  const avatarSrc = resolveAvatarUrl({
+    avatarPublicId:
+      (session?.user as any)?.avatarPublicId ??
+      dbAvatar?.avatarPublicId ??
+      null,
+    avatarUrl:
+      profileImageUrl ??
+      (session?.user as any)?.avatarUrl ??
+      dbAvatar?.avatarUrl ??
+      null,
+    placeholder: AVATAR_PLACEHOLDER,
+    seedKey: session?.user?.id ?? "user",
+  });
 
   const renderButton = (btn: HeaderButton, idx: number) => {
     if (btn.href?.includes("/api/auth/signout") || btn.label.toLowerCase().includes("déconnexion")) {

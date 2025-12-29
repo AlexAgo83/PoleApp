@@ -12,8 +12,6 @@ type Props = {
     firstName: string;
     lastName: string;
     age?: number | null;
-    avatarUrl?: string | null;
-    avatarPublicId?: string | null;
     diplomas?: string | null;
     favoritePositionIds: string[];
   };
@@ -34,8 +32,8 @@ export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: P
     <section className="panel border-indigo-400/15 p-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin / Prof</p>
-          <h2 className="text-lg font-semibold text-white">Éditer le profil professeur</h2>
+          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
+          <h2 className="text-lg font-semibold text-white">Éditer le profil</h2>
         </div>
         <button
           type="button"

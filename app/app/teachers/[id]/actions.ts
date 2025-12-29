@@ -66,16 +66,22 @@ export async function updateTeacherProfileAction(formData: FormData) {
 
   const name = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ").trim() || null;
 
+  const updateData: Record<string, unknown> = {
+    name,
+    age: parsed.data.age ?? null,
+    diplomas: parsed.data.diplomas ?? null,
+  };
+  if (parsed.data.avatarUrl !== undefined) {
+    updateData.avatarUrl = parsed.data.avatarUrl ?? null;
+  }
+  if (parsed.data.avatarPublicId !== undefined) {
+    updateData.avatarPublicId = parsed.data.avatarPublicId ?? null;
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
       where: { id: parsed.data.teacherId },
-      data: {
-        name,
-        age: parsed.data.age ?? null,
-        avatarUrl: parsed.data.avatarUrl ?? null,
-        avatarPublicId: parsed.data.avatarPublicId ?? null,
-        diplomas: parsed.data.diplomas ?? null,
-      },
+      data: updateData,
     });
 
     await tx.teacherFavoritePosition.deleteMany({
@@ -144,9 +150,9 @@ export async function updateTeacherAvatarAction(input: {
 
   const parsed = avatarSchema.safeParse({
     teacherId: input.teacherId,
-    avatarUrl: input.avatarUrl ?? undefined,
-    avatarPublicId: input.avatarPublicId ?? undefined,
-    returnTo: input.returnTo,
+    avatarUrl: input.avatarUrl?.trim() || undefined,
+    avatarPublicId: input.avatarPublicId?.trim() || undefined,
+    returnTo: input.returnTo?.trim() || undefined,
   });
 
   if (!parsed.success) {
