@@ -221,21 +221,6 @@ export default async function TeacherCoursesPage({
           <p className="text-sm text-slate-200">Derniers cours créés.</p>
         </div>
         <div className="flex w-full flex-wrap items-center justify-end gap-2">
-          {session.user.role === "SCHOOL_ADMIN" ? (
-            <Link
-              href="/app/admin"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour dashboard
-            </Link>
-          ) : session.user.role === "TEACHER" ? (
-            <Link
-              href="/app/teacher"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour accueil
-            </Link>
-          ) : null}
           <Link
             href="/app/teacher/courses/agenda?view=month"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"

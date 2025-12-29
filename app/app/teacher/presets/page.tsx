@@ -12,17 +12,24 @@ import { createPresetAction, deletePresetAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
 
-export default async function TeacherPresetsPage() {
+type SearchParams = { page?: string } | Promise<{ page?: string }>;
+
+export default async function TeacherPresetsPage({ searchParams }: { searchParams?: SearchParams } = {}) {
   const session = await getServerSession(authOptions);
   if (!session?.user || !session.user.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
 
-  const [positions, presets, disciplines] = await Promise.all([
+  const params = (await Promise.resolve(searchParams)) ?? {};
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const take = 9;
+  const skip = (page - 1) * take;
+
+  const [positions, presets, disciplines, totalPresets] = await Promise.all([
     prisma.position.findMany({
       select: { id: true, name: true, discipline: true },
       orderBy: { name: "asc" },
-      take: 20,
+      take: 30,
     }),
     prisma.preset.findMany({
       where: { schoolId: session.user.schoolId },
@@ -31,7 +38,8 @@ export default async function TeacherPresetsPage() {
         createdBy: { select: { name: true, email: true } },
       },
       orderBy: { createdAt: "desc" },
-      take: 20,
+      skip,
+      take,
     }),
     prisma.discipline
       .findMany({
@@ -40,7 +48,9 @@ export default async function TeacherPresetsPage() {
         orderBy: { name: "asc" },
       })
       .catch(() => []),
+    prisma.preset.count({ where: { schoolId: session.user.schoolId } }),
   ]);
+  const totalPages = Math.max(1, Math.ceil(totalPresets / take));
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-6">
@@ -122,6 +132,29 @@ export default async function TeacherPresetsPage() {
             })}
           </ul>
         )}
+        <div className="mt-3 flex items-center justify-between text-sm text-slate-300">
+          <span>
+            Page {page} / {totalPages} · {totalPresets} presets
+          </span>
+          <div className="flex items-center gap-2">
+            {page > 1 && (
+              <Link
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                href={`?page=${Math.max(1, page - 1)}`}
+              >
+                Précédent
+              </Link>
+            )}
+            {page < totalPages && (
+              <Link
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                href={`?page=${Math.min(totalPages, page + 1)}`}
+              >
+                Suivant
+              </Link>
+            )}
+          </div>
+        </div>
       </section>
 
       <section className="panel space-y-4 p-5">
