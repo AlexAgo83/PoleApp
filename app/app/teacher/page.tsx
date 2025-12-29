@@ -11,7 +11,7 @@ export default async function TeacherDashboard() {
   const teacherUser = session?.user?.id
     ? await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { avatarUrl: true, avatarPublicId: true, name: true, email: true },
+        select: { id: true, avatarUrl: true, avatarPublicId: true, name: true, email: true },
       })
     : null;
   const nameParts =
