@@ -478,53 +478,51 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       {p.discipline}
                     </span>
                   ) : null}
-                  {(hasVideo || (p._count?.progress ?? 0) > 0 || progressText || p.discipline) && (
-                    <div className="absolute inset-3 flex flex-col justify-between">
-                      <div className="flex items-start justify-between gap-2">
-                        {p.discipline ? (
+                  <div className="absolute inset-3 flex flex-col justify-between">
+                    <div className="flex items-start justify-between gap-2">
+                      {p.discipline ? (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
+                          style={disciplineStyle(p.discipline)}
+                        >
+                          {p.discipline}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                      {hasVideo ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
+                          🎥 Vidéo
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex items-end justify-between gap-3">
+                      <div className="flex flex-col items-start gap-2">
+                        {progressText ? (
                           <span
-                            className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
-                            style={disciplineStyle(p.discipline)}
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                              progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
+                              "border border-white/15 bg-black/50 text-slate-200"
+                            }`}
                           >
-                            {p.discipline}
+                            Niveau élève : {progressText}
                           </span>
-                        ) : <span />}
-                        {hasVideo ? (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/25 px-2.5 py-1 text-[11px] font-semibold text-cyan-50 shadow-inner shadow-cyan-500/20">
-                            🎥 Vidéo
+                        ) : null}
+                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white">
+                          {levelLabels[p.levelRequired]}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                          Vu : {p._count?.progress ?? 0}
+                        </span>
+                        {showPremiumBadge ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
+                            🔒 Premium
                           </span>
                         ) : null}
                       </div>
-                      {(p._count?.progress ?? 0) > 0 || progressText ? (
-                        <div className="flex flex-col items-end justify-end gap-2 text-right">
-                          {(p._count?.progress ?? 0) > 0 && (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
-                              Vu : {p._count?.progress ?? 0}
-                            </span>
-                          )}
-                          {progressText ? (
-                            <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                                progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
-                                "border border-white/15 bg-black/50 text-slate-200"
-                              }`}
-                            >
-                              Niveau élève : {progressText}
-                            </span>
-                          ) : null}
-                        </div>
-                      ) : null}
                     </div>
-                  )}
-                  <div className="absolute left-3 bottom-3 flex flex-col items-start gap-2">
-                    {showPremiumBadge && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
-                        🔒 Premium
-                      </span>
-                    )}
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white">
-                      {levelLabels[p.levelRequired]}
-                    </span>
                   </div>
                 </div>
                   <div className="flex flex-1 flex-col gap-2 p-4">
