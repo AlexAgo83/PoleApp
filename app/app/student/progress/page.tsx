@@ -364,8 +364,8 @@ export default async function StudentProgressPage({
                       src={cover.url}
                       alt={position.name}
                       width={480}
-                      height={200}
-                      className="h-44 w-full object-cover"
+                      height={360}
+                      className="aspect-[4/3] w-full object-cover"
                       fallbackSrc={POSITION_PLACEHOLDER}
                     />
                   ) : (
@@ -373,8 +373,8 @@ export default async function StudentProgressPage({
                       src={POSITION_PLACEHOLDER}
                       alt={position.name}
                       width={480}
-                      height={200}
-                      className="h-44 w-full object-cover"
+                      height={360}
+                      className="aspect-[4/3] w-full object-cover"
                       fallbackSrc={POSITION_PLACEHOLDER}
                     />
                   )}

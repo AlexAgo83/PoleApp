@@ -16,7 +16,7 @@ const PAGE_SIZE = 10;
 export default async function StudentInjuriesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; success?: string; error?: string }>;
+  searchParams?: Promise<{ page?: string; type?: string; status?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -29,13 +29,26 @@ export default async function StudentInjuriesPage({
     ? resolvedParams.page[0]
     : resolvedParams.page;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const typeFilter = resolvedParams.type?.toString() || "";
+  const statusFilter = resolvedParams.status?.toString() || "";
   const skip = (page - 1) * PAGE_SIZE;
+  const activeFilters = [typeFilter || null, statusFilter || null].filter(Boolean).length;
 
   const [injuryTypes, injuryCount, injuries] = await Promise.all([
     prisma.injuryType.findMany({ orderBy: { name: "asc" } }),
-    prisma.studentInjury.count({ where: { studentId: session.user.id } }),
+    prisma.studentInjury.count({
+      where: {
+        studentId: session.user.id,
+        ...(typeFilter ? { injuryTypeId: typeFilter } : {}),
+        ...(statusFilter === "active" ? { isActive: true } : statusFilter === "resolved" ? { isActive: false } : {}),
+      },
+    }),
     prisma.studentInjury.findMany({
-      where: { studentId: session.user.id },
+      where: {
+        studentId: session.user.id,
+        ...(typeFilter ? { injuryTypeId: typeFilter } : {}),
+        ...(statusFilter === "active" ? { isActive: true } : statusFilter === "resolved" ? { isActive: false } : {}),
+      },
       include: { injuryType: true },
       orderBy: { createdAt: "desc" },
       skip,
@@ -44,6 +57,9 @@ export default async function StudentInjuriesPage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(injuryCount / PAGE_SIZE));
+  const filterParams = new URLSearchParams();
+  if (typeFilter) filterParams.set("type", typeFilter);
+  if (statusFilter) filterParams.set("status", statusFilter);
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -66,6 +82,61 @@ export default async function StudentInjuriesPage({
           </Link>
         </div>
         <h2 className="text-lg font-semibold text-white">Mes blessures</h2>
+        <FilterPanel
+          storageKey="filters:student-injuries"
+          title="Filtres"
+          activeCount={activeFilters}
+          userKey={userKey}
+          className="space-y-3"
+          contentClassName="mt-3"
+        >
+          <form className="grid gap-3 md:grid-cols-3 md:items-end">
+            <label className="text-sm text-slate-200">
+              Type
+              <select
+                name="type"
+                defaultValue={typeFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                {injuryTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Statut
+              <select
+                name="status"
+                defaultValue={statusFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                <option value="active">Actives</option>
+                <option value="resolved">Résolues</option>
+              </select>
+            </label>
+            <div className="flex items-end justify-end gap-2">
+              <button
+                type="submit"
+                className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-200"
+              >
+                Filtrer
+              </button>
+              {activeFilters > 0 ? (
+                <Link
+                  href="/app/student/injuries"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  Réinitialiser
+                </Link>
+              ) : null}
+            </div>
+          </form>
+        </FilterPanel>
+
         <div className="grid gap-4 md:grid-cols-2">
           {injuries.map((injury) => (
             <article
@@ -163,35 +234,45 @@ export default async function StudentInjuriesPage({
 
         {injuries.length > 0 && (
           <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-200">
-            <Link
-              aria-disabled={page <= 1}
-              href={page <= 1 ? "#" : `/app/student/injuries?page=${page - 1}`}
-              className={`rounded-full border px-3 py-1 font-semibold transition ${
-                page <= 1
-                  ? "cursor-not-allowed border-white/10 text-slate-500"
-                  : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
-              }`}
-            >
-              Précédent
-            </Link>
-            <span>
-              Page {page} / {totalPages}
-            </span>
-            <Link
-              aria-disabled={page >= totalPages}
-              href={
-                page >= totalPages
-                  ? "#"
-                  : `/app/student/injuries?page=${page + 1}`
-              }
-              className={`rounded-full border px-3 py-1 font-semibold transition ${
-                page >= totalPages
-                  ? "cursor-not-allowed border-white/10 text-slate-500"
-                  : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
-              }`}
-            >
-              Suivant
-            </Link>
+            {(() => {
+              const prevParams = new URLSearchParams(filterParams);
+              prevParams.set("page", String(Math.max(1, page - 1)));
+              const nextParams = new URLSearchParams(filterParams);
+              nextParams.set("page", String(Math.min(totalPages, page + 1)));
+              return (
+                <>
+                  <Link
+                    aria-disabled={page <= 1}
+                    href={page <= 1 ? "#" : `/app/student/injuries?${prevParams.toString()}`}
+                    className={`rounded-full border px-3 py-1 font-semibold transition ${
+                      page <= 1
+                        ? "cursor-not-allowed border-white/10 text-slate-500"
+                        : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+                    }`}
+                  >
+                    Précédent
+                  </Link>
+                  <span>
+                    Page {page} / {totalPages}
+                  </span>
+                  <Link
+                    aria-disabled={page >= totalPages}
+                    href={
+                      page >= totalPages
+                        ? "#"
+                        : `/app/student/injuries?${nextParams.toString()}`
+                    }
+                    className={`rounded-full border px-3 py-1 font-semibold transition ${
+                      page >= totalPages
+                        ? "cursor-not-allowed border-white/10 text-slate-500"
+                        : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+                    }`}
+                  >
+                    Suivant
+                  </Link>
+                </>
+              );
+            })()}
           </div>
         )}
       </section>
