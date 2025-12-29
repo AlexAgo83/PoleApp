@@ -20,17 +20,18 @@ function formatDate(date: Date) {
 export default async function TeacherPurchasesPage({
   searchParams,
 }: {
-  searchParams?: { status?: string; q?: string; page?: string; kind?: string };
+  searchParams?: Promise<{ status?: string; q?: string; page?: string; kind?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "TEACHER" || !session.user.schoolId) {
     redirect("/access-denied");
   }
 
-  const page = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
-  const kind = searchParams?.kind?.toUpperCase() || "";
-  const status = searchParams?.status?.toUpperCase() || "";
-  const q = searchParams?.q?.trim() || "";
+  const resolved = (await searchParams) ?? {};
+  const page = Math.max(1, Number.parseInt(resolved.page ?? "1", 10) || 1);
+  const kind = resolved.kind?.toUpperCase() || "";
+  const status = resolved.status?.toUpperCase() || "";
+  const q = resolved.q?.trim() || "";
 
   const where: Prisma.PurchaseWhereInput = {
     user: { schoolId: session.user.schoolId },

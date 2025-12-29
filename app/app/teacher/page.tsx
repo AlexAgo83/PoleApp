@@ -5,7 +5,6 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
-import { PartnerProductsCarousel } from "../student/PartnerProductsCarousel";
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
@@ -31,38 +30,6 @@ export default async function TeacherDashboard() {
   }) || null;
   const avatarInitial = (displayName?.[0] ?? "P").toUpperCase();
   const teacherProfileHref = session?.user?.id ? `/app/teachers/${session.user.id}` : "/app/profile";
-  const partners =
-    session?.user?.schoolId
-      ? await prisma.partner.findMany({
-          where: { schoolId: session.user.schoolId },
-          select: {
-            id: true,
-            name: true,
-            kind: true,
-            website: true,
-            description: true,
-            sponsoredLinks: { select: { id: true, category: true, label: true, url: true } },
-          },
-          orderBy: { name: "asc" },
-          take: 6,
-        })
-      : [];
-  const partnerProducts = partners
-    .flatMap((partner) =>
-      (partner as any).sponsoredLinks
-        ? (partner as any).sponsoredLinks.map((link: any) => ({
-            id: link.id,
-            partnerId: partner.id,
-            partnerName: partner.name,
-            partnerKind: partner.kind,
-            category: link.category,
-            label: link.label,
-            url: link.url,
-          }))
-        : []
-    )
-    .slice(0, 12);
-
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-6">
@@ -244,6 +211,34 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
+            href="/app/teacher/partners"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8a6 6 0 00-9.33-5" />
+                  <path d="M5 22a7 7 0 0010-6.71" />
+                  <path d="M16 8a6 6 0 00-9.33-5" />
+                  <path d="M2 22a7 7 0 0010-6.71" />
+                  <path d="M7 10h10" />
+                  <path d="M7 14h10" />
+                </svg>
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+                  Partenaires
+                </p>
+                <p className="text-base font-semibold text-white">
+                  Voir partenaires/links sponsorisés
+                </p>
+                <p className="text-sm text-slate-300">
+                  Liste des partenaires de l’école et leurs liens sponsorisés.
+                </p>
+              </div>
+            </div>
+          </Link>
+          <Link
             href="/app/student/game"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
@@ -323,42 +318,6 @@ export default async function TeacherDashboard() {
         </div>
       </section>
 
-      {partners.length > 0 && (
-        <section className="panel p-6">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-lg font-semibold text-white">Partenaires de l’école</h3>
-            <Link
-              href="/app/teacher/school"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Voir la fiche école
-            </Link>
-          </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {partners.map((partner) => (
-              <div
-                key={partner.id}
-                className="flex min-w-0 flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 transition hover:border-cyan-300/70 hover:bg-white/10"
-              >
-                <p className="text-base font-semibold text-white">{partner.name}</p>
-                {partner.kind && <p className="text-xs uppercase tracking-[0.12em] text-cyan-200">{partner.kind}</p>}
-                {partner.description && <p className="text-sm text-slate-300">{partner.description}</p>}
-                {partner.website && (
-                  <a
-                    href={`/api/partners/redirect?partnerId=${partner.id}&url=${encodeURIComponent(partner.website)}&type=click`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100"
-                  >
-                    Site web ↗
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-          {partnerProducts.length > 0 && <PartnerProductsCarousel items={partnerProducts} />}
-        </section>
-      )}
     </main>
   );
 }
