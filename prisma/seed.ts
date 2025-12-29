@@ -742,8 +742,11 @@ async function seedCourses(schoolsData: {
         })
       )
     );
+    const studioCourseCount = new Map<string, number>(
+      createdStudios.map((s) => [s.id, 0])
+    );
 
-    const slots = buildSchedule({ daysPast: 15, daysFuture: 15, total: 20 }, reservedSlots);
+    const slots = buildSchedule({ daysPast: 15, daysFuture: 45, total: 40 }, reservedSlots);
     const forcedStatuses = ["REFUNDED", "MANUAL_PAID", "MANUAL_LATE"];
 
     for (let i = 0; i < slots.length; i += 1) {
@@ -766,8 +769,12 @@ async function seedCourses(schoolsData: {
           ? positions.filter((p) => teacherPositions.includes(p.id))
           : [];
       const pool = preferredPositions.length > 0 ? preferredPositions : positions;
+      const courseDiscipline =
+        disciplinePool[(courseNameIdx + i) % disciplinePool.length]?.name ??
+        PRIMARY_DISCIPLINE;
       const disciplinePoolPositions = pool.filter(
-        (p: any) => p.discipline && p.discipline.toLowerCase() === courseDiscipline.toLowerCase()
+        (p: any) =>
+          p.discipline && p.discipline.toLowerCase() === courseDiscipline.toLowerCase()
       );
       const effectivePool = disciplinePoolPositions.length > 0 ? disciplinePoolPositions : pool;
       const coursePositions = effectivePool
@@ -775,7 +782,6 @@ async function seedCourses(schoolsData: {
         .sort(() => 0.5 - Math.random())
         .slice(0, Math.min(3, Math.max(2, effectivePool.length > 0 ? 2 : 0)));
       const courseName = courseNames[courseNameIdx % courseNames.length];
-      const courseDiscipline = disciplinePool[(courseNameIdx + i) % disciplinePool.length]?.name ?? PRIMARY_DISCIPLINE;
       courseNameIdx += 1;
       const photoUrl = COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length];
       courseImageIdx += 1;
@@ -797,6 +803,10 @@ async function seedCourses(schoolsData: {
           },
         },
       });
+      studioCourseCount.set(
+        studio.id,
+        (studioCourseCount.get(studio.id) ?? 0) + 1
+      );
       reservedSlots.push({
         start: slot.date,
         end: new Date(slot.date.getTime() + slot.duration * 60_000),
@@ -888,10 +898,17 @@ async function seedCourses(schoolsData: {
       });
     }
 
-    // Ajouter 2 cours récurrents hebdo (Pole) sur ~2 mois avec occurrences virtuelles
-    const recurrenceTemplates = [
-      { weekday: 2, hour: 14, minute: 0, duration: 60 }, // mardi 14h
-      { weekday: 4, hour: 15, minute: 0, duration: 90 }, // jeudi 15h
+    // Ajouter des cours récurrents hebdo (Pole) sur ~2 mois avec occurrences virtuelles
+    const recurrenceTemplates: { weekday: number; hour: number; minute: number; duration: number; studioIndex: number }[] = [
+      { weekday: 2, hour: 14, minute: 0, duration: 60, studioIndex: 0 }, // mardi 14h
+      { weekday: 4, hour: 15, minute: 0, duration: 90, studioIndex: 0 }, // jeudi 15h
+      ...createdStudios.slice(1).map((_, idx) => ({
+        weekday: 5,
+        hour: 14,
+        minute: 0,
+        duration: 60,
+        studioIndex: idx + 1,
+      })), // vendredis sur les autres studios
     ];
     const startBase = new Date();
     startBase.setDate(startBase.getDate() + 3); // décale légèrement pour éviter conflits immédiats
@@ -906,7 +923,7 @@ async function seedCourses(schoolsData: {
         return countA - countB;
       });
       const teacher = sortedTeachers[0] ?? schoolTeachers[0];
-      const studio = createdStudios[0];
+      const studio = createdStudios[tmpl.studioIndex] ?? createdStudios[0];
       if (!teacher || !studio) continue;
       teacherUsage.set(teacher.id, (teacherUsage.get(teacher.id) ?? 0) + 1);
 
@@ -956,6 +973,7 @@ async function seedCourses(schoolsData: {
             costCredits: 100,
             recurrenceSeriesId: series.id,
             isVirtual,
+            photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
             positions: isVirtual
               ? undefined
               : {
@@ -963,22 +981,124 @@ async function seedCourses(schoolsData: {
                 },
           },
         });
+        courseImageIdx += 1;
+        studioCourseCount.set(
+          studio.id,
+          (studioCourseCount.get(studio.id) ?? 0) + 1
+        );
         reservedSlots.push({
           start: date,
           end: new Date(date.getTime() + tmpl.duration * 60_000),
         });
 
+        // Ajout d'attendances et de notes sur la première occurrence réelle
+        if (!isVirtual) {
+          const attendees = schoolStudents.sort(() => 0.5 - Math.random()).slice(0, 4);
+          const waitlisted = attendees.pop();
+          if (attendees.length > 0) {
+            await prisma.courseAttendance.createMany({
+              data: attendees.map((s, sIdx) => ({
+                courseId: course.id,
+                studentId: s.id,
+                status: sIdx === 0 ? "CONFIRMED" : "WAITLIST",
+                waitlistRank: sIdx === 0 ? null : sIdx,
+              })),
+            });
+          }
+          if (waitlisted) {
+            await prisma.courseAttendance.create({
+              data: {
+                courseId: course.id,
+                studentId: waitlisted.id,
+                status: "WAITLIST",
+                waitlistRank: (attendees.length || 1) + 1,
+              },
+            });
+          }
+
+          const notesData: Prisma.CourseNoteCreateManyInput[] = [];
+          for (const attendee of attendees.slice(0, 2)) {
+            for (const position of positionsForSeries.slice(0, 2)) {
+              notesData.push({
+                courseId: course.id,
+                studentId: attendee.id,
+                positionId: position.id,
+                masteryLevel: pickRandomMastery(),
+                comment: null,
+              });
+            }
+          }
+          if (notesData.length > 0) {
+            await prisma.courseNote.createMany({ data: notesData });
+          }
+        }
+
         const defaultAmountCents = computeDefaultInvoiceAmountCents(0, course.maxSeats);
+        const roll = Math.random();
+        const forced = forcedStatuses.shift();
+        const isRefunded = forced === "REFUNDED" || roll < 0.08;
+        const hasManualStatus =
+          !isRefunded && (forced === "MANUAL_PAID" || forced === "MANUAL_LATE" || roll >= 0.08);
+        const manualStatus =
+          hasManualStatus && (forced === "MANUAL_PAID" || roll < 0.2)
+            ? ManualFinancialStatus.PAID
+            : hasManualStatus
+              ? ManualFinancialStatus.LATE
+              : ManualFinancialStatus.NONE;
+
         await prisma.invoice.create({
           data: {
             courseId: course.id,
             amountCents: defaultAmountCents,
             currency: euro,
-            status: InvoiceStatus.GENERATED,
+            status: isRefunded ? InvoiceStatus.REFUNDED : InvoiceStatus.GENERATED,
             issuedAt: new Date(),
+            refundedAt: isRefunded ? new Date() : null,
+            refundNote: isRefunded ? "Remboursement seed (récurrence)" : null,
+            manualStatus,
           },
         });
       }
+    }
+
+    // Garantie : au moins un cours par studio
+    for (const studio of createdStudios) {
+      if ((studioCourseCount.get(studio.id) ?? 0) > 0) continue;
+      const date = new Date(startBase);
+      date.setHours(11, 0, 0, 0);
+      const disciplineName = PRIMARY_DISCIPLINE;
+      const disciplinePositions = positions.filter(
+        (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
+      );
+      const positionsFallback =
+        disciplinePositions.length > 0
+          ? disciplinePositions.slice(0, Math.min(3, disciplinePositions.length))
+          : positions.slice(0, 2);
+      const teacher = schoolTeachers[0];
+      if (!teacher) continue;
+      const course = await prisma.course.create({
+        data: {
+          title: `${disciplineName} studio ${studio.name}`,
+          date,
+          durationMinutes: 60,
+          teacherId: teacher.id,
+          schoolId: school.id,
+          studioId: studio.id,
+          discipline: disciplineName,
+          maxSeats: 20,
+          costCredits: 100,
+          photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
+          positions: {
+            create: positionsFallback.map((p) => ({ positionId: p.id })),
+          },
+        },
+      });
+      courseImageIdx += 1;
+      studioCourseCount.set(studio.id, 1);
+      reservedSlots.push({
+        start: date,
+        end: new Date(date.getTime() + 60 * 60_000),
+      });
     }
   }
 }
