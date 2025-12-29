@@ -80,7 +80,7 @@ export default async function TeacherDashboard() {
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Cours
+                  Planning
                 </p>
                 <p className="text-base font-semibold text-white">
                   Créer et suivre les cours
@@ -143,26 +143,6 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
-            href="/app/teacher/presets"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="5" width="16" height="14" rx="2" />
-                  <path d="M4 9h16" />
-                  <path d="M8 5v14" />
-                  <path d="M16 5v14" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Presets / combos</p>
-                <p className="text-base font-semibold text-white">Créer/ gérer les presets</p>
-                <p className="text-sm text-slate-300">Combos vidéo premium ou en crédits avec positions liées.</p>
-              </div>
-            </div>
-          </Link>
-          <Link
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
@@ -188,6 +168,26 @@ export default async function TeacherDashboard() {
                 <p className="text-sm text-slate-300">
                   Voir/ajouter des positions (types, niveaux, médias) utilisables en cours.
                 </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            href="/app/teacher/presets"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="5" width="16" height="14" rx="2" />
+                  <path d="M4 9h16" />
+                  <path d="M8 5v14" />
+                  <path d="M16 5v14" />
+                </svg>
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Combos</p>
+                <p className="text-base font-semibold text-white">Créer/ gérer les combos</p>
+                <p className="text-sm text-slate-300">Combos vidéo premium ou en crédits avec positions liées.</p>
               </div>
             </div>
           </Link>
