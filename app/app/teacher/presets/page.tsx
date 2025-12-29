@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-import { createPresetAction, deletePresetAction, updatePresetImageAction } from "./actions";
+import { createPresetAction, deletePresetAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
 
@@ -63,77 +63,63 @@ export default async function TeacherPresetsPage() {
           <p className="text-slate-300">Aucun preset pour le moment.</p>
         ) : (
           <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {presets.map((preset) => (
-              <li key={preset.id} className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30">
-                <div className="space-y-3">
-                  {preset.imageUrl ? (
-                    <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
-                      <SafeImage src={preset.imageUrl} alt={preset.title} className="h-full w-full object-cover" />
+            {presets.map((preset) => {
+              const cost = preset.priceCredits ?? 0;
+              return (
+                <li key={preset.id} className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30">
+                  <div className="space-y-3">
+                    {preset.imageUrl ? (
+                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
+                        <SafeImage src={preset.imageUrl} alt={preset.title} className="h-full w-full object-cover" />
+                      </div>
+                    ) : null}
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+                      {preset.discipline ? (
+                        <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">{preset.discipline}</span>
+                      ) : null}
+                      {preset.premiumRequired ? (
+                        <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">Premium</span>
+                      ) : cost > 0 ? (
+                        <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">{cost} crédits</span>
+                      ) : (
+                        <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">Gratuit</span>
+                      )}
+                      {preset.createdBy ? (
+                        <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
+                          Créé par {preset.createdBy.name ?? preset.createdBy.email}
+                        </span>
+                      ) : null}
                     </div>
-                  ) : null}
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
-                    {preset.discipline ? (
-                      <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">{preset.discipline}</span>
-                    ) : null}
-                    {preset.premiumRequired ? (
-                      <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">Premium</span>
-                    ) : cost > 0 ? (
-                      <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">{cost} crédits</span>
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-semibold text-white">{preset.title}</h3>
+                      <p className="text-sm text-slate-200">{preset.description || "Pas de description"}</p>
+                    </div>
+                    {preset.positions.length > 0 ? (
+                      <p className="text-xs text-slate-300">
+                        Positions : {preset.positions.map((pp) => pp.position.name).join(", ")}
+                      </p>
                     ) : (
-                      <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">Gratuit</span>
+                      <p className="text-xs text-slate-400">Aucune position liée.</p>
                     )}
-                    {preset.createdBy ? (
-                      <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
-                        Créé par {preset.createdBy.name ?? preset.createdBy.email}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-semibold text-white">{preset.title}</h3>
-                    <p className="text-sm text-slate-200">{preset.description || "Pas de description"}</p>
-                  </div>
-                  {preset.positions.length > 0 ? (
-                    <p className="text-xs text-slate-300">
-                      Positions : {preset.positions.map((pp) => pp.position.name).join(", ")}
+                    <p className="text-xs text-slate-400">
+                      Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
+                      {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
                     </p>
-                  ) : (
-                    <p className="text-xs text-slate-400">Aucune position liée.</p>
-                  )}
-                  <p className="text-xs text-slate-400">
-                    Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
-                    {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
-                  </p>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="text-xs text-slate-300">
-                    {premiumLocked
-                      ? "Nécessite Premium"
-                      : insufficientCredits
-                        ? `Crédits manquants (${hasCredits}/${cost})`
-                        : ""}
                   </div>
-                  <form action={buyPresetAction} className="flex items-center gap-2">
-                    <input type="hidden" name="presetId" value={preset.id} />
-                    <button
-                      type="submit"
-                      disabled={disablePurchase || (premiumLocked && isStudent)}
-                      className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
-                        disablePurchase || (premiumLocked && isStudent)
-                          ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
-                          : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
-                      }`}
-                    >
-                      {cta}
-                    </button>
-                    {premiumLocked && isStudent ? (
-                      <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
-                        Passer premium
-                      </PremiumUpsellButton>
-                    ) : null}
-                  </form>
-                </div>
-              </li>
-            ))}
+                  <div className="mt-4 flex justify-end">
+                    <form action={deletePresetAction}>
+                      <input type="hidden" name="id" value={preset.id} />
+                      <button
+                        type="submit"
+                        className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
+                      >
+                        Supprimer
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
