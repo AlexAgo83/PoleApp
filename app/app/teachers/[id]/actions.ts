@@ -114,3 +114,81 @@ export async function updateTeacherProfileAction(formData: FormData) {
   revalidatePath(targetPath);
   redirect(targetPath);
 }
+
+const avatarSchema = z.object({
+  teacherId: z.string().cuid(),
+  avatarUrl: z
+    .string()
+    .trim()
+    .url("URL invalide")
+    .max(2048, "URL trop longue")
+    .nullable()
+    .optional(),
+  avatarPublicId: z.string().trim().max(512).nullable().optional(),
+  returnTo: z.string().trim().optional(),
+});
+
+export async function updateTeacherAvatarAction(input: {
+  teacherId: string;
+  avatarUrl: string | null;
+  avatarPublicId: string | null;
+  returnTo?: string;
+}) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "SCHOOL_ADMIN" && session.user.role !== "TEACHER") {
+    redirect("/access-denied");
+  }
+
+  const parsed = avatarSchema.safeParse({
+    teacherId: input.teacherId,
+    avatarUrl: input.avatarUrl ?? undefined,
+    avatarPublicId: input.avatarPublicId ?? undefined,
+    returnTo: input.returnTo,
+  });
+
+  if (!parsed.success) {
+    throw new Error("Formulaire avatar invalide");
+  }
+
+  const teacher = await prisma.user.findUnique({
+    where: { id: parsed.data.teacherId },
+    select: { schoolId: true, role: true, avatarPublicId: true },
+  });
+  if (!teacher || teacher.role !== "TEACHER" || teacher.schoolId !== session.user.schoolId) {
+    redirect("/access-denied");
+  }
+
+  await prisma.user.update({
+    where: { id: parsed.data.teacherId },
+    data: {
+      avatarUrl: parsed.data.avatarUrl ?? null,
+      avatarPublicId: parsed.data.avatarPublicId ?? null,
+    },
+  });
+
+  const previousPublicId = teacher.avatarPublicId;
+  const newPublicId = parsed.data.avatarPublicId ?? null;
+  if (
+    previousPublicId &&
+    previousPublicId !== newPublicId &&
+    !isDefaultAvatarPublicId(previousPublicId) &&
+    isCloudinaryEnabled()
+  ) {
+    try {
+      await destroyAsset(previousPublicId, "image", "authenticated");
+    } catch (error) {
+      console.error("[teacher-profile-avatar] failed to destroy previous avatar", error);
+    }
+  }
+
+  const safeReturn =
+    parsed.data.returnTo && parsed.data.returnTo.startsWith("/") ? parsed.data.returnTo : undefined;
+  const targetPath = `/app/teachers/${parsed.data.teacherId}${
+    safeReturn ? `?from=${encodeURIComponent(safeReturn)}` : ""
+  }`;
+  revalidatePath(targetPath);
+  return { ok: true };
+}

@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { TeacherEditPanel } from "./TeacherEditPanel";
+import { TeacherAvatarManager } from "./TeacherAvatarManager";
 
 const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
@@ -110,6 +111,7 @@ export default async function TeacherPublicProfilePage({
       .filter(Boolean);
   const lastNameDefault = restName.join(" ");
   const favoritePositionIds = teacher.favoritePositions.map((fp) => fp.positionId);
+  const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -146,7 +148,7 @@ export default async function TeacherPublicProfilePage({
         <div className="grid gap-5 md:grid-cols-2">
           <div className="space-y-2">
             <h2 className="text-lg font-semibold text-white">Diplômes</h2>
-            <p className="whitespace-pre-line rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
+            <p className="whitespace-pre-line rounded-xl px-0 py-0 text-sm text-slate-100">
               {teacher.diplomas?.trim() || "Non renseigné"}
             </p>
           </div>
@@ -172,20 +174,47 @@ export default async function TeacherPublicProfilePage({
       </section>
 
       {canEdit && (
-        <TeacherEditPanel
-          teacherId={teacher.id}
-          defaults={{
-            firstName: firstNameDefault,
-            lastName: lastNameDefault,
-            age: teacher.age,
-            avatarUrl: teacher.avatarUrl,
-            avatarPublicId: teacher.avatarPublicId,
-            diplomas: teacher.diplomas,
-            favoritePositionIds,
-          }}
-          positions={positions}
-          returnTo={backHref}
-        />
+        <>
+          <TeacherEditPanel
+            teacherId={teacher.id}
+            defaults={{
+              firstName: firstNameDefault,
+              lastName: lastNameDefault,
+              age: teacher.age,
+              avatarUrl: teacher.avatarUrl,
+              avatarPublicId: teacher.avatarPublicId,
+              diplomas: teacher.diplomas,
+              favoritePositionIds,
+            }}
+            positions={positions}
+            returnTo={backHref}
+          />
+
+          <section className="panel space-y-5 border-indigo-400/15 p-6">
+            <details className="group space-y-3">
+              <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
+                  <h2 className="text-lg font-semibold text-white">Photo de profil</h2>
+                </div>
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                  <span className="group-open:hidden">Modifier</span>
+                  <span className="hidden group-open:inline">Fermer</span>
+                </span>
+              </summary>
+              <div className="pt-1">
+                <TeacherAvatarManager
+                  teacherId={teacher.id}
+                  folder={avatarFolder}
+                  returnTo={backHref}
+                  initialUrl={teacher.avatarUrl ?? null}
+                  initialPublicId={teacher.avatarPublicId ?? null}
+                />
+                <p className="text-sm text-slate-300">Upload signé Cloudinary (auth), formats jpg/png/webp, 4 Mo max.</p>
+              </div>
+            </details>
+          </section>
+        </>
       )}
     </main>
   );
