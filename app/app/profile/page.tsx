@@ -87,16 +87,26 @@ export default async function ProfilePage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-6">
-        <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
-          Profil
-        </p>
-        <h1 className="text-2xl font-semibold text-white">
-          Informations du compte
-        </h1>
-        <p className="text-slate-300">
-          Mets à jour ton profil (nom, âge, photo). Les autres champs restent informatifs
-          et liés à ton compte existant.
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
+              Profil
+            </p>
+            <h1 className="text-2xl font-semibold text-white">
+              Informations du compte
+            </h1>
+            <p className="text-slate-300">
+              Mets à jour ton profil (nom, âge, photo). Les autres champs restent informatifs
+              et liés à ton compte existant.
+            </p>
+          </div>
+          <Link
+            href="/app/student"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
+          >
+            ← Retour accueil
+          </Link>
+        </div>
         <div className="mt-4 flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -118,14 +128,6 @@ export default async function ProfilePage({
             value={user.isPremium ? "Premium" : "Gratuit"}
           />
           <InfoRow label="Âge" value={ageLabel} />
-        </div>
-        <div className="mt-4 flex justify-end">
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
-          >
-            ← Retour accueil
-          </Link>
         </div>
       </section>
 
