@@ -1,7 +1,17 @@
 # 01_BACKLOG_S013 — Suivi élève, droits profs, transferts crédits, détail pack (QA S014)
-[Aligné v0.10.8 | Source: QA S014 | Priorité: à définir]
+[Aligné v0.10.8 | Source: QA S014 & QA S015 | Priorité: à définir]
+[Compréhension: ??% | Avancement (±QA): ??% ??%]
+> Quand une tâche est terminée la passer en **(DONE)**
+> Pensez à mettre à jour les autres fichiers .md
+> Pensez à mettre à jour la homepage
+> (Idéalement) Style: chaque feature contient **user stories détaillées**, **critères d’acceptation** **DoD** **progression** et **priorité**.
+> (Idéalement) Priorité: P0 (bloquant GA/qualité produit), P1 (prochaine itération produit), P2 (plus tard).
+> (Idéalement) Prépares tes questions pour améliorer la compréhension
+> (Idéalement) Prépares la session QA
 
-## Objectif
+## Prendre en compte la vision produit : 06_QA_S015.md (Pour contexte)
+
+## Objectif 
 Traiter les retours QA S014 : enrichir la fiche élève, gérer disciplines multiples pour profs, ajouter des droits avancés sur la création de positions, permettre les transferts de crédits entre élèves avec suivi, et proposer une fiche détail pack avec VOD Cloudinary.
 
 ## Portée (in / out)
