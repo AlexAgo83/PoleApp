@@ -122,5 +122,5 @@ export async function deleteInjuryAction(formData: FormData) {
   });
 
   revalidatePath("/app/student/injuries");
-  redirect("/app/student/injuries?success=Blessure supprimée");
+  redirect("/app/student/injuries");
 }

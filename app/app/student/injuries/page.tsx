@@ -44,8 +44,6 @@ export default async function StudentInjuriesPage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(injuryCount / PAGE_SIZE));
-  const success = resolvedParams.success?.toString();
-  const error = resolvedParams.error?.toString();
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -67,20 +65,8 @@ export default async function StudentInjuriesPage({
             ← Retour accueil
           </Link>
         </div>
-
-        {(success || error) && (
-          <div
-            className={`mb-4 rounded-xl border px-4 py-3 text-sm ${
-              error
-                ? "border-amber-300/40 bg-amber-500/10 text-amber-100"
-                : "border-emerald-300/40 bg-emerald-500/10 text-emerald-100"
-            }`}
-          >
-            {error ?? success}
-          </div>
-        )}
         <h2 className="text-lg font-semibold text-white">Mes blessures</h2>
-        <div className="grid gap-4">
+        <div className="grid gap-4 md:grid-cols-2">
           {injuries.map((injury) => (
             <article
               key={injury.id}
