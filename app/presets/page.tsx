@@ -206,14 +206,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
             </Link>
           </div>
         </div>
-        {isStudent ? (
-          <p className="text-sm text-slate-300">
-            Crédits disponibles :{" "}
-            <span className="font-semibold text-white">{hasCredits}</span>{" "}
-            · Statut :{" "}
-            <span className="font-semibold text-white">{hasPremium ? "Premium" : "Freemium"}</span>
-          </p>
-        ) : null}
+        {isStudent ? null : null}
         {flash === "ok" && (
           <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-100 border border-emerald-400/40">
             Achat enregistré.
