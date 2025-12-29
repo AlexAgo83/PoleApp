@@ -6,12 +6,23 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function StudentPurchasesPage() {
+function formatEuro(cents: number | null) {
+  return `${((cents ?? 0) / 100).toFixed(2)} €`;
+}
+
+export default async function StudentPurchasesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || session.user.role !== "STUDENT") {
     return null;
   }
 
+  const resolved = (await searchParams) ?? {};
+  const page = Math.max(1, Number.parseInt(resolved.page ?? "1", 10) || 1);
+  const take = 10;
   let purchases: {
     id: string;
     createdAt: Date;
@@ -22,19 +33,25 @@ export default async function StudentPurchasesPage() {
     creditsGranted: number | null;
     isPremiumGranted: boolean | null;
   }[] = [];
+  let count = 0;
 
   try {
     const client: any = prisma as any;
     if (client.purchase?.findMany) {
-      purchases = await client.purchase.findMany({
-        where: { userId: session.user.id },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-      });
+      [count, purchases] = await Promise.all([
+        client.purchase.count({ where: { userId: session.user.id } }),
+        client.purchase.findMany({
+          where: { userId: session.user.id },
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * take,
+          take,
+        }),
+      ]);
     }
   } catch {
     purchases = [];
   }
+  const totalPages = Math.max(1, Math.ceil(count / take));
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -63,7 +80,6 @@ export default async function StudentPurchasesPage() {
           )}
           {purchases.map((p) => {
             const created = new Date(p.createdAt).toLocaleString("fr-FR", { hour12: false });
-            const amount = (p.amountCents ?? 0) / 100;
             return (
               <div
                 key={p.id}
@@ -74,7 +90,7 @@ export default async function StudentPurchasesPage() {
                     {p.offerName} ({p.kind})
                   </p>
                   <p className="text-xs text-slate-300">
-                    {amount.toFixed(2)} € TTC · TVA {p.vatPercent ?? 20}% · Crédits :{" "}
+                    {formatEuro(p.amountCents)} TTC · TVA {p.vatPercent ?? 20}% · Crédits :{" "}
                     {p.creditsGranted ?? 0}
                     {p.isPremiumGranted ? " + Premium" : ""}
                   </p>
@@ -83,6 +99,37 @@ export default async function StudentPurchasesPage() {
               </div>
             );
           })}
+        </div>
+
+        <div className="mt-3 flex items-center justify-between text-sm text-slate-300">
+          <span>
+            Page {page} / {totalPages} · {count} achats
+          </span>
+          <div className="flex items-center gap-2">
+            {(() => {
+              const params = new URLSearchParams();
+              params.set("page", String(Math.max(1, page - 1)));
+              const prevHref = `?${params.toString()}`;
+              params.set("page", String(Math.min(totalPages, page + 1)));
+              const nextHref = `?${params.toString()}`;
+              return (
+                <>
+                  <a
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                    href={prevHref}
+                  >
+                    Précédent
+                  </a>
+                  <a
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                    href={nextHref}
+                  >
+                    Suivant
+                  </a>
+                </>
+              );
+            })()}
+          </div>
         </div>
       </section>
     </main>

@@ -33,10 +33,7 @@ export default async function TeacherDashboard() {
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-6">
-        <h3 className="text-lg font-semibold text-white">
-          Modules et actions prof
-        </h3>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           <Link
             href="/app/teacher/students"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
