@@ -153,7 +153,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
               {teachers.map((teacher) => (
                 <article
                   key={teacher.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20 backdrop-blur"
+                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20 backdrop-blur md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex flex-1 items-center gap-4">
                     <SafeImage
@@ -186,7 +186,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
                       </p>
                     </div>
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end md:self-center">
                     <Link
                       href={`/app/teachers/${teacher.id}?from=/app/admin/teachers`}
                       className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"

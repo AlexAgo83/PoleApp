@@ -38,7 +38,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/students"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="9" cy="8" r="3" />
@@ -61,7 +61,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/courses/agenda?view=month"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="4" y="5" width="16" height="15" rx="2" />
@@ -86,7 +86,7 @@ export default async function TeacherDashboard() {
             href={teacherProfileHref}
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="4" y="6" width="16" height="12" rx="2" />
@@ -109,7 +109,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/school"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 4l8 4-8 4-8-4 8-4z" />
@@ -131,7 +131,7 @@ export default async function TeacherDashboard() {
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 5c-2 0-3.5 1.5-3.5 3.5S10 12 12 12s3.5 1.5 3.5 3.5S14 19 12 19" />
@@ -157,7 +157,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/presets"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="4" y="5" width="16" height="14" rx="2" />
@@ -176,7 +176,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/purchases"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="6" width="18" height="12" rx="2" />
@@ -194,7 +194,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/billing"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M7 4h10a2 2 0 012 2v12l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
@@ -216,7 +216,7 @@ export default async function TeacherDashboard() {
             href="/app/student/game"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="7" />
@@ -241,7 +241,7 @@ export default async function TeacherDashboard() {
             href="/app/teacher/partners"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 8a6 6 0 00-9.33-5" />

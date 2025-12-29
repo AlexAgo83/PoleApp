@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import clsx from "clsx";
 
 import { MonthNav } from "@/components/MonthNav";
 
@@ -42,6 +43,7 @@ type Props = {
   hasCourses: boolean;
   filters: Filters;
   baseFrom: string;
+  className?: string;
 };
 
 function formatDuration(minutes: number) {
@@ -65,6 +67,7 @@ export function MonthView({
   hasCourses,
   filters,
   baseFrom,
+  className,
 }: Props) {
   const [month, setMonth] = useState(initialMonth);
   const [prev, setPrev] = useState(initialPrev);
@@ -107,7 +110,7 @@ export function MonthView({
   };
 
   return (
-    <section className="panel p-6">
+    <section className={clsx(className ?? "panel p-6")}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
         <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">

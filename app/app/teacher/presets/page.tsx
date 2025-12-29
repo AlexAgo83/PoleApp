@@ -52,10 +52,10 @@ export default async function TeacherPresetsPage() {
             <p className="text-sm text-slate-300 leading-6">Crée des combos vidéo premium ou achetables en crédits.</p>
           </div>
           <Link
-            href="/app/teacher"
+            href="/positions"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
           >
-            ← Retour accueil
+            Positions
           </Link>
         </div>
         <h2 className="text-lg font-semibold text-white">Presets existants</h2>
