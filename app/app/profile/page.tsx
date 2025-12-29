@@ -136,7 +136,6 @@ export default async function ProfilePage({
           id="edit-profile"
           eyebrow="Édition"
           heading="Mettre à jour ton profil"
-          description={`Nom affiché actuellement : ${currentDisplay}`}
         >
         <form action={updateProfileAction} className="mt-4 space-y-4">
           <label className="block space-y-2">
@@ -231,7 +230,6 @@ export default async function ProfilePage({
           id="avatar"
           eyebrow="Édition"
           heading="Photo de profil"
-          description="Upload/suppression de l'avatar."
         >
           <AvatarManager
             folder={avatarFolder}
