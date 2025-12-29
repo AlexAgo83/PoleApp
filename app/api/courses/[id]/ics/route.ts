@@ -36,9 +36,12 @@ function formatWithTz(date: Date, timeZone: string) {
 
 export async function GET(
   req: Request,
-  context: { params: { id?: string } } | Promise<{ params: { id?: string } }>,
+  context:
+    | { params: { id?: string } }
+    | Promise<{ params: { id?: string } }>,
 ) {
-  const { params } = await Promise.resolve(context);
+  const resolved = await Promise.resolve(context);
+  const params = "params" in resolved ? await Promise.resolve(resolved.params) : undefined;
   const url = new URL(req.url);
   const courseIdFromQuery = url.searchParams.get("id") ?? url.searchParams.get("courseId");
   const courseIdFromPath = params?.id;
