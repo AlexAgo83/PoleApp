@@ -122,7 +122,7 @@ export default async function TeacherDashboard() {
                   École
                 </p>
                 <p className="text-base font-semibold text-white">
-                  Fiche école
+                  Fiche école et studios
                 </p>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default async function TeacherDashboard() {
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Combos</p>
-                <p className="text-base font-semibold text-white">Créer/ gérer les combos</p>
+                <p className="text-base font-semibold text-white">Créer et gérer les combos</p>
               </div>
             </div>
           </Link>

@@ -86,9 +86,6 @@ export default async function StudentDashboard() {
                 <p className="text-base font-semibold text-white">
                   Voir ta progression par position
                 </p>
-                <p className="text-sm text-slate-300">
-                  Accès complet si premium, sinon positions vues en cours.
-                </p>
               </div>
             </div>
           </Link>
@@ -110,9 +107,6 @@ export default async function StudentDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Déclarer et gérer tes blessures
-                </p>
-                <p className="text-sm text-slate-300">
-                  Permet au prof de tenir compte des contre-indications.
                 </p>
               </div>
             </div>
@@ -144,9 +138,6 @@ export default async function StudentDashboard() {
                 <p className="text-base font-semibold text-white">
                   Photo, infos, positions préférées
                 </p>
-                <p className="text-sm text-slate-300">
-                  Édite depuis ton profil.
-                </p>
               </div>
             </div>
           </Link>
@@ -168,9 +159,6 @@ export default async function StudentDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Voir tes professeurs
-                </p>
-                <p className="text-sm text-slate-300">
-                  Consulte leurs diplômes, photo et positions préférées.
                 </p>
               </div>
             </div>
@@ -195,9 +183,6 @@ export default async function StudentDashboard() {
                 <p className="text-base font-semibold text-white">
                   Historique des cours réservés
                 </p>
-                <p className="text-sm text-slate-300">
-                  Voir les cours où tu es inscrit (passés et à venir).
-                </p>
               </div>
             </div>
           </Link>
@@ -219,9 +204,6 @@ export default async function StudentDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Réserver et voir les studios
-                </p>
-                <p className="text-sm text-slate-300">
-                  Agenda par studio, filtres multi-studios et infos partenaires.
                 </p>
               </div>
             </div>
@@ -251,9 +233,6 @@ export default async function StudentDashboard() {
                 <p className="text-base font-semibold text-white">
                   Consulter les figures
                 </p>
-                <p className="text-sm text-slate-300">
-                  Parcours filtrable des positions (images seed). Accès complet si premium, sinon selon progression.
-                </p>
               </div>
             </div>
           </Link>
@@ -272,13 +251,10 @@ export default async function StudentDashboard() {
               </span>
               <div className="space-y-1">
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Combos / presets
+                  Combos
                 </p>
                 <p className="text-base font-semibold text-white">
                   Parcourir et acheter les combos
-                </p>
-                <p className="text-sm text-slate-300">
-                  Catalogue de combos vidéo (premium ou crédits). Achat direct pour débloquer les contenus.
                 </p>
               </div>
             </div>
@@ -305,9 +281,6 @@ export default async function StudentDashboard() {
                 <p className="text-base font-semibold text-white">
                   6 mini-jeux de révision
                 </p>
-                <p className="text-sm text-slate-300">
-                  Photo→nom + variantes (type/niveau/grips/tips) sur tes positions débloquées ({isPremium ? "ou toutes si premium" : "libérées via cours"}).
-                </p>
               </div>
             </div>
           </Link>
@@ -331,9 +304,6 @@ export default async function StudentDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Packs / abonnements
-                </p>
-                <p className="text-sm text-slate-300">
-                  Consulte tes achats (TTC, TVA, crédits/premium).
                 </p>
               </div>
             </div>
@@ -379,9 +349,6 @@ export default async function StudentDashboard() {
                 </p>
                 <p className="text-base font-semibold text-white">
                   Offres et liens sponsorisés
-                </p>
-                <p className="text-sm text-slate-300">
-                  Découvre les partenaires de ton école et leurs avantages.
                 </p>
               </div>
             </div>
