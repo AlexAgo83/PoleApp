@@ -82,16 +82,18 @@ export default async function StudentTeachersPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-          Élève
-        </p>
-        <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
-        <p className="text-sm text-slate-200">
-          Fiches professeurs qui t&apos;ont déjà donné cours. Accède à leurs diplômes et positions
-          préférées.
-        </p>
-        <div className="mt-3 flex w-full justify-end">
+      <section className="panel space-y-4 border-indigo-400/15 p-6 shadow-indigo-900/30">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+              Élève
+            </p>
+            <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
+            <p className="text-sm text-slate-200">
+              Fiches professeurs qui t&apos;ont déjà donné cours. Accède à leurs diplômes et positions
+              préférées.
+            </p>
+          </div>
           <Link
             href="/app/student"
             className="inline-flex items-center justify-center rounded-full border border-white/20 px-3 py-2 text-white transition hover:border-indigo-300 hover:text-cyan-200"
@@ -99,9 +101,7 @@ export default async function StudentTeachersPage({
             ← Retour accueil
           </Link>
         </div>
-      </header>
 
-      <section className="panel border-indigo-400/15 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-white">Tes professeurs</h2>
           <div className="text-sm text-slate-300">
@@ -112,7 +112,7 @@ export default async function StudentTeachersPage({
           storageKey="filters:student-teachers"
           title="Filtres"
           activeCount={activeFilters}
-          className="mt-4"
+          className="mt-2"
           contentClassName="mt-3"
           userKey={userKey}
         >
