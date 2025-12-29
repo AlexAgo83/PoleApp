@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { PartnerProductsCarousel } from "../student/PartnerProductsCarousel";
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
@@ -34,11 +35,33 @@ export default async function TeacherDashboard() {
     session?.user?.schoolId
       ? await prisma.partner.findMany({
           where: { schoolId: session.user.schoolId },
-          select: { id: true, name: true, kind: true, website: true, description: true },
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            website: true,
+            description: true,
+            sponsoredLinks: { select: { id: true, category: true, label: true, url: true } },
+          },
           orderBy: { name: "asc" },
-          take: 4,
+          take: 6,
         })
       : [];
+  const partnerProducts = partners
+    .flatMap((partner) =>
+      (partner as any).sponsoredLinks
+        ? (partner as any).sponsoredLinks.map((link: any) => ({
+            id: link.id,
+            partnerId: partner.id,
+            partnerName: partner.name,
+            partnerKind: partner.kind,
+            category: link.category,
+            label: link.label,
+            url: link.url,
+          }))
+        : []
+    )
+    .slice(0, 12);
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -128,6 +151,51 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
+            href="/app/teacher/school"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 4l8 4-8 4-8-4 8-4z" />
+                  <path d="M4 12v5.5a1.5 1.5 0 001.5 1.5H9v-5.5" />
+                  <path d="M20 12v5.5a1.5 1.5 0 01-1.5 1.5H15v-5.5" />
+                </svg>
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
+                  École
+                </p>
+                <p className="text-base font-semibold text-white">
+                  Fiche école
+                </p>
+                <p className="text-sm text-slate-300">
+                  Studios et partenaires rattachés à ton école.
+                </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            href="/app/teacher/presets"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="5" width="16" height="14" rx="2" />
+                  <path d="M4 9h16" />
+                  <path d="M8 5v14" />
+                  <path d="M16 5v14" />
+                </svg>
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Presets / combos</p>
+                <p className="text-base font-semibold text-white">Créer/ gérer les presets</p>
+                <p className="text-sm text-slate-300">Combos vidéo premium ou en crédits avec positions liées.</p>
+              </div>
+            </div>
+          </Link>
+          <Link
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
@@ -149,12 +217,29 @@ export default async function TeacherDashboard() {
                 <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
                   Positions
                 </p>
-                <p className="text-base font-semibold text-white">
-                  Gérer les positions
-                </p>
+                <p className="text-base font-semibold text-white">Gérer les positions</p>
                 <p className="text-sm text-slate-300">
                   Voir/ajouter des positions (types, niveaux, médias) utilisables en cours.
                 </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            href="/app/teacher/purchases"
+            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="6" width="18" height="12" rx="2" />
+                  <path d="M3 10h18" />
+                  <path d="M7 15h2" />
+                </svg>
+              </span>
+              <div className="space-y-1">
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Achats élèves</p>
+                <p className="text-base font-semibold text-white">Packs / Abos / Presets</p>
+                <p className="text-sm text-slate-300">Lecture des achats de l’école (packs, abonnements, presets).</p>
               </div>
             </div>
           </Link>
@@ -183,68 +268,6 @@ export default async function TeacherDashboard() {
                 <p className="text-sm text-slate-300">
                   Photo→nom, nom→type/niveau/grips/intro/tip pour animer tes sessions.
                 </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/app/teacher/school"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 4l8 4-8 4-8-4 8-4z" />
-                  <path d="M4 12v5.5a1.5 1.5 0 001.5 1.5H9v-5.5" />
-                  <path d="M20 12v5.5a1.5 1.5 0 01-1.5 1.5H15v-5.5" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  École
-                </p>
-                <p className="text-base font-semibold text-white">Fiche école</p>
-                <p className="text-sm text-slate-300">
-                  Studios et partenaires rattachés à ton école.
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/app/teacher/purchases"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="6" width="18" height="12" rx="2" />
-                  <path d="M3 10h18" />
-                  <path d="M7 15h2" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Achats élèves</p>
-                <p className="text-base font-semibold text-white">Packs / Abos / Presets</p>
-                <p className="text-sm text-slate-300">Lecture des achats de l’école (packs, abonnements, presets).</p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/app/teacher/presets"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="5" width="16" height="14" rx="2" />
-                  <path d="M4 9h16" />
-                  <path d="M8 5v14" />
-                  <path d="M16 5v14" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Presets / combos</p>
-                <p className="text-base font-semibold text-white">Créer/ gérer les presets</p>
-                <p className="text-sm text-slate-300">Combos vidéo premium ou en crédits avec positions liées.</p>
               </div>
             </div>
           </Link>
@@ -311,18 +334,18 @@ export default async function TeacherDashboard() {
               Voir la fiche école
             </Link>
           </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {partners.map((partner) => (
               <div
                 key={partner.id}
-                className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200"
+                className="flex min-w-0 flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 transition hover:border-cyan-300/70 hover:bg-white/10"
               >
                 <p className="text-base font-semibold text-white">{partner.name}</p>
                 {partner.kind && <p className="text-xs uppercase tracking-[0.12em] text-cyan-200">{partner.kind}</p>}
                 {partner.description && <p className="text-sm text-slate-300">{partner.description}</p>}
                 {partner.website && (
                   <a
-                    href={partner.website}
+                    href={`/api/partners/redirect?partnerId=${partner.id}&url=${encodeURIComponent(partner.website)}&type=click`}
                     target="_blank"
                     rel="noreferrer"
                     className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100"
@@ -333,6 +356,7 @@ export default async function TeacherDashboard() {
               </div>
             ))}
           </div>
+          {partnerProducts.length > 0 && <PartnerProductsCarousel items={partnerProducts} />}
         </section>
       )}
     </main>

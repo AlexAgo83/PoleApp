@@ -215,6 +215,20 @@ export default async function AdminDashboard({
             }
           />
           <ActionCard
+            title="Presets / combos"
+            description="Crée et gère les presets vidéo premium ou en crédits."
+            href="/app/admin/presets"
+            cta="Gérer les presets"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="5" width="16" height="14" rx="2" />
+                <path d="M4 9h16" />
+                <path d="M8 5v14" />
+                <path d="M16 5v14" />
+              </svg>
+            }
+          />
+          <ActionCard
             title="Jeux"
             description="Mini-jeu de révision positions (accès élève)."
             href="/app/student/game"
