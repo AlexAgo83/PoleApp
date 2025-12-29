@@ -62,7 +62,15 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
   return (
     <main className="flex min-h-screen w-full flex-col gap-6">
       <section className="panel space-y-4 p-5">
-        <h2 className="text-lg font-semibold text-white">Presets existants</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Presets existants</h2>
+          <Link
+            href="/positions"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+          >
+            Positions
+          </Link>
+        </div>
         {presets.length === 0 ? (
           <p className="text-slate-300">Aucun preset pour le moment.</p>
         ) : (

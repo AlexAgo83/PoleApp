@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 import clsx from "clsx";
 import React from "react";
 import { SignOutModalButton } from "@/components/auth/SignOutModalButton";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { authOptions } from "@/lib/auth";
 
 type HeaderButton = {
   label: string;
@@ -29,7 +31,7 @@ type Props = {
 const baseOverlay =
   "linear-gradient(135deg, rgba(10,15,30,0.85), rgba(15,25,45,0.7))";
 
-export function FoxPageHeader({
+export async function FoxPageHeader({
   title,
   eyebrow,
   buttons = [],
@@ -42,6 +44,7 @@ export function FoxPageHeader({
   sticky = true,
   profileImageUrl,
 }: Props) {
+  const session = await getServerSession(authOptions).catch(() => null);
   const style = {
     backgroundImage: backgroundImage
       ? `${baseOverlay}, url(${backgroundImage})`
@@ -62,7 +65,7 @@ export function FoxPageHeader({
       ? { width: "100vw", marginLeft: "calc(50% - 50vw)" }
       : {}),
   } as React.CSSProperties;
-  const avatarSrc = profileImageUrl || AVATAR_PLACEHOLDER;
+  const avatarSrc = profileImageUrl || session?.user?.avatarUrl || AVATAR_PLACEHOLDER;
 
   const renderButton = (btn: HeaderButton, idx: number) => {
     if (btn.href?.includes("/api/auth/signout") || btn.label.toLowerCase().includes("déconnexion")) {

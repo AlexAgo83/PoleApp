@@ -87,7 +87,7 @@ export default async function StudentSchoolPage({
     name: string;
     photoUrl: string | null;
     website: string | null;
-    studios: { id: string; name: string; address: string | null }[];
+    studios: { id: string; name: string; address: string | null; photoUrl: string | null }[];
     partners: {
       id: string;
       name: string;
@@ -107,7 +107,7 @@ export default async function StudentSchoolPage({
         name: true,
         photoUrl: true,
         website: true,
-        studios: { select: { id: true, name: true, address: true } },
+        studios: { select: { id: true, name: true, address: true, photoUrl: true } },
         partners: {
           select: {
             id: true,
@@ -126,7 +126,12 @@ export default async function StudentSchoolPage({
         name: fetched.name,
         photoUrl: fetched.photoUrl ?? null,
         website: fetched.website ?? null,
-        studios: fetched.studios,
+        studios: fetched.studios.map((s) => ({
+          id: s.id,
+          name: s.name,
+          address: s.address,
+          photoUrl: s.photoUrl ?? null,
+        })),
         partners: fetched.partners,
       };
     }
@@ -141,7 +146,7 @@ export default async function StudentSchoolPage({
       select: {
         id: true,
         name: true,
-        studios: { select: { id: true, name: true, address: true } },
+        studios: { select: { id: true, name: true, address: true, photoUrl: true } },
         partners: {
           select: {
             id: true,
@@ -160,7 +165,12 @@ export default async function StudentSchoolPage({
         name: fetched.name,
         photoUrl: null,
         website: null,
-        studios: fetched.studios,
+        studios: fetched.studios.map((s) => ({
+          id: s.id,
+          name: s.name,
+          address: s.address,
+          photoUrl: s.photoUrl ?? null,
+        })),
         partners: fetched.partners,
       };
     }
@@ -205,7 +215,7 @@ export default async function StudentSchoolPage({
   const mineLast = mineValues.length > 0 ? mineValues[mineValues.length - 1] : undefined;
   const onlyMine =
     mineLast === undefined
-      ? true
+      ? false
       : mineLast === "true" || mineLast === "1" || mineLast === "on" || mineLast === "";
   const activeFilters = [
     view,
@@ -456,14 +466,6 @@ export default async function StudentSchoolPage({
             ) : null}
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
-          </Link>
-        </div>
       </header>
 
       <section className="panel p-6">
@@ -487,6 +489,11 @@ export default async function StudentSchoolPage({
               <li
                 key={studio.id}
                 className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
+                style={{
+                  backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.7)), url(${studio.photoUrl ?? COURSE_PLACEHOLDER})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-base font-semibold text-white">{studio.name}</p>
@@ -521,20 +528,6 @@ export default async function StudentSchoolPage({
             <p className="text-sm text-slate-300">
               Vue semaine/mensuelle, filtrable par studio/professeur. Les codes couleur suivent tes statuts.
             </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={listHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Liste des cours
-            </Link>
-            <Link
-              href={agendaHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Agenda complet
-            </Link>
           </div>
         </div>
 

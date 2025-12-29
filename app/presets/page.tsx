@@ -161,26 +161,26 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       />
 
       <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold text-white">Combos</h2>
-        </div>
-        <div className="flex w-full flex-wrap justify-end gap-2 md:w-auto">
-          {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
+          <div className="flex flex-wrap justify-end gap-2 md:w-auto">
+            {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
+              <Link
+                href={session.user.role === "SCHOOL_ADMIN" ? "/app/admin/presets" : "/app/teacher/presets"}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
+                  Gestion (prof/admin)
+                </span>
+              </Link>
+            )}
             <Link
-              href="/app/teacher/presets"
+              href="/positions"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
-                Gestion (prof/admin)
-              </span>
+              <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Positions</span>
             </Link>
-          )}
-          <Link
-            href="/positions"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Positions</span>
-          </Link>
+          </div>
         </div>
         {isStudent ? null : null}
         {flash === "ok" && (
