@@ -6,11 +6,8 @@ import HealthBadge from "@/components/HealthBadge";
 import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { CircularRedFox, PlainRedFox } from "@/components/FoxVignette";
-import SummaryPanel from "@/components/home/SummaryPanel";
-import packageJson from "../package.json";
 
-const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? packageJson.version ?? "0.0.0";
-const billingStatus = `Livré (${appVersion})`;
+const billingStatus = "Livré";
 
 const moduleSections = [
   {
@@ -195,8 +192,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      <SummaryPanel appVersion={appVersion} />
 
       {session?.user?.role === "SUPER_ADMIN" && (
         <details className="panel group p-8 border-indigo-400/25 shadow-indigo-900/30">
