@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 import { SafeImage } from "@/components/SafeImage";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { AVATAR_PLACEHOLDER, COURSE_PLACEHOLDER } from "@/lib/placeholders";
@@ -92,41 +93,20 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header
-        className="panel relative overflow-hidden border-indigo-400/25 p-6 shadow-indigo-900/30"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+      <FoxPageHeader
+        eyebrow="Admin"
+        title="Professeurs"
+        backgroundImage={schoolPhoto}
+        buttons={[
+          { label: "Retour dashboard", href: "/app/admin" },
+          { label: "Gérer via utilisateurs", href: "/app/admin/users?role=TEACHER" },
+        ]}
+        foxHref="/"
       >
-        <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Admin</p>
-            <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
-            <p className="text-sm text-slate-200">
-              Liste des professeurs de l’école. Filtre par recherche et premium.
-            </p>
-            {school?.name ? (
-              <p className="text-xs text-slate-300 mt-1">École : {school.name}</p>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap justify-end gap-3 text-sm md:self-start">
-            <Link
-              href="/app/admin"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour dashboard
-            </Link>
-            <Link
-              href="/app/admin/users?role=TEACHER"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Gérer via utilisateurs
-            </Link>
-          </div>
-        </div>
-      </header>
+        {school?.name ? (
+          <p className="text-sm text-slate-200">École : {school.name}</p>
+        ) : null}
+      </FoxPageHeader>
 
       <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">

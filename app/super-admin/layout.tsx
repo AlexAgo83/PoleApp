@@ -1,9 +1,7 @@
 import { getServerSession } from "next-auth";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { SignOutButton } from "@/components/auth/SignOutButton";
-import { CircularRedFox } from "@/components/FoxVignette";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 
 export default async function SuperAdminLayout({ children }: { children: React.ReactNode }) {
@@ -13,30 +11,16 @@ export default async function SuperAdminLayout({ children }: { children: React.R
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 py-6 md:px-8 md:py-10">
-      <header className="panel relative overflow-visible border-cyan-300/30 p-6 shadow-cyan-900/40">
-        <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2">
-          <CircularRedFox sizeClass="h-20 w-20 md:h-28 md:w-28" href="/" />
-        </div>
-        <div className="relative flex flex-col gap-4 pl-24 md:flex-row md:items-center md:justify-between md:pl-0 md:pt-6">
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">Super Admin</p>
-            <h1 className="text-3xl font-semibold text-white">Backoffice global</h1>
-            <p className="text-sm text-slate-300">
-            Gestion des écoles, admins, offres et paramètres.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 md:justify-end">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Accueil
-            </Link>
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 pt-0 pb-2 md:px-8 md:pt-0 md:pb-4">
+      <FoxPageHeader
+        eyebrow="Super admin"
+        title="Backoffice global"
+        buttons={[
+          { label: "Accueil", href: "/" },
+          { label: "Déconnexion", href: "/api/auth/signout" },
+        ]}
+        foxHref="/"
+      />
       {children}
     </main>
   );
