@@ -6,8 +6,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
-import { AvatarUploadField } from "@/components/AvatarUploadField";
 import { updateProfileAction } from "./actions";
+import { ProfileCollapsible } from "./ProfileCollapsible";
+import { AvatarManager } from "./AvatarManager";
 
 const roleLabels: Record<string, string> = {
   STUDENT: "Étudiant",
@@ -104,8 +105,8 @@ export default async function ProfilePage({
             className="h-16 w-16 rounded-full border border-white/10 object-cover shadow-lg shadow-black/30"
           />
           <div className="text-sm text-slate-300">
-            <p>{user.avatarUrl ? "Photo personnalisée" : "Placeholder appliqué"}</p>
-            <p className="text-xs text-slate-400">Modifie ta photo plus bas.</p>
+            <p className="text-base font-semibold text-white">{currentDisplay}</p>
+            <p className="text-xs text-slate-400">Ton portrait actuel.</p>
           </div>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -129,20 +130,12 @@ export default async function ProfilePage({
       </section>
 
       <section className="panel p-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
-                Édition
-              </p>
-              <h2 className="text-xl font-semibold text-white">
-                Mettre à jour ton profil
-              </h2>
-              <p className="text-xs text-slate-300">
-                Nom affiché actuellement : <span className="font-semibold text-white">{currentDisplay}</span>
-              </p>
-            </div>
-          </div>
-
+        <ProfileCollapsible
+          id="edit-profile"
+          eyebrow="Édition"
+          heading="Mettre à jour ton profil"
+          description={`Nom affiché actuellement : ${currentDisplay}`}
+        >
         <form action={updateProfileAction} className="mt-4 space-y-4">
           <label className="block space-y-2">
             <span className="text-sm font-medium text-slate-200">Prénom</span>
@@ -179,19 +172,6 @@ export default async function ProfilePage({
               className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
             />
           </label>
-
-          <div className="space-y-2">
-            <span className="text-sm font-medium text-slate-200">Photo de profil</span>
-            <AvatarUploadField
-              folder={avatarFolder}
-              currentUrl={user.avatarUrl ?? undefined}
-              currentPublicId={user.avatarPublicId ?? undefined}
-              maxSizeMB={2}
-            />
-            <p className="text-xs text-slate-400">
-              Upload signé Cloudinary (restrict), formats jpg/png/webp, 2 Mo max. Laisse vide pour utiliser l’avatar neutre ({isTeacher ? "prof" : "élève"}).
-            </p>
-          </div>
 
           {isTeacher && (
             <label className="block space-y-2">
@@ -241,6 +221,25 @@ export default async function ProfilePage({
             </button>
           </div>
         </form>
+        </ProfileCollapsible>
+      </section>
+
+      <section className="panel p-6">
+        <ProfileCollapsible
+          id="avatar"
+          eyebrow="Édition"
+          heading="Photo de profil"
+          description="Upload/suppression de l'avatar."
+        >
+          <AvatarManager
+            folder={avatarFolder}
+            initialUrl={user.avatarUrl ?? null}
+            initialPublicId={user.avatarPublicId ?? null}
+          />
+          <p className="text-xs text-slate-400">
+            Upload signé Cloudinary (restrict), formats jpg/png/webp, 4 Mo max. Laisse vide pour utiliser l’avatar neutre ({isTeacher ? "prof" : "élève"}).
+          </p>
+        </ProfileCollapsible>
       </section>
 
       {isTeacher && (
@@ -283,31 +282,34 @@ export default async function ProfilePage({
 
       {isStudent && (
         <section className="panel p-6">
-          <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
-            Profil élève
-          </p>
-          <h2 className="text-xl font-semibold text-white">Préférences</h2>
-          <div className="mt-3 space-y-3 text-sm text-slate-200">
-            <div>
-              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
-                Positions coups de cœur
-              </p>
-              {favoritePositionIds.length > 0 ? (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {user.studentFavoritePositions.map((fav) => (
-                    <span
-                      key={fav.positionId}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
-                    >
-                      {fav.position.name}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
-              )}
+          <ProfileCollapsible
+            id="student-preferences"
+            eyebrow="Profil élève"
+            heading="Préférences"
+            defaultOpen={false}
+          >
+            <div className="space-y-3 text-sm text-slate-200">
+              <div>
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                  Positions coups de cœur
+                </p>
+                {favoritePositionIds.length > 0 ? (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {user.studentFavoritePositions.map((fav) => (
+                      <span
+                        key={fav.positionId}
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                      >
+                        {fav.position.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
+                )}
+              </div>
             </div>
-          </div>
+          </ProfileCollapsible>
         </section>
       )}
 
