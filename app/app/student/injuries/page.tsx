@@ -84,81 +84,85 @@ export default async function StudentInjuriesPage({
           {injuries.map((injury) => (
             <article
               key={injury.id}
-              className="grid gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-950/50 via-slate-900/40 to-cyan-900/40 p-5 shadow-lg shadow-black/20"
+              className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-950/50 via-slate-900/40 to-cyan-900/40 p-5 shadow-lg shadow-black/20"
             >
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-lg font-semibold text-white">
-                    {injury.injuryType.name}
-                  </p>
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
-                      injury.isActive
-                        ? "border border-red-300/70 bg-red-500/30 text-red-50 shadow-inner shadow-red-500/30 animate-pulse"
-                        : "border border-emerald-300/60 bg-emerald-500/20 text-emerald-50"
-                    }`}
-                  >
-                    {injury.isActive ? "Active" : "Résolue"}
-                  </span>
-                </div>
-                {injury.notes && (
-                  <p className="rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm text-slate-100">
-                    Notes : {injury.notes}
-                  </p>
-                )}
-                <p className="text-xs text-slate-300">
-                  Créée le {new Date(injury.createdAt).toLocaleDateString("fr-FR")}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-end gap-3">
-                <details className="group">
-                  <summary className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10 [&::marker]:hidden">
-                    Éditer
-                    <span className="text-xs text-slate-300 group-open:rotate-180 transition">▼</span>
-                  </summary>
-                  <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3">
-                    <form
-                      action={updateInjuryAction}
-                      className="flex flex-wrap items-center gap-3"
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-lg font-semibold text-white">
+                      {injury.injuryType.name}
+                    </p>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+                        injury.isActive
+                          ? "border border-red-300/70 bg-red-500/30 text-red-50 shadow-inner shadow-red-500/30 animate-pulse"
+                          : "border border-emerald-300/60 bg-emerald-500/20 text-emerald-50"
+                      }`}
                     >
-                      <input type="hidden" name="injuryId" value={injury.id} />
-                      <input
-                        type="hidden"
-                        name="isActive"
-                        value={injury.isActive ? "false" : "true"}
-                      />
-                      <div className="flex flex-wrap items-center gap-2">
-                        <input
-                          name="notes"
-                          defaultValue={injury.notes ?? ""}
-                          placeholder="Notes"
-                          className="w-56 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-                        />
-                        <button
-                          type="submit"
-                          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-                        >
-                          Sauver
-                        </button>
-                        <button
-                          type="submit"
-                          className="rounded-full bg-amber-500 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-amber-400"
-                        >
-                          Marquer {injury.isActive ? "résolue" : "active"}
-                        </button>
-                      </div>
-                    </form>
+                      {injury.isActive ? "Active" : "Résolue"}
+                    </span>
                   </div>
-                </details>
-                <form action={deleteInjuryAction}>
-                  <input type="hidden" name="injuryId" value={injury.id} />
-                  <button
-                    type="submit"
-                    className="rounded-full border border-red-500/40 bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-300 hover:bg-red-400/30"
-                  >
-                    Supprimer
-                  </button>
-                </form>
+                  {injury.notes && (
+                    <p className="rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm text-slate-100">
+                      Notes : {injury.notes}
+                    </p>
+                  )}
+                  <p className="text-xs text-slate-300">
+                    Créée le {new Date(injury.createdAt).toLocaleDateString("fr-FR")}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <details className="group flex w-full flex-col items-end gap-2 md:w-auto">
+                    <div className="order-1 hidden w-full group-open:block">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                        <form
+                          action={updateInjuryAction}
+                          className="flex flex-wrap items-center gap-3"
+                        >
+                          <input type="hidden" name="injuryId" value={injury.id} />
+                          <input
+                            type="hidden"
+                            name="isActive"
+                            value={injury.isActive ? "false" : "true"}
+                          />
+                          <div className="flex flex-wrap items-center gap-2">
+                            <input
+                              name="notes"
+                              defaultValue={injury.notes ?? ""}
+                              placeholder="Notes"
+                              className="w-56 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                            />
+                            <button
+                              type="submit"
+                              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+                            >
+                              Sauver
+                            </button>
+                            <button
+                              type="submit"
+                              className="rounded-full bg-amber-500 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-amber-400"
+                            >
+                              Marquer {injury.isActive ? "résolue" : "active"}
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <summary className="order-2 inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10 [&::marker]:hidden">
+                      Éditer
+                      <span className="text-xs text-slate-300 group-open:rotate-180 transition">▼</span>
+                    </summary>
+                  </details>
+                  <form action={deleteInjuryAction}>
+                    <input type="hidden" name="injuryId" value={injury.id} />
+                    <button
+                      type="submit"
+                      className="rounded-full border border-red-500/40 bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-300 hover:bg-red-400/30"
+                    >
+                      Supprimer
+                    </button>
+                  </form>
+                </div>
               </div>
             </article>
           ))}
