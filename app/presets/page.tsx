@@ -161,6 +161,9 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       />
 
       <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Combos</h2>
+        </div>
         <div className="flex w-full flex-wrap justify-end gap-2 md:w-auto">
           {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
             <Link

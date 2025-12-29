@@ -6,7 +6,6 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { backfillInvoicesAction } from "./actions";
 import { BillingList } from "./BillingList";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -96,26 +95,6 @@ export default async function AdminBillingPage({ searchParams }: { searchParams?
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        eyebrow="Admin"
-        title="Facturation"
-        buttons={[
-          { label: "Retour dashboard", href: "/app/admin" },
-          { label: "Voir achats", href: "/app/admin/purchases" },
-        ]}
-        foxHref="/"
-      >
-        <form action={backfillInvoicesAction} className="inline-flex">
-          <input type="hidden" name="redirectTo" value={backfillRedirect} />
-          <button
-            type="submit"
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
-          >
-            Générer les factures manquantes
-          </button>
-        </form>
-      </FoxPageHeader>
-
       <BillingList
         initialQuery={queryParams.toString()}
         teachers={teachers}
@@ -124,6 +103,8 @@ export default async function AdminBillingPage({ searchParams }: { searchParams?
         statusClasses={statusClasses}
         activeCount={activeFilters}
         userKey={userKey}
+        backfillRedirect={backfillRedirect}
+        backfillAction={backfillInvoicesAction}
       />
     </main>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { GameMode, GameQuestion } from "./logic";
@@ -93,7 +94,13 @@ export function GameClient({ questions, mode }: Props) {
             {saved && <p className="text-xs text-emerald-300">Session enregistrée</p>}
             {error && <p className="text-xs text-red-300">{error}</p>}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/app/student/game"
+              className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              ← Autre mode
+            </Link>
             <button
               type="button"
               onClick={() => window.location.reload()}

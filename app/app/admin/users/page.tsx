@@ -178,7 +178,7 @@ export default async function AdminUsersPage({
 
       <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-semibold text-white">Utilisateurs existants</h2>
+          <h2 className="text-xl font-semibold text-white">Utilisateurs</h2>
           <p className="text-sm text-slate-300">
             Page {currentPage} / {totalPages} · {totalCount} comptes
           </p>

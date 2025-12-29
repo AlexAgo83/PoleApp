@@ -61,21 +61,6 @@ function modeLabel(mode: GameMode) {
   return MODES.find((m) => m.id === mode)?.title ?? mode;
 }
 
-function ReturnCta({ role }: { role: string }) {
-  const href =
-    role === "TEACHER" ? "/app/teacher" : role === "SCHOOL_ADMIN" ? "/app/admin" : "/app/student";
-  return (
-    <div className="flex justify-end">
-      <Link
-        href={href}
-        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-      >
-        ← Retour accueil
-      </Link>
-    </div>
-  );
-}
-
 type SessionStat = { accuracy: number; correct: number; total: number; createdAt: Date; durationMs?: number | null };
 
 function computeUserStats(
@@ -242,19 +227,6 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
   if (!selectedMode) {
     return (
       <main className="flex min-h-screen w-full flex-col gap-4">
-        <header className="panel flex flex-wrap items-center justify-between gap-3 p-6">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-              {isTeacherOrAdmin ? "Prof / Admin" : "Élève"}
-            </p>
-            <h1 className="text-3xl font-semibold text-white">Mini-jeux</h1>
-            <p className="text-sm text-slate-300">
-              Choisis un mode. Pool basé sur tes positions débloquées (toutes si premium).
-            </p>
-          </div>
-          <ReturnCta role={session.user.role} />
-        </header>
-
         {notEnoughPositions && (
           <section className="panel w-full max-w-3xl self-center p-6 text-center text-slate-200">
             <p className="text-lg font-semibold text-white">Pas assez de positions pour générer un jeu.</p>
@@ -426,30 +398,6 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel flex flex-col gap-4 p-6">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-            {isTeacherOrAdmin ? "Prof / Admin" : "Élève"}
-          </p>
-          <h1 className="text-3xl font-semibold text-white">{modeLabel(selectedMode)}</h1>
-          <p className="text-sm text-slate-300">
-            {questions.length} questions · pool basé sur tes positions débloquées
-          </p>
-          <p className="text-xs text-slate-400">
-            Stats : {userStats?.sessions ?? 0} parties · Meilleur {userStats?.best ? `${userStats.best.accuracy}%` : "—"}
-          </p>
-        </div>
-        <div className="flex flex-nowrap items-center justify-end gap-2">
-          <Link
-            href="/app/student/game"
-            className="whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Autre mode
-          </Link>
-          <ReturnCta role={session.user.role} />
-        </div>
-      </header>
-
       <section className="panel w-full p-6">
         <GameClient mode={selectedMode} questions={questions} />
       </section>

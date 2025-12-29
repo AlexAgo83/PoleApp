@@ -242,22 +242,25 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         foxHref="/"
       />
 
-      <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
-        <div className="flex w-full flex-wrap justify-end gap-3 md:w-auto">
-          <Link
-            href="/presets"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Combos
-          </Link>
-          {canManage ? (
+      <section className="panel relative space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Positions</h2>
+          <div className="flex flex-wrap justify-end gap-2 md:gap-3">
             <Link
-              href="/teacher/positions/new"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+              href="/presets"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              Nouvelle position
+              Combos
             </Link>
-          ) : null}
+            {canManage ? (
+              <Link
+                href="/teacher/positions/new"
+                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+              >
+                Nouvelle position
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         {isStudent && (

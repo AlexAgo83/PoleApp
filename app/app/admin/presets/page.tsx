@@ -7,7 +7,6 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdminAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
@@ -62,12 +61,6 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-6">
-      <FoxPageHeader
-        eyebrow="Espace admin"
-        title="Presets / combos"
-        buttons={[{ label: "Retour dashboard", href: "/app/admin" }]}
-        foxHref="/"
-      />
       <section className="panel space-y-4 p-5">
         <h2 className="text-lg font-semibold text-white">Presets existants</h2>
         {presets.length === 0 ? (

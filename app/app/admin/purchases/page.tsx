@@ -69,17 +69,8 @@ export default async function AdminPurchasesPage({ searchParams }: { searchParam
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        eyebrow="Admin"
-        title="Achats (packs / abonnements)"
-        buttons={[
-          { label: "Retour dashboard", href: "/app/admin" },
-          { label: "Facturation", href: "/app/admin/billing" },
-        ]}
-        foxHref="/"
-      />
-
       <section className="panel mt-4 space-y-4 p-6">
+        <h2 className="text-lg font-semibold text-white">Historique des achats</h2>
         <FilterPanel title="Filtres" activeCount={[kind, status, q && q.length > 0].filter(Boolean).length} storageKey="filters:admin-purchases">
           <form className="grid gap-3 md:grid-cols-4">
             <label className="text-sm text-slate-200">
