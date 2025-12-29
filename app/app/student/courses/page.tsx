@@ -32,6 +32,7 @@ type CourseRow = {
   costCredits: number;
   photoUrl?: string | null;
   discipline?: string | null;
+  isVirtual?: boolean;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { name: string } | null;
   positions: { position: { id: string; name: string } }[];
@@ -173,6 +174,7 @@ export default async function StudentCoursesPage({
             teacher: { select: { id: true, name: true, email: true } },
             positions: { include: { position: true } },
             studio: { select: { name: true } },
+            isVirtual: true,
             notes: {
               where: { studentId: session.user.id },
               include: { position: true },
@@ -197,6 +199,7 @@ export default async function StudentCoursesPage({
                 teacher: { select: { id: true, name: true, email: true } },
                 positions: { include: { position: true } },
                 studio: { select: { name: true } },
+                isVirtual: true,
                 notes: {
                   where: { studentId: session.user.id },
                   include: { position: true },
@@ -530,6 +533,7 @@ export default async function StudentCoursesPage({
             )}`;
             const isWaitlist = myAttendance?.status === "WAITLIST";
             const isAttending = Boolean(myAttendance && myAttendance.status === "CONFIRMED");
+            const isVirtual = Boolean(course.isVirtual);
             const badgeClass = isWaitlist
               ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
               : isAttending
@@ -544,9 +548,12 @@ export default async function StudentCoursesPage({
                 ? "Cours déjà suivi"
                 : "Inscrit"
               : "Non inscrit";
+            const cardClass = isVirtual
+              ? "border border-amber-300/60 bg-amber-500/15 text-white"
+              : "border border-white/10 bg-white/5";
             return (
               <div key={key} className={`block rounded-xl ${faded}`}>
-                <article className="flex flex-col gap-2 py-3 px-2">
+                <article className={`flex flex-col gap-2 py-3 px-2 ${cardClass}`}>
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}

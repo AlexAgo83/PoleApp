@@ -5,9 +5,10 @@ import { useState } from "react";
 type Props = {
   path: string; // ex: /app/student/courses/123
   label?: string;
+  className?: string;
 };
 
-export function ShareLinkButton({ path, label = "Partager" }: Props) {
+export function ShareLinkButton({ path, label = "Partager", className }: Props) {
   const [copied, setCopied] = useState(false);
   const handleShare = async () => {
     const url = `${window.location.origin}${path}`;
@@ -32,7 +33,7 @@ export function ShareLinkButton({ path, label = "Partager" }: Props) {
     <button
       type="button"
       onClick={handleShare}
-      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+      className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 ${className ?? ""}`}
     >
       <span aria-hidden>🔗</span>
       {copied ? "Lien copié" : label}

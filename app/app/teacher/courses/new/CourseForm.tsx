@@ -51,6 +51,7 @@ type Props = {
     positions?: boolean;
   };
   isVirtual?: boolean;
+  enableRecurrence?: boolean;
 };
 
 type Note = {
@@ -125,6 +126,7 @@ export function CourseForm({
   groupedPanels = false,
   defaultCollapsed,
   isVirtual = false,
+  enableRecurrence = true,
 }: Props) {
   const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
   const resolvedDefaultDate = useMemo(() => {
@@ -278,13 +280,12 @@ export function CourseForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const invalid: string[] = [];
     if (!selectedDiscipline) invalid.push("discipline");
-    if (selectedPositions.length === 0) invalid.push("positions");
     if (!studioValue) invalid.push("studio");
     if (!titleValue.trim()) invalid.push("titre");
     if (!dateValue) invalid.push("date");
     if (invalid.length > 0) {
       e.preventDefault();
-      setFormError("Merci de remplir les champs requis (discipline, positions, studio, titre, date).");
+      setFormError("Merci de remplir les champs requis (discipline, studio, titre, date).");
       return;
     }
     setFormError(null);
@@ -318,7 +319,7 @@ export function CourseForm({
 
   const [collapsedPanels, setCollapsedPanels] = useState<{ students: boolean; positions: boolean }>(() => ({
     students: groupedPanels ? defaultCollapsed?.students ?? true : false,
-    positions: groupedPanels ? defaultCollapsed?.positions ?? false : false,
+    positions: groupedPanels ? defaultCollapsed?.positions ?? true : false,
   }));
 
   useEffect(() => {
@@ -362,21 +363,7 @@ export function CourseForm({
             Occurrence programmée : ajoute au moins une position pour la rendre “réelle” et ouvrir l’inscription élève.
           </div>
         )}
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="text-sm text-slate-200">
-            Date
-            <input
-              type="datetime-local"
-              name="date"
-              required
-              value={dateValue}
-              onChange={(e) => {
-                needsRefocus.current = true;
-                setDateValue(e.target.value);
-              }}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-          </label>
+        {enableRecurrence && (
           <div className="text-sm text-slate-200 space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
             <label className="inline-flex items-center gap-2 font-semibold text-white">
               <input
@@ -407,18 +394,34 @@ export function CourseForm({
                 </label>
                 <label className="text-sm text-slate-200">
                   Fin de série (incluse)
-                  <input
-                    type="date"
-                    name="recurrenceUntil"
-                    min={resolvedDefaultDateOnly}
-                    value={recurrenceUntil}
-                    onChange={(e) => setRecurrenceUntil(e.target.value)}
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-                  />
-                </label>
-              </div>
-            )}
-          </div>
+                    <input
+                      type="date"
+                      name="recurrenceUntil"
+                      min={resolvedDefaultDateOnly}
+                      value={recurrenceUntil}
+                      onChange={(e) => setRecurrenceUntil(e.target.value)}
+                      className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
+          )}
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="text-sm text-slate-200">
+            Date
+            <input
+              type="datetime-local"
+              name="date"
+              required
+              value={dateValue}
+              onChange={(e) => {
+                needsRefocus.current = true;
+                setDateValue(e.target.value);
+              }}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            />
+          </label>
           <label className="text-sm text-slate-200">
             Titre
             <input
@@ -434,6 +437,7 @@ export function CourseForm({
               className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
             />
           </label>
+        </div>
           <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
             <label className="text-sm text-slate-200">
               Discipline
@@ -500,7 +504,6 @@ export function CourseForm({
               <p className="mt-1 text-xs text-slate-400">Par défaut 100 crédits. Valeur minimale 0, pas de contrainte de multiple.</p>
             </label>
           </div>
-        </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm text-slate-200">

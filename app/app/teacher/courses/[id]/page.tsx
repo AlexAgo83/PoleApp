@@ -183,9 +183,19 @@ export default async function TeacherCourseDetailPage({
   });
   const icsHref = `/api/courses/${course.id}/ics`;
   const sharePath = `/app/teacher/courses/${course.id}`;
+  const isPastCourse = new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 < Date.now();
+  const headerBgStyle = {
+    backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${coursePhoto})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
+
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <header
+        className="panel relative space-y-4 overflow-hidden border-indigo-400/25 p-6 shadow-indigo-900/30"
+        style={headerBgStyle}
+      >
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-3 md:w-2/3">
             <div className="space-y-2">
@@ -196,19 +206,14 @@ export default async function TeacherCourseDetailPage({
                 <h1 className="text-3xl font-semibold text-white">
                   {course.title ?? "Cours sans titre"}
                 </h1>
-                {course.isVirtual && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
-                    Occurrence programmée
-                  </span>
-                )}
                 <Link
                   href={`/app/teacher/courses/${course.id}/edit${
                     safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
                   }`}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
+                  className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/gear.svg" alt="" className="h-4 w-4" />
+                  <img src="/gear.svg" alt="" className="h-3.5 w-3.5" />
                   Éditer
                 </Link>
                 {course.notes.length > 0 && (
@@ -216,59 +221,68 @@ export default async function TeacherCourseDetailPage({
                     Notes : {course.notes.length}
                   </span>
                 )}
-                <ShareLinkButton path={sharePath} />
-                <Link
-                  href={icsHref}
-                  prefetch={false}
-                  className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
-                >
-                  Ajouter à mon agenda
-                </Link>
               </div>
             </div>
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={coursePhoto}
-                alt={course.title ?? "Cours"}
-                className="h-20 w-32 rounded-xl border border-white/10 object-cover shadow"
-              />
-              <div className="space-y-1 text-sm text-slate-200">
-                <p className="text-base text-white">{teacherName}</p>
-                <p className="flex flex-wrap items-center gap-1">
-                  <LocalDateTime
-                    iso={course.date.toISOString()}
-                    fallback={formattedDate}
-                    options={{
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }}
-                  />
-                  <span className="mx-1">·</span>
-                  Durée : {formatDuration(course.durationMinutes ?? 60)}
-                </p>
-                <p>
-                  {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
-                </p>
-                {course.studio && (
-                  <p className="text-slate-300">
-                    Studio : {course.studio.name}
-                    {course.studio.address ? ` — ${course.studio.address}` : ""}
-                  </p>
+            <div className="space-y-1 text-sm text-slate-200">
+              <p className="text-base text-white flex flex-wrap items-center gap-2">
+                <span>{teacherName}</span>
+                {course.discipline && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-100">
+                    {course.discipline}
+                  </span>
                 )}
-              </div>
+              </p>
+              <p className="flex flex-wrap items-center gap-1">
+                <LocalDateTime
+                  iso={course.date.toISOString()}
+                  fallback={formattedDate}
+                  options={{
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }}
+                />
+                <span className="mx-1">·</span>
+                Durée : {formatDuration(course.durationMinutes ?? 60)}
+              </p>
+              <p>
+                {remainingSeats} place(s) restante(s) / {course.maxSeats ?? 30} · {cost} crédits
+              </p>
+              {course.studio && (
+                <p className="text-slate-300">
+                  Studio : {course.studio.name}
+                  {course.studio.address ? ` — ${course.studio.address}` : ""}
+                </p>
+              )}
             </div>
           </div>
-          <div className="flex w-full justify-end md:w-auto md:self-end">
+          <div className="flex w-full flex-col items-end gap-2 md:w-auto md:self-end">
+            {course.isVirtual && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
+                Occurrence programmée
+              </span>
+            )}
+            <div className="flex w-full flex-wrap items-center justify-end gap-3 md:flex-nowrap">
             <Link
               href={backHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              ← Retour liste
+              ← Retour cours
             </Link>
+            <ShareLinkButton
+              path={sharePath}
+              className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-semibold"
+            />
+            <Link
+              href={icsHref}
+              prefetch={false}
+              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
+            >
+              Ajouter à mon agenda
+            </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -427,6 +441,7 @@ export default async function TeacherCourseDetailPage({
         )}
       </section>
 
+      {!isPastCourse && (
       <section className="panel border-indigo-400/15 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -597,9 +612,10 @@ export default async function TeacherCourseDetailPage({
                   Ajuster dans l’édition
                 </Link>
               </div>
-            </form>
-          )}
-        </section>
+          </form>
+        )}
+      </section>
+      )}
       {successToast && (
         <div className="fixed bottom-4 right-4 z-20 rounded-xl border border-emerald-300/50 bg-emerald-600/80 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
           Suggestions appliquées au cours.

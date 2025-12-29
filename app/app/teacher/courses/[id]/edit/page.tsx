@@ -298,16 +298,17 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
             return acc;
           }, {})}
           studentsWithActiveInjury={studentsWithActiveInjury}
-          progressByStudent={progresses.map((p) => ({
-            studentId: p.studentId,
-            positionId: p.positionId,
-            masteryLevel: p.masteryLevel,
-            learningStatus: p.learningStatus,
-            positionName: p.position.name,
-            positionType: p.position.type,
-          }))}
-          isVirtual={course.isVirtual}
-        />
+        progressByStudent={progresses.map((p) => ({
+          studentId: p.studentId,
+          positionId: p.positionId,
+          masteryLevel: p.masteryLevel,
+          learningStatus: p.learningStatus,
+          positionName: p.position.name,
+          positionType: p.position.type,
+        }))}
+        isVirtual={course.isVirtual}
+        enableRecurrence={false}
+      />
       </section>
 
       <section className="panel border-red-500/30 bg-red-500/5 p-6">

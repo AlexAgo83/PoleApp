@@ -35,11 +35,14 @@ function formatWithTz(date: Date, timeZone: string) {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   context: { params: { id?: string } } | Promise<{ params: { id?: string } }>,
 ) {
   const { params } = await Promise.resolve(context);
-  const courseId = params?.id;
+  const url = new URL(req.url);
+  const courseIdFromQuery = url.searchParams.get("id") ?? url.searchParams.get("courseId");
+  const courseIdFromPath = params?.id;
+  const courseId = courseIdFromPath ?? courseIdFromQuery ?? undefined;
   if (!courseId) {
     return NextResponse.json({ error: "missing id" }, { status: 400 });
   }
