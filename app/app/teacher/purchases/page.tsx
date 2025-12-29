@@ -67,7 +67,7 @@ export default async function TeacherPurchasesPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-2 p-6">
+      <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h1 className="text-2xl font-semibold">Achats élèves (packs / abonnements / presets)</h1>
@@ -94,9 +94,6 @@ export default async function TeacherPurchasesPage({
             </a>
           </div>
         </div>
-      </section>
-
-      <section className="panel mt-4 space-y-4 p-6">
         <FilterPanel
           title="Filtres"
           activeCount={[kind, status, q && q.length > 0].filter(Boolean).length}
