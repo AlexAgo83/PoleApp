@@ -194,7 +194,7 @@ export default async function TeacherStudentDetailPage({
       {canEdit && (
         <section className="panel space-y-5 border-indigo-400/15 p-6">
           <PersistedSection
-            id="student-profile"
+            id={`student-profile:${student.id}`}
             summary={
               <>
                 <div>
@@ -367,7 +367,7 @@ export default async function TeacherStudentDetailPage({
 
       <section className="panel border-indigo-400/15 p-6">
         <PersistedSection
-          id="student-progress"
+          id={`student-progress:${student.id}`}
           summary={
             <>
               <div>
