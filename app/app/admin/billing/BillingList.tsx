@@ -38,6 +38,8 @@ type Props = {
   statusClasses: Record<InvoiceStatus, string>;
   activeCount: number;
   userKey: string;
+  backfillRedirect?: string;
+  backfillAction?: (formData: FormData) => Promise<any>;
 };
 
 type ApiResponse = {
@@ -58,7 +60,15 @@ type ApiResponse = {
   error?: string;
 };
 
-export function BillingList({ initialQuery, teachers, studios, statusClasses, statusLabels, activeCount, userKey }: Props) {
+export function BillingList({
+  initialQuery,
+  teachers,
+  studios,
+  statusClasses,
+  statusLabels,
+  activeCount,
+  userKey,
+}: Props) {
   const [searchParams, setSearchParams] = useState<URLSearchParams>(() => new URLSearchParams(initialQuery));
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, startTransition] = useTransition();
