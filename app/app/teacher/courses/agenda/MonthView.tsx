@@ -32,6 +32,7 @@ type Filters = {
   q?: string;
   from?: string;
   to?: string;
+  mine?: boolean;
 };
 
 type Props = {
