@@ -9,6 +9,7 @@ import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
 import { SafeImage } from "@/components/SafeImage";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -263,12 +264,12 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                         </div>
                         <form action={deleteStudioAction}>
                           <input type="hidden" name="studioId" value={studio.id} />
-                          <button
+                          <ConfirmDeleteButton
                             type="submit"
                             className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
                           >
                             Supprimer
-                          </button>
+                          </ConfirmDeleteButton>
                         </form>
                       </div>
                       <div className="space-y-2">
@@ -304,12 +305,12 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
                       </Link>
                       <form action={deleteStudioAction} className="m-0">
                         <input type="hidden" name="studioId" value={studio.id} />
-                        <button
+                        <ConfirmDeleteButton
                           type="submit"
                           className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
                         >
                           Supprimer
-                        </button>
+                        </ConfirmDeleteButton>
                       </form>
                     </div>
                     <form

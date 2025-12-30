@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { createPresetAction, deletePresetAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 
 type SearchParams = { page?: string } | Promise<{ page?: string }>;
 
@@ -118,12 +119,12 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
                   <div className="mt-4 flex justify-end">
                     <form action={deletePresetAction}>
                       <input type="hidden" name="id" value={preset.id} />
-                      <button
+                      <ConfirmDeleteButton
                         type="submit"
                         className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
                       >
                         Supprimer
-                      </button>
+                      </ConfirmDeleteButton>
                     </form>
                   </div>
                 </li>

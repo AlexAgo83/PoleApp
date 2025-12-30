@@ -7,6 +7,7 @@ import { createPartnerAction, deletePartnerAction, updatePartnerAction } from ".
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -583,12 +584,12 @@ export default async function AdminPartnersPage({
                         </div>
                         <form action={deletePartnerAction}>
                           <input type="hidden" name="partnerId" value={partner.id} />
-                          <button
+                          <ConfirmDeleteButton
                             type="submit"
                             className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
                           >
                             Supprimer
-                          </button>
+                          </ConfirmDeleteButton>
                         </form>
                       </div>
                       <div className="space-y-1">
@@ -643,12 +644,12 @@ export default async function AdminPartnersPage({
                       </Link>
                       <form action={deletePartnerAction} className="m-0">
                         <input type="hidden" name="partnerId" value={partner.id} />
-                        <button
+                        <ConfirmDeleteButton
                           type="submit"
                           className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
                         >
                           Supprimer
-                        </button>
+                        </ConfirmDeleteButton>
                       </form>
                     </div>
                     <form

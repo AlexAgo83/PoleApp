@@ -344,7 +344,15 @@ export function CourseForm({
         lastFocusedRef.current = e.target as HTMLElement;
       }}
     >
-      <Panel groupedPanels={groupedPanels} title={groupedPanels ? "Infos du cours" : undefined}>
+      <Panel groupedPanels={groupedPanels} title={groupedPanels ? undefined : "Infos du cours"}>
+        {groupedPanels && (
+          <div className="mb-3 space-y-1">
+            <h1 className="text-2xl font-semibold text-white">Créer un cours</h1>
+            <p className="text-sm text-slate-200">
+              Sélectionne la date, les élèves présents, les positions abordées, puis ajoute des notes par élève/position pour mettre à jour la progression.
+            </p>
+          </div>
+        )}
         {isVirtual && (
           <div className="mb-2 rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100">
             Occurrence programmée : ajoute au moins une position pour la rendre “réelle” et ouvrir l’inscription élève.

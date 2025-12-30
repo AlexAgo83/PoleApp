@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdminAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 
 type SearchParams =
   | { page?: string }
@@ -120,12 +121,12 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
                   <div className="mt-4 flex justify-end">
                     <form action={deletePresetAdminAction}>
                       <input type="hidden" name="id" value={preset.id} />
-                      <button
+                      <ConfirmDeleteButton
                         type="submit"
                         className="rounded-full border border-red-300/60 bg-red-500/15 px-3 py-1.5 text-xs font-semibold text-red-100 hover:border-red-200"
                       >
                         Supprimer
-                      </button>
+                      </ConfirmDeleteButton>
                     </form>
                   </div>
                 </li>
