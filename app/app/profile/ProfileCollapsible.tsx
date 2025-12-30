@@ -22,17 +22,17 @@ export function ProfileCollapsible({
   children,
 }: Props) {
   const storageKey = `profile:panel:${id}`;
-  const [open, setOpen] = useState(defaultOpen);
-
-  useEffect(() => {
+  const [open, setOpen] = useState(() => {
+    if (typeof window === "undefined") return defaultOpen;
     try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored === "1") setOpen(true);
-      if (stored === "0") setOpen(false);
+      const stored = window.localStorage.getItem(storageKey);
+      if (stored === "1") return true;
+      if (stored === "0") return false;
     } catch {
       // ignore storage errors
     }
-  }, [storageKey]);
+    return defaultOpen;
+  });
 
   useEffect(() => {
     try {

@@ -13,11 +13,7 @@ type Props = {
 export function DeleteCourseDialog({ courseId, virtualOccurrencesCount }: Props) {
   const [open, setOpen] = useState(false);
   const [alsoDeleteVirtual, setAlsoDeleteVirtual] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted] = useState(() => typeof window !== "undefined");
 
   const close = () => {
     setOpen(false);

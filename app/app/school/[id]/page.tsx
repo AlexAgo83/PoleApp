@@ -35,6 +35,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   if (!session?.user) redirect("/login");
   const userRole = session.user.role;
   const agendaRole = (userRole === "SUPER_ADMIN" ? "SCHOOL_ADMIN" : userRole) as "STUDENT" | "TEACHER" | "SCHOOL_ADMIN";
+  const NOW_MS = Date.now();
 
   const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
   const qRaw = resolvedSearch?.q;
@@ -161,7 +162,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
       : [];
   const isPastCourse = (courseDate: Date, durationMinutes?: number | null) => {
     const endMs = new Date(courseDate).getTime() + (durationMinutes ?? 60) * 60_000;
-    return endMs < Date.now();
+    return endMs < NOW_MS;
   };
   const studentWeekDays =
     viewMode === "agenda" && isStudentRole
@@ -322,7 +323,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 durationMinutes: course.durationMinutes,
                 teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
                 studioName: course.studio?.name ?? "Studio",
-                isVirtual: (course as any).isVirtual ?? false,
+                isVirtual: (course as { isVirtual?: boolean }).isVirtual ?? false,
                 myStatus: attendance(course)?.status ?? null,
                 waitlistRank: attendance(course)?.waitlistRank ?? null,
                 past: isPastCourse(course.date as Date, course.durationMinutes),

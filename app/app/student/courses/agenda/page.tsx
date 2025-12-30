@@ -155,7 +155,7 @@ export default async function StudentCoursesAgendaPage({
   const rangeEnd = new Date(Math.max(explicitRangeEnd.getTime(), weekRangeEnd.getTime()));
   const baseDateFilter: Prisma.DateTimeFilter = { gte: rangeStart, lte: rangeEnd };
   if (!selectedStatuses.includes("past")) {
-    baseDateFilter.gte = new Date(Math.max(rangeStart.getTime(), Date.now()));
+    baseDateFilter.gte = new Date(Math.max(rangeStart.getTime(), NOW_MS));
   }
 
   const buildViewHref = (mode: "month" | "week") => {
