@@ -62,29 +62,11 @@ export default async function TeacherDashboard() {
   const startOfMonth = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
 
   const [
-    counts,
     coursesTodayCount,
     coursesWeekCount,
-    positionsCount,
-    combosCount,
-    activeInjuries,
     newStudentsWeek,
     newStudentsMonth,
   ] = await Promise.all([
-    prisma.user.findMany({
-      where: { schoolId: session.user.schoolId },
-      select: { role: true, isPremium: true },
-    }).then((users) =>
-      users.reduce(
-        (acc, user) => {
-          acc.total += 1;
-          acc[user.role] = (acc[user.role] ?? 0) + 1;
-          if (user.isPremium) acc.premium += 1;
-          return acc;
-        },
-        { total: 0, STUDENT: 0, TEACHER: 0, SCHOOL_ADMIN: 0, SUPER_ADMIN: 0, premium: 0 } as Record<string, number>
-      )
-    ),
     prisma.course.count({
       where: {
         schoolId: session.user.schoolId,
@@ -96,11 +78,6 @@ export default async function TeacherDashboard() {
         schoolId: session.user.schoolId,
         date: { gte: startOfLast7Days, lte: endOfToday },
       },
-    }),
-    prisma.position.count(),
-    prisma.preset.count({ where: { schoolId: session.user.schoolId } }),
-    prisma.studentInjury.count({
-      where: { isActive: true, student: { schoolId: session.user.schoolId } },
     }),
     prisma.user.count({
       where: {
@@ -119,36 +96,6 @@ export default async function TeacherDashboard() {
   ]);
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="grid gap-3 md:gap-4 md:grid-cols-2">
-        <div className="panel space-y-2 p-3 md:p-4">
-          <div className="flex items-start justify-between gap-2">
-            <h2 className="text-lg font-semibold text-white leading-tight">École</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
-            <Stat label="Utilisateurs" value={counts.total} />
-            <Stat label="Étudiants" value={counts.STUDENT} />
-            <Stat label="Professeurs" value={counts.TEACHER} />
-            <Stat label="Admins" value={counts.SCHOOL_ADMIN} />
-            <Stat label="Premium" value={counts.premium} />
-            <Stat label="Positions" value={positionsCount} />
-            <Stat label="Combos" value={combosCount} />
-            <Stat label="Blessures actives" value={activeInjuries} />
-          </div>
-        </div>
-
-        <div className="panel space-y-2 p-3 md:p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
-            <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
-            <Stat label="Cours (7 jours)" value={coursesWeekCount} />
-            <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
-            <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
-          </div>
-        </div>
-      </section>
-
       <section className="panel p-6">
         <div className="grid gap-3 md:grid-cols-2">
           <Link
