@@ -8,6 +8,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { createStudioAction, deleteStudioAction, updateStudioAction } from "../studios/actions";
+import { CollapsibleSection } from "./CollapsibleSection";
 import {
   createDisciplineAction,
   deleteDisciplineAction,
@@ -142,15 +143,19 @@ export default async function AdminSchoolPage({
       )}
 
       <section className="panel space-y-4 p-6">
-        <details className="group space-y-4">
-          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
-            <h3 className="text-xl font-semibold text-white">Identité</h3>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-              <span className="group-open:hidden">Modifier</span>
-              <span className="hidden group-open:inline">Fermer</span>
-            </span>
-          </summary>
-
+        <CollapsibleSection
+          id="identity"
+          defaultOpen={resolvedParams.identityOpen === "true"}
+          summary={
+            <>
+              <h3 className="flex-1 text-xl font-semibold text-white">Identité</h3>
+              <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Modifier</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </>
+          }
+        >
           <div className="space-y-4 pt-1">
             <p className="text-sm text-slate-300">
               ID : <span className="font-mono text-slate-200">{baseSchool?.id ?? "—"}</span>
@@ -215,20 +220,24 @@ export default async function AdminSchoolPage({
                 </button>
               </div>
             </form>
-
           </div>
-        </details>
+        </CollapsibleSection>
       </section>
 
       <section className="panel space-y-4 p-6">
-        <details className="group space-y-4">
-          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
-            <h3 className="text-xl font-semibold text-white">Disciplines</h3>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-              <span className="group-open:hidden">Modifier</span>
-              <span className="hidden group-open:inline">Fermer</span>
-            </span>
-          </summary>
+        <CollapsibleSection
+          id="disciplines"
+          defaultOpen={resolvedParams.disciplinesOpen === "true"}
+          summary={
+            <>
+              <h3 className="flex-1 text-xl font-semibold text-white">Disciplines</h3>
+              <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Modifier</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </>
+          }
+        >
 
           <div className="space-y-4 pt-1">
             <div className="grid gap-3 md:grid-cols-2">
@@ -346,18 +355,23 @@ export default async function AdminSchoolPage({
               </form>
             </div>
           </div>
-        </details>
+        </CollapsibleSection>
       </section>
 
       <section className="panel space-y-4 p-6">
-        <details className="group space-y-4" open={Boolean(editStudioId)}>
-          <summary className="flex cursor-pointer items-center justify-between text-xl font-semibold text-white outline-none transition hover:text-cyan-100">
-            <h3 className="text-xl font-semibold text-white">Studios</h3>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-              <span className="group-open:hidden">Modifier</span>
-              <span className="hidden group-open:inline">Fermer</span>
-            </span>
-          </summary>
+        <CollapsibleSection
+          id="studios"
+          defaultOpen={resolvedParams.studiosOpen === "true" || Boolean(editStudioId)}
+          summary={
+            <>
+              <h3 className="flex-1 text-xl font-semibold text-white">Studios</h3>
+              <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Modifier</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </>
+          }
+        >
 
           <div className="space-y-4 pt-1">
             {studios.length === 0 ? (
@@ -591,7 +605,7 @@ export default async function AdminSchoolPage({
               </form>
             </div>
           </div>
-        </details>
+        </CollapsibleSection>
       </section>
     </main>
   );
