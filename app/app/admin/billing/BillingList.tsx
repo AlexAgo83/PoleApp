@@ -39,7 +39,7 @@ type Props = {
   activeCount: number;
   userKey: string;
   backfillRedirect?: string;
-  backfillAction?: (formData: FormData) => Promise<any>;
+  backfillAction?: (formData: FormData) => Promise<void>;
 };
 
 type ApiResponse = {

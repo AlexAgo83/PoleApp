@@ -168,6 +168,7 @@ export default async function TeacherCourseDetailPage({
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
   const coursePhoto = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
+  const NOW_MS = Date.now();
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
     year: "numeric",
@@ -178,7 +179,7 @@ export default async function TeacherCourseDetailPage({
   });
   const icsHref = `/api/courses/${course.id}/ics`;
   const sharePath = `/app/teacher/courses/${course.id}`;
-  const isPastCourse = new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 < Date.now();
+  const isPastCourse = new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 < NOW_MS;
   const headerBgStyle = {
     backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${coursePhoto})`,
     backgroundSize: "cover",
