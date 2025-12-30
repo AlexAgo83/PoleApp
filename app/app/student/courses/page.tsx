@@ -585,7 +585,7 @@ export default async function StudentCoursesPage({
                         )}
                         {course.discipline && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
-                            Discipline · {course.discipline}
+                          {course.discipline}
                           </span>
                         )}
                         {course.positions.length > 0 && (
