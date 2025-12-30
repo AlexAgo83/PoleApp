@@ -45,6 +45,7 @@ type Props = {
   filters: Filters;
   baseFrom: string;
   className?: string;
+  compact?: boolean;
 };
 
 function formatDuration(minutes: number) {
@@ -69,6 +70,7 @@ export function MonthView({
   filters,
   baseFrom,
   className,
+  compact,
 }: Props) {
   const [month, setMonth] = useState(initialMonth);
   const [prev, setPrev] = useState(initialPrev);
