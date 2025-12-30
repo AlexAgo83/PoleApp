@@ -292,14 +292,14 @@ export default async function CoursesAgendaPage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+        <div className="flex w-full flex-col gap-3 md:flex-row md:items-start">
+          <div className="flex-1">
             <h1 className="text-3xl font-semibold text-white">Agenda des cours</h1>
             <p className="text-sm text-slate-200">
-              Navigation hebdo/mensuelle, filtres prof/studio/discipline, et signalement des journées avec cours.
+              Navigation hebdo/mensuelle, filtres prof/studio/discipline.
             </p>
           </div>
-          <div className="flex flex-wrap items-start justify-end gap-2 self-start">
+          <div className="flex flex-wrap items-start justify-end gap-2 md:ml-auto">
             <Link
               href={buildViewHref("week")}
               className={`rounded-full px-3 py-1.5 font-semibold transition ${
@@ -506,28 +506,6 @@ export default async function CoursesAgendaPage({
             )}
           </div>
         )}
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-          <Link
-            href={buildViewHref("week", weekValue)}
-            className={`rounded-full px-3 py-1.5 font-semibold transition ${
-              view === "week"
-                ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-                : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-            }`}
-          >
-            Hebdo
-          </Link>
-          <Link
-            href={buildViewHref("month")}
-            className={`rounded-full px-3 py-1.5 font-semibold transition ${
-              view === "month"
-                ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
-                : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
-            }`}
-          >
-            Mensuelle
-          </Link>
-        </div>
         {view === "month" && (
           <MonthView
             initialMonth={monthValue}
