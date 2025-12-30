@@ -75,12 +75,6 @@ export default async function TeacherPurchasesPage({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <a
-              href="/app/teacher"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour accueil
-            </a>
-            <a
               href="/app/teacher/billing"
               className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-3 py-2 text-sm font-semibold text-emerald-50 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
             >

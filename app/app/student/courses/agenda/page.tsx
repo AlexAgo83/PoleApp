@@ -470,22 +470,15 @@ export default async function StudentCoursesAgendaPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
-          <h1 className="text-3xl font-semibold text-white">Agenda</h1>
-          <p className="text-sm text-slate-200">
-            Navigation hebdo/mensuelle sans rechargement. Les jours avec cours suivis sont marqués.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href="/app/student"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour accueil
-            </Link>
+      <section className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-semibold text-white">Agenda</h1>
+            <p className="text-sm text-slate-200">
+              Navigation hebdo/mensuelle sans rechargement. Les jours avec cours suivis sont marqués.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2 md:self-start">
             <Link
               href={buildViewHref("week")}
               className={`rounded-full px-3 py-1.5 font-semibold transition ${
@@ -506,37 +499,36 @@ export default async function StudentCoursesAgendaPage({
             >
               Mensuelle
             </Link>
-          </div>
-          <Link
-            href="/app/student/courses"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/list.svg" alt="" className="h-4 w-4" />
-            Liste
-          </Link>
-        </div>
-      </header>
-      <section className="panel border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {legendItems.map((item) => (
-            <span
-              key={item.key}
-              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${
-                statusesSet.has(item.key)
-                  ? item.className
-                  : "border border-white/20 bg-white/10 text-slate-400 opacity-80"
-              }`}
+            <Link
+              href="/app/student/courses"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
-              <span aria-hidden="true">●</span>
-              {item.label}
-            </span>
-          ))}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/list.svg" alt="" className="h-4 w-4" />
+              Liste
+            </Link>
+          </div>
         </div>
-      </section>
 
-      <section className="panel p-4 md:p-6">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+          <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {legendItems.map((item) => (
+              <span
+                key={item.key}
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${
+                  statusesSet.has(item.key)
+                    ? item.className
+                    : "border border-white/20 bg-white/10 text-slate-400 opacity-80"
+                }`}
+              >
+                <span aria-hidden="true">●</span>
+                {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <FilterPanel
           storageKey="filters:student-agenda"
           title="Filtres"
@@ -722,48 +714,47 @@ export default async function StudentCoursesAgendaPage({
             </div>
           </form>
         </FilterPanel>
+        {view === "month" && (
+          <MonthView
+            initialMonth={monthValue}
+            currentMonth={currentMonthValue}
+            initialPrev={prevMonthValue}
+            initialNext={nextMonthValue}
+            initialCells={initialMonthCells}
+            hasCourses={hasMonthCourses}
+            filters={{
+              teacher: teacherFilter,
+              studio: studioFilter,
+              discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
+              mine: onlyMine,
+              schools: schoolsParam,
+              q,
+              statuses: selectedStatuses.join(","),
+              from: fromParam,
+              to: toParam,
+            }}
+            baseFrom="/app/student/courses/agenda"
+          />
+        )}
+
+        {view === "week" && (
+          <WeekView
+            initialWeek={weekValue}
+            initialPrev={prevWeekValue}
+            initialNext={nextWeekValue}
+            initialDays={initialWeekDays}
+            filters={{
+              teacher: teacherFilter,
+              studio: studioFilter,
+              discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
+              mine: onlyMine,
+              schools: schoolsParam,
+              q,
+            }}
+            baseFrom="/app/student/courses/agenda"
+          />
+        )}
       </section>
-
-      {view === "month" && (
-        <MonthView
-          initialMonth={monthValue}
-          currentMonth={currentMonthValue}
-          initialPrev={prevMonthValue}
-          initialNext={nextMonthValue}
-          initialCells={initialMonthCells}
-          hasCourses={hasMonthCourses}
-          filters={{
-            teacher: teacherFilter,
-            studio: studioFilter,
-            discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
-            mine: onlyMine,
-            schools: schoolsParam,
-            q,
-            statuses: selectedStatuses.join(","),
-            from: fromParam,
-            to: toParam,
-          }}
-          baseFrom="/app/student/courses/agenda"
-        />
-      )}
-
-      {view === "week" && (
-        <WeekView
-          initialWeek={weekValue}
-          initialPrev={prevWeekValue}
-          initialNext={nextWeekValue}
-          initialDays={initialWeekDays}
-          filters={{
-            teacher: teacherFilter,
-            studio: studioFilter,
-            discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
-            mine: onlyMine,
-            schools: schoolsParam,
-            q,
-          }}
-          baseFrom="/app/student/courses/agenda"
-        />
-      )}
     </main>
   );
 }

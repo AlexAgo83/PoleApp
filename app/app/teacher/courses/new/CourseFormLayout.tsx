@@ -56,7 +56,6 @@ export function CourseFormLayout({
       <header className="panel border-indigo-400/25 bg-gradient-to-br from-slate-900/70 via-slate-900/60 to-indigo-900/40 p-6 shadow-indigo-900/40 md:p-8">
         <div className="flex flex-wrap items-start gap-3">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Professeur / Admin</p>
             <h1 className="text-3xl font-semibold text-white">Créer un cours</h1>
             <p className="text-sm text-slate-200 max-w-2xl">
               Sélectionne la date, les élèves présents, les positions abordées, puis ajoute des notes par élève/position pour mettre à jour la progression.

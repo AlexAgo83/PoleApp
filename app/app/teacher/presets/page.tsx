@@ -57,7 +57,6 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
       <section className="panel space-y-4 p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Espace prof</p>
             <h1 className="text-2xl font-semibold text-white md:text-2xl">Presets / combos</h1>
             <p className="text-sm text-slate-300 leading-6">Crée des combos vidéo premium ou achetables en crédits.</p>
           </div>

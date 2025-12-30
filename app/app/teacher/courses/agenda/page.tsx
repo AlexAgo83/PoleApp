@@ -291,35 +291,52 @@ export default async function CoursesAgendaPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            {isTeacher ? "Professeur" : "Admin"}
-          </p>
-          <h1 className="text-3xl font-semibold text-white">Agenda des cours</h1>
-          <p className="text-sm text-slate-200">
-            Navigation hebdo/mensuelle sans rechargement. Les journées avec cours sont signalées.
-          </p>
+      <section className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-semibold text-white">Agenda des cours</h1>
+            <p className="text-sm text-slate-200">
+              Navigation hebdo/mensuelle, filtres prof/studio/discipline, et signalement des journées avec cours.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-start justify-end gap-2 self-start">
+            <Link
+              href={buildViewHref("week")}
+              className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                view === "week"
+                  ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
+                  : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
+              }`}
+            >
+              Hebdo
+            </Link>
+            <Link
+              href={buildViewHref("month")}
+              className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                view === "month"
+                  ? "border border-cyan-400/70 bg-cyan-500/20 text-white"
+                  : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:bg-white/10"
+              }`}
+            >
+              Mensuelle
+            </Link>
+            <Link
+              href="/app/teacher/courses"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/list.svg" alt="" className="h-4 w-4" />
+              Liste
+            </Link>
+            <Link
+              href="/app/teacher/courses/new"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+            >
+              Nouveau cours
+            </Link>
+          </div>
         </div>
-        <div className="flex w-full flex-wrap items-center justify-end gap-2">
-          <Link
-            href="/app/teacher/courses"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/list.svg" alt="" className="h-4 w-4" />
-            Liste
-          </Link>
-          <Link
-            href="/app/teacher/courses/new"
-            className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
-          >
-            Nouveau cours
-          </Link>
-        </div>
-      </header>
 
-      <section className="panel p-4 md:p-6">
         <FilterPanel
           storageKey="filters:teacher-agenda"
           title="Filtres"
@@ -511,45 +528,44 @@ export default async function CoursesAgendaPage({
             Mensuelle
           </Link>
         </div>
+        {view === "month" && (
+          <MonthView
+            initialMonth={monthValue}
+            currentMonth={currentMonthValue}
+            initialPrev={prevMonthValue}
+            initialNext={nextMonthValue}
+            initialCells={initialMonthCells}
+            hasCourses={hasMonthCourses}
+            filters={{
+              teacher: teacherParamForNav,
+              studio: studioFilter,
+              discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
+              level: levelFilter,
+              q,
+              from: fromParam,
+              to: toParam,
+            }}
+            baseFrom="/app/teacher/courses/agenda"
+          />
+        )}
+
+        {view === "week" && (
+          <WeekView
+            initialWeek={weekValue}
+            initialPrev={prevWeekValue}
+            initialNext={nextWeekValue}
+            initialDays={days}
+            filters={{
+              teacher: teacherParamForNav,
+              studio: studioFilter,
+              q,
+              discipline: disciplineParam,
+              level: levelFilter ?? undefined,
+            }}
+            baseFrom="/app/teacher/courses/agenda"
+          />
+        )}
       </section>
-
-      {view === "month" && (
-        <MonthView
-          initialMonth={monthValue}
-          currentMonth={currentMonthValue}
-          initialPrev={prevMonthValue}
-          initialNext={nextMonthValue}
-          initialCells={initialMonthCells}
-          hasCourses={hasMonthCourses}
-          filters={{
-            teacher: teacherParamForNav,
-            studio: studioFilter,
-            discipline: disciplineFilters.length > 0 ? disciplineFilters.join(",") : undefined,
-            level: levelFilter,
-            q,
-            from: fromParam,
-            to: toParam,
-          }}
-          baseFrom="/app/teacher/courses/agenda"
-        />
-      )}
-
-      {view === "week" && (
-        <WeekView
-          initialWeek={weekValue}
-          initialPrev={prevWeekValue}
-          initialNext={nextWeekValue}
-          initialDays={days}
-          filters={{
-            teacher: teacherParamForNav,
-            studio: studioFilter,
-            q,
-            discipline: disciplineParam,
-            level: levelFilter ?? undefined,
-          }}
-          baseFrom="/app/teacher/courses/agenda"
-        />
-      )}
     </main>
   );
 }

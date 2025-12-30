@@ -110,7 +110,7 @@ export function MonthView({
   };
 
   return (
-    <section className={clsx(className ?? "panel p-6")}>
+    <section className={clsx("p-0 border-0 bg-transparent shadow-none", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
         <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">

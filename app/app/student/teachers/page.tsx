@@ -83,28 +83,18 @@ export default async function StudentTeachersPage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-4 border-indigo-400/15 p-6 shadow-indigo-900/30">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              Élève
-            </p>
-            <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
+            <h1 className="text-3xl font-semibold text-white">Tes professeurs</h1>
             <p className="text-sm text-slate-200">
               Fiches professeurs qui t&apos;ont déjà donné cours. Accède à leurs diplômes et positions
-              préférées.
+              coup de cœur.
             </p>
           </div>
-          <Link
-            href="/app/student"
-            className="inline-flex items-center justify-center rounded-full border border-white/20 px-3 py-2 text-white transition hover:border-indigo-300 hover:text-cyan-200"
-          >
-            ← Retour accueil
-          </Link>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-white">Tes professeurs</h2>
-          <div className="text-sm text-slate-300">
+        <div className="flex flex-wrap items-center justify-end gap-3 text-sm text-slate-300">
+          <div>
             Page {safePage} / {totalPages} · {totalCount} professeurs
           </div>
         </div>
@@ -181,11 +171,9 @@ export default async function StudentTeachersPage({
                       <p className="text-sm text-slate-300">{teacher.email}</p>
                       <p className="text-sm text-slate-400">Professeur de ton école</p>
                     </div>
-                  </div>
-                  <div className="flex justify-end text-sm">
                     <Link
                       href={`/app/teachers/${teacher.id}?from=/app/student/teachers`}
-                      className="inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1.5 font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
+                      className="inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
                     >
                       Voir la fiche
                     </Link>

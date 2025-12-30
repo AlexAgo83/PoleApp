@@ -61,12 +61,6 @@ export default async function TeacherPartnersPage() {
           <h1 className="text-2xl font-semibold text-white">Partenaires de l’école</h1>
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/app/teacher"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour
-            </Link>
-            <Link
               href="/app/teacher/school"
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >

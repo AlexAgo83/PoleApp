@@ -67,18 +67,11 @@ export default async function StudentPurchasesPage({
       <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
             <h1 className="text-3xl font-semibold text-white">Historique achats</h1>
             <p className="text-sm text-slate-300">
               Achats simulés (statut PAYÉ). Montants TTC, TVA 20%, devise EUR.
             </p>
           </div>
-          <Link
-            href="/app/student"
-            className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
-          </Link>
         </div>
 
         <FilterPanel
