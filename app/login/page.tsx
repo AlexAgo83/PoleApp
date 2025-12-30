@@ -81,12 +81,9 @@ function LoginContent() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-start px-4 py-8 md:items-center md:justify-center md:px-6 md:py-12">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-start px-4 py-4 md:items-center md:justify-center md:px-6 md:py-6">
       <section className="panel w-full max-w-xl border-indigo-400/25 p-6 shadow-indigo-900/30 md:p-9">
-        <p className="text-sm uppercase tracking-[0.14em] text-indigo-100">
-          Pole App
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold text-white">
+        <h1 className="text-3xl font-semibold text-white">
           Connexion
         </h1>
         <details className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
