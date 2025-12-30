@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import clsx from "clsx";
 import { LearningStatus } from "@prisma/client";
 
@@ -26,6 +26,11 @@ type Props = {
 
 export function ProgressCard({ position, progress, studentId }: Props) {
   const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+  const [localProgress, setLocalProgress] = useState<ProgressData | undefined>(progress);
+  const displayStatus = localProgress?.learningStatus ?? LearningStatus.NOT_STARTED;
+  const displayComment =
+    localProgress?.comment && localProgress.comment.trim().length > 0 ? localProgress.comment : "Aucun commentaire";
 
   return (
     <article className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -45,8 +50,9 @@ export function ProgressCard({ position, progress, studentId }: Props) {
 
       <div aria-hidden="true">
         <ProgressSlider
+          key={`readonly-${displayStatus}`}
           name={undefined}
-          defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
+          defaultValue={displayStatus}
           hideLabel
           hideValue
           readOnly
@@ -54,23 +60,37 @@ export function ProgressCard({ position, progress, studentId }: Props) {
       </div>
       <div className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-sm text-slate-200">
         <span className="font-semibold text-slate-100">Commentaire :</span>{" "}
-        {progress?.comment && progress.comment.trim().length > 0 ? progress.comment : "Aucun commentaire"}
+        {displayComment}
       </div>
 
       {open ? (
-        <form action={updateProgressAction} className="space-y-2 text-sm text-slate-200">
+        <form
+          action={(formData) =>
+            startTransition(async () => {
+              const res = await updateProgressAction(formData);
+              if (res?.progress) {
+                setLocalProgress({
+                  learningStatus: res.progress.learningStatus,
+                  comment: res.progress.comment,
+                });
+              }
+            })
+          }
+          className="space-y-2 text-sm text-slate-200"
+        >
           <input type="hidden" name="studentId" value={studentId} />
           <input type="hidden" name="positionId" value={position.id} />
           <ProgressSlider
+            key={`editable-${displayStatus}-${localProgress?.comment ?? ""}`}
             name="learningStatus"
-            defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
+            defaultValue={displayStatus}
             tone="neutral"
           />
           <label className="block">
             Éditer le commentaire :
             <textarea
               name="comment"
-              defaultValue={progress?.comment ?? ""}
+              defaultValue={localProgress?.comment ?? ""}
               className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
           </label>
@@ -78,9 +98,11 @@ export function ProgressCard({ position, progress, studentId }: Props) {
             type="submit"
             className={clsx(
               "rounded-full bg-cyan-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-cyan-400",
+              pending && "cursor-not-allowed opacity-70",
             )}
+            disabled={pending}
           >
-            Sauvegarder
+            {pending ? "Sauvegarde..." : "Sauvegarder"}
           </button>
         </form>
       ) : null}
