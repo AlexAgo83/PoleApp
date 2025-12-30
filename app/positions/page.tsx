@@ -382,14 +382,14 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 Réinitialiser
               </Link>
             </div>
-          </form>
-        </FilterPanel>
-        <div className="grid gap-4 md:grid-cols-3">
-          {positions.map((p) => {
-            const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];
-            const premiumContent =
-              Boolean(p.description) ||
-              Boolean(p.tips) ||
+      </form>
+    </FilterPanel>
+    <div className="grid gap-4 md:grid-cols-3">
+      {positions.map((p) => {
+        const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];
+        const premiumContent =
+          Boolean(p.description) ||
+          Boolean(p.tips) ||
               p.media?.some((m) => m.kind === "VIDEO");
             const hasVideo = p.media?.some((m) => m.kind === "VIDEO");
             const showPremiumBadge = premiumContent && isStudent && !isPremium;

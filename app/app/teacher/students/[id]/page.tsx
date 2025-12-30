@@ -9,9 +9,12 @@ import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
 import { StudentAvatarManager } from "./StudentAvatarManager";
+import { PersistedSection } from "./PersistedSection";
+import { ProgressSlider } from "./ProgressSlider";
+import { ProgressCard } from "./ProgressCard";
 
 const statusLabel: Record<LearningStatus, string> = {
-  NOT_STARTED: "Nouveauté",
+  NOT_STARTED: "Nouveau",
   IN_PROGRESS: "Initié",
   PASSED: "Passé",
   MASTERED: "Fluide chorégraphié",
@@ -190,17 +193,21 @@ export default async function TeacherStudentDetailPage({
 
       {canEdit && (
         <section className="panel space-y-5 border-indigo-400/15 p-6">
-          <details className="group space-y-3">
-            <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-              <div>
-                <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
-                <h2 className="text-lg font-semibold text-white">Profil élève</h2>
-              </div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-                <span className="group-open:hidden">Modifier</span>
-                <span className="hidden group-open:inline">Fermer</span>
-              </span>
-            </summary>
+          <PersistedSection
+            id="student-profile"
+            summary={
+              <>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
+                  <h2 className="text-lg font-semibold text-white">Profil élève</h2>
+                </div>
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                  <span className="group-open:hidden">Modifier</span>
+                  <span className="hidden group-open:inline">Fermer</span>
+                </span>
+              </>
+            }
+          >
             <div className="pt-1">
               <form
                 action={updateStudentProfileAction}
@@ -248,7 +255,7 @@ export default async function TeacherStudentDetailPage({
                 </div>
               </form>
             </div>
-          </details>
+          </PersistedSection>
         </section>
       )}
 
@@ -359,92 +366,25 @@ export default async function TeacherStudentDetailPage({
       </section>
 
       <section className="panel border-indigo-400/15 p-6">
-        <details className="group space-y-3" open={false}>
-          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Progression</h2>
-              <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
-            </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-              <span className="group-open:hidden">Ouvrir</span>
-              <span className="hidden group-open:inline">Fermer</span>
-            </span>
-          </summary>
+        <PersistedSection
+          id="student-progress"
+          summary={
+            <>
+              <div>
+                <h2 className="text-lg font-semibold text-white">Progression</h2>
+                <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Ouvrir</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </>
+          }
+        >
           <div className="mt-2 grid gap-4 md:grid-cols-2">
             {filteredPositions.map((position) => {
               const progress = progressMap.get(position.id);
-              return (
-                <article
-                  key={position.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-base font-semibold text-white">{position.name}</p>
-                    <p className="text-xs text-slate-300">{position.type}</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${
-                        progress
-                          ? statusStyles[progress.learningStatus].solid
-                          : statusStyles.NOT_STARTED.solid
-                      }`}
-                    >
-                      {progress ? statusLabel[progress.learningStatus] : "Nouveauté"}
-                    </span>
-                    {progress?.masteryLevel && (
-                      <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white/90">
-                        {progress.masteryLevel}
-                      </span>
-                    )}
-                  </div>
-                  <form action={updateProgressAction} className="space-y-2 text-sm text-slate-200">
-                    <input type="hidden" name="studentId" value={student.id} />
-                    <input type="hidden" name="positionId" value={position.id} />
-                    <label className="block">
-                      Statut
-                      <select
-                        name="learningStatus"
-                        defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
-                        className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                      >
-                        <option value="NOT_STARTED">Nouveauté</option>
-                        <option value="IN_PROGRESS">Initié</option>
-                        <option value="PASSED">Passé</option>
-                        <option value="MASTERED">Fluide chorégraphié</option>
-                      </select>
-                    </label>
-                    <label className="block">
-                      Niveau
-                      <select
-                        name="masteryLevel"
-                        defaultValue={progress?.masteryLevel ?? ""}
-                        className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                      >
-                        <option value="">(non renseigné)</option>
-                        <option value="NOVELTY">Nouveauté</option>
-                        <option value="INITIATED">Initié</option>
-                        <option value="PASSED">Passé</option>
-                        <option value="FLUID_CHOREO">Fluide chorégraphié</option>
-                      </select>
-                    </label>
-                    <label className="block">
-                      Commentaire
-                      <textarea
-                        name="comment"
-                        defaultValue={progress?.comment ?? ""}
-                        className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      className="rounded-full bg-cyan-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-cyan-400"
-                    >
-                      Sauvegarder
-                    </button>
-                  </form>
-                </article>
-              );
+              return <ProgressCard key={position.id} position={position} progress={progress} studentId={student.id} />;
             })}
             {filteredPositions.length === 0 && (
               <p className="md:col-span-2 text-sm text-slate-200">
@@ -452,7 +392,7 @@ export default async function TeacherStudentDetailPage({
               </p>
             )}
           </div>
-        </details>
+        </PersistedSection>
       </section>
     </main>
   );
