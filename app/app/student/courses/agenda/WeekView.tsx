@@ -221,7 +221,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                           </p>
                           {course.discipline && (
                             <p className="truncate text-[10px] text-cyan-50/90">
-                              Discipline · {course.discipline}
+                              {course.discipline}
                             </p>
                           )}
                           {course.isVirtual && (
