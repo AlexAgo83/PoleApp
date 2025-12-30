@@ -150,7 +150,7 @@ export default async function StudentProgressPage({
           progress: {
             some: {
               studentId: session.user.id,
-              learningStatus: LearningStatus.IN_PROGRESS,
+              learningStatus: { not: LearningStatus.NOT_STARTED },
             },
           },
         }
