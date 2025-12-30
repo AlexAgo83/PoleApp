@@ -153,7 +153,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                 }`}
               >
                 <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 pl-1">
                     <span
                       className={`text-[10px] uppercase tracking-wide md:text-xs ${
                         day.isPast && !isToday ? "text-slate-400" : "text-cyan-100"
@@ -165,7 +165,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       {day.day}
                     </span>
                   </span>
-                  <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
+                  <span className="text-[11px] text-cyan-100 pr-1">{day.courses.length} cours</span>
                 </div>
                 <div className="flex flex-col gap-1 md:gap-1.5">
                   {day.courses.map((course) => {
@@ -190,7 +190,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       <Link
                         key={course.id}
                         href={`/app/student/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
-                        className={`relative w-full rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
+                        className={`relative block w-full rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
                           isVirtual
                             ? course.past
                               ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"

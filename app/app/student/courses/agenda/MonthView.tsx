@@ -197,7 +197,7 @@ export function MonthView({
                       <Link
                         key={course.id}
                         href={`/app/student/courses/${course.courseId}?from=${encodeURIComponent(baseFrom)}`}
-                        className={`relative mt-1 flex w-full items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
+                        className={`relative mt-1 block w-full rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
                           course.isVirtual
                             ? past
                               ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
