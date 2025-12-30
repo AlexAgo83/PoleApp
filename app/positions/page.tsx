@@ -39,6 +39,7 @@ const progressLabels: Record<string, string> = {
   INITIATED: "Initié",
   FLUID_CHOREO: "Fluide chorégraphié",
 };
+const statusLabels = progressLabels;
 
 function hexToRgba(color: string, alpha: number) {
   if (!color || !color.startsWith("#")) return null;
