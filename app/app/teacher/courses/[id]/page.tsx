@@ -14,6 +14,7 @@ import {
 import { MasteryLevel } from "@prisma/client";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { LocalDateTime } from "@/components/LocalDateTime";
+import { MasterySlider } from "./MasterySlider";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -146,12 +147,6 @@ export default async function TeacherCourseDetailPage({
   const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
-  const masteryOptions: { value: MasteryLevel; label: string }[] = [
-    { value: MasteryLevel.NOVELTY, label: "Nouveauté" },
-    { value: MasteryLevel.INITIATED, label: "Initié" },
-    { value: MasteryLevel.PASSED, label: "Passé" },
-    { value: MasteryLevel.FLUID_CHOREO, label: "Fluide chorégraphié" },
-  ];
   const masteryMap = new Map(
     course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.masteryLevel ?? MasteryLevel.INITIATED]),
   );
@@ -405,19 +400,13 @@ export default async function TeacherCourseDetailPage({
                         const key = `${att.studentId}-${p.position.id}`;
                         const current = masteryMap.get(key) ?? MasteryLevel.INITIATED;
                         return (
-                          <td key={p.position.id} className="px-3 py-2">
-                            <select
+                          <td key={p.position.id} className="px-3 py-2 align-top">
+                            <MasterySlider
                               name={`note:${att.studentId}:${p.position.id}`}
                               defaultValue={current}
-                              className="w-full rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-cyan-400"
-                            >
-                              <option value="">—</option>
-                              {masteryOptions.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
-                            </select>
+                              hideLabel
+                              tone="neutral"
+                            />
                           </td>
                         );
                       })}

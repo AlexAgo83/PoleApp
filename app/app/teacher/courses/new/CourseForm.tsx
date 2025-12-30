@@ -3,6 +3,7 @@
 import { MasteryLevel, RecurrenceFrequency } from "@prisma/client";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { MasterySlider } from "../[id]/MasterySlider";
 
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string; discipline?: string | null };
@@ -238,17 +239,6 @@ export function CourseForm({
     setSelectedPositions([]);
     setLastGeneratedCount(0);
   }, [selectedDiscipline]);
-
-  const masteryOptions = useMemo(
-    () => [
-      { value: "", label: "(non renseigné)" },
-      { value: MasteryLevel.NOVELTY, label: "Nouveauté" },
-      { value: MasteryLevel.INITIATED, label: "Initié" },
-      { value: MasteryLevel.PASSED, label: "Passé" },
-      { value: MasteryLevel.FLUID_CHOREO, label: "Fluide chorégraphié" },
-    ],
-    []
-  );
 
   const notesArray: Note[] = useMemo(
     () =>
@@ -782,7 +772,6 @@ export function CourseForm({
           <NotesMatrix
             students={students.filter((s) => selectedStudents.includes(s.id))}
             positions={positions.filter((p) => selectedPositions.includes(p.id))}
-            masteryOptions={masteryOptions}
             notes={notes}
             setNotes={setNotes}
           />
@@ -876,13 +865,11 @@ export function CourseForm({
 function NotesMatrix({
   students,
   positions,
-  masteryOptions,
   notes,
   setNotes,
 }: {
   students: Student[];
   positions: Position[];
-  masteryOptions: { value: string; label: string }[];
   notes: Record<string, Note>;
   setNotes: React.Dispatch<React.SetStateAction<Record<string, Note>>>;
 }) {
@@ -913,13 +900,14 @@ function NotesMatrix({
                     <legend className="text-sm font-semibold text-white">
                       {pos.name} ({pos.type})
                     </legend>
-                    <label className="block">
-                      Niveau
-                      <select
-                        value={current?.masteryLevel ?? ""}
-                        onChange={(e) => {
-                          const raw = e.target.value as MasteryLevel | "";
-                          const nextValue = raw === "" ? undefined : (raw as MasteryLevel);
+                    <label className="block space-y-2">
+                      <span className="text-xs font-semibold text-white">Niveau</span>
+                      <MasterySlider
+                        defaultValue={current?.masteryLevel as MasteryLevel | null | undefined}
+                        hideLabel
+                        tone="neutral"
+                        includeHidden={false}
+                        onChange={(value) =>
                           setNotes((prev) => ({
                             ...prev,
                             [key]: {
@@ -927,18 +915,11 @@ function NotesMatrix({
                                 studentId: student.id,
                                 positionId: pos.id,
                               }),
-                              masteryLevel: nextValue,
+                              masteryLevel: value,
                             },
-                          }));
-                        }}
-                        className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
-                      >
-                        {masteryOptions.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                          }))
+                        }
+                      />
                     </label>
                     <label className="block">
                       Commentaire
