@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ProgressSlider } from "../students/[id]/ProgressSlider";
+import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 type Student = { id: string; name: string | null; email: string | null };
 type Position = { id: string; name: string; type: string | null };
