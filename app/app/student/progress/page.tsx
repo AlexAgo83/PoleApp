@@ -113,9 +113,25 @@ export default async function StudentProgressPage({
     progressEntries.map((p) => [p.positionId, p])
   );
 
+  // Positions vues en cours (pour afficher le compteur et débloquer l'accès même sans progression explicite)
+  const attendanceWithPositions = await prisma.courseAttendance.findMany({
+    where: { studentId: session.user.id },
+    select: {
+      course: { select: { positions: { select: { positionId: true } } } },
+    },
+  });
+  const seenCounts = new Map<string, number>();
+  const seenIds = new Set<string>();
+  attendanceWithPositions.forEach((att) => {
+    att.course.positions.forEach((cp) => {
+      seenCounts.set(cp.positionId, (seenCounts.get(cp.positionId) ?? 0) + 1);
+      seenIds.add(cp.positionId);
+    });
+  });
+
   const visibleIds = session.user.isPremium
     ? undefined
-    : progressEntries.map((p) => p.positionId);
+    : Array.from(new Set([...progressEntries.map((p) => p.positionId), ...Array.from(seenIds)]));
 
   const where: Prisma.PositionWhereInput = {
     ...(visibleIds ? { id: { in: visibleIds } } : {}),
@@ -143,20 +159,6 @@ export default async function StudentProgressPage({
 
   const filteredCount = await prisma.position.count({
     where,
-  });
-
-  // Nombre de fois où l’élève a vu/enseigné la position (basé sur les cours suivis)
-  const attendanceWithPositions = await prisma.courseAttendance.findMany({
-    where: { studentId: session.user.id },
-    select: {
-      course: { select: { positions: { select: { positionId: true } } } },
-    },
-  });
-  const seenCounts = new Map<string, number>();
-  attendanceWithPositions.forEach((att) => {
-    att.course.positions.forEach((cp) => {
-      seenCounts.set(cp.positionId, (seenCounts.get(cp.positionId) ?? 0) + 1);
-    });
   });
 
   const positions = await prisma.position.findMany({
@@ -340,7 +342,7 @@ export default async function StudentProgressPage({
             const cover = position.media[0];
             const detailHref = `/positions/${position.id}?from=/app/student/progress?page=${page}${qs ? `&${qs}` : ""}`;
             const seen = seenCounts.get(position.id) ?? 0;
-            const showProgress = seen > 0;
+            const showProgress = seen > 0 || status !== "NOT_STARTED";
             const statusColor = statusBarColor[status as LearningStatus] ?? "#2563eb";
             const fillRatio =
               status === "NOT_STARTED"
@@ -433,11 +435,6 @@ export default async function StudentProgressPage({
                   <p className="text-sm text-slate-300 line-clamp-2">
                     {position.tips ?? position.description ?? "Aucun détail"}
                   </p>
-                  {showProgress ? (
-                    <p className="text-xs font-semibold text-slate-200">
-                      Statut : {statusLabels[status as LearningStatus]}
-                    </p>
-                  ) : null}
                 </div>
               </Link>
             );
