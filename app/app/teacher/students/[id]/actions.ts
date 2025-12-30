@@ -46,7 +46,7 @@ export async function updateProgressAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  await prisma.studentPositionProgress.upsert({
+  const saved = await prisma.studentPositionProgress.upsert({
     where: {
       studentId_positionId: {
         studentId: parsed.data.studentId,
@@ -71,7 +71,14 @@ export async function updateProgressAction(formData: FormData) {
 
   const targetPath = `/app/teacher/students/${parsed.data.studentId}`;
   revalidatePath(targetPath);
-  redirect(targetPath);
+  return {
+    ok: true,
+    progress: {
+      learningStatus: saved.learningStatus,
+      masteryLevel: saved.masteryLevel,
+      comment: saved.comment,
+    },
+  };
 }
 
 const updateProfileSchema = z.object({
