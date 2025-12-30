@@ -22,9 +22,11 @@ export function PersistedSection({
 }: Props) {
   const storageKey = `teacher-student:${id}:open`;
   const [open, setOpen] = useState<boolean>(defaultOpen);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     try {
+      setHydrated(true);
       const stored = window.localStorage.getItem(storageKey);
       if (stored === "true" || stored === "false") {
         setOpen(stored === "true");
@@ -35,16 +37,17 @@ export function PersistedSection({
   }, [storageKey]);
 
   useEffect(() => {
+    if (!hydrated) return;
     try {
       window.localStorage.setItem(storageKey, open ? "true" : "false");
     } catch {
       /* ignore */
     }
-  }, [open, storageKey]);
+  }, [open, storageKey, hydrated]);
 
   return (
     <details
-      open={open}
+      open={hydrated ? open : defaultOpen}
       onToggle={(e) => setOpen(e.currentTarget.open)}
       className={clsx("group space-y-3", className)}
     >
