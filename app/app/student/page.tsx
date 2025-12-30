@@ -62,9 +62,13 @@ export default async function StudentDashboard() {
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-6">
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-50 shadow-sm">
-            Crédits : {credits}
-          </span>
+          <BuyCreditsButton
+            currentCredits={credits}
+            packs={packs}
+            subscriptions={subs}
+            buttonLabel={`Crédits : ${credits}`}
+            buttonClassName="border-amber-300/70 bg-amber-400/20 text-amber-50 shadow-[0_0_18px_rgba(251,191,36,0.35)] hover:border-amber-200 hover:bg-amber-400/30"
+          />
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           <Link
