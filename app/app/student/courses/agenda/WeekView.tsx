@@ -148,11 +148,11 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
             return (
               <div
                 key={day.isoDate}
-                className={`rounded-xl p-2 text-sm text-slate-200 ${
+                className={`rounded-xl px-1 pb-1 text-sm text-slate-200 ${
                   isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
                 }`}
               >
-                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
+                <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
                   <span className="flex items-center gap-1">
                     <span
                       className={`text-[10px] uppercase tracking-wide md:text-xs ${
@@ -167,7 +167,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                   </span>
                   <span className="text-[11px] text-cyan-100">{day.courses.length} cours</span>
                 </div>
-                <div className="flex flex-col gap-1.5 md:gap-2">
+                <div className="flex flex-col gap-1 md:gap-1.5">
                   {day.courses.map((course) => {
                     const isWaitlist = course.myStatus === "WAITLIST";
                     const isMineConfirmed = course.myStatus === "CONFIRMED";
@@ -190,7 +190,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       <Link
                         key={course.id}
                         href={`/app/student/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
-                        className={`relative inline-flex w-full items-start gap-2 rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
+                        className={`relative w-full rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
                           isVirtual
                             ? course.past
                               ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
@@ -201,7 +201,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                         }`}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
                       >
-                        <div className="flex-1 space-y-0.5 overflow-hidden pr-6">
+                        <div className="space-y-0.5">
                           <p className="text-[9px] text-cyan-100 whitespace-nowrap">
                             {new Date(course.date).toLocaleTimeString("fr-FR", {
                               hour: "2-digit",
@@ -210,23 +210,23 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                             })}{" "}
                             - {formatDuration(course.durationMinutes ?? 60)}
                           </p>
-                          <p className="truncate text-[11px] font-semibold text-white">
+                          <p className="text-[11px] font-semibold text-white leading-snug break-words">
                             {course.title ?? "Cours"}
                           </p>
-                          <p className="truncate text-[10px] text-cyan-100">
+                          <p className="text-[10px] text-cyan-100 break-words">
                             {course.teacherName}
                           </p>
-                          <p className="truncate text-[10px] text-slate-200">
+                          <p className="text-[10px] text-slate-200 break-words">
                             {course.studioName}
                           </p>
                           {course.discipline && (
-                            <p className="truncate text-[10px] text-cyan-50/90">
+                            <p className="text-[10px] text-cyan-50/90 break-words">
                               {course.discipline}
                             </p>
                           )}
                           {course.isVirtual && (
                             <p
-                              className="truncate text-[12px] text-amber-100"
+                              className="text-[12px] text-amber-100"
                               title="Occurrence programmée · positions à définir"
                               aria-label="Occurrence programmée"
                             >
@@ -234,7 +234,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                             </p>
                           )}
                         </div>
-                        <div className="absolute bottom-1 right-1 flex flex-col items-end gap-1">
+                        <div className="mt-2 flex justify-end">
                           <span
                             className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
                             title={

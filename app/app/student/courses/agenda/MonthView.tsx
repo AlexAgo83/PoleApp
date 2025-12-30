@@ -149,7 +149,7 @@ export function MonthView({
             return (
               <div
                 key={`${month}-${idx}`}
-                className={`rounded-xl p-2 text-left ${
+                className={`rounded-xl px-1 pb-1 text-left ${
                   !cell.courses || cell.courses.length === 0 ? "min-h-[56px] md:min-h-[80px]" : "min-h-[80px]"
                 } ${
                   isToday
@@ -216,7 +216,7 @@ export function MonthView({
                             })}{" "}
                             - {formatDuration(course.durationMinutes ?? 60)}
                           </p>
-                          <p className="truncate text-[11px] font-semibold text-white">
+                          <p className="text-[11px] font-semibold text-white leading-snug break-words">
                             {course.title ?? "Cours"}
                           </p>
                           <p className="truncate text-[10px] text-cyan-100">
