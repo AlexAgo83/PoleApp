@@ -500,7 +500,7 @@ export default async function TeacherSchoolPage({
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Planning</p>
             <h2 className="text-lg font-semibold text-white">Agenda de l’école</h2>
             <p className="text-sm text-slate-300">
-              Vue semaine/mensuelle, filtrable par studio/professeur. Les codes couleur suivent tes statuts.
+              Vue semaine/mensuelle, filtrable par studio/professeur.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 md:ml-auto">
