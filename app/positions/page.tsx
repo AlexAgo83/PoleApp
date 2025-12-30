@@ -205,7 +205,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   const studentProgress = isStudent
     ? await prisma.studentPositionProgress.findMany({
         where: { studentId: session.user.id },
-        select: { positionId: true, learningStatus: true, masteryLevel: true },
+        select: { positionId: true, learningStatus: true },
       })
     : [];
   const progressMap = new Map(studentProgress.map((p) => [p.positionId, p]));
@@ -396,8 +396,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
             const canViewPremium = !isStudent || isPremium;
             const progress = progressMap.get(p.id);
             const progressText =
-              progress?.masteryLevel && progressLabels[progress.masteryLevel]
-                ? progressLabels[progress.masteryLevel]
+              progress?.learningStatus
+                ? statusLabels[progress.learningStatus]
                 : progress?.learningStatus
                 ? progressLabels[progress.learningStatus] ?? progress.learningStatus
                 : null;
@@ -459,7 +459,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         {progressText ? (
                           <span
                             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                              progressBadgeClass[progress?.masteryLevel ?? progress?.learningStatus ?? "NOT_STARTED"] ??
+                              progressBadgeClass[progress?.learningStatus ?? "NOT_STARTED"] ??
                               "border border-white/15 bg-black/50 text-slate-200"
                             }`}
                           >

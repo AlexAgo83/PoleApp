@@ -1,4 +1,4 @@
-import { LearningStatus, MasteryLevel, PositionLevel, PositionType, Prisma } from "@prisma/client";
+import { LearningStatus, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -14,13 +14,6 @@ const statusLabels: Record<LearningStatus, string> = {
   IN_PROGRESS: "Initié",
   PASSED: "Passé",
   MASTERED: "Fluide chorégraphié",
-};
-
-const masteryLabels: Record<MasteryLevel, string> = {
-  NOVELTY: "Nouveauté",
-  INITIATED: "Initié",
-  PASSED: "Passé",
-  FLUID_CHOREO: "Fluide chorégraphié",
 };
 
 const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {
@@ -344,7 +337,6 @@ export default async function StudentProgressPage({
           {positions.map((position) => {
             const progress = progressMap.get(position.id);
             const status = progress?.learningStatus ?? "NOT_STARTED";
-            const mastery = progress?.masteryLevel;
             const cover = position.media[0];
             const detailHref = `/positions/${position.id}?from=/app/student/progress?page=${page}${qs ? `&${qs}` : ""}`;
             const seen = seenCounts.get(position.id) ?? 0;
@@ -441,11 +433,11 @@ export default async function StudentProgressPage({
                   <p className="text-sm text-slate-300 line-clamp-2">
                     {position.tips ?? position.description ?? "Aucun détail"}
                   </p>
-                  {mastery && (
+                  {showProgress ? (
                     <p className="text-xs font-semibold text-slate-200">
-                      Niveau élève : {masteryLabels[mastery]}
+                      Statut : {statusLabels[status as LearningStatus]}
                     </p>
-                  )}
+                  ) : null}
                 </div>
               </Link>
             );

@@ -40,13 +40,6 @@ enum LearningStatus {
   MASTERED
 }
 
-enum MasteryLevel {
-  NOVELTY
-  INITIATED
-  PASSED
-  FLUID_CHOREO
-}
-
 enum GameMode {
   PHOTO_NAME
   NAME_TYPE
@@ -233,7 +226,6 @@ model StudentPositionProgress {
   studentId           String
   positionId          String
   learningStatus      LearningStatus
-  masteryLevel        MasteryLevel?
   comment             String?
   lastUpdatedByUserId String?
   createdAt           DateTime       @default(now())
@@ -322,7 +314,7 @@ model CourseNote {
   courseId     String
   studentId    String
   positionId   String
-  masteryLevel MasteryLevel
+  learningStatus LearningStatus?
   comment      String?
   createdAt    DateTime     @default(now())
   course       Course       @relation(fields: [courseId], references: [id])

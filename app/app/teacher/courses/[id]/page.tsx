@@ -11,10 +11,10 @@ import {
   removeCoursePositionAction,
   updateCourseNotesOnlyAction,
 } from "./actions";
-import { MasteryLevel } from "@prisma/client";
+import { LearningStatus } from "@prisma/client";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { LocalDateTime } from "@/components/LocalDateTime";
-import { MasterySlider } from "./MasterySlider";
+import { ProgressSlider } from "../../teacher/students/[id]/ProgressSlider";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
@@ -147,8 +147,8 @@ export default async function TeacherCourseDetailPage({
   const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
-  const masteryMap = new Map(
-    course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.masteryLevel ?? MasteryLevel.INITIATED]),
+  const statusMap = new Map(
+    course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.learningStatus ?? LearningStatus.NOT_STARTED]),
   );
 
   const teacherName =
@@ -398,13 +398,14 @@ export default async function TeacherCourseDetailPage({
                       </td>
                       {course.positions.map((p) => {
                         const key = `${att.studentId}-${p.position.id}`;
-                        const current = masteryMap.get(key) ?? MasteryLevel.INITIATED;
+                        const current = statusMap.get(key) ?? LearningStatus.NOT_STARTED;
                         return (
                           <td key={p.position.id} className="px-3 py-2 align-top">
-                            <MasterySlider
+                            <ProgressSlider
                               name={`note:${att.studentId}:${p.position.id}`}
                               defaultValue={current}
                               hideLabel
+                              hideValue
                               tone="neutral"
                             />
                           </td>
@@ -649,7 +650,7 @@ export default async function TeacherCourseDetailPage({
                     </p>
                   </div>
                   <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {note.masteryLevel ?? "(non renseigné)"}
+                    {note.learningStatus ?? "(non renseigné)"}
                   </span>
                 </div>
                 {note.comment && (

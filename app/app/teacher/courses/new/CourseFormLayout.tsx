@@ -12,7 +12,6 @@ type Studio = { id: string; name: string };
 type ProgressRecord = {
   studentId: string;
   positionId: string;
-  masteryLevel?: import("@prisma/client").MasteryLevel | null;
   learningStatus?: import("@prisma/client").LearningStatus | null;
   positionName: string;
   positionType?: string | null;

@@ -1,6 +1,6 @@
 "use server";
 
-import { LearningStatus, MasteryLevel } from "@prisma/client";
+import { LearningStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -14,7 +14,6 @@ const updateProgressSchema = z.object({
   studentId: z.string().cuid(),
   positionId: z.string().cuid(),
   learningStatus: z.nativeEnum(LearningStatus),
-  masteryLevel: z.nativeEnum(MasteryLevel).optional(),
   comment: z.string().optional(),
 });
 
@@ -31,7 +30,6 @@ export async function updateProgressAction(formData: FormData) {
     studentId: formData.get("studentId"),
     positionId: formData.get("positionId"),
     learningStatus: formData.get("learningStatus"),
-    masteryLevel: formData.get("masteryLevel") || undefined,
     comment: formData.get("comment") || undefined,
   });
   if (!parsed.success) {
@@ -55,7 +53,6 @@ export async function updateProgressAction(formData: FormData) {
     },
     update: {
       learningStatus: parsed.data.learningStatus,
-      masteryLevel: parsed.data.masteryLevel ?? null,
       comment: parsed.data.comment?.toString().trim() || null,
       lastUpdatedByUserId: session.user.id,
     },
@@ -63,7 +60,6 @@ export async function updateProgressAction(formData: FormData) {
       studentId: parsed.data.studentId,
       positionId: parsed.data.positionId,
       learningStatus: parsed.data.learningStatus,
-      masteryLevel: parsed.data.masteryLevel ?? null,
       comment: parsed.data.comment?.toString().trim() || null,
       lastUpdatedByUserId: session.user.id,
     },
@@ -75,7 +71,6 @@ export async function updateProgressAction(formData: FormData) {
     ok: true,
     progress: {
       learningStatus: saved.learningStatus,
-      masteryLevel: saved.masteryLevel,
       comment: saved.comment,
     },
   };

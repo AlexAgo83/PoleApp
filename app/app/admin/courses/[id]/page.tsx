@@ -288,7 +288,7 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
                     <p className="text-xs text-slate-300">{note.position.name}</p>
                   </div>
                   <span className="text-xs uppercase tracking-[0.12em] text-emerald-200">
-                    {note.masteryLevel ?? "(non renseigné)"}
+                    {note.learningStatus ?? "(non renseigné)"}
                   </span>
                 </div>
                 {note.comment && <p className="mt-1 text-slate-300">{note.comment}</p>}
