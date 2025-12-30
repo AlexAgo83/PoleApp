@@ -334,6 +334,50 @@ export default async function StudentProgressPage({
           </form>
         </FilterPanel>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="overflow-hidden rounded-2xl border border-dashed border-amber-300/60 bg-amber-500/5 shadow-inner shadow-amber-900/20">
+            <div className="relative">
+              <SafeImage
+                src={POSITION_PLACEHOLDER}
+                alt="Debug pastilles"
+                width={480}
+                height={360}
+                className="aspect-[4/3] w-full object-cover"
+                fallbackSrc={POSITION_PLACEHOLDER}
+              />
+              <div className="absolute left-3 right-3 top-3 flex items-start justify-between gap-2">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
+                  style={disciplineStyle("Debug")}
+                >
+                  Discipline
+                </span>
+                <div className="flex flex-col items-end gap-2 text-right">
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusStyles.MASTERED.solid}`}>
+                    {statusLabels.MASTERED}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                    Vu : 999
+                  </span>
+                </div>
+              </div>
+              <div className="absolute bottom-3 left-3">
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                  Vu : 999
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 p-4">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-lg font-semibold text-white">Debug — pastilles actives</h3>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-amber-100">
+                  Advanced
+                </span>
+              </div>
+              <p className="text-sm text-cyan-200">{typeLabels.TRICK}</p>
+              <p className="text-sm text-slate-300">Carte de debug pour visualiser toutes les pastilles.</p>
+              <p className="text-xs font-semibold text-slate-200">Niveau élève : {masteryLabels.FLUID_CHOREO}</p>
+            </div>
+          </div>
           {positions.map((position) => {
             const progress = progressMap.get(position.id);
             const status = progress?.learningStatus ?? "NOT_STARTED";
