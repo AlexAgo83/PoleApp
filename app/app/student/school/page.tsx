@@ -553,7 +553,7 @@ export default async function StudentSchoolPage({
           </div>
         </div>
 
-        <section className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/20">
+        <section className="text-sm text-slate-200">
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {legendItems.map((item) => (
@@ -572,8 +572,8 @@ export default async function StudentSchoolPage({
           title="Filtres"
           activeCount={activeFilters}
           userKey={session.user.id}
-          className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20"
-          contentClassName="mt-3"
+          className="mt-2"
+          contentClassName=""
         >
           <form
             method="get"

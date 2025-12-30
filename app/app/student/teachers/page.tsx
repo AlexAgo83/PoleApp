@@ -173,7 +173,8 @@ export default async function StudentTeachersPage({
                     </div>
                     <Link
                       href={`/app/teachers/${teacher.id}?from=/app/student/teachers`}
-                      className="inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
+                      className="inline-flex shrink-0 items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
+                      style={{ minHeight: "2.25rem" }}
                     >
                       Voir la fiche
                     </Link>

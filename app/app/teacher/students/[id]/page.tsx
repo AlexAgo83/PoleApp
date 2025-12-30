@@ -1,15 +1,14 @@
 import { GameMode, LearningStatus } from "@prisma/client";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
-import { AvatarUploadField } from "@/components/AvatarUploadField";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { updateProgressAction, updateStudentProfileAction } from "./actions";
+import { StudentAvatarManager } from "./StudentAvatarManager";
 
 const statusLabel: Record<LearningStatus, string> = {
   NOT_STARTED: "Nouveauté",
@@ -58,6 +57,7 @@ export default async function TeacherStudentDetailPage({
   searchParams,
 }: Props) {
   const resolvedParams = await Promise.resolve(params);
+  void searchParams;
   const studentId = resolvedParams?.id;
 
   if (!studentId) {
@@ -136,13 +136,6 @@ export default async function TeacherStudentDetailPage({
   const filteredPositions = taughtPositionIds.size
     ? positions.filter((p) => taughtPositionIds.has(p.id))
     : [];
-  const resolvedSearch = (await searchParams) ?? {};
-  const rawFrom = resolvedSearch.from;
-  const safeFrom =
-    rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
-      ? rawFrom
-      : undefined;
-  const backHref = safeFrom ?? "/app/teacher/students";
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: student.avatarPublicId,
     avatarUrl: student.avatarUrl,
@@ -150,60 +143,36 @@ export default async function TeacherStudentDetailPage({
     seedKey: student.id,
   });
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
+  const studentDisplayName = student.name?.trim() || student.email || "Élève";
+  const nameParts = (student.name ?? "").trim().split(" ").filter(Boolean);
+  const firstNameDefault = nameParts[0] ?? "";
+  const lastNameDefault = nameParts.slice(1).join(" ");
+  const canEdit = session.user.role === "SCHOOL_ADMIN" || session.user.role === "TEACHER";
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div className="space-y-1">
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-            Professeur / Admin
-          </p>
-          <h1 className="text-3xl font-semibold text-white">Fiche élève</h1>
-          <p className="text-sm text-slate-200">
-            {student.name ?? student.email} · {student.email} ·{" "}
-            {student.isPremium ? "Premium" : "Free"} · Âge :{" "}
-            {student.age ? `${student.age} ans` : "non renseigné"}
-          </p>
-          <details className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
-            <summary className="flex cursor-pointer items-center justify-between gap-2 text-white">
-              <span className="font-semibold">Éditer nom / photo / âge</span>
-              <span className="text-xs text-indigo-200">Afficher / masquer</span>
-            </summary>
-            <form action={updateStudentProfileAction} className="mt-3 flex flex-wrap items-center gap-2">
-              <input type="hidden" name="studentId" value={student.id} />
-              <input
-                name="firstName"
-                placeholder="Prénom"
-                defaultValue={student.name?.split(" ")[0] ?? ""}
-                className="w-28 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
-              />
-              <input
-                name="lastName"
-                placeholder="Nom"
-                defaultValue={student.name?.split(" ").slice(1).join(" ") ?? ""}
-                className="w-32 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
-              />
-              <input
-                name="age"
-                type="number"
-                inputMode="numeric"
-                placeholder="Âge"
-                defaultValue={student.age ?? ""}
-                min={1}
-                max={120}
-                className="w-20 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-indigo-400"
-              />
-              <button
-                type="submit"
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-              >
-                Sauvegarder
-              </button>
-            </form>
-          </details>
-        </div>
-        <div className="mt-4 flex w-full flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+      <section className="panel space-y-5 border-indigo-400/25 p-6 shadow-indigo-900/30">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-center gap-4">
+            <SafeImage
+              src={avatarUrl}
+              alt={`Avatar de ${studentDisplayName}`}
+              width={80}
+              height={80}
+              className="h-20 w-20 rounded-full border border-white/10 object-cover shadow-lg shadow-black/30"
+              fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
+            />
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Fiche élève</p>
+              <h1 className="text-2xl font-semibold text-white">{studentDisplayName}</h1>
+              <p className="text-sm text-slate-200">{student.email}</p>
+              <p className="text-sm text-slate-300">
+                Statut : {student.isPremium ? "Premium" : "Free"} ·{" "}
+                {student.age ? `${student.age} ans` : "Âge non renseigné"}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
               Vu : {student.progress.length}
             </span>
@@ -216,196 +185,274 @@ export default async function TeacherStudentDetailPage({
               </span>
             )}
           </div>
-          <Link
-            href={backHref}
-            className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300 hover:text-cyan-200"
-          >
-            ← Retour à la liste
-          </Link>
-        </div>
-      </header>
-
-      <section className="panel border-indigo-400/15 p-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <SafeImage
-              src={avatarUrl}
-              alt={`Avatar de ${student.name ?? student.email}`}
-              width={64}
-              height={64}
-              className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
-              fallbackSrc={STUDENT_AVATAR_PLACEHOLDER}
-            />
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold text-white">Photo de profil</h2>
-              <p className="text-xs text-slate-300">Upload/suppression dédiée (Cloudinary), 2 Mo max.</p>
-            </div>
-          </div>
-          <form action={updateStudentProfileAction} className="flex flex-wrap items-center gap-2">
-            <input type="hidden" name="studentId" value={student.id} />
-            <AvatarUploadField
-              folder={avatarFolder}
-              currentUrl={student.avatarUrl ?? undefined}
-              currentPublicId={student.avatarPublicId ?? undefined}
-              maxSizeMB={2}
-            />
-            <button
-              type="submit"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-            >
-              Sauvegarder
-            </button>
-          </form>
         </div>
       </section>
 
-      <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Blessures</h2>
-        <div className="mt-4 flex flex-col divide-y divide-white/5">
-          {student.injuries.map((injury) => (
-            <article key={injury.id} className="py-3">
-              <p className="text-base font-semibold text-white">
-                {injury.injuryType.name} ·{" "}
-                <span className={injury.isActive ? "text-amber-200" : "text-green-200"}>
-                  {injury.isActive ? "Active" : "Résolue"}
-                </span>
-              </p>
-              {injury.notes && (
-                <p className="text-sm text-slate-200">Notes : {injury.notes}</p>
-              )}
-            </article>
-          ))}
-          {student.injuries.length === 0 && (
-            <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
-          )}
-        </div>
-      </section>
-
-      <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Mini-jeux (5 dernières)</h2>
-        {gameSessions.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-200">Aucune session jouée pour le moment.</p>
-        ) : (
-          <ul className="mt-3 divide-y divide-white/5 text-sm text-slate-200">
-            {gameSessions.map((g) => {
-              const accuracy =
-                g.totalQuestions > 0
-                  ? Math.round((g.correctAnswers / g.totalQuestions) * 100)
-                  : 0;
-              return (
-                <li key={g.id} className="py-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="font-semibold text-white">
-                        {gameModeLabel[g.mode]} ({g.mode})
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {g.correctAnswers}/{g.totalQuestions} · {accuracy}% ·{" "}
-                        {g.durationMs ? `${Math.round(g.durationMs / 1000)}s` : "—"}
-                      </p>
-                    </div>
-                    <p className="text-xs text-slate-300">
-                      {g.createdAt.toLocaleDateString("fr-FR", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
-
-      <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Progression</h2>
-        <p className="text-sm text-slate-300">
-          Positions enseignées : {filteredPositions.length}
-        </p>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {filteredPositions.map((position) => {
-            const progress = progressMap.get(position.id);
-            return (
-              <article
-                key={position.id}
-                className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+      {canEdit && (
+        <section className="panel space-y-5 border-indigo-400/15 p-6">
+          <details className="group space-y-3">
+            <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+              <div>
+                <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
+                <h2 className="text-lg font-semibold text-white">Profil élève</h2>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Modifier</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </summary>
+            <div className="pt-1">
+              <form
+                action={updateStudentProfileAction}
+                className="grid gap-3 md:grid-cols-4"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-base font-semibold text-white">{position.name}</p>
-                  <p className="text-xs text-slate-300">{position.type}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${
-                      progress
-                        ? statusStyles[progress.learningStatus].solid
-                        : statusStyles.NOT_STARTED.solid
-                    }`}
-                  >
-                    {progress ? statusLabel[progress.learningStatus] : "Nouveauté"}
-                  </span>
-                  {progress?.masteryLevel && (
-                    <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white/90">
-                      {progress.masteryLevel}
-                    </span>
-                  )}
-                </div>
-                <form action={updateProgressAction} className="space-y-2 text-sm text-slate-200">
-                  <input type="hidden" name="studentId" value={student.id} />
-                  <input type="hidden" name="positionId" value={position.id} />
-                  <label className="block">
-                    Statut
-                    <select
-                      name="learningStatus"
-                      defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                    >
-                      <option value="NOT_STARTED">Nouveauté</option>
-                      <option value="IN_PROGRESS">Initié</option>
-                      <option value="PASSED">Passé</option>
-                      <option value="MASTERED">Fluide chorégraphié</option>
-                    </select>
-                  </label>
-                  <label className="block">
-                    Niveau
-                    <select
-                      name="masteryLevel"
-                      defaultValue={progress?.masteryLevel ?? ""}
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                    >
-                      <option value="">(non renseigné)</option>
-                      <option value="NOVELTY">Nouveauté</option>
-                      <option value="INITIATED">Initié</option>
-                      <option value="PASSED">Passé</option>
-                      <option value="FLUID_CHOREO">Fluide chorégraphié</option>
-                    </select>
-                  </label>
-                  <label className="block">
-                    Commentaire
-                    <textarea
-                      name="comment"
-                      defaultValue={progress?.comment ?? ""}
-                      className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                    />
-                  </label>
+                <input type="hidden" name="studentId" value={student.id} />
+                <label className="text-sm text-slate-200">
+                  Prénom
+                  <input
+                    name="firstName"
+                    placeholder="Prénom"
+                    defaultValue={firstNameDefault}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
+                  />
+                </label>
+                <label className="text-sm text-slate-200">
+                  Nom
+                  <input
+                    name="lastName"
+                    placeholder="Nom"
+                    defaultValue={lastNameDefault}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
+                  />
+                </label>
+                <label className="text-sm text-slate-200">
+                  Âge
+                  <input
+                    name="age"
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="Âge"
+                    defaultValue={student.age ?? ""}
+                    min={1}
+                    max={120}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
+                  />
+                </label>
+                <div className="flex items-end justify-end">
                   <button
                     type="submit"
-                    className="rounded-full bg-cyan-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-cyan-400"
+                    className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
                   >
                     Sauvegarder
                   </button>
-                </form>
+                </div>
+              </form>
+            </div>
+          </details>
+        </section>
+      )}
+
+      {canEdit && (
+        <section className="panel space-y-5 border-indigo-400/15 p-6">
+          <details className="group space-y-3">
+            <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+              <div>
+                <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
+                <h2 className="text-lg font-semibold text-white">Photo de profil</h2>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Modifier</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </summary>
+            <div className="pt-1">
+              <StudentAvatarManager
+                studentId={student.id}
+                folder={avatarFolder}
+                initialUrl={student.avatarUrl ?? null}
+                initialPublicId={student.avatarPublicId ?? null}
+              />
+              <p className="pt-3 text-sm text-slate-300">
+                Upload/suppression dédiée (Cloudinary), 2 Mo max.
+              </p>
+            </div>
+          </details>
+        </section>
+      )}
+
+      <section className="panel border-indigo-400/15 p-6">
+        <details className="group space-y-3" open={false}>
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+            <h2 className="text-lg font-semibold text-white">
+              Blessures ({student.injuries.length})
+            </h2>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+              <span className="group-open:hidden">Ouvrir</span>
+              <span className="hidden group-open:inline">Fermer</span>
+            </span>
+          </summary>
+          <div className="mt-2 flex flex-col divide-y divide-white/5">
+            {student.injuries.map((injury) => (
+              <article key={injury.id} className="py-3">
+                <p className="text-base font-semibold text-white">
+                  {injury.injuryType.name} ·{" "}
+                  <span className={injury.isActive ? "text-amber-200" : "text-green-200"}>
+                    {injury.isActive ? "Active" : "Résolue"}
+                  </span>
+                </p>
+                {injury.notes && (
+                  <p className="text-sm text-slate-200">Notes : {injury.notes}</p>
+                )}
               </article>
-            );
-          })}
-          {filteredPositions.length === 0 && (
-            <p className="md:col-span-2 text-sm text-slate-200">
-              Aucune position enseignée pour l&apos;instant.
-            </p>
+            ))}
+            {student.injuries.length === 0 && (
+              <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
+            )}
+          </div>
+        </details>
+      </section>
+
+      <section className="panel border-indigo-400/15 p-6">
+        <details className="group space-y-3" open={false}>
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+            <h2 className="text-lg font-semibold text-white">Mini-jeux (5 dernières)</h2>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+              <span className="group-open:hidden">Ouvrir</span>
+              <span className="hidden group-open:inline">Fermer</span>
+            </span>
+          </summary>
+          {gameSessions.length === 0 ? (
+            <p className="mt-2 text-sm text-slate-200">Aucune session jouée pour le moment.</p>
+          ) : (
+            <ul className="mt-3 divide-y divide-white/5 text-sm text-slate-200">
+              {gameSessions.map((g) => {
+                const accuracy =
+                  g.totalQuestions > 0
+                    ? Math.round((g.correctAnswers / g.totalQuestions) * 100)
+                    : 0;
+                return (
+                  <li key={g.id} className="py-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="font-semibold text-white">
+                          {gameModeLabel[g.mode]} ({g.mode})
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          {g.correctAnswers}/{g.totalQuestions} · {accuracy}% ·{" "}
+                          {g.durationMs ? `${Math.round(g.durationMs / 1000)}s` : "—"}
+                        </p>
+                      </div>
+                      <p className="text-xs text-slate-300">
+                        {g.createdAt.toLocaleDateString("fr-FR", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
-        </div>
+        </details>
+      </section>
+
+      <section className="panel border-indigo-400/15 p-6">
+        <details className="group space-y-3" open={false}>
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+            <div>
+              <h2 className="text-lg font-semibold text-white">Progression</h2>
+              <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+              <span className="group-open:hidden">Ouvrir</span>
+              <span className="hidden group-open:inline">Fermer</span>
+            </span>
+          </summary>
+          <div className="mt-2 grid gap-4 md:grid-cols-2">
+            {filteredPositions.map((position) => {
+              const progress = progressMap.get(position.id);
+              return (
+                <article
+                  key={position.id}
+                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-base font-semibold text-white">{position.name}</p>
+                    <p className="text-xs text-slate-300">{position.type}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold ${
+                        progress
+                          ? statusStyles[progress.learningStatus].solid
+                          : statusStyles.NOT_STARTED.solid
+                      }`}
+                    >
+                      {progress ? statusLabel[progress.learningStatus] : "Nouveauté"}
+                    </span>
+                    {progress?.masteryLevel && (
+                      <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold text-white/90">
+                        {progress.masteryLevel}
+                      </span>
+                    )}
+                  </div>
+                  <form action={updateProgressAction} className="space-y-2 text-sm text-slate-200">
+                    <input type="hidden" name="studentId" value={student.id} />
+                    <input type="hidden" name="positionId" value={position.id} />
+                    <label className="block">
+                      Statut
+                      <select
+                        name="learningStatus"
+                        defaultValue={progress?.learningStatus ?? LearningStatus.NOT_STARTED}
+                        className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                      >
+                        <option value="NOT_STARTED">Nouveauté</option>
+                        <option value="IN_PROGRESS">Initié</option>
+                        <option value="PASSED">Passé</option>
+                        <option value="MASTERED">Fluide chorégraphié</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      Niveau
+                      <select
+                        name="masteryLevel"
+                        defaultValue={progress?.masteryLevel ?? ""}
+                        className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                      >
+                        <option value="">(non renseigné)</option>
+                        <option value="NOVELTY">Nouveauté</option>
+                        <option value="INITIATED">Initié</option>
+                        <option value="PASSED">Passé</option>
+                        <option value="FLUID_CHOREO">Fluide chorégraphié</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      Commentaire
+                      <textarea
+                        name="comment"
+                        defaultValue={progress?.comment ?? ""}
+                        className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      className="rounded-full bg-cyan-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-cyan-400"
+                    >
+                      Sauvegarder
+                    </button>
+                  </form>
+                </article>
+              );
+            })}
+            {filteredPositions.length === 0 && (
+              <p className="md:col-span-2 text-sm text-slate-200">
+                Aucune position enseignée pour l&apos;instant.
+              </p>
+            )}
+          </div>
+        </details>
       </section>
     </main>
   );

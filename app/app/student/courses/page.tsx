@@ -326,7 +326,7 @@ export default async function StudentCoursesPage({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+        <div className="text-sm text-slate-200">
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {legendItems.map((item) => (
@@ -349,7 +349,7 @@ export default async function StudentCoursesPage({
           <form
           key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${teacherFilter ?? "all"}-${withNotes ? "notes" : "all"}-${disciplineFilters.join("|") || "all"}`}
           method="get"
-          className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-6 md:items-end"
+          className="mt-4 grid w-full gap-3 md:grid-cols-6 md:items-end"
         >
             <label className="text-sm text-slate-200">
               Date min

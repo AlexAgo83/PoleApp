@@ -84,13 +84,6 @@ const updateProfileSchema = z.object({
     .min(1, "Âge invalide")
     .max(120, "Âge invalide")
     .optional(),
-  avatarUrl: z
-    .string()
-    .trim()
-    .url("URL invalide")
-    .max(2048, "URL trop longue")
-    .optional(),
-  avatarPublicId: z.string().trim().max(512).optional(),
 });
 
 export async function updateStudentProfileAction(formData: FormData) {
@@ -107,8 +100,6 @@ export async function updateStudentProfileAction(formData: FormData) {
     firstName: (formData.get("firstName") as string | null)?.trim() || "",
     lastName: (formData.get("lastName") as string | null)?.trim() || "",
     age: (formData.get("age") as string | null)?.trim() || undefined,
-    avatarUrl: (formData.get("avatarUrl") as string | null)?.trim() || undefined,
-    avatarPublicId: (formData.get("avatarPublicId") as string | null)?.trim() || undefined,
   });
 
   if (!parsed.success) {
@@ -117,7 +108,7 @@ export async function updateStudentProfileAction(formData: FormData) {
 
   const student = await prisma.user.findUnique({
     where: { id: parsed.data.studentId },
-    select: { schoolId: true, avatarPublicId: true },
+    select: { schoolId: true },
   });
   if (!student || student.schoolId !== session.user.schoolId) {
     redirect("/access-denied");
@@ -130,16 +121,66 @@ export async function updateStudentProfileAction(formData: FormData) {
     data: {
       name,
       age: parsed.data.age ?? null,
-      avatarUrl: parsed.data.avatarUrl ?? null,
-      avatarPublicId: parsed.data.avatarPublicId ?? null,
     },
   });
 
   const targetPath = `/app/teacher/students/${parsed.data.studentId}`;
   revalidatePath(targetPath);
+  redirect(targetPath);
+}
+
+const updateAvatarSchema = z.object({
+  studentId: z.string().cuid(),
+  avatarUrl: z.string().trim().url("URL invalide").max(2048).nullable(),
+  avatarPublicId: z.string().trim().max(512).nullable(),
+  returnTo: z.string().optional(),
+});
+
+export async function updateStudentAvatarAction(input: {
+  studentId: string;
+  avatarUrl: string | null;
+  avatarPublicId: string | null;
+  returnTo?: string | null;
+}) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.schoolId) {
+    redirect("/access-denied");
+  }
+  if (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN") {
+    redirect("/access-denied");
+  }
+
+  const parsed = updateAvatarSchema.safeParse({
+    studentId: input.studentId,
+    avatarUrl: input.avatarUrl,
+    avatarPublicId: input.avatarPublicId,
+    returnTo: input.returnTo ?? undefined,
+  });
+  if (!parsed.success) {
+    throw new Error("Formulaire avatar invalide");
+  }
+
+  const student = await prisma.user.findUnique({
+    where: { id: parsed.data.studentId },
+    select: { schoolId: true, avatarPublicId: true },
+  });
+  if (!student || student.schoolId !== session.user.schoolId) {
+    redirect("/access-denied");
+  }
+
+  await prisma.user.update({
+    where: { id: parsed.data.studentId },
+    data: {
+      avatarUrl: parsed.data.avatarUrl,
+      avatarPublicId: parsed.data.avatarPublicId,
+    },
+  });
+
+  const targetPath = parsed.data.returnTo || `/app/teacher/students/${parsed.data.studentId}`;
+  revalidatePath(targetPath);
 
   const previousPublicId = student.avatarPublicId;
-  const newPublicId = parsed.data.avatarPublicId ?? null;
+  const newPublicId = parsed.data.avatarPublicId;
   if (
     previousPublicId &&
     previousPublicId !== newPublicId &&
@@ -149,8 +190,9 @@ export async function updateStudentProfileAction(formData: FormData) {
     try {
       await destroyAsset(previousPublicId, "image", "authenticated");
     } catch (error) {
-      console.error("[student-profile] failed to destroy previous avatar", error);
+      console.error("[student-avatar] failed to destroy previous avatar", error);
     }
   }
-  redirect(targetPath);
+
+  return { ok: true };
 }

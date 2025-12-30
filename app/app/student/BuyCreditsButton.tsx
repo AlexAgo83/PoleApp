@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import clsx from "clsx";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
@@ -32,6 +33,8 @@ type Props = {
   title?: string;
   subtitle?: string;
   description?: string;
+  buttonLabel?: string;
+  buttonClassName?: string;
 };
 
 function formatPrice(cents: number) {
@@ -48,6 +51,8 @@ export function BuyCreditsButton({
   title,
   subtitle,
   description,
+  buttonLabel,
+  buttonClassName,
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -328,10 +333,13 @@ export function BuyCreditsButton({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            className={clsx(
+              "rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10",
+              buttonClassName,
+            )}
             onClick={openCredits}
           >
-            Acheter des crédits
+            {buttonLabel ?? "Acheter des crédits"}
           </button>
           {showUpgrade ? (
             <button
