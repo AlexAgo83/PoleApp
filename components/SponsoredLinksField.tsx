@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { ConfirmDeleteButton } from "./ConfirmDeleteButton";
+
 type RawSponsoredLink = { category?: unknown; label?: unknown; url?: unknown };
 type SponsoredLink = { category: string; label?: string; url: string };
 
@@ -103,14 +105,14 @@ export function SponsoredLinksField({
                 className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-cyan-400"
               />
               {links.length > 1 && (
-                <button
+                <ConfirmDeleteButton
                   type="button"
-                  onClick={() => removeLink(idx)}
+                  onConfirm={() => removeLink(idx)}
                   aria-label="Supprimer le lien"
                   className="rounded-full border border-red-400/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold text-red-100 transition hover:border-red-300/70 hover:bg-red-500/20"
                 >
                   ×
-                </button>
+                </ConfirmDeleteButton>
               )}
             </div>
           </div>

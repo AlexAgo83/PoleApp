@@ -6,11 +6,7 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCourseSuggestions } from "@/lib/courseGenerator";
-import {
-  applySuggestedPositionsAction,
-  removeCoursePositionAction,
-  updateCourseNotesOnlyAction,
-} from "./actions";
+import { applySuggestedPositionsAction, updateCourseNotesOnlyAction } from "./actions";
 import { LearningStatus } from "@prisma/client";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { LocalDateTime } from "@/components/LocalDateTime";
@@ -159,7 +155,6 @@ export default async function TeacherCourseDetailPage({
       ? rawFrom
       : undefined;
   const baseHref = `/app/teacher/courses/${course.id}`;
-  const backHref = safeFrom ?? "/app/teacher/courses/agenda?view=month";
   const successToast = resolvedSearch.applied === "1";
   const currentPath = `${baseHref}${
     safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
@@ -258,23 +253,17 @@ export default async function TeacherCourseDetailPage({
               </span>
             )}
             <div className="flex w-full flex-wrap items-center justify-end gap-3 md:flex-nowrap">
-            <Link
-              href={backHref}
-              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              ← Retour cours
-            </Link>
-            <ShareLinkButton
-              path={sharePath}
-              className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-semibold"
-            />
-            <Link
-              href={icsHref}
-              prefetch={false}
-              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
-            >
-              Ajouter à mon agenda
-            </Link>
+              <ShareLinkButton
+                path={sharePath}
+                className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-semibold"
+              />
+              <Link
+                href={icsHref}
+                prefetch={false}
+                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
+              >
+                Ajouter à mon agenda
+              </Link>
             </div>
           </div>
         </div>
@@ -316,16 +305,6 @@ export default async function TeacherCourseDetailPage({
                       Exclu blessure
                     </span>
                   )}
-                  <form action={removeCoursePositionAction}>
-                    <input type="hidden" name="courseId" value={course.id} />
-                    <input type="hidden" name="positionId" value={cp.position.id} />
-                    <button
-                      type="submit"
-                      className="text-xs font-semibold text-rose-200 underline-offset-4 hover:text-rose-100 hover:underline"
-                    >
-                      Retirer
-                    </button>
-                  </form>
                 </div>
               </div>
             </li>
@@ -338,7 +317,7 @@ export default async function TeacherCourseDetailPage({
 
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Participants</h2>
-        <ul className="mt-3 space-y-2">
+        <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.attendances.map((attendance) => (
             <li
               key={attendance.id}

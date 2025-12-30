@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { prisma } from "@/lib/prisma";
 
 import {
@@ -204,12 +205,12 @@ export default async function StudentInjuriesPage({
                   </details>
                   <form action={deleteInjuryAction}>
                     <input type="hidden" name="injuryId" value={injury.id} />
-                    <button
+                    <ConfirmDeleteButton
                       type="submit"
                       className="rounded-full border border-red-500/40 bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-300 hover:bg-red-400/30"
                     >
                       Supprimer
-                    </button>
+                    </ConfirmDeleteButton>
                   </form>
                 </div>
               </div>

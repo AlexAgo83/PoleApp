@@ -8,6 +8,7 @@ import { createUserAction, deleteUserAction } from "./actions";
 import { prisma } from "@/lib/prisma";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
 
@@ -296,12 +297,12 @@ export default async function AdminUsersPage({
               <div className="flex w-full flex-col items-start gap-2 text-sm">
                 <form action={deleteUserAction} className="w-full">
                   <input type="hidden" name="userId" value={user.id} />
-                  <button
+                  <ConfirmDeleteButton
                     type="submit"
                     className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
                   >
                     Supprimer
-                  </button>
+                  </ConfirmDeleteButton>
                 </form>
                 {user.role !== "SCHOOL_ADMIN" && (
                   <Link

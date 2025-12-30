@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SessionNavBar } from "@/components/SessionNavBar";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EditPositionForm } from "./EditPositionForm";
@@ -123,12 +124,12 @@ export default async function EditPositionPage({ params }: Props) {
         </p>
         <form action={deletePositionAction} className="mt-4">
           <input type="hidden" name="positionId" value={position.id} />
-          <button
+          <ConfirmDeleteButton
             type="submit"
             className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
           >
             Supprimer
-          </button>
+          </ConfirmDeleteButton>
         </form>
       </section>
     </main>

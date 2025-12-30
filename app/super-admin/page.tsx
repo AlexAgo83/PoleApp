@@ -18,6 +18,7 @@ import {
 } from "./actions";
 import { ResetCopyButton } from "./ResetCopyButton";
 import { PersistedPanel } from "@/components/PersistedPanel";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -510,12 +511,12 @@ export default async function SuperAdminPage({
                 </form>
                 <form action={deleteSubscriptionOfferAction} className="mt-2 inline-flex">
                   <input type="hidden" name="id" value={offer.id} />
-                  <button
+                  <ConfirmDeleteButton
                     type="submit"
                     className="inline-flex items-center gap-2 rounded-full border border-red-400/60 bg-red-500/15 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-300/70 hover:bg-red-500/25"
                   >
                     Supprimer
-                  </button>
+                  </ConfirmDeleteButton>
                 </form>
               </div>
             ))}
@@ -681,12 +682,12 @@ export default async function SuperAdminPage({
                 </form>
                 <form action={deleteCreditPackOfferAction} className="mt-2 inline-flex">
                   <input type="hidden" name="id" value={pack.id} />
-                  <button
+                  <ConfirmDeleteButton
                     type="submit"
                     className="inline-flex items-center gap-2 rounded-full border border-red-400/60 bg-red-500/15 px-3 py-2 text-sm font-semibold text-red-50 transition hover:border-red-300/70 hover:bg-red-500/25"
                   >
                     Supprimer
-                  </button>
+                  </ConfirmDeleteButton>
                 </form>
               </div>
             ))}

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { ConfirmDeleteButton } from "./ConfirmDeleteButton";
+
 type Props = {
   label?: string;
   currentUrl?: string | null;
@@ -193,14 +195,14 @@ export function CloudinaryUpload({
             />
             {uploading ? "Téléversement..." : "Uploader"}
           </label>
-          <button
+          <ConfirmDeleteButton
             type="button"
-            onClick={handleDelete}
+            onConfirm={handleDelete}
             disabled={uploading || !currentUrl}
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Supprimer
-          </button>
+          </ConfirmDeleteButton>
         </div>
       </div>
       {error && <p className="text-sm text-amber-300">{error}</p>}
