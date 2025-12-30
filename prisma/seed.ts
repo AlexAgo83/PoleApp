@@ -586,6 +586,12 @@ async function seedSchoolsAndUsers() {
         avatarPublicId: takeAvatarPublicId(acc.gender ?? null),
         age: acc.age ?? null,
         credits: acc.role === Role.STUDENT ? 1000 : undefined,
+        diplomas:
+          acc.role === Role.TEACHER
+            ? acc.email === "teacher@poleapp.test"
+              ? "BPJEPS; Certificat Pole avancé; Formation enseignement chorégraphique"
+              : "Certificat Pole avancé; Formation enseignement"
+            : undefined,
       },
     });
     if (acc.role === Role.TEACHER) {
@@ -628,6 +634,7 @@ async function seedSchoolsAndUsers() {
           name: person.name,
           age: person.age,
           avatarPublicId: takeAvatarPublicId(person.gender),
+          diplomas: "Certificat Pole; BPJEPS option danse; Formation pédagogique",
         },
       });
       teachers.push({ id: created.id, schoolId: school.id });
@@ -1177,7 +1184,7 @@ async function seedPartners(schools: { id: string }[]) {
 
 async function seedTeacherFavorites(options: {
   teachers: { id: string; schoolId: string }[];
-  positions: { id: string }[];
+  positions: { id: string; discipline?: string | null }[];
   positionsByTeacher: Record<string, string[]>;
 }) {
   for (const teacher of options.teachers) {
@@ -1191,6 +1198,71 @@ async function seedTeacherFavorites(options: {
     if (pick.length === 0) continue;
     await prisma.teacherFavoritePosition.createMany({
       data: pick.map((p) => ({ teacherId: teacher.id, positionId: p.id })),
+      skipDuplicates: true,
+    });
+  }
+}
+
+async function seedStudentFavorites(options: {
+  students: { id: string }[];
+  positions: { id: string; discipline?: string | null }[];
+}) {
+  const polePositions = options.positions.filter(
+    (p) => p.discipline && p.discipline.toLowerCase().includes("pole"),
+  );
+  const fallback = polePositions.length > 0 ? polePositions : options.positions;
+  if (fallback.length === 0) return;
+  for (const student of options.students) {
+    const pick = fallback
+      .slice()
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.max(2, Math.min(4, fallback.length)));
+    if (pick.length === 0) continue;
+    await prisma.studentFavoritePosition.createMany({
+      data: pick.map((p) => ({ studentId: student.id, positionId: p.id })),
+      skipDuplicates: true,
+    });
+  }
+}
+
+async function seedStudentProgress(options: {
+  students: { id: string; schoolId: string }[];
+  positions: { id: string; discipline?: string | null }[];
+  teachers: { id: string; schoolId: string }[];
+}) {
+  const polePositions = options.positions.filter(
+    (p) => p.discipline && p.discipline.toLowerCase().includes("pole"),
+  );
+  const fallback = polePositions.length > 0 ? polePositions : options.positions;
+  if (fallback.length === 0) return;
+  const statuses: LearningStatus[] = [
+    LearningStatus.IN_PROGRESS,
+    LearningStatus.PASSED,
+    LearningStatus.MASTERED,
+    LearningStatus.NOT_STARTED,
+  ];
+  const weightedPick = () => {
+    const r = Math.random();
+    if (r < 0.45) return LearningStatus.IN_PROGRESS;
+    if (r < 0.8) return LearningStatus.PASSED;
+    if (r < 0.95) return LearningStatus.MASTERED;
+    return LearningStatus.NOT_STARTED;
+  };
+  for (const student of options.students) {
+    const pool = fallback.slice().sort(() => 0.5 - Math.random());
+    const count = Math.max(5, Math.min(10, pool.length));
+    const chosen = pool.slice(0, count);
+    if (chosen.length === 0) continue;
+    const teacherForSchool = options.teachers.find((t) => t.schoolId === student.schoolId);
+    const data = chosen.map((p) => ({
+      studentId: student.id,
+      positionId: p.id,
+      learningStatus: weightedPick(),
+      comment: null as string | null,
+      lastUpdatedByUserId: teacherForSchool?.id ?? null,
+    }));
+    await prisma.studentPositionProgress.createMany({
+      data,
       skipDuplicates: true,
     });
   }
@@ -1430,6 +1502,8 @@ async function main() {
     priorityTeacherId: elzaTeacher?.id,
   });
   await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
+  await seedStudentFavorites({ students, positions });
+  await seedStudentProgress({ students, positions, teachers });
   await seedStudentInjuries(students);
   await seedPresets({ schools, positions, teachers });
   await seedPurchases(students);

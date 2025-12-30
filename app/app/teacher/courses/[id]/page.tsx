@@ -14,7 +14,7 @@ import {
 import { LearningStatus } from "@prisma/client";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { LocalDateTime } from "@/components/LocalDateTime";
-import { ProgressSlider } from "../../teacher/students/[id]/ProgressSlider";
+import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 
