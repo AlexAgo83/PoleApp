@@ -335,7 +335,7 @@ export default async function TeacherSchoolPage({
     };
   });
 
-  const cells: Array<{ day: number | "prev" | "next"; attendances: typeof agendaItems }> = [];
+  const cells: Array<{ day: number; attendances: typeof agendaItems }> = [];
   const lastDayOfMonth = endOfMonth(monthStart).getDate();
   for (let day = 1; day <= lastDayOfMonth; day += 1) {
     const daily = agendaItems.filter((a) => {
@@ -369,10 +369,7 @@ export default async function TeacherSchoolPage({
   const nextMonthValue = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}`;
   const monthCells = cells.map((cell) => ({
     day: cell.day,
-    isoDate:
-      typeof cell.day === "number"
-        ? new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString()
-        : undefined,
+    isoDate: new Date(monthStart.getFullYear(), monthStart.getMonth(), cell.day).toISOString(),
     courses: (cell.attendances ?? []).map((a) => ({
       id: a.course.id,
       courseId: a.courseId,
