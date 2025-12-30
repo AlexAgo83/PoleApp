@@ -67,7 +67,7 @@ export default async function StudentDashboard() {
             packs={packs}
             subscriptions={subs}
             buttonLabel={`Crédits : ${credits}`}
-            buttonClassName="border-amber-300/70 bg-amber-400/20 text-amber-50 shadow-[0_0_18px_rgba(251,191,36,0.35)] hover:border-amber-200 hover:bg-amber-400/30"
+            buttonClassName="border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20"
           />
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
