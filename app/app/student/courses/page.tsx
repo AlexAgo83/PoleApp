@@ -306,46 +306,40 @@ export default async function StudentCoursesPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel flex flex-wrap items-center justify-between gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
-          <h1 className="text-3xl font-semibold text-white">Historique des cours</h1>
-          <p className="text-sm text-slate-200">
-            Uniquement les cours réservés (passés et à venir).
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
-          </Link>
-          <Link
-            href="/app/student/courses/agenda"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icons/agenda.svg" alt="" className="h-4 w-4" />
-            Agenda
-          </Link>
-        </div>
-      </header>
-      <section className="panel border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {legendItems.map((item) => (
-            <span
-              key={item.label}
-              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
-            >
-              ● {item.label}
-            </span>
-          ))}
-        </div>
-      </section>
-
       <section className="panel space-y-4 border-indigo-400/15 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-semibold text-white">Historique des cours</h1>
+            <p className="text-sm text-slate-200">
+              Liste des cours à venir et passés.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Link
+              href="/app/student/courses/agenda"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/agenda.svg" alt="" className="h-4 w-4" />
+              Agenda
+            </Link>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+          <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {legendItems.map((item) => (
+              <span
+                key={item.label}
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
+              >
+                ● {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <FilterPanel
           storageKey="filters:student-courses"
           title="Filtres"
@@ -547,11 +541,11 @@ export default async function StudentCoursesPage({
                 : "Inscrit"
               : "Non inscrit";
             const cardClass = isVirtual
-              ? "border border-amber-300/60 bg-amber-500/15 text-white"
-              : "border border-white/10 bg-white/5";
+              ? "border border-amber-300/60 bg-amber-500/15"
+              : "border border-white/10 bg-gradient-to-br from-indigo-900/40 via-slate-900/40 to-cyan-900/30";
             return (
-              <div key={key} className={`block rounded-xl ${faded}`}>
-                <article className={`flex flex-col gap-2 py-3 px-2 ${cardClass}`}>
+              <div key={key} className={`${faded}`}>
+                <article className={`flex flex-col gap-3 rounded-2xl p-4 shadow-inner shadow-black/30 ${cardClass}`}>
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${badgeClass}`}

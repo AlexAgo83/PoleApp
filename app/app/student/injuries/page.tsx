@@ -64,24 +64,14 @@ export default async function StudentInjuriesPage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel border-indigo-400/15 p-6 space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex flex-wrap items-start gap-2">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              Élève
-            </p>
             <h1 className="text-3xl font-semibold text-white">Mes blessures</h1>
             <p className="text-sm text-slate-200">
               Déclare ou mets à jour tes blessures actives pour que le prof adapte les cours.
             </p>
           </div>
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            ← Retour accueil
-          </Link>
         </div>
-        <h2 className="text-lg font-semibold text-white">Mes blessures</h2>
         <FilterPanel
           storageKey="filters:student-injuries"
           title="Filtres"
@@ -137,7 +127,7 @@ export default async function StudentInjuriesPage({
           </form>
         </FilterPanel>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4">
           {injuries.map((injury) => (
             <article
               key={injury.id}

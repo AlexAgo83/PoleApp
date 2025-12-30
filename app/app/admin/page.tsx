@@ -56,9 +56,8 @@ export default async function AdminDashboard({
   startOfToday.setHours(0, 0, 0, 0);
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
-  const endOfWeek = new Date(startOfToday);
-  endOfWeek.setDate(endOfWeek.getDate() + 7);
-  endOfWeek.setHours(23, 59, 59, 999);
+  const startOfLast7Days = new Date(startOfToday);
+  startOfLast7Days.setDate(startOfLast7Days.getDate() - 7);
   const startOfMonth = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
 
   const [
@@ -110,7 +109,7 @@ export default async function AdminDashboard({
       where: {
         schoolId: session.user.schoolId,
         role: "STUDENT",
-        createdAt: { gte: startOfToday, lte: endOfWeek },
+        createdAt: { gte: startOfLast7Days, lte: endOfToday },
       },
     }),
     prisma.user.count({
@@ -170,8 +169,8 @@ export default async function AdminDashboard({
             <Stat label="Cours (7 jours)" value={coursesWeekCount} />
             <Stat label="Positions" value={positionsCount} />
             <Stat label="Combos" value={combosCount} />
-            <Stat label="Élèves (7 jours)" value={newStudentsWeek} />
-            <Stat label="Élèves (mois)" value={newStudentsMonth} />
+            <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
+            <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
             <Stat label="Blessures actives" value={activeInjuries} />
           </div>
         </div>

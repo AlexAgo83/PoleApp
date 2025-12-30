@@ -199,9 +199,6 @@ export default async function TeacherCourseDetailPage({
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-3 md:w-2/3">
             <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-                Professeur / Admin
-              </p>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-3xl font-semibold text-white">
                   {course.title ?? "Cours sans titre"}

@@ -413,7 +413,31 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
 
       {viewMode === "agenda" ? (
         <section className="panel space-y-4 p-4 md:p-6">
-          <h2 className="text-lg font-semibold text-white">Agenda du studio</h2>
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h2 className="text-lg font-semibold text-white">Agenda du studio</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={weekRangeHref}
+                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                  agendaRange === "week"
+                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                }`}
+              >
+                Vue semaine
+              </Link>
+              <Link
+                href={monthRangeHref}
+                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
+                  agendaRange === "month"
+                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
+                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
+                }`}
+              >
+                Vue mois
+              </Link>
+            </div>
+          </div>
           <FilterPanel
             storageKey={`filters:studio:${studioId}:agenda`}
             title="Filtres"
@@ -488,35 +512,11 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               </div>
             </form>
           </FilterPanel>
-          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href={weekRangeHref}
-                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
-                  agendaRange === "week"
-                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
-                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
-                }`}
-              >
-                Vue semaine
-              </Link>
-              <Link
-                href={monthRangeHref}
-                className={`rounded-full border px-3 py-1.5 font-semibold transition ${
-                  agendaRange === "month"
-                    ? "border-cyan-300/70 bg-cyan-500/20 text-white"
-                    : "border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/60 hover:bg-white/10"
-                }`}
-              >
-                Vue mois
-              </Link>
+          {agendaRange === "month" ? (
+            <div className="text-sm text-slate-200">
+              {agendaMonthCourses.length} cours sur le mois affiché
             </div>
-            {agendaRange === "month" ? (
-              <span className="text-slate-200">
-                {agendaMonthCourses.length} cours sur le mois affiché
-              </span>
-            ) : null}
-          </div>
+          ) : null}
           {agendaRange === "week" ? (
             <>
               {isStudentRole && studentWeekDays ? (

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -100,12 +99,6 @@ export default async function ProfilePage({
               et liés à ton compte existant.
             </p>
           </div>
-          <Link
-            href="/app/student"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white/90 transition hover:border-indigo-300/70 hover:text-white"
-          >
-            ← Retour accueil
-          </Link>
         </div>
         <div className="mt-4 flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}

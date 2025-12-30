@@ -100,7 +100,9 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     fetchWeek(currentWeekKey);
   };
 
-  const containerClass = compact ? "rounded-2xl border border-white/0 bg-transparent p-0" : "panel p-6";
+  const containerClass = compact
+    ? "rounded-2xl border border-white/0 bg-transparent p-0"
+    : "p-0 border-0 bg-transparent shadow-none";
 
   return (
     <section className={containerClass}>
