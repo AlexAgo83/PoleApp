@@ -900,27 +900,24 @@ function NotesMatrix({
                     <legend className="text-sm font-semibold text-white">
                       {pos.name} ({pos.type})
                     </legend>
-                    <label className="block space-y-2">
-                      <span className="text-xs font-semibold text-white">Niveau</span>
-                      <MasterySlider
-                        defaultValue={current?.masteryLevel as MasteryLevel | null | undefined}
-                        hideLabel
-                        tone="neutral"
-                        includeHidden={false}
-                        onChange={(value) =>
-                          setNotes((prev) => ({
-                            ...prev,
-                            [key]: {
-                              ...(prev[key] ?? {
-                                studentId: student.id,
-                                positionId: pos.id,
-                              }),
-                              masteryLevel: value,
-                            },
-                          }))
-                        }
-                      />
-                    </label>
+                    <MasterySlider
+                      defaultValue={current?.masteryLevel as MasteryLevel | null | undefined}
+                      hideLabel
+                      tone="neutral"
+                      includeHidden={false}
+                      onChange={(value) =>
+                        setNotes((prev) => ({
+                          ...prev,
+                          [key]: {
+                            ...(prev[key] ?? {
+                              studentId: student.id,
+                              positionId: pos.id,
+                            }),
+                            masteryLevel: value,
+                          },
+                        }))
+                      }
+                    />
                     <label className="block">
                       Commentaire
                       <input

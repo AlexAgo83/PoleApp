@@ -322,7 +322,9 @@ export default async function TeacherStudentDetailPage({
       <section className="panel border-indigo-400/15 p-6">
         <details className="group space-y-3" open={false}>
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-            <h2 className="text-lg font-semibold text-white">Mini-jeux (5 dernières)</h2>
+            <h2 className="text-lg font-semibold text-white">
+              Mini-jeux ({gameSessions.length})
+            </h2>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
               <span className="group-open:hidden">Ouvrir</span>
               <span className="hidden group-open:inline">Fermer</span>
