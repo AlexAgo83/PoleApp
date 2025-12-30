@@ -109,7 +109,6 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       select: {
         studentId: true,
         positionId: true,
-        masteryLevel: true,
         learningStatus: true,
         position: { select: { name: true, type: true } },
       },
@@ -170,13 +169,13 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
 
   const defaultSelectedStudents = course.attendances.map((a) => a.studentId);
   const defaultSelectedPositions = course.positions.map((p) => p.positionId);
-  const defaultNotes = course.notes.reduce<Record<string, { studentId: string; positionId: string; masteryLevel?: string; comment?: string }>>(
+  const defaultNotes = course.notes.reduce<Record<string, { studentId: string; positionId: string; learningStatus?: string; comment?: string }>>(
     (acc, n) => {
       const key = `${n.studentId}-${n.positionId}`;
       acc[key] = {
         studentId: n.studentId,
         positionId: n.positionId,
-        masteryLevel: n.masteryLevel ?? undefined,
+        learningStatus: n.learningStatus ?? undefined,
         comment: n.comment ?? undefined,
       };
       return acc;
@@ -301,7 +300,6 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
         progressByStudent={progresses.map((p) => ({
           studentId: p.studentId,
           positionId: p.positionId,
-          masteryLevel: p.masteryLevel,
           learningStatus: p.learningStatus,
           positionName: p.position.name,
           positionType: p.position.type,

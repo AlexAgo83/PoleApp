@@ -1,9 +1,9 @@
 "use client";
 
-import { MasteryLevel, RecurrenceFrequency } from "@prisma/client";
+import { LearningStatus, RecurrenceFrequency } from "@prisma/client";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { MasterySlider } from "../[id]/MasterySlider";
+import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string; discipline?: string | null };
@@ -12,7 +12,6 @@ type Studio = { id: string; name: string };
 type ProgressRecord = {
   studentId: string;
   positionId: string;
-  masteryLevel?: MasteryLevel | null;
   learningStatus?: string | null;
   positionName: string;
   positionType?: string | null;
@@ -58,7 +57,7 @@ type Props = {
 type Note = {
   studentId: string;
   positionId: string;
-  masteryLevel?: string;
+  learningStatus?: string;
   comment?: string;
 };
 
@@ -242,9 +241,7 @@ export function CourseForm({
 
   const notesArray: Note[] = useMemo(
     () =>
-      Object.values(notes).filter(
-        (n) => n.comment || (n.masteryLevel && n.masteryLevel.length > 0)
-      ),
+      Object.values(notes).filter((n) => n.comment || n.learningStatus),
     [notes]
   );
   const hasDefaultDisciplineInList =
@@ -677,8 +674,7 @@ export function CourseForm({
                     .filter((r) => selectedSet.has(r.studentId))
                     .forEach((r) => {
                       const base = weights[r.learningStatus ?? "IN_PROGRESS"] ?? 1;
-                      const masteryPenalty = r.masteryLevel === MasteryLevel.FLUID_CHOREO ? -1 : 0;
-                      const score = base + masteryPenalty;
+                      const score = base;
                       if (score <= 0) return;
                       const existing = scores.get(r.positionId);
                       const nextScore = (existing?.score ?? 0) + score;
@@ -900,9 +896,10 @@ function NotesMatrix({
                     <legend className="text-sm font-semibold text-white">
                       {pos.name} ({pos.type})
                     </legend>
-                    <MasterySlider
-                      defaultValue={current?.masteryLevel as MasteryLevel | null | undefined}
+                    <ProgressSlider
+                      defaultValue={(current?.learningStatus as LearningStatus) || "NOT_STARTED"}
                       hideLabel
+                      hideValue
                       tone="neutral"
                       includeHidden={false}
                       onChange={(value) =>
@@ -913,7 +910,7 @@ function NotesMatrix({
                               studentId: student.id,
                               positionId: pos.id,
                             }),
-                            masteryLevel: value,
+                            learningStatus: value,
                           },
                         }))
                       }

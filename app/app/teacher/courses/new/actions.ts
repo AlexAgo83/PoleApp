@@ -1,6 +1,6 @@
 "use server";
 
-import { InvoiceStatus, LearningStatus, MasteryLevel, Prisma, RecurrenceFrequency } from "@prisma/client";
+import { InvoiceStatus, LearningStatus, Prisma, RecurrenceFrequency } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -68,7 +68,7 @@ const courseSchema = z.object({
       z.object({
         studentId: z.string().cuid(),
         positionId: z.string().cuid(),
-        masteryLevel: z.nativeEnum(MasteryLevel).optional(),
+        learningStatus: z.nativeEnum(LearningStatus).optional(),
         comment: z.string().optional(),
       })
     )
@@ -261,7 +261,7 @@ export async function createCourseAction(formData: FormData) {
           courseId: course.id,
           studentId: n.studentId,
           positionId: n.positionId,
-          masteryLevel: n.masteryLevel ?? MasteryLevel.INITIATED,
+          learningStatus: n.learningStatus ?? LearningStatus.NOT_STARTED,
           comment: n.comment || null,
         })),
       });
@@ -360,18 +360,13 @@ async function upsertProgressFromNotes(
   notes: {
     studentId: string;
     positionId: string;
-    masteryLevel?: MasteryLevel;
+    learningStatus?: LearningStatus;
     comment?: string;
   }[],
   teacherId: string
 ) {
   for (const note of notes) {
-    const learningStatus =
-      note.masteryLevel === MasteryLevel.PASSED || note.masteryLevel === MasteryLevel.FLUID_CHOREO
-        ? LearningStatus.PASSED
-        : note.masteryLevel === MasteryLevel.INITIATED
-          ? LearningStatus.IN_PROGRESS
-          : LearningStatus.NOT_STARTED;
+    const learningStatus = note.learningStatus ?? LearningStatus.NOT_STARTED;
 
     await tx.studentPositionProgress.upsert({
       where: {
@@ -382,7 +377,6 @@ async function upsertProgressFromNotes(
       },
       update: {
         learningStatus,
-        masteryLevel: note.masteryLevel ?? null,
         comment: note.comment ?? null,
         lastUpdatedByUserId: teacherId,
       },
@@ -390,7 +384,6 @@ async function upsertProgressFromNotes(
         studentId: note.studentId,
         positionId: note.positionId,
         learningStatus,
-        masteryLevel: note.masteryLevel ?? null,
         comment: note.comment ?? null,
         lastUpdatedByUserId: teacherId,
       },

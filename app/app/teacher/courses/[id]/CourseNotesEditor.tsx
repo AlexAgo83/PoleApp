@@ -1,11 +1,11 @@
 "use client";
 
-import { MasteryLevel } from "@prisma/client";
 import { useMemo, useState } from "react";
+import { ProgressSlider } from "../students/[id]/ProgressSlider";
 
 type Student = { id: string; name: string | null; email: string | null };
 type Position = { id: string; name: string; type: string | null };
-type Note = { studentId: string; positionId: string; masteryLevel?: MasteryLevel | null; comment?: string | null };
+type Note = { studentId: string; positionId: string; learningStatus?: string | null; comment?: string | null };
 
 type Props = {
   students: Student[];
@@ -25,20 +25,9 @@ export function CourseNotesEditor({ students, positions, existingNotes, courseId
     return initial;
   });
 
-  const masteryOptions = useMemo(
-    () => [
-      { value: "", label: "(non renseigné)" },
-      { value: MasteryLevel.NOVELTY, label: "Nouveauté" },
-      { value: MasteryLevel.INITIATED, label: "Initié" },
-      { value: MasteryLevel.PASSED, label: "Passé" },
-      { value: MasteryLevel.FLUID_CHOREO, label: "Fluide chorégraphié" },
-    ],
-    []
-  );
-
   const notesArray = useMemo(
     () =>
-      Object.values(notes).filter((n) => (n.masteryLevel && n.masteryLevel.length > 0) || (n.comment && n.comment.length > 0)),
+      Object.values(notes).filter((n) => n.learningStatus || (n.comment && n.comment.length > 0)),
     [notes]
   );
 
@@ -74,30 +63,21 @@ export function CourseNotesEditor({ students, positions, existingNotes, courseId
                       <legend className="text-sm font-semibold text-white">
                         {pos.name} {pos.type ? `(${pos.type})` : ""}
                       </legend>
-                      <label className="block">
-                        Niveau
-                        <select
-                        value={current?.masteryLevel ?? ""}
-                          onChange={(e) => {
-                            const raw = e.target.value as MasteryLevel | "";
-                            const nextValue = raw === "" ? undefined : (raw as MasteryLevel);
-                            setNotes((prev) => ({
-                              ...prev,
-                              [key]: {
-                                ...(prev[key] ?? { studentId: student.id, positionId: pos.id }),
-                                masteryLevel: nextValue,
-                              },
-                            }));
-                          }}
-                          className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white outline-none focus:border-indigo-400"
-                        >
-                          {masteryOptions.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      <ProgressSlider
+                        defaultValue={(current?.learningStatus as any) || "NOT_STARTED"}
+                        hideLabel
+                        tone="neutral"
+                        includeHidden={false}
+                        onChange={(value) =>
+                          setNotes((prev) => ({
+                            ...prev,
+                            [key]: {
+                              ...(prev[key] ?? { studentId: student.id, positionId: pos.id }),
+                              learningStatus: value,
+                            },
+                          }))
+                        }
+                      />
                       <label className="block">
                         Commentaire
                         <input

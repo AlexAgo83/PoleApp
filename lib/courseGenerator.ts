@@ -1,4 +1,4 @@
-import { LearningStatus, MasteryLevel, Position } from "@prisma/client";
+import { LearningStatus, Position } from "@prisma/client";
 
 import { prisma } from "./prisma";
 
@@ -297,17 +297,10 @@ function selectTopSuggestions(
 
 function deriveLearningState(
   learningStatus?: LearningStatus | null,
-  masteryLevel?: MasteryLevel | null
 ): "NOT_STARTED" | "IN_PROGRESS" | "PASSED" | "MASTERED" {
-  if (masteryLevel === MasteryLevel.FLUID_CHOREO) {
-    return "MASTERED";
-  }
-  if (masteryLevel === MasteryLevel.PASSED || learningStatus === LearningStatus.PASSED) {
-    return "PASSED";
-  }
-  if (learningStatus === LearningStatus.IN_PROGRESS) {
-    return "IN_PROGRESS";
-  }
+  if (learningStatus === LearningStatus.MASTERED) return "MASTERED";
+  if (learningStatus === LearningStatus.PASSED) return "PASSED";
+  if (learningStatus === LearningStatus.IN_PROGRESS) return "IN_PROGRESS";
   return "NOT_STARTED";
 }
 
@@ -362,7 +355,7 @@ export async function generateCourseSuggestions(params: {
     }),
     prisma.studentPositionProgress.findMany({
       where: { studentId: { in: studentIds } },
-      select: { studentId: true, positionId: true, learningStatus: true, masteryLevel: true },
+      select: { studentId: true, positionId: true, learningStatus: true },
     }),
     prisma.studentInjury.findMany({
       where: { studentId: { in: studentIds }, isActive: true },
@@ -397,14 +390,13 @@ export async function generateCourseSuggestions(params: {
   const courseDiscipline = course.discipline?.trim().toLowerCase() || null;
 
   const existingSet = new Set(existingPositionIds);
-  const progressByStudent = new Map<string, Map<string, { learningStatus: LearningStatus | null; masteryLevel: MasteryLevel | null }>>();
+  const progressByStudent = new Map<string, Map<string, { learningStatus: LearningStatus | null }>>();
   progress.forEach((p) => {
     if (!progressByStudent.has(p.studentId)) {
       progressByStudent.set(p.studentId, new Map());
     }
     progressByStudent.get(p.studentId)!.set(p.positionId, {
       learningStatus: p.learningStatus,
-      masteryLevel: p.masteryLevel,
     });
   });
 

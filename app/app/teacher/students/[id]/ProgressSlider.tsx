@@ -18,6 +18,8 @@ type Props = {
   hideValue?: boolean;
   readOnly?: boolean;
   tone?: "default" | "cyan" | "neutral";
+  includeHidden?: boolean;
+  onChange?: (value: (typeof STATUS_ORDER)[number]) => void;
 };
 
 export function ProgressSlider({
@@ -27,6 +29,8 @@ export function ProgressSlider({
   hideValue,
   readOnly,
   tone = "default",
+  includeHidden = true,
+  onChange,
 }: Props) {
   const defaultIndex = useMemo(
     () => Math.max(0, STATUS_ORDER.indexOf(defaultValue as any)),
@@ -55,7 +59,12 @@ export function ProgressSlider({
         max={STATUS_ORDER.length - 1}
         step={1}
         value={index}
-        onChange={(e) => setIndex(Number(e.target.value))}
+        onChange={(e) => {
+          const next = Number(e.target.value);
+          setIndex(next);
+          const status = STATUS_ORDER[next] ?? "NOT_STARTED";
+          onChange?.(status);
+        }}
         disabled={readOnly}
         className={clsx(
           "w-full appearance-none rounded-full",
@@ -76,7 +85,7 @@ export function ProgressSlider({
           </span>
         ))}
       </div>
-      {name ? <input type="hidden" name={name} value={current} /> : null}
+      {name && includeHidden ? <input type="hidden" name={name} value={current} /> : null}
     </div>
   );
 }

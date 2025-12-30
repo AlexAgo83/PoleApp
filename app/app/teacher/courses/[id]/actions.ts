@@ -1,6 +1,6 @@
 "use server";
 
-import { LearningStatus, MasteryLevel, Prisma, SuggestionTag } from "@prisma/client";
+import { LearningStatus, Prisma, SuggestionTag } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -32,7 +32,7 @@ const updateSchema = z.object({
       z.object({
         studentId: z.string().cuid(),
         positionId: z.string().cuid(),
-        masteryLevel: z.nativeEnum(MasteryLevel).optional(),
+        learningStatus: z.nativeEnum(LearningStatus).optional(),
         comment: z.string().optional(),
       })
     )
@@ -46,7 +46,7 @@ const updateNotesSchema = z.object({
       z.object({
         studentId: z.string().cuid(),
         positionId: z.string().cuid(),
-        masteryLevel: z.nativeEnum(MasteryLevel).optional(),
+        learningStatus: z.nativeEnum(LearningStatus).optional(),
         comment: z.string().optional(),
       })
     )
@@ -225,7 +225,7 @@ export async function updateCourseAction(formData: FormData) {
           courseId: data.id,
           studentId: n.studentId,
           positionId: n.positionId,
-          masteryLevel: n.masteryLevel ?? MasteryLevel.INITIATED,
+          learningStatus: n.learningStatus ?? LearningStatus.NOT_STARTED,
           comment: n.comment || null,
         })),
       });
@@ -276,7 +276,7 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
     const notes: {
       studentId: string;
       positionId: string;
-      masteryLevel?: MasteryLevel;
+      learningStatus?: LearningStatus;
       comment?: string;
     }[] = [];
 
@@ -284,13 +284,13 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
       if (!key.startsWith("note:")) continue;
       const [, studentId, positionId] = key.split(":");
       if (!studentId || !positionId) continue;
-      const mastery = value?.toString() ?? "";
-      if (!mastery) continue;
-      if (!Object.values(MasteryLevel).includes(mastery as MasteryLevel)) continue;
+      const status = value?.toString() ?? "";
+      if (!status) continue;
+      if (!Object.values(LearningStatus).includes(status as LearningStatus)) continue;
       notes.push({
         studentId,
         positionId,
-        masteryLevel: mastery as MasteryLevel,
+        learningStatus: status as LearningStatus,
       });
     }
     parsedNotes = notes;
@@ -315,7 +315,7 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
           courseId,
           studentId: n.studentId,
           positionId: n.positionId,
-          masteryLevel: n.masteryLevel ?? MasteryLevel.INITIATED,
+          learningStatus: n.learningStatus ?? LearningStatus.NOT_STARTED,
           comment: n.comment || null,
         })),
       });
@@ -331,18 +331,13 @@ async function upsertProgressFromNotes(
   notes: {
     studentId: string;
     positionId: string;
-    masteryLevel?: MasteryLevel;
+    learningStatus?: LearningStatus;
     comment?: string;
   }[],
   teacherId: string
 ) {
   for (const note of notes) {
-    const learningStatus =
-      note.masteryLevel === MasteryLevel.PASSED || note.masteryLevel === MasteryLevel.FLUID_CHOREO
-        ? LearningStatus.PASSED
-        : note.masteryLevel === MasteryLevel.INITIATED
-          ? LearningStatus.IN_PROGRESS
-          : LearningStatus.NOT_STARTED;
+    const learningStatus = note.learningStatus ?? LearningStatus.NOT_STARTED;
 
     await tx.studentPositionProgress.upsert({
       where: {
@@ -353,7 +348,6 @@ async function upsertProgressFromNotes(
       },
       update: {
         learningStatus,
-        masteryLevel: note.masteryLevel ?? null,
         comment: note.comment ?? null,
         lastUpdatedByUserId: teacherId,
       },
@@ -361,7 +355,6 @@ async function upsertProgressFromNotes(
         studentId: note.studentId,
         positionId: note.positionId,
         learningStatus,
-        masteryLevel: note.masteryLevel ?? null,
         comment: note.comment ?? null,
         lastUpdatedByUserId: teacherId,
       },

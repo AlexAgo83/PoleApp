@@ -344,7 +344,7 @@ export default async function StudentCourseDetailPage({
                     {note.position.name}
                   </span>
                   <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {note.masteryLevel}
+                    {note.learningStatus ?? "(non renseigné)"}
                   </span>
                 </div>
                 {note.comment && (

@@ -19,7 +19,7 @@ const FALLBACK_DISCIPLINES = [
 type CourseNote = {
   id: string;
   position: { name: string };
-  masteryLevel: string;
+  learningStatus: string | null;
   comment: string | null;
 };
 
@@ -623,7 +623,7 @@ export default async function StudentCoursesPage({
                       <ul className="mt-1 space-y-1">
                         {course.notes.map((note: CourseNote) => (
                           <li key={note.id}>
-                            {note.position.name}: {note.masteryLevel}
+                            {note.position.name}: {note.learningStatus ?? "(non renseigné)"}
                             {note.comment ? ` — ${note.comment}` : ""}
                           </li>
                         ))}

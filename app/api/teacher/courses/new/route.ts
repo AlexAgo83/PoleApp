@@ -50,7 +50,6 @@ export async function GET() {
       select: {
         studentId: true,
         positionId: true,
-        masteryLevel: true,
         learningStatus: true,
         position: { select: { name: true, type: true } },
       },
@@ -122,7 +121,6 @@ export async function GET() {
   const progressByStudent = progresses.map((p) => ({
     studentId: p.studentId,
     positionId: p.positionId,
-    masteryLevel: p.masteryLevel,
     learningStatus: p.learningStatus,
     positionName: p.position.name,
     positionType: p.position.type,
