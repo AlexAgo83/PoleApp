@@ -21,19 +21,21 @@ export function CollapsibleSection({
   className,
 }: Props) {
   const storageKey = `admin-school:${id}:open`;
-  const [open, setOpen] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = window.localStorage.getItem(storageKey);
-        if (stored === "true" || stored === "false") {
-          return stored === "true";
-        }
-      } catch {
-        // ignore read errors
+  const [hydrated, setHydrated] = useState(false);
+  const [open, setOpen] = useState<boolean>(defaultOpen);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(storageKey);
+      if (stored === "true" || stored === "false") {
+        setOpen(stored === "true");
       }
+    } catch {
+      // ignore read errors
+    } finally {
+      setHydrated(true);
     }
-    return defaultOpen;
-  });
+  }, [storageKey]);
 
   useEffect(() => {
     try {
@@ -45,7 +47,7 @@ export function CollapsibleSection({
 
   return (
     <details
-      open={open}
+      open={hydrated ? open : undefined}
       onToggle={(e) => setOpen(e.currentTarget.open)}
       className={clsx("group space-y-4", className)}
     >
