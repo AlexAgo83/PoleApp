@@ -114,7 +114,7 @@ export default async function TeacherPublicProfilePage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-5 border-indigo-400/25 p-6 shadow-indigo-900/30">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-center gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -140,7 +140,6 @@ export default async function TeacherPublicProfilePage({
             />
           </div>
         </div>
-
         <div className="grid gap-5 md:grid-cols-2">
           <div className="space-y-2">
             <h2 className="text-lg font-semibold text-white">Diplômes</h2>

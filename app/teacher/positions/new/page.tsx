@@ -57,8 +57,12 @@ export default async function NewPositionPage() {
     <main className="flex min-h-screen w-full flex-col gap-4">
       <FoxPageHeader
         title="Créer une position"
-        sticky
-        flushEdges
+        eyebrow="Espace prof"
+        foxHref="/app/teacher"
+        buttons={[
+          { label: "Mon espace", href: "/app/teacher", icon: <img src="/house.svg" alt="" className="h-4 w-4" /> },
+          { label: "Déconnexion", href: "/api/auth/signout" },
+        ]}
       />
 
       <div className="mx-auto w-full max-w-5xl px-2 pb-6 md:px-6">

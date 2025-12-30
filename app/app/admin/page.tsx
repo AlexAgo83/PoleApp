@@ -56,6 +56,9 @@ export default async function AdminDashboard({
   startOfToday.setHours(0, 0, 0, 0);
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
+  const endOfWeek = new Date(startOfToday);
+  endOfWeek.setDate(endOfWeek.getDate() + 7);
+  endOfWeek.setHours(23, 59, 59, 999);
   const startOfLast7Days = new Date(startOfToday);
   startOfLast7Days.setDate(startOfLast7Days.getDate() - 7);
   const startOfMonth = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
@@ -93,8 +96,8 @@ export default async function AdminDashboard({
       where: {
         schoolId: session.user.schoolId,
         date: {
-          gte: startOfToday,
-          lte: endOfWeek,
+          gte: startOfLast7Days,
+          lte: endOfToday,
         },
       },
     }),
