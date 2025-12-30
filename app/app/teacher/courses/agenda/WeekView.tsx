@@ -35,6 +35,7 @@ type Props = {
     q?: string;
     discipline?: string;
     level?: string;
+    mine?: boolean;
   };
   baseFrom: string;
 };

@@ -430,7 +430,7 @@ export async function generateCourseSuggestions(params: {
     .map((position) => {
       const perStudentStatus = studentIds.map((studentId) => {
         const record = progressByStudent.get(studentId)?.get(position.id);
-        return deriveLearningState(record?.learningStatus, record?.masteryLevel);
+        return deriveLearningState(record?.learningStatus);
       });
       const contraindicationHits = matchContraindications(position, activeInjuryNames);
       const injuryImpact = evaluateInjuryImpact(

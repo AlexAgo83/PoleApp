@@ -97,7 +97,7 @@ export default async function TeacherPublicProfilePage({
     teacher.favoritePositions
       .map((fp) => fp.position)
       .filter((p): p is NonNullable<typeof p> => Boolean(p)) ?? [];
-  const backHref = safeFrom ?? null;
+  const backHref = safeFrom || undefined;
   const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
   const nameParts = (teacher.name ?? "")
     .trim()
@@ -176,8 +176,6 @@ export default async function TeacherPublicProfilePage({
               firstName: firstNameDefault,
               lastName: lastNameDefault,
               age: teacher.age,
-              avatarUrl: teacher.avatarUrl,
-              avatarPublicId: teacher.avatarPublicId,
               diplomas: teacher.diplomas,
               favoritePositionIds,
             }}
