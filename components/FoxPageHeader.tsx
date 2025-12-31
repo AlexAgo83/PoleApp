@@ -188,6 +188,7 @@ export async function FoxPageHeader({
               name={session?.user?.name ?? session?.user?.email ?? "Profil"}
               roleLabel={roleLabel}
               profileHref={profileHref}
+              navLinks={navLinks}
             />
           </div>
         </div>
