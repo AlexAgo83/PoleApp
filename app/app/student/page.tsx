@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { BuyCreditsButton } from "./BuyCreditsButton";
+import { appSignature } from "@/lib/appMeta";
 
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
@@ -359,6 +360,7 @@ export default async function StudentDashboard() {
         </div>
       </section>
 
+      <div className="pb-4 text-center text-xs text-slate-300/80">{appSignature}</div>
     </main>
   );
 }

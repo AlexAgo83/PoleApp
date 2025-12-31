@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -200,15 +201,6 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-          Professeur / Admin
-        </p>
-        <h1 className="text-3xl font-semibold text-white">Éditer le cours</h1>
-        <p className="text-sm text-slate-300">
-          Mets à jour la date, les élèves, les positions et les notes pour ce cours.
-        </p>
-      </header>
 
       {initialError === "collision" && (
         <div className="panel border-amber-400/40 bg-amber-500/10 p-4 text-sm font-semibold text-amber-100">
@@ -268,6 +260,32 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       )}
 
       <section className="panel p-6">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
+              Professeur / Admin
+            </p>
+            <h1 className="text-3xl font-semibold text-white">Éditer le cours</h1>
+            <p className="text-sm text-slate-300">
+              Mets à jour la date, les élèves, les positions et les notes pour ce cours.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <Link
+              href={backHref}
+              className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+            >
+              Annuler
+            </Link>
+            <button
+              type="submit"
+              form="course-edit-form"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Mettre à jour
+            </button>
+          </div>
+        </div>
         <CourseForm
           students={students}
           positions={positions}
@@ -297,24 +315,30 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
             return acc;
           }, {})}
           studentsWithActiveInjury={studentsWithActiveInjury}
-        progressByStudent={progresses.map((p) => ({
-          studentId: p.studentId,
-          positionId: p.positionId,
-          learningStatus: p.learningStatus,
-          positionName: p.position.name,
-          positionType: p.position.type,
-        }))}
-        isVirtual={course.isVirtual}
-        enableRecurrence={false}
-      />
+          progressByStudent={progresses.map((p) => ({
+            studentId: p.studentId,
+            positionId: p.positionId,
+            learningStatus: p.learningStatus,
+            positionName: p.position.name,
+            positionType: p.position.type,
+          }))}
+          isVirtual={course.isVirtual}
+          enableRecurrence={false}
+          hideFooterActions
+          formId="course-edit-form"
+        />
       </section>
 
       <section className="panel border-red-500/30 bg-red-500/5 p-6">
-        <h2 className="text-lg font-semibold text-white">Supprimer ce cours</h2>
-        <p className="text-sm text-slate-200">
-          Action irréversible. Les présences, positions et notes liées seront supprimées.
-        </p>
-        <DeleteCourseDialog courseId={course.id} virtualOccurrencesCount={virtualOccurrencesCount} />
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Supprimer ce cours</h2>
+            <p className="text-sm text-slate-200">
+              Action irréversible. Les présences, positions et notes liées seront supprimées.
+            </p>
+          </div>
+          <DeleteCourseDialog courseId={course.id} virtualOccurrencesCount={virtualOccurrencesCount} />
+        </div>
       </section>
     </main>
   );

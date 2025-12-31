@@ -125,7 +125,7 @@ export async function FoxPageHeader({
       ? [
           { label: "Réserver", href: "/app/student/school" },
           { label: "Mes cours", href: "/app/student/courses/agenda?view=month" },
-          { label: "Mes progrès", href: "/app/student/progress" },
+          { label: "Mon suivi", href: "/app/student/progress" },
         ]
       : session?.user?.role === "TEACHER"
         ? [{ label: "Planning", href: "/app/teacher/courses/agenda?view=month" }]

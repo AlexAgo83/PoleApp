@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
+import { appSignature } from "@/lib/appMeta";
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
@@ -35,6 +36,7 @@ export default async function TeacherDashboard() {
           <h1 className="text-3xl font-semibold text-white">Espace professeur</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
         </section>
+        <div className="pb-4 text-center text-xs text-slate-300/80">{appSignature}</div>
       </main>
     );
   }
@@ -382,6 +384,7 @@ export default async function TeacherDashboard() {
         </div>
       </section>
 
+      <div className="pb-4 text-center text-xs text-slate-300/80">{appSignature}</div>
     </main>
   );
 }
