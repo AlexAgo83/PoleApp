@@ -74,6 +74,10 @@ export default async function TeacherDashboard() {
     positionsCount,
     combosCount,
     activeInjuries,
+    studiosCount,
+    partnersCount,
+    studentsCount,
+    disciplinesCount,
     newStudentsWeek,
     newStudentsMonth,
   ] = await Promise.all([
@@ -94,6 +98,12 @@ export default async function TeacherDashboard() {
     prisma.studentInjury.count({
       where: { isActive: true, student: { schoolId: session.user.schoolId } },
     }),
+    prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.user.count({
+      where: { schoolId: session.user.schoolId, role: "STUDENT" },
+    }),
+    prisma.discipline.count({ where: { schoolId: session.user.schoolId } }),
     prisma.user.count({
       where: {
         schoolId: session.user.schoolId,
@@ -119,7 +129,10 @@ export default async function TeacherDashboard() {
           <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Positions" value={positionsCount} />
             <Stat label="Combos" value={combosCount} />
-            <Stat label="Blessures actives" value={activeInjuries} />
+            <Stat label="Studios" value={studiosCount} />
+            <Stat label="Partenaires" value={partnersCount} />
+            <Stat label="Étudiants" value={studentsCount} />
+            <Stat label="Disciplines" value={disciplinesCount} />
           </div>
         </div>
         <div className="panel space-y-2 p-3 md:p-4 md:col-span-2 lg:col-span-1">
@@ -131,6 +144,7 @@ export default async function TeacherDashboard() {
             <Stat label="Cours (7 jours)" value={coursesWeekCount} />
             <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
             <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
+            <Stat label="Blessures actives" value={activeInjuries} />
           </div>
         </div>
       </section>
