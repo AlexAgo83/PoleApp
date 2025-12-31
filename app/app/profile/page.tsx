@@ -306,11 +306,6 @@ export default async function ProfilePage({
         </section>
       )}
 
-      {saved && (
-        <div className="fixed bottom-4 right-4 z-30 rounded-xl border border-emerald-300/60 bg-emerald-600/85 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
-          Profil mis à jour.
-        </div>
-      )}
     </main>
   );
 }
