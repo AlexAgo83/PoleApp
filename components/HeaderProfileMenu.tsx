@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 
 import { SignOutModalButton } from "@/components/auth/SignOutModalButton";
 
@@ -54,26 +55,27 @@ export function HeaderProfileMenu({ avatarSrc, name, roleLabel, profileHref }: P
         </div>
       </button>
 
-      {open && (
-        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-white/10 bg-slate-900/90 p-2 shadow-xl shadow-black/30 backdrop-blur">
-          <Link
-            href={profileHref}
-            className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
-            onClick={() => setOpen(false)}
-          >
-            Mon Profil
-          </Link>
-          <SignOutModalButton
-            className="mt-1 flex w-full items-center rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
-            ariaLabel="Se déconnecter"
-            onOpenChange={(v) => {
-              if (!v) setOpen(false);
-            }}
-          >
-            Déconnexion
-          </SignOutModalButton>
-        </div>
-      )}
+      <div
+        className={clsx(
+          "absolute right-0 mt-2 w-48 rounded-xl border border-white/10 bg-slate-900/90 p-2 shadow-xl shadow-black/30 backdrop-blur",
+          open ? "block" : "hidden"
+        )}
+      >
+        <Link
+          href={profileHref}
+          className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+          onClick={() => setOpen(false)}
+        >
+          Mon Profil
+        </Link>
+        <SignOutModalButton
+          className="mt-1 flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+          ariaLabel="Se déconnecter"
+          onOpenChange={() => setOpen(false)}
+        >
+          Déconnexion
+        </SignOutModalButton>
+      </div>
     </div>
   );
 }
