@@ -312,12 +312,6 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             ) : null}
           </div>
         </div>
-        <Link
-          href={backHref}
-          className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-        >
-          ← Retour
-        </Link>
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">

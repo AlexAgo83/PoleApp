@@ -59,7 +59,6 @@ export function CourseFormLayout({
         <CourseForm
           formId={formId}
           groupedPanels
-          hideFooterActions
           students={students}
           positions={positions}
           action={action}

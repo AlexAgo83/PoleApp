@@ -164,22 +164,22 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold text-white">Combos</h2>
           <div className="flex flex-wrap justify-end gap-2 md:w-auto">
-            {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
-              <Link
-                href={session.user.role === "SCHOOL_ADMIN" ? "/app/admin/presets" : "/app/teacher/presets"}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              >
-                <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
-                  Gestion (prof/admin)
-                </span>
-              </Link>
-            )}
             <Link
               href="/positions"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
             >
               <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">Positions</span>
             </Link>
+            {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
+              <Link
+                href={session.user.role === "SCHOOL_ADMIN" ? "/app/admin/presets" : "/app/teacher/presets"}
+                className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+              >
+                <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
+                  Gestion
+                </span>
+              </Link>
+            )}
           </div>
         </div>
         {isStudent ? null : null}
