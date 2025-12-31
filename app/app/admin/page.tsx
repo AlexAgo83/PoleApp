@@ -139,7 +139,7 @@ export default async function AdminDashboard({
       <section className="grid gap-3 md:gap-4 md:grid-cols-2">
         <div className="panel space-y-2 p-3 md:p-4">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-lg font-semibold text-white leading-tight">{baseSchool?.name ?? "École"}</h2>
+            <h2 className="text-lg font-semibold text-white leading-tight">Stats</h2>
             {schoolWebsite && (
               <a
                 href={schoolWebsite}
