@@ -5,6 +5,7 @@ import { CircularRedFox } from "@/components/FoxVignette";
 import HealthBadge from "@/components/HealthBadge";
 import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
+import { appSignature } from "@/lib/appMeta";
 
 const billingStatus = "Livré";
 
@@ -151,7 +152,7 @@ export default async function Home() {
           >
             Continuer
           </Link>
-          <p className="text-xs text-slate-300/80">PoleApp v0.10.8</p>
+          <p className="text-xs text-slate-300/80">{appSignature}</p>
         </div>
       </div>
 

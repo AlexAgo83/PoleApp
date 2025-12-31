@@ -62,7 +62,16 @@ export default async function TeacherCourseDetailPage({
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true, address: true } },
         attendances: {
-          include: { student: { select: { id: true, name: true, email: true } } },
+          include: {
+            student: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                injuries: { where: { isActive: true }, select: { id: true } },
+              },
+            },
+          },
         },
         positions: { include: { position: true } },
         notes: {
@@ -85,7 +94,16 @@ export default async function TeacherCourseDetailPage({
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true, address: true } },
             attendances: {
-              include: { student: { select: { id: true, name: true, email: true } } },
+              include: {
+                student: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    injuries: { where: { isActive: true }, select: { id: true } },
+                  },
+                },
+              },
             },
             positions: { include: { position: true } },
             notes: {
@@ -318,23 +336,42 @@ export default async function TeacherCourseDetailPage({
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Participants</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
-          {course.attendances.map((attendance) => (
-            <li
-              key={attendance.id}
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200"
-            >
-              {attendance.student?.id ? (
-                <Link
-                  href={`/app/teacher/students/${attendance.student.id}?from=${encodeURIComponent(currentPath)}`}
-                  className="inline-flex items-center gap-2 text-white underline-offset-4 hover:underline"
-                >
-                  {attendance.student?.name ?? attendance.student?.email ?? "Élève"}
-                </Link>
-              ) : (
-                attendance.student?.name ?? attendance.student?.email ?? "Élève"
-              )}
-            </li>
-          ))}
+          {course.attendances.map((attendance) => {
+            const hasActiveInjury = (attendance.student?.injuries?.length ?? 0) > 0;
+            return (
+              <li
+                key={attendance.id}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-200"
+              >
+                {attendance.student?.id ? (
+                  <Link
+                    href={`/app/teacher/students/${attendance.student.id}?from=${encodeURIComponent(currentPath)}`}
+                    className="inline-flex items-center gap-2 text-white underline-offset-4 hover:underline"
+                  >
+                    {attendance.student?.name ?? attendance.student?.email ?? "Élève"}
+                    {hasActiveInjury && (
+                      <span
+                        className="inline-flex h-2.5 w-2.5 items-center justify-center rounded-full border border-amber-300/70 bg-amber-500/80 text-[10px]"
+                        title="Blessure active"
+                        aria-label="Blessure active"
+                      />
+                    )}
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    {attendance.student?.name ?? attendance.student?.email ?? "Élève"}
+                    {hasActiveInjury && (
+                      <span
+                        className="inline-flex h-2.5 w-2.5 items-center justify-center rounded-full border border-amber-300/70 bg-amber-500/80 text-[10px]"
+                        title="Blessure active"
+                        aria-label="Blessure active"
+                      />
+                    )}
+                  </span>
+                )}
+              </li>
+            );
+          })}
           {course.attendances.length === 0 && (
             <li className="text-slate-300">Aucun élève rattaché.</li>
           )}

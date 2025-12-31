@@ -123,6 +123,7 @@ export function CourseForm({
   studentsWithActiveInjury = {},
   formId,
   hideFooterActions = false,
+  extraActions,
   groupedPanels = false,
   defaultCollapsed,
   isVirtual = false,
