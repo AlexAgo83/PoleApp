@@ -171,13 +171,15 @@ export default async function StudentTeachersPage({
                       <p className="text-sm text-slate-300">{teacher.email}</p>
                       <p className="text-sm text-slate-400">Professeur de ton école</p>
                     </div>
-                    <Link
-                      href={`/app/teachers/${teacher.id}?from=/app/student/teachers`}
-                      className="inline-flex shrink-0 items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
-                      style={{ minHeight: "2.25rem" }}
-                    >
-                      Voir la fiche
-                    </Link>
+                    <div className="flex items-center">
+                      <Link
+                        href={`/app/teachers/${teacher.id}?from=/app/student/teachers`}
+                        className="inline-flex shrink-0 items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
+                        style={{ minHeight: "2.25rem" }}
+                      >
+                        Voir la fiche
+                      </Link>
+                    </div>
                   </div>
                 </article>
               );
