@@ -116,9 +116,7 @@ export async function FoxPageHeader({
   const profileHref =
     session?.user?.role === "TEACHER" && session.user.id
       ? `/app/teachers/${session.user.id}`
-      : session?.user?.role === "SCHOOL_ADMIN"
-        ? "/app/admin/users"
-        : "/app/profile";
+      : "/app/profile";
   const schoolName = school?.name || title || "Mon école";
   const navLinks =
     session?.user?.role === "STUDENT"
