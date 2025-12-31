@@ -2,13 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { SafeImage } from "@/components/SafeImage";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
-import { createStudioAction, deleteStudioAction, updateStudioAction } from "../studios/actions";
+import { createStudioAction } from "../studios/actions";
+import { StudioCard as AdminStudioCard } from "../studios/StudioCard";
 import { CollapsibleSection } from "./CollapsibleSection";
 import {
   createDisciplineAction,
@@ -35,7 +34,6 @@ export default async function AdminSchoolPage({
   const flashMessage = getValue(resolvedParams.flashMessage);
   const disciplinePageRaw = Number(getValue(resolvedParams.disciplinePage) ?? "1");
   const disciplinePage = Math.max(1, Number.isFinite(disciplinePageRaw) ? disciplinePageRaw : 1);
-  const editStudioId = getValue(resolvedParams.edit);
 
   const baseSchool = await prisma.school.findUnique({
     where: { id: session.user.schoolId },
@@ -150,7 +148,7 @@ export default async function AdminSchoolPage({
           summary={
             <>
               <h3 className="flex-1 text-xl font-semibold text-white">Identité</h3>
-              <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+              <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white group-open:border-white/15 group-open:bg-white/5">
                 <span className="group-open:hidden">Modifier</span>
                 <span className="hidden group-open:inline">Fermer</span>
               </span>
@@ -266,9 +264,12 @@ export default async function AdminSchoolPage({
                       </ConfirmDeleteButton>
                     </form>
                   </div>
-                  <form action={updateDisciplineAction} className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-5 md:items-end">
+                  <form
+                    action={updateDisciplineAction}
+                    className="mt-3 flex flex-col gap-3 md:flex-row md:items-end"
+                  >
                     <input type="hidden" name="disciplineId" value={d.id} />
-                    <label className="text-xs text-slate-300 md:col-span-3">
+                    <label className="text-xs text-slate-300 md:flex-1">
                       Nom
                       <input
                         name="name"
@@ -277,7 +278,7 @@ export default async function AdminSchoolPage({
                         className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-cyan-400/70"
                       />
                     </label>
-                    <label className="text-xs text-slate-300 md:col-span-1">
+                    <label className="text-xs text-slate-300 md:w-36">
                       Couleur
                       <input
                         type="color"
@@ -286,12 +287,12 @@ export default async function AdminSchoolPage({
                         className="mt-1 h-[42px] w-full rounded-lg border border-white/10 bg-white/5 p-1"
                       />
                     </label>
-                    <div className="md:col-span-1 flex justify-end">
+                    <div className="flex justify-end md:w-auto md:self-end">
                       <button
                         type="submit"
-                        className="w-full rounded-xl border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
+                        className="w-full rounded-xl border border-cyan-400/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30 md:w-auto"
                       >
-                        Mettre à jour
+                        Sauvegarder
                       </button>
                     </div>
                   </form>
@@ -362,7 +363,7 @@ export default async function AdminSchoolPage({
       <section className="panel space-y-4 p-6">
         <CollapsibleSection
           id="studios"
-          defaultOpen={resolvedParams.studiosOpen === "true" || Boolean(editStudioId)}
+          defaultOpen={resolvedParams.studiosOpen === "true"}
           summary={
             <>
               <h3 className="flex-1 text-xl font-semibold text-white">Studios</h3>
@@ -381,153 +382,7 @@ export default async function AdminSchoolPage({
               <>
                 <div className="grid gap-4 md:grid-cols-2">
                   {studios.map((studio) => (
-                    <article
-                      key={studio.id}
-                      className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/10"
-                      style={{
-                        backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.68)), url(${studio.photoUrl ?? COURSE_PLACEHOLDER})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    >
-                      {(() => {
-                        const baseParams = new URLSearchParams();
-                        if (currentDisciplinePage > 1) {
-                          baseParams.set("disciplinePage", currentDisciplinePage.toString());
-                        }
-                        if (currentStudioPage > 1) {
-                          baseParams.set("studioPage", currentStudioPage.toString());
-                        }
-                        const editParams = new URLSearchParams(baseParams);
-                        editParams.set("edit", studio.id);
-                        const cancelHref = `/app/admin/school${
-                          baseParams.toString() ? `?${baseParams.toString()}` : ""
-                        }`;
-                        const editHref = `/app/admin/school${editParams.toString() ? `?${editParams.toString()}` : ""}`;
-                        const isEditing = editStudioId === studio.id;
-
-                        if (!isEditing) {
-                          return (
-                            <>
-                              <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-indigo-100">
-                                    Studio
-                                  </span>
-                                  <Link
-                                    href={editHref}
-                                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                                  >
-                                    ✏️ Éditer
-                                  </Link>
-                                  <Link
-                                    href={`/app/school/${studio.id}?view=agenda&range=month`}
-                                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                                  >
-                                    Voir la fiche
-                                  </Link>
-                                </div>
-                                <form action={deleteStudioAction}>
-                                  <input type="hidden" name="studioId" value={studio.id} />
-                                  <input type="hidden" name="redirectTo" value={redirectToSchool} />
-                                  <ConfirmDeleteButton
-                                    type="submit"
-                                    className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
-                                  >
-                                    Supprimer
-                                  </ConfirmDeleteButton>
-                                </form>
-                              </div>
-                              <div className="space-y-2">
-                                <p className="text-base font-semibold text-white">{studio.name}</p>
-                                {studio.address ? (
-                                  <p className="text-sm text-cyan-100">
-                                    Adresse : {studio.address}{" "}
-                                    <a
-                                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="text-xs font-semibold text-cyan-200 underline underline-offset-2 transition hover:text-cyan-100"
-                                    >
-                                      Ouvrir dans Google Maps
-                                    </a>
-                                  </p>
-                                ) : (
-                                  <p className="text-sm text-slate-200">Adresse non renseignée.</p>
-                                )}
-                                {studio.photoUrl ? <p className="text-xs text-slate-300">Photo disponible</p> : null}
-                              </div>
-                            </>
-                          );
-                        }
-
-                        return (
-                          <>
-                            <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-cyan-400/40 bg-white/5 p-3 text-sm text-slate-200 shadow-inner shadow-indigo-900/10">
-                              <Link
-                                href={cancelHref}
-                                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                              >
-                                Annuler
-                              </Link>
-                              <form action={deleteStudioAction} className="m-0">
-                                <input type="hidden" name="studioId" value={studio.id} />
-                                <input type="hidden" name="redirectTo" value={redirectToSchool} />
-                                <ConfirmDeleteButton
-                                  type="submit"
-                                  className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
-                                >
-                                  Supprimer
-                                </ConfirmDeleteButton>
-                              </form>
-                            </div>
-                            <form
-                              action={updateStudioAction}
-                              className="grid gap-3 rounded-2xl border border-cyan-400/40 bg-white/5 p-4 shadow-inner shadow-indigo-900/10 text-sm text-slate-200 md:grid-cols-2 md:gap-4"
-                            >
-                              <input type="hidden" name="studioId" value={studio.id} />
-                              <input type="hidden" name="redirectTo" value={redirectToSchool} />
-                              <label className="grid gap-1">
-                                Nom
-                                <input
-                                  name="name"
-                                  defaultValue={studio.name}
-                                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                                  required
-                                />
-                              </label>
-                              <label className="grid gap-1">
-                                Adresse (optionnel)
-                                <input
-                                  name="address"
-                                  defaultValue={studio.address ?? ""}
-                                  placeholder="Adresse"
-                                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                                />
-                              </label>
-                              <label className="grid gap-1">
-                                Photo (URL)
-                                <input
-                                  name="photoUrl"
-                                  defaultValue={studio.photoUrl ?? ""}
-                                  placeholder="https://..."
-                                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                                  type="url"
-                                />
-                              </label>
-                              <div className="md:col-span-2 flex flex-wrap justify-end gap-2">
-                                <button
-                                  type="submit"
-                                  className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                                >
-                                  Sauvegarder
-                                </button>
-                              </div>
-                            </form>
-                          </>
-                        );
-                      })()}
-                    </article>
+                    <AdminStudioCard key={studio.id} studio={studio} />
                   ))}
                 </div>
 

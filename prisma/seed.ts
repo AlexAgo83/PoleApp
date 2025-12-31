@@ -134,7 +134,7 @@ const positionsData = [
 
 const disciplinesCatalog = [
   { name: "Pole", color: "#0ea5e9" },
-  { name: "Pole Exotic", color: "#d946ef" },
+  { name: "Exotic", color: "#d946ef" },
   { name: "Souplesse", color: "#22c55e" },
   { name: "Pilates", color: "#f59e0b" },
   { name: "Conditioning", color: "#6366f1" },
