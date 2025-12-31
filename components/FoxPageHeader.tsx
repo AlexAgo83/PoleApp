@@ -8,6 +8,7 @@ import { resolveAvatarUrl } from "@/lib/avatar";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { HeaderProfileMenu } from "./HeaderProfileMenu";
+import { HeaderNotificationsMenu } from "./HeaderNotificationsMenu";
 
 type HeaderButton = {
   label: string;
@@ -183,6 +184,7 @@ export async function FoxPageHeader({
           )}
 
           <div className="ml-auto flex flex-wrap items-center gap-3">
+            <HeaderNotificationsMenu />
             <HeaderProfileMenu
               avatarSrc={avatarSrc}
               name={session?.user?.name ?? session?.user?.email ?? "Profil"}
