@@ -40,20 +40,24 @@ export function HeaderProfileMenu({ avatarSrc, name, roleLabel, profileHref, nav
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 transition hover:border-cyan-300/70 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+        className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-1 transition hover:border-cyan-300/70 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
         aria-haspopup="menu"
         aria-expanded={open}
       >
+        <div className="leading-tight text-left min-w-0 hidden md:block pr-0.5 pl-1">
+          <p className="font-semibold text-white leading-tight [font-size:clamp(10px,2.6vw,14px)]">
+            {name}
+          </p>
+          <p className="text-slate-200 leading-tight text-right [font-size:clamp(10px,2.4vw,12px)]">
+            {roleLabel}
+          </p>
+        </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={avatarSrc ?? ""}
           alt="Profil"
-          className="h-10 w-10 rounded-full border border-white/20 object-cover"
+          className="h-9 w-9 rounded-full border border-white/20 object-cover md:h-10 md:w-10"
         />
-        <div className="leading-tight text-left">
-          <p className="text-sm font-semibold text-white">{name}</p>
-          <p className="text-xs text-slate-200">{roleLabel}</p>
-        </div>
       </button>
 
       <div

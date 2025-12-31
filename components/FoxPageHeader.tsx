@@ -49,7 +49,7 @@ export async function FoxPageHeader({
   profileImageUrl,
 }: Props) {
   const session = await getServerSession(authOptions).catch(() => null);
-  let dbAvatar: { avatarUrl: string | null; avatarPublicId: string | null } | null = null;
+  let userRecord: { avatarUrl: string | null; avatarPublicId: string | null; name: string | null; email: string | null } | null = null;
   let school: { name: string | null; photoUrl: string | null } | null = null;
   if (session?.user?.schoolId) {
     try {
@@ -63,9 +63,9 @@ export async function FoxPageHeader({
   }
   if (!profileImageUrl && session?.user?.id) {
     try {
-      dbAvatar = await prisma.user.findUnique({
+      userRecord = await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { avatarUrl: true, avatarPublicId: true },
+        select: { avatarUrl: true, avatarPublicId: true, name: true, email: true },
       });
     } catch {
       // ignore db errors for header rendering
@@ -94,12 +94,12 @@ export async function FoxPageHeader({
   const avatarSrc = resolveAvatarUrl({
     avatarPublicId:
       (session?.user as any)?.avatarPublicId ??
-      dbAvatar?.avatarPublicId ??
+      userRecord?.avatarPublicId ??
       null,
     avatarUrl:
       profileImageUrl ??
       (session?.user as any)?.avatarUrl ??
-      dbAvatar?.avatarUrl ??
+      userRecord?.avatarUrl ??
       null,
     placeholder: AVATAR_PLACEHOLDER,
     seedKey: session?.user?.id ?? "user",
@@ -146,24 +146,40 @@ export async function FoxPageHeader({
       )}
       style={style}
     >
-      <div className="relative z-10 flex w-full flex-col gap-3 pl-0 pt-0">
-        <div className="flex w-full flex-wrap items-center gap-4">
+      <div className="relative z-10 flex w-full flex-col gap-2 pl-0 pt-0">
+        <div className="flex w-full flex-wrap items-center gap-2 md:gap-4">
           <Link
             href={homeHref}
-            className="flex items-center gap-3 rounded-xl px-1 py-0.5 transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
+            className="flex min-w-0 items-center gap-2 rounded-xl px-1 py-0.5 transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200 md:gap-3"
           >
-            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 shadow-lg shadow-black/30">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 shadow-lg shadow-black/30 md:h-14 md:w-14">
               {school?.photoUrl ? (
                 <img src={school.photoUrl} alt={schoolName} className="h-full w-full object-cover" />
               ) : (
-                <span className="text-2xl font-extrabold text-white">
+                <span className="text-xl font-extrabold text-white md:text-2xl">
                   {(schoolName || "E")[0]?.toUpperCase()}
                 </span>
               )}
             </div>
-            <div className="flex flex-col text-left">
-              <span className="text-lg font-bold text-white leading-tight">{schoolName}</span>
-              <span className="text-sm text-indigo-100">{eyebrow ?? `Espace ${roleLabel.toLowerCase()}`}</span>
+            <div className="flex min-w-0 flex-col text-left">
+              <div className="max-w-[8.4rem] md:max-w-[12.2rem]">
+                <span
+                  className={clsx(
+                    "font-bold text-white leading-tight whitespace-nowrap block",
+                    schoolName && schoolName.length > 20
+                      ? "truncate text-[clamp(12px,3.4vw,16px)] md:text-[clamp(14px,2.5vw,18px)]"
+                      : schoolName && schoolName.length > 10
+                        ? "text-[clamp(13px,3.6vw,17px)] md:text-[clamp(15px,2.7vw,19px)]"
+                        : "text-[clamp(14px,4vw,18px)] md:text-[clamp(16px,3vw,20px)]"
+                  )}
+                  title={schoolName}
+                >
+                  {schoolName}
+                </span>
+              </div>
+              <span className="text-indigo-100 leading-tight whitespace-nowrap [font-size:clamp(11px,3.2vw,15px)] md:[font-size:clamp(12px,2.5vw,16px)] max-w-[8.4rem] md:max-w-[12.2rem]">
+                {eyebrow ?? `Espace ${roleLabel.toLowerCase()}`}
+              </span>
             </div>
           </Link>
 
@@ -181,11 +197,11 @@ export async function FoxPageHeader({
             </nav>
           )}
 
-          <div className="ml-auto flex flex-wrap items-center gap-3">
+          <div className="ml-auto flex flex-wrap items-center gap-2 md:gap-3">
             <HeaderNotificationsMenu />
             <HeaderProfileMenu
               avatarSrc={avatarSrc}
-              name={session?.user?.name ?? session?.user?.email ?? "Profil"}
+              name={userRecord?.name ?? session?.user?.name ?? userRecord?.email ?? session?.user?.email ?? "Profil"}
               roleLabel={roleLabel}
               profileHref={profileHref}
               navLinks={navLinks}
