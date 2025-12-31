@@ -9,9 +9,16 @@ import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-center">
-      <p className="text-[10px] uppercase tracking-[0.12em] text-cyan-100">{label}</p>
-      <p className="text-base font-semibold text-white">{value}</p>
+    <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 shadow-sm">
+      <div className="absolute inset-0 opacity-20 blur-2xl" aria-hidden>
+        <div className="h-full w-full bg-gradient-to-br from-cyan-500/40 via-white/30 to-transparent" />
+      </div>
+      <div className="relative flex items-center justify-between gap-2">
+        <p className="text-[11px] uppercase tracking-[0.14em] text-slate-300">{label}</p>
+        <span className="inline-flex h-5 min-w-[2.5rem] items-center justify-center rounded-full border border-white/10 bg-white/10 px-2 text-xs font-semibold text-white">
+          {value}
+        </span>
+      </div>
     </div>
   );
 }
@@ -64,6 +71,9 @@ export default async function TeacherDashboard() {
   const [
     coursesTodayCount,
     coursesWeekCount,
+    positionsCount,
+    combosCount,
+    activeInjuries,
     newStudentsWeek,
     newStudentsMonth,
   ] = await Promise.all([
@@ -78,6 +88,11 @@ export default async function TeacherDashboard() {
         schoolId: session.user.schoolId,
         date: { gte: startOfLast7Days, lte: endOfToday },
       },
+    }),
+    prisma.position.count(),
+    prisma.preset.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.studentInjury.count({
+      where: { isActive: true, student: { schoolId: session.user.schoolId } },
     }),
     prisma.user.count({
       where: {
@@ -96,6 +111,30 @@ export default async function TeacherDashboard() {
   ]);
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
+      <section className="grid gap-3 md:gap-4 md:grid-cols-2">
+        <div className="panel space-y-2 p-3 md:p-4 md:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white leading-tight">Stats</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
+            <Stat label="Positions" value={positionsCount} />
+            <Stat label="Combos" value={combosCount} />
+            <Stat label="Blessures actives" value={activeInjuries} />
+          </div>
+        </div>
+        <div className="panel space-y-2 p-3 md:p-4 md:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
+            <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
+            <Stat label="Cours (7 jours)" value={coursesWeekCount} />
+            <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
+            <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
+          </div>
+        </div>
+      </section>
+
       <section className="panel p-6">
         <div className="grid gap-3 md:grid-cols-2">
           <Link
