@@ -139,7 +139,7 @@ export async function FoxPageHeader({
   return (
     <section
       className={clsx(
-        "overflow-hidden px-2 py-1 md:px-3 md:py-1",
+        "overflow-visible px-2 py-1 md:px-3 md:py-1",
         sticky ? "sticky top-0 z-30" : "",
         fullWidth ? "w-full" : "w-full max-w-6xl mx-auto",
         flushEdges ? "rounded-none" : "",
