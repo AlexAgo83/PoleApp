@@ -116,7 +116,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
               disabled={isPending}
             >
-              ← Précédente
+              ←
             </button>
           </form>
           <form onSubmit={handleReset} className="inline-flex">
@@ -135,7 +135,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
               className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
               disabled={isPending}
             >
-              Suivante →
+              →
             </button>
           </form>
         </div>

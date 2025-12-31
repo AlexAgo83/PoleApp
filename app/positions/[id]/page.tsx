@@ -613,7 +613,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                   : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
               }`}
             >
-              ← Précédente
+              ←
               {prevPosition ? <span className="text-xs text-slate-300">({prevPosition.name})</span> : null}
             </Link>
             <Link
@@ -625,7 +625,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                   : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
               }`}
             >
-              Suivante →
+              →
               {nextPosition ? <span className="text-xs text-slate-300">({nextPosition.name})</span> : null}
             </Link>
           </div>
