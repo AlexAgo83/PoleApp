@@ -157,6 +157,8 @@ export default async function AdminDashboard({
             <Stat label="Professeurs" value={counts.TEACHER} />
             <Stat label="Admins" value={counts.SCHOOL_ADMIN} />
             <Stat label="Premium" value={counts.premium} />
+            <Stat label="Positions" value={positionsCount} />
+            <Stat label="Combos" value={combosCount} />
             <Stat label="Studios" value={studiosCount} />
             <Stat label="Partenaires" value={partnersCount} />
             <Stat label="Disciplines" value={disciplinesCount} />
@@ -170,8 +172,6 @@ export default async function AdminDashboard({
           <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
             <Stat label="Cours (7 jours)" value={coursesWeekCount} />
-            <Stat label="Positions" value={positionsCount} />
-            <Stat label="Combos" value={combosCount} />
             <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
             <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
             <Stat label="Blessures actives" value={activeInjuries} />
