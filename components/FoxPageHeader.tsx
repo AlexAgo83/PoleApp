@@ -2,12 +2,12 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import clsx from "clsx";
 import React from "react";
-import { SignOutModalButton } from "@/components/auth/SignOutModalButton";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { authOptions } from "@/lib/auth";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
+import { HeaderProfileMenu } from "./HeaderProfileMenu";
 
 type HeaderButton = {
   label: string;
@@ -112,6 +112,12 @@ export async function FoxPageHeader({
         : session?.user?.role === "STUDENT"
           ? "Élève"
           : "Invité";
+  const profileHref =
+    session?.user?.role === "TEACHER" && session.user.id
+      ? `/app/teachers/${session.user.id}`
+      : session?.user?.role === "SCHOOL_ADMIN"
+        ? "/app/admin/users"
+        : "/app/profile";
   const schoolName = school?.name || title || "Mon école";
   const navLinks =
     session?.user?.role === "STUDENT"
@@ -177,22 +183,12 @@ export async function FoxPageHeader({
           )}
 
           <div className="ml-auto flex flex-wrap items-center gap-3">
-            <SignOutModalButton
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 transition hover:border-cyan-300/70 hover:bg-white/10"
-              ariaLabel="Se déconnecter"
-            >
-              <img
-                src={avatarSrc}
-                alt="Profil"
-                className="h-10 w-10 rounded-full border border-white/20 object-cover"
-              />
-              <div className="leading-tight text-left">
-                <p className="text-sm font-semibold text-white">
-                  {session?.user?.name ?? session?.user?.email ?? "Profil"}
-                </p>
-                <p className="text-xs text-slate-200">{roleLabel}</p>
-              </div>
-            </SignOutModalButton>
+            <HeaderProfileMenu
+              avatarSrc={avatarSrc}
+              name={session?.user?.name ?? session?.user?.email ?? "Profil"}
+              roleLabel={roleLabel}
+              profileHref={profileHref}
+            />
           </div>
         </div>
       </div>
