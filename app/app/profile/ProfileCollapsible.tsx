@@ -61,7 +61,7 @@ export function ProfileCollapsible({
             aria-expanded={open}
             aria-controls={`panel-${id}`}
           >
-            {open ? "Réduire" : "Déployer"}
+            {open ? "Réduire" : "Ouvrir"}
             <span className={`transition ${open ? "rotate-180" : ""}`}>▼</span>
           </button>
         </div>

@@ -44,7 +44,7 @@ export function MonthNav({ basePath, baseParams, prev, current, next, className,
         className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
         disabled={disabled}
       >
-        ← Précédente
+        ←
       </button>
       <button
         type="button"
@@ -60,7 +60,7 @@ export function MonthNav({ basePath, baseParams, prev, current, next, className,
         className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
         disabled={disabled}
       >
-        Suivante →
+        →
       </button>
     </div>
   );

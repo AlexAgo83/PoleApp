@@ -110,7 +110,7 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
             disabled={isPending}
           >
-            Précédente
+            ←
           </button>
         </form>
         <form onSubmit={handleReset} className="inline-flex">
@@ -129,7 +129,7 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-400/70 hover:bg-white/10 disabled:opacity-60"
             disabled={isPending}
           >
-            Suivante
+            →
           </button>
         </form>
         <span className="text-xs font-normal text-cyan-100">{totalCourses} cours sur la semaine affichée</span>
