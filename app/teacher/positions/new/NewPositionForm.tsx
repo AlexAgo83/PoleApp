@@ -163,46 +163,6 @@ export function NewPositionForm({
             })}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={newMuscle}
-            onChange={(e) => setNewMuscle(e.target.value)}
-            placeholder="Ajouter un muscle/articulation"
-            className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400"
-          />
-          <button
-            type="button"
-            disabled={addingMuscle || newMuscle.trim().length < 2}
-            onClick={async () => {
-              if (newMuscle.trim().length < 2) return;
-              setAddingMuscle(true);
-              setError(null);
-              try {
-                const res = await fetch("/api/muscles", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ name: newMuscle.trim() }),
-                });
-                if (!res.ok) {
-                  const data = await res.json().catch(() => ({}));
-                  throw new Error(data.error ?? "Ajout muscle impossible");
-                }
-                const created = (await res.json()) as Muscle;
-                setMuscleList((prev) => [...prev, created]);
-                setSelectedMuscles((prev) => [...prev, created.id]);
-                setNewMuscle("");
-              } catch (e) {
-                setError((e as Error).message);
-              } finally {
-                setAddingMuscle(false);
-              }
-            }}
-            className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/80 hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {addingMuscle ? "Ajout..." : "Ajouter"}
-          </button>
-        </div>
         <input type="hidden" name="muscles" value="" />
       </div>
 
@@ -212,7 +172,7 @@ export function NewPositionForm({
         </p>
       )}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap justify-end">
         <button
           type="submit"
           disabled={loading}
