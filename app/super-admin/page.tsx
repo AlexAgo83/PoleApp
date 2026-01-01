@@ -175,8 +175,7 @@ export default async function SuperAdminPage({
 
       <section className="panel space-y-3 p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Modules</h2>
-          <p className="text-xs text-slate-300">Accès rapide aux espaces super-admin.</p>
+          <h2 className="text-lg font-semibold text-white">Actions</h2>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {modules.map((mod) => (

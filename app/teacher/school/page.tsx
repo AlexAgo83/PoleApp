@@ -542,8 +542,14 @@ export default async function TeacherSchoolPage({
           </div>
         </div>
 
-        <section className="text-sm text-slate-200">
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</p>
+        <details className="group text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+              Légende
+              <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+              <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
+            </span>
+          </summary>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {legendItems.map((item) => (
               <span
@@ -554,7 +560,7 @@ export default async function TeacherSchoolPage({
               </span>
             ))}
           </div>
-        </section>
+        </details>
 
         <FilterPanel
           storageKey="filters:teacher-school-agenda"
