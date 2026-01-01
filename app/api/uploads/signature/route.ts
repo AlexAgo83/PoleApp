@@ -34,9 +34,8 @@ export async function POST(request: Request) {
 
   try {
     const resourceType = parsed.data.resourceType ?? "image";
-    // On force en authenticated tous les uploads (avatars/images/vidéos) pour éviter les assets publics.
-    const deliveryType = "authenticated";
-    const accessMode = "authenticated";
+    const deliveryType = parsed.data.deliveryType ?? "upload";
+    const accessMode = parsed.data.accessMode ?? (deliveryType === "authenticated" ? "authenticated" : undefined);
 
     const data = signUpload({
       folder: parsed.data.folder,

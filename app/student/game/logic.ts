@@ -24,8 +24,14 @@ type PositionWithMeta = {
   levelRequired: string;
   type: string;
   grips?: string | null;
-  media?: { url: string }[];
+  media?: { publicId?: string | null; kind?: string | null }[];
 };
+
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const imageFromPublicId = (publicId?: string | null) =>
+  publicId && cloudName
+    ? `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/${publicId}`
+    : undefined;
 
 export function buildGameQuestions(mode: GameMode, positions: PositionWithMeta[]): GameQuestion[] {
   const count = mode === "BLITZ_MIX" ? BLITZ_COUNT : QUESTIONS_COUNT;
@@ -40,7 +46,7 @@ export function buildGameQuestions(mode: GameMode, positions: PositionWithMeta[]
           id: position.id,
           prompt: "Quelle est cette position ?",
           image:
-            position.media?.[0]?.url ??
+            imageFromPublicId(position.media?.[0]?.publicId) ??
             `https://placehold.co/800x1000/png?text=${encodeURIComponent(position.name)}`,
           correctOptionId: position.id,
           options,

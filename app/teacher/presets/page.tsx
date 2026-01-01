@@ -168,11 +168,15 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
               return (
                 <li key={preset.id} className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30">
                   <div className="space-y-3">
-                    {preset.imageUrl ? (
-                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
-                        <SafeImage src={preset.imageUrl} alt={preset.title} className="h-full w-full object-cover" />
-                      </div>
-                    ) : null}
+                {preset.imagePublicId ? (
+                  <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
+                    <SafeImage
+                      publicId={preset.imagePublicId}
+                      alt={preset.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : null}
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
                       {preset.discipline ? (
                         <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">{preset.discipline}</span>

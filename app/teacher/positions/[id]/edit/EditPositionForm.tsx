@@ -14,6 +14,7 @@ export function EditPositionForm({
   muscles,
   disciplines,
   selectedMuscleIds,
+  videoPreviewUrl,
 }: {
   position: {
     id: string;
@@ -31,11 +32,18 @@ export function EditPositionForm({
   muscles: Muscle[];
   disciplines: (Discipline & { id?: string })[];
   selectedMuscleIds: string[];
+  videoPreviewUrl?: string;
 }) {
   const video = position.media.find((m) => m.kind === "VIDEO");
-  const [videoUrl, setVideoUrl] = useState<string>(video?.url ?? "");
   const [videoPublicId, setVideoPublicId] = useState<string>(video?.publicId ?? "");
+  const cover = position.media.find((m) => m.kind === "PHOTO");
+  const [imagePublicId, setImagePublicId] = useState<string>(cover?.publicId ?? "");
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>(selectedMuscleIds);
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+  const existingImageUrl =
+    imagePublicId && cloudName
+      ? `https://res.cloudinary.com/${cloudName}/image/upload/${imagePublicId}`
+      : undefined;
 
   const types = Object.values(PositionType);
   const levels = Object.values(PositionLevel);
@@ -73,7 +81,21 @@ export function EditPositionForm({
         textarea
         defaultValue={position.contraindications ?? ""}
       />
-      <Field label="Image URL (placeholder accepté)" name="imageUrl" defaultValue={position.media.find((m) => m.kind === "PHOTO")?.url ?? ""} />
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-slate-100">Image (Cloudinary)</p>
+        <CloudinaryUpload
+          label="Uploader une image"
+          folder="poleapp/positions"
+          resourceType="image"
+          deliveryType="upload"
+          accept="image/*"
+          maxSizeMB={10}
+          currentUrl={existingImageUrl}
+          currentPublicId={imagePublicId || undefined}
+          onChange={(_, publicId) => setImagePublicId(publicId ?? "")}
+        />
+        <input type="hidden" name="imagePublicId" value={imagePublicId} />
+      </div>
 
       <div className="space-y-2">
         <p className="text-sm font-semibold text-slate-100">Vidéo (Cloudinary)</p>
@@ -84,14 +106,12 @@ export function EditPositionForm({
           deliveryType="authenticated"
           accept="video/*"
           maxSizeMB={100}
-          currentUrl={videoUrl || undefined}
+          currentUrl={videoPreviewUrl}
           currentPublicId={videoPublicId || undefined}
-          onChange={(url, publicId) => {
-            setVideoUrl(url ?? "");
+          onChange={(_, publicId) => {
             setVideoPublicId(publicId ?? "");
           }}
         />
-        <input type="hidden" name="videoUrl" value={videoUrl} />
         <input type="hidden" name="videoPublicId" value={videoPublicId} />
       </div>
 

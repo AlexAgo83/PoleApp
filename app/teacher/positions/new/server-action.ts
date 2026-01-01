@@ -1,6 +1,6 @@
 "use server";
 
-import { MediaKind, PositionLevel, PositionType } from "@prisma/client";
+import { MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -18,8 +18,7 @@ const schema = z.object({
   grips: z.string().optional(),
   tips: z.string().optional(),
   contraindications: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  videoUrl: z.string().url().optional(),
+  imagePublicId: z.string().optional(),
   videoPublicId: z.string().optional(),
   muscles: z.array(z.string()).optional(),
 });
@@ -50,14 +49,14 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
       contraindications: data.contraindications,
       createdByUserId: session?.user?.id,
       media:
-        data.imageUrl || data.videoUrl
+        data.imagePublicId || data.videoPublicId
           ? {
               create: [
-                ...(data.imageUrl
-                  ? [{ kind: MediaKind.PHOTO, url: data.imageUrl }]
+                ...(data.imagePublicId
+                  ? [{ kind: MediaKind.PHOTO, publicId: data.imagePublicId } satisfies Prisma.PositionMediaCreateWithoutPositionInput]
                   : []),
-                ...(data.videoUrl
-                  ? [{ kind: MediaKind.VIDEO, url: data.videoUrl, publicId: data.videoPublicId ?? null }]
+                ...(data.videoPublicId
+                  ? [{ kind: MediaKind.VIDEO, publicId: data.videoPublicId } satisfies Prisma.PositionMediaCreateWithoutPositionInput]
                   : []),
               ],
             }

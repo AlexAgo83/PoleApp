@@ -12,8 +12,8 @@ const presetSchema = z.object({
   title: z.string().min(2),
   description: z.string().optional(),
   discipline: z.string().optional(),
-  videoUrl: z.string().url().optional().or(z.literal("")),
-  imageUrl: z.string().url().optional().or(z.literal("")),
+  videoPublicId: z.string().optional().or(z.literal("")),
+  imagePublicId: z.string().optional().or(z.literal("")),
   premiumRequired: z.boolean().optional(),
   teacherId: z.string().cuid().optional(),
   priceCredits: z.coerce.number().min(0).optional(),
@@ -41,8 +41,8 @@ export async function createPresetAdminAction(formData: FormData) {
     title: formData.get("title")?.toString().trim(),
     description: formData.get("description")?.toString().trim() || undefined,
     discipline: disciplineRecord?.name ?? disciplineInput ?? undefined,
-    videoUrl: formData.get("videoUrl")?.toString().trim() || undefined,
-    imageUrl: formData.get("imageUrl")?.toString().trim() || undefined,
+    videoPublicId: formData.get("videoPublicId")?.toString().trim() || undefined,
+    imagePublicId: formData.get("imagePublicId")?.toString().trim() || undefined,
     premiumRequired: formData.get("premiumRequired") === "on",
     priceCredits: formData.get("priceCredits") ? Number(formData.get("priceCredits")) : undefined,
     positionIds: rawPositionIds,
@@ -64,8 +64,8 @@ export async function createPresetAdminAction(formData: FormData) {
       description: parsed.data.description,
       discipline: parsed.data.discipline,
       disciplineId: disciplineRecord?.id ?? fallbackDisciplineId ?? parsed.data.discipline ?? "",
-      videoUrl: parsed.data.videoUrl || null,
-      imageUrl: parsed.data.imageUrl || null,
+      videoPublicId: parsed.data.videoPublicId || null,
+      imagePublicId: parsed.data.imagePublicId || null,
       premiumRequired: parsed.data.premiumRequired ?? false,
       priceCredits: parsed.data.premiumRequired ? null : parsed.data.priceCredits ?? null,
       schoolId: session.user.schoolId,
@@ -95,7 +95,7 @@ export async function deletePresetAdminAction(formData: FormData) {
 
 const presetImageSchema = z.object({
   id: z.string().cuid(),
-  imageUrl: z.string().url().optional().or(z.literal("")),
+  imagePublicId: z.string().optional().or(z.literal("")),
 });
 
 export async function updatePresetImageAdminAction(formData: FormData) {
@@ -105,7 +105,7 @@ export async function updatePresetImageAdminAction(formData: FormData) {
   }
   const parsed = presetImageSchema.safeParse({
     id: formData.get("id")?.toString(),
-    imageUrl: formData.get("imageUrl")?.toString().trim() || undefined,
+    imagePublicId: formData.get("imagePublicId")?.toString().trim() || undefined,
   });
   if (!parsed.success) redirect("/access-denied");
 
@@ -114,7 +114,7 @@ export async function updatePresetImageAdminAction(formData: FormData) {
 
   await prisma.preset.update({
     where: { id: parsed.data.id },
-    data: { imageUrl: parsed.data.imageUrl || null },
+    data: { imagePublicId: parsed.data.imagePublicId || null },
   });
 
   revalidatePath("/admin/presets");

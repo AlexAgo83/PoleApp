@@ -374,7 +374,8 @@ export default async function StudentProgressPage({
                 <div className="relative">
                   {cover ? (
                     <SafeImage
-                      src={cover.url}
+                      publicId={cover.publicId}
+                      src={POSITION_PLACEHOLDER}
                       alt={position.name}
                       width={480}
                       height={360}

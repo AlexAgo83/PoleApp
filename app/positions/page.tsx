@@ -444,7 +444,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 <div className="relative">
                   {cover ? (
                     <SafeImage
-                      src={cover.url}
+                      publicId={cover.publicId}
+                      src={POSITION_PLACEHOLDER}
                       alt={p.name}
                       width={480}
                       height={360}

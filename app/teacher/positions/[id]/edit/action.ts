@@ -29,8 +29,7 @@ const schema = z.object({
   grips: z.string().optional(),
   tips: z.string().optional(),
   contraindications: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  videoUrl: z.string().url().optional(),
+  imagePublicId: z.string().optional(),
   videoPublicId: z.string().optional(),
   muscles: z.array(z.string()).optional(),
 });
@@ -52,8 +51,7 @@ export async function updatePositionAction(formData: FormData) {
     grips: formData.get("grips") || undefined,
     tips: formData.get("tips") || undefined,
     contraindications: formData.get("contraindications") || undefined,
-    imageUrl: formData.get("imageUrl") || undefined,
-    videoUrl: formData.get("videoUrl") || undefined,
+    imagePublicId: formData.get("imagePublicId") || undefined,
     videoPublicId: formData.get("videoPublicId") || undefined,
     muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
   });
@@ -102,15 +100,15 @@ export async function updatePositionAction(formData: FormData) {
       tips: data.tips,
       contraindications: data.contraindications,
       media:
-        data.imageUrl || data.videoUrl
+        data.imagePublicId || data.videoPublicId
           ? {
               deleteMany: { positionId: data.id },
               create: [
-                ...(data.imageUrl
-                  ? [{ kind: MediaKind.PHOTO, url: data.imageUrl }]
+                ...(data.imagePublicId
+                  ? [{ kind: MediaKind.PHOTO, publicId: data.imagePublicId }]
                   : []),
-                ...(data.videoUrl
-                  ? [{ kind: MediaKind.VIDEO, url: data.videoUrl, publicId: data.videoPublicId ?? null }]
+                ...(data.videoPublicId
+                  ? [{ kind: MediaKind.VIDEO, publicId: data.videoPublicId ?? null }]
                   : []),
               ],
             }

@@ -96,11 +96,13 @@ export function generateSignedUrl({
   resourceType = "image",
   deliveryType = "authenticated",
   expiresInSeconds = 3600,
+  format,
 }: {
   publicId: string;
   resourceType?: "image" | "video";
   deliveryType?: "upload" | "authenticated";
   expiresInSeconds?: number;
+  format?: string;
 }) {
   if (!isCloudinaryEnabled()) return null;
   const expiresAt = Math.round(Date.now() / 1000) + expiresInSeconds;
@@ -110,5 +112,6 @@ export function generateSignedUrl({
     sign_url: true,
     expires_at: expiresAt,
     secure: true,
+    format,
   });
 }

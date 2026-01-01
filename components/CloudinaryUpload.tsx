@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ConfirmDeleteButton } from "./ConfirmDeleteButton";
 
@@ -48,9 +48,52 @@ export function CloudinaryUpload({
 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentUrl ?? null);
   const isVideo = resourceType === "video";
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
   const forceAuthenticated = resourceType === "video" || folder.startsWith(avatarFolder);
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+  // si on a seulement un publicId (asset authentifié), on essaie de récupérer une URL signée
+  useEffect(() => {
+    let mounted = true;
+    if (previewUrl || currentUrl || !currentPublicId) return undefined;
+    (async () => {
+      const trySignedUrl = async (deliveryType: "upload" | "authenticated") => {
+        try {
+          const res = await fetch("/api/uploads/signed-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              publicId: currentPublicId,
+              resourceType,
+              deliveryType,
+            }),
+          });
+          if (!res.ok) return undefined;
+          const json = (await res.json()) as { url?: string };
+          return json.url;
+        } catch {
+          return undefined;
+        }
+      };
+
+      let resolved: string | undefined;
+      // priorité authenticated pour les vidéos uploadées, sinon tente upload public
+      resolved = await trySignedUrl(forceAuthenticated ? "authenticated" : "upload");
+      if (!resolved && forceAuthenticated) {
+        resolved = await trySignedUrl("upload");
+      }
+      if (!resolved && cloudName) {
+        resolved = `https://res.cloudinary.com/${cloudName}/${isVideo ? "video" : "image"}/upload/${currentPublicId}`;
+      }
+      if (resolved && mounted) {
+        setPreviewUrl(resolved);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [cloudName, currentPublicId, currentUrl, forceAuthenticated, isVideo, previewUrl, resourceType]);
 
   const handleSelect = async (file?: File | null) => {
     if (!file) return;
@@ -129,6 +172,7 @@ export function CloudinaryUpload({
         throw new Error("Upload Cloudinary échoué");
       }
       const uploaded = await uploadRes.json();
+      setPreviewUrl((uploaded.secure_url as string) ?? null);
       onChange(uploaded.secure_url as string, uploaded.public_id as string);
     } catch (e) {
       setError((e as Error).message);
@@ -154,6 +198,7 @@ export function CloudinaryUpload({
           deliveryType: forceAuthenticated ? "authenticated" : deliveryType,
         }),
       });
+      setPreviewUrl(null);
       onChange(null, null);
     } catch (e) {
       console.error("[cloudinary-upload] delete failed", e);
@@ -167,17 +212,17 @@ export function CloudinaryUpload({
     <div className="space-y-2">
       {label && <p className="text-sm font-semibold text-slate-100">{label}</p>}
       <div className="flex flex-wrap items-center gap-3">
-        {currentUrl ? (
+        {previewUrl ?? currentUrl ? (
           isVideo ? (
             <video
-              src={currentUrl}
+              src={previewUrl ?? currentUrl ?? undefined}
               className="h-24 w-36 rounded-lg object-cover"
               controls
               preload="metadata"
             />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={currentUrl} alt="aperçu" className="h-24 w-24 rounded-lg object-cover" />
+            <img src={previewUrl ?? currentUrl ?? undefined} alt="aperçu" className="h-24 w-24 rounded-lg object-cover" />
           )
         ) : (
           <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-dashed border-white/20 text-xs text-slate-300">
@@ -198,7 +243,7 @@ export function CloudinaryUpload({
           <ConfirmDeleteButton
             type="button"
             onConfirm={handleDelete}
-            disabled={uploading || !currentUrl}
+            disabled={uploading || !(previewUrl ?? currentUrl)}
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Supprimer

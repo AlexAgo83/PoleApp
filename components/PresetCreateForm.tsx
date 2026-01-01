@@ -75,20 +75,20 @@ export function PresetCreateForm({
         />
       </label>
       <label className="text-sm text-slate-200">
-        Lien vidéo
+        Vidéo (publicId)
         <input
-          name="videoUrl"
-          type="url"
-          placeholder="https://..."
+          name="videoPublicId"
+          type="text"
+          placeholder="cloudinary_public_id_video"
           className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
         />
       </label>
       <label className="text-sm text-slate-200">
-        Image (URL)
+        Image (publicId)
         <input
-          name="imageUrl"
-          type="url"
-          placeholder="https://…"
+          name="imagePublicId"
+          type="text"
+          placeholder="cloudinary_public_id_image"
           className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
         />
         <span className="text-xs text-slate-400">
