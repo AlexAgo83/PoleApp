@@ -12,10 +12,11 @@ import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdmi
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
+import { FilterPanel } from "@/components/FilterPanel";
 
 type SearchParams =
-  | { page?: string }
-  | Promise<{ page?: string }>;
+  | { page?: string; q?: string; discipline?: string; price?: string }
+  | Promise<{ page?: string; q?: string; discipline?: string; price?: string }>;
 
 export default async function AdminPresetsPage({ searchParams }: { searchParams?: SearchParams }) {
   const session = await getServerSession(authOptions);
@@ -25,8 +26,38 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
 
   const awaitedParams = (await Promise.resolve(searchParams)) ?? {};
   const page = Math.max(1, Number.parseInt(awaitedParams.page ?? "1", 10) || 1);
+  const q = awaitedParams.q?.toString().trim() || "";
+  const disciplineFilter = awaitedParams.discipline?.toString().trim() || "";
+  const priceFilter = awaitedParams.price?.toString() || "";
+  const activeFilters = [q, disciplineFilter, priceFilter].filter(Boolean).length;
   const take = 10;
   const skip = (page - 1) * take;
+  const whereClause = {
+    schoolId: session.user.schoolId,
+    ...(q
+      ? {
+          OR: [
+            { title: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+    ...(disciplineFilter
+      ? {
+          OR: [
+            { disciplineId: disciplineFilter },
+            { discipline: { equals: disciplineFilter, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+    ...(priceFilter === "premium"
+      ? { premiumRequired: true }
+      : priceFilter === "credits"
+      ? { priceCredits: { gt: 0 } }
+      : priceFilter === "free"
+      ? { premiumRequired: false, priceCredits: 0 }
+      : {}),
+  } as const;
 
   const [positions, presets, disciplines, teachers] = await Promise.all([
     prisma.position.findMany({
@@ -35,7 +66,7 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
       take: 30,
     }),
     prisma.preset.findMany({
-      where: { schoolId: session.user.schoolId },
+      where: whereClause,
       include: {
         positions: { include: { position: { select: { name: true } } } },
         createdBy: { select: { name: true, email: true } },
@@ -56,14 +87,22 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
       orderBy: { name: "asc" },
     }),
   ]);
-  const totalPresets = await prisma.preset.count({ where: { schoolId: session.user.schoolId } });
+  const totalPresets = await prisma.preset.count({ where: whereClause });
   const totalPages = Math.max(1, Math.ceil(totalPresets / take));
+  const queryParams = new URLSearchParams();
+  if (q) queryParams.set("q", q);
+  if (disciplineFilter) queryParams.set("discipline", disciplineFilter);
+  if (priceFilter) queryParams.set("price", priceFilter);
+  const pageParamPrefix = queryParams.toString() ? `${queryParams.toString()}&` : "";
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-6">
       <section className="panel space-y-4 p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Presets existants</h2>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold text-white md:text-2xl">Presets / combos</h1>
+            <p className="text-sm text-slate-300 leading-6">Gère les combos disponibles pour l’école.</p>
+          </div>
           <Link
             href="/positions"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -71,6 +110,72 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
             Positions
           </Link>
         </div>
+        <FilterPanel
+          storageKey="filters:admin-presets"
+          userKey={session.user.id ?? "anon"}
+          title="Filtres"
+          activeCount={activeFilters}
+          className="space-y-3"
+          contentClassName="mt-3"
+        >
+          <form
+            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 md:grid-cols-4 md:items-end"
+            method="get"
+          >
+            <label className="text-sm text-slate-200">
+              Recherche
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Titre ou description"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplines.map((d) => (
+                  <option key={d.id ?? d.name} value={d.id ?? d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Tarification
+              <select
+                name="price"
+                defaultValue={priceFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes</option>
+                <option value="premium">Premium requis</option>
+                <option value="credits">Payant en crédits</option>
+                <option value="free">Gratuit</option>
+              </select>
+            </label>
+            <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-1">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/app/admin/presets"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </FilterPanel>
         {presets.length === 0 ? (
           <p className="text-slate-300">Aucun preset pour le moment.</p>
         ) : (
@@ -139,7 +244,7 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
                 {page > 1 && (
                   <Link
                     className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-                    href={`?page=${Math.max(1, page - 1)}`}
+                    href={`?${pageParamPrefix}page=${Math.max(1, page - 1)}`}
                   >
                     Précédent
                   </Link>
@@ -147,7 +252,7 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
                 {page < totalPages && (
                   <Link
                     className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-                    href={`?page=${Math.min(totalPages, page + 1)}`}
+                    href={`?${pageParamPrefix}page=${Math.min(totalPages, page + 1)}`}
                   >
                     Suivant
                   </Link>
