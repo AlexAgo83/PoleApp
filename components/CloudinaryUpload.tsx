@@ -108,8 +108,8 @@ export function CloudinaryUpload({
         const img = new Image();
         img.src = blobUrl;
         await img.decode();
-        const limitW = maxWidth ?? 1080;
-        const limitH = maxHeight ?? 1080;
+        const limitW = maxWidth ?? (transformPreset === "avatar" ? 3000 : 1080);
+        const limitH = maxHeight ?? (transformPreset === "avatar" ? 3000 : 1080);
         if (img.naturalWidth > limitW || img.naturalHeight > limitH) {
           setError(`Image trop grande (${img.naturalWidth}x${img.naturalHeight}). Max ${limitW}x${limitH}px.`);
           URL.revokeObjectURL(blobUrl);
