@@ -49,6 +49,7 @@ export async function FoxPageHeader({
   profileImageUrl,
 }: Props) {
   const session = await getServerSession(authOptions).catch(() => null);
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
   let userRecord: { avatarUrl: string | null; avatarPublicId: string | null; name: string | null; email: string | null } | null = null;
   let school: { name: string | null; photoUrl: string | null } | null = null;
   let userLookupAttempted = false;
@@ -96,6 +97,7 @@ export async function FoxPageHeader({
       ? { width: "100vw", marginLeft: "calc(50% - 50vw)" }
       : {}),
   } as React.CSSProperties;
+  const superAdminImage = "/redFox_color.png";
   const avatarSrc = resolveAvatarUrl({
     avatarPublicId:
       (session?.user as any)?.avatarPublicId ??
@@ -106,7 +108,7 @@ export async function FoxPageHeader({
       (session?.user as any)?.avatarUrl ??
       userRecord?.avatarUrl ??
       null,
-    placeholder: AVATAR_PLACEHOLDER,
+    placeholder: isSuperAdmin ? superAdminImage : AVATAR_PLACEHOLDER,
   });
 
   const roleLabel =
@@ -116,12 +118,16 @@ export async function FoxPageHeader({
         ? "Professeur"
         : session?.user?.role === "STUDENT"
           ? "Élève"
-          : "Invité";
+          : session?.user?.role === "SUPER_ADMIN"
+            ? "Super-Admin"
+            : "Invité";
   const profileHref =
     session?.user?.role === "TEACHER" && session.user.id
       ? `/app/teachers/${session.user.id}`
       : "/app/profile";
-  const schoolName = school?.name || title || "Mon école";
+  const schoolName = isSuperAdmin ? "Dashboard" : school?.name || title || "Mon école";
+  const schoolImage = isSuperAdmin ? superAdminImage : school?.photoUrl ?? null;
+  const eyebrowText = isSuperAdmin ? "Espace super-admin" : eyebrow ?? `Espace ${roleLabel.toLowerCase()}`;
   const navLinks =
     session?.user?.role === "STUDENT"
       ? [
@@ -157,8 +163,8 @@ export async function FoxPageHeader({
             className="flex min-w-0 items-center gap-2 rounded-xl px-1 py-0.5 transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200 md:gap-3"
           >
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 shadow-lg shadow-black/30 md:h-14 md:w-14">
-              {school?.photoUrl ? (
-                <img src={school.photoUrl} alt={schoolName} className="h-full w-full object-cover" />
+              {schoolImage ? (
+                <img src={schoolImage} alt={schoolName} className="h-full w-full object-cover" />
               ) : (
                 <span className="text-xl font-extrabold text-white md:text-2xl">
                   {(schoolName || "E")[0]?.toUpperCase()}
@@ -182,7 +188,7 @@ export async function FoxPageHeader({
                 </span>
               </div>
               <span className="text-indigo-100 leading-tight whitespace-nowrap [font-size:clamp(11px,3.2vw,15px)] md:[font-size:clamp(12px,2.5vw,16px)] max-w-[8.4rem] md:max-w-[12.2rem]">
-                {eyebrow ?? `Espace ${roleLabel.toLowerCase()}`}
+                {eyebrowText}
               </span>
             </div>
           </Link>

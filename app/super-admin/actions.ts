@@ -99,6 +99,7 @@ const settingsSchema = z.object({
 
 export async function updateSettingsAction(formData: FormData) {
   await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const parsed = settingsSchema.safeParse({
     vatPercent: formData.get("vatPercent"),
     currency: formData.get("currency"),
@@ -123,7 +124,8 @@ export async function updateSettingsAction(formData: FormData) {
     },
   });
   await logAudit("settings:update", "global", parsed.data);
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
 }
 
 const schoolSchema = z.object({
@@ -133,6 +135,7 @@ const schoolSchema = z.object({
 
 export async function createSchoolAction(formData: FormData) {
   const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const parsed = schoolSchema.safeParse({
     name: formData.get("name"),
     website: formData.get("website")?.toString().trim(),
@@ -145,11 +148,13 @@ export async function createSchoolAction(formData: FormData) {
     },
   });
   await logAudit("school:create", school.id, { name: school.name, by: admin.email });
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
 }
 
 export async function toggleArchiveSchoolAction(formData: FormData) {
   const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const schoolId = formData.get("schoolId")?.toString();
   const mode = formData.get("mode")?.toString();
   if (!schoolId || !mode) throw new Error("Requête invalide");
@@ -165,7 +170,8 @@ export async function toggleArchiveSchoolAction(formData: FormData) {
     data: { archivedAt },
   });
   await logAudit(`school:${mode}`, schoolId, { name: school.name, by: admin.email });
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
 }
 
 const assignAdminSchema = z.object({
@@ -175,6 +181,7 @@ const assignAdminSchema = z.object({
 
 export async function assignSchoolAdminAction(formData: FormData) {
   const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const parsed = assignAdminSchema.safeParse({
     schoolId: formData.get("schoolId"),
     email: formData.get("email"),
@@ -192,7 +199,8 @@ export async function assignSchoolAdminAction(formData: FormData) {
     },
   });
   await logAudit("school:assign-admin", parsed.data.schoolId, { email: user.email, by: admin.email });
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
 }
 
 const promoteSchema = z.object({
@@ -202,6 +210,7 @@ const promoteSchema = z.object({
 
 export async function promoteSuperAdminAction(formData: FormData) {
   const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const parsed = promoteSchema.safeParse({
     email: formData.get("email"),
     action: formData.get("action"),
@@ -221,7 +230,8 @@ export async function promoteSuperAdminAction(formData: FormData) {
     email: user.email,
     by: admin.email,
   });
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
 }
 
 const resetSchema = z.object({
@@ -230,17 +240,18 @@ const resetSchema = z.object({
 
 export async function resetUserPasswordAction(formData: FormData) {
   const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   try {
     const parsed = resetSchema.safeParse({
       email: formData.get("email"),
     });
     if (!parsed.success) {
-      redirect(`${basePath}?flash=reset-invalid`);
+      redirect(`${redirectTo}?flash=reset-invalid`);
     }
 
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
     if (!user) {
-      redirect(`${basePath}?flash=reset-not-found`);
+      redirect(`${redirectTo}?flash=reset-not-found`);
     }
 
     const tempPassword = crypto.randomBytes(9).toString("base64url").slice(0, 12);
@@ -274,10 +285,13 @@ Connecte-toi et change-le dès que possible.`;
       email: user.email,
       mail: mailResult.sent ? "sent" : "skipped",
     });
-    redirect(`${basePath}?${qs.toString()}`);
+    revalidatePath(redirectTo);
+    if (redirectTo !== basePath) revalidatePath(basePath);
+    redirect(`${redirectTo}?${qs.toString()}`);
   } catch (error) {
     console.error("resetUserPasswordAction", error);
-    redirect(`${basePath}?flash=reset-invalid`);
+    revalidatePath(redirectTo);
+    redirect(`${redirectTo}?flash=reset-invalid`);
   }
 }
 
@@ -288,6 +302,7 @@ function euroToCents(value: number) {
 
 export async function upsertSubscriptionOfferAction(formData: FormData) {
   await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const name = formData.get("name")?.toString().trim() ?? "";
   const monthly = toNumberOrZero(formData.get("monthly"));
   const annual = toNumberOrZero(formData.get("annual"));
@@ -309,8 +324,8 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
   if (errors.length > 0) {
     const qs = new URLSearchParams({ flash: "invalid-offer", error: errors.join("; ") });
     console.error("super-admin invalid offer", errors.join("; "), { form: Object.fromEntries(formData.entries()) });
-    revalidatePath(basePath);
-    redirect(`${basePath}?${qs.toString()}`);
+    revalidatePath(redirectTo);
+    redirect(`${redirectTo}?${qs.toString()}`);
   }
 
   const payload = {
@@ -333,11 +348,12 @@ export async function upsertSubscriptionOfferAction(formData: FormData) {
     const created = await prisma.subscriptionOffer.create({ data: payload });
     await logAudit("offer:subscription:create", created.id, payload);
   }
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
 }
 
 export async function upsertCreditPackOfferAction(formData: FormData) {
   await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const name = formData.get("name")?.toString().trim() ?? "";
   const credits = toNumberOrZero(formData.get("credits"));
   const price = toNumberOrZero(formData.get("price"));
@@ -355,8 +371,8 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
   if (errors.length > 0) {
     const qs = new URLSearchParams({ flash: "invalid-pack", error: errors.join("; ") });
     console.error("super-admin invalid pack", errors.join("; "), { form: Object.fromEntries(formData.entries()) });
-    revalidatePath(basePath);
-    redirect(`${basePath}?${qs.toString()}`);
+    revalidatePath(redirectTo);
+    redirect(`${redirectTo}?${qs.toString()}`);
   }
 
   const payload = {
@@ -377,25 +393,27 @@ export async function upsertCreditPackOfferAction(formData: FormData) {
     const created = await prisma.creditPackOffer.create({ data: payload });
     await logAudit("offer:pack:create", created.id, payload);
   }
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
 }
 
 export async function deleteSubscriptionOfferAction(formData: FormData) {
   await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("ID manquant");
   await prisma.subscriptionOffer.delete({ where: { id } });
   await logAudit("offer:subscription:delete", id);
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
 }
 
 export async function deleteCreditPackOfferAction(formData: FormData) {
   await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
   const id = formData.get("id")?.toString();
   if (!id) throw new Error("ID manquant");
   await prisma.creditPackOffer.delete({ where: { id } });
   await logAudit("offer:pack:delete", id);
-  revalidatePath(basePath);
+  revalidatePath(redirectTo);
 }
 
 function toNumberOrZero(val: FormDataEntryValue | null, fallback = 0) {

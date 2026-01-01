@@ -11,14 +11,6 @@ const billingStatus = "Livré";
 
 const moduleSections = [
   {
-    title: "Super Admin",
-    href: "/super-admin",
-    description: "Backoffice global : écoles, admins, TVA/devise, offres abonnements/packs, audit.",
-    status: "v0.8.2",
-    role: "Super Admin",
-    icon: "🛡️",
-  },
-  {
     title: "Positions",
     href: "/positions",
     description:
