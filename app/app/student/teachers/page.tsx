@@ -155,26 +155,28 @@ export default async function StudentTeachersPage({
                   key={teacher.id}
                   className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
                 >
-                  <div className="flex gap-3">
-                    <SafeImage
-                      src={avatar}
-                      alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
-                      width={64}
-                      height={64}
-                      className="h-16 w-16 rounded-full border border-white/10 object-cover shadow"
-                      fallbackSrc={TEACHER_AVATAR_PLACEHOLDER}
-                    />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-base font-semibold text-white">
-                        {teacher.name ?? "Professeur"}
-                      </p>
-                      <p className="text-sm text-slate-300">{teacher.email}</p>
-                      <p className="text-sm text-slate-400">Professeur de ton école</p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div className="flex gap-3 sm:flex-1">
+                      <SafeImage
+                        src={avatar}
+                        alt={`Avatar de ${teacher.name ?? teacher.email ?? "Professeur"}`}
+                        width={64}
+                        height={64}
+                        className="h-16 w-16 shrink-0 rounded-full border border-white/10 object-cover shadow"
+                        fallbackSrc={TEACHER_AVATAR_PLACEHOLDER}
+                      />
+                      <div className="min-w-0 space-y-1 sm:flex-1">
+                        <p className="break-words text-base font-semibold text-white">
+                          {teacher.name ?? "Professeur"}
+                        </p>
+                        <p className="break-words text-sm text-slate-300">{teacher.email}</p>
+                        <p className="text-sm text-slate-400">Professeur de ton école</p>
+                      </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex w-full items-center sm:w-auto sm:justify-end">
                       <Link
                         href={`/app/teachers/${teacher.id}?from=/app/student/teachers`}
-                        className="inline-flex shrink-0 items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-1 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
+                        className="inline-flex w-full justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20 sm:w-auto sm:shrink-0"
                         style={{ minHeight: "2.25rem" }}
                       >
                         Voir la fiche
