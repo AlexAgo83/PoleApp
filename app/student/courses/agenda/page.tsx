@@ -481,14 +481,12 @@ export default async function StudentCoursesAgendaPage({
           </div>
         </div>
 
-        <details className="group rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+        <details className="group text-sm text-slate-200">
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-            <span className="text-xs uppercase tracking-[0.14em] text-cyan-100">Légende</span>
-            <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white group-open:hidden">
-              Afficher
-            </span>
-            <span className="hidden rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white group-open:inline-flex">
-              Masquer
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+              Légende
+              <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+              <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
             </span>
           </summary>
           <div className="mt-3 flex flex-wrap items-center gap-2">
