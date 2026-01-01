@@ -141,7 +141,10 @@ export default async function StudentCoursesPage({
     ...(studioFilter ? { studioId: studioFilter } : {}),
     ...(disciplineFilters.length > 0
       ? {
-          disciplineId: { in: disciplineFilters },
+          OR: [
+            { disciplineId: { in: disciplineFilters } },
+            { discipline: { in: disciplineFilters, mode: "insensitive" as Prisma.QueryMode } },
+          ],
         }
       : {}),
     ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
@@ -383,52 +386,21 @@ export default async function StudentCoursesPage({
                 ))}
               </select>
             </label>
-            <fieldset className="text-sm text-slate-200">
-              <legend className="mb-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Discipline</legend>
-              <div className="flex flex-wrap gap-2">
-                {disciplines.slice(0, 6).map((d, idx) => (
-                  <label
-                    key={`${d.name}-${idx}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
-                  >
-                    <input
-                      type="checkbox"
-                      name="discipline"
-                      value={d.id ?? d.name}
-                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
-                      className="h-4 w-4 rounded border-white/20 bg-white/5"
-                    />
-                    <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilters[0] ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplines.map((d) => (
+                  <option key={d.id ?? d.name} value={d.id ?? d.name}>
                     {d.name}
-                  </label>
+                  </option>
                 ))}
-              </div>
-              {disciplines.length > 6 && (
-                <details className="mt-2 space-y-2">
-                  <summary className="cursor-pointer text-xs text-slate-300 hover:text-white">
-                    Voir plus ({disciplines.length - 6})
-                  </summary>
-                  <div className="grid max-h-40 grid-cols-2 gap-2 overflow-auto pr-1 md:grid-cols-3">
-                    {disciplines.slice(6).map((d, idx) => (
-                      <label
-                        key={`${d.name}-extra-${idx}`}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
-                      >
-                        <input
-                          type="checkbox"
-                          name="discipline"
-                          value={d.id ?? d.name}
-                          defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
-                          className="h-4 w-4 rounded border-white/20 bg-white/5"
-                        />
-                        <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />
-                        {d.name}
-                      </label>
-                    ))}
-                  </div>
-                </details>
-              )}
-            </fieldset>
+              </select>
+            </label>
             <label className="text-sm text-slate-200">
               Tri
               <select

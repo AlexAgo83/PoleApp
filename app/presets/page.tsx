@@ -70,7 +70,10 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       : {}),
     ...(disciplineFilters.length
       ? {
-          disciplineId: { in: disciplineFilters },
+          OR: [
+            { disciplineId: { in: disciplineFilters } },
+            { discipline: { in: disciplineFilters, mode: "insensitive" } },
+          ],
         }
       : {}),
   };

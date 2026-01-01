@@ -384,30 +384,21 @@ export default async function CoursesAgendaPage({
                 ))}
               </select>
             </label>
-            <fieldset className="text-sm text-slate-200">
-              <legend className="mb-1">Discipline</legend>
-              <div className="flex flex-wrap gap-2">
-                {disciplines.map((d, idx) => (
-                  <label
-                    key={`${d.name}-${idx}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
-                  >
-                    <input
-                      type="checkbox"
-                      name="discipline"
-                      value={d.id ?? d.name}
-                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
-                      className="h-4 w-4 rounded border-white/20 bg-white/5"
-                    />
-                  <span
-                    className="inline-flex h-3 w-3 rounded-full border border-white/20"
-                    style={{ backgroundColor: d.color ?? undefined }}
-                  />
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilters[0] ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplines.map((d) => (
+                  <option key={d.id ?? d.name} value={d.id ?? d.name}>
                     {d.name}
-                  </label>
+                  </option>
                 ))}
-              </div>
-            </fieldset>
+              </select>
+            </label>
             <label className="text-sm text-slate-200">
               Niveau (libellé)
               <input

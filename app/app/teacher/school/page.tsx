@@ -270,7 +270,10 @@ export default async function TeacherSchoolPage({
         ...(onlyMine ? { teacherId: session.user.id } : {}),
         ...(disciplineFilters.length > 0
           ? {
-              disciplineId: { in: disciplineFilters },
+              OR: [
+                { disciplineId: { in: disciplineFilters } },
+                { discipline: { in: disciplineFilters, mode: Prisma.QueryMode.insensitive } },
+              ],
             }
           : {}),
         ...(q

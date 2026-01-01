@@ -379,7 +379,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: main haute (exterieur) : baseball grip / main basse (interieur) : full bracket
+- Grip: Baseball grip, Full bracket
 
 ## Cradle extension
 **Description**
@@ -592,7 +592,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: 🦵 inter : accroche la pole à l’interieur du genou, cuisse horizontale, pied pointé vers le sol / 🦵 exter : jambe d’appui de terre droite / ✋ inter : baseball grip / ✋ exter : port de bras
+- Grip: Non renseigné
 
 ## Ballerina
 **Description**
@@ -631,7 +631,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: 🤚 inter : baseball (à verifier) / 🤚 exter : half-bracket grip.
+- Grip: Baseball, Half-bracket grip
 
 ## Corkscrew (enroulé dorsal)
 **Description**
@@ -908,7 +908,7 @@
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Avancé
 - Type: WARMUP
-- Grip: /
+- Grip: Non renseigné
 
 ## Renfo stretch à la barre
 **Description**
