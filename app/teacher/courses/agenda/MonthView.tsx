@@ -141,7 +141,7 @@ export function MonthView({
           />
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 lg:grid-cols-7">
+      <div className="mt-3 grid grid-cols-2 gap-1.5 text-sm text-slate-200 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
         {cells.map((cell, idx) => {
           const weekDayIndex = (idx % 7) + 1;
           const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
@@ -157,8 +157,8 @@ export function MonthView({
           return (
             <div
               key={`${month}-${idx}`}
-              className={`rounded-xl p-2 text-left ${hideOnMobileMonth} ${
-                !cell.courses || cell.courses.length === 0 ? "min-h-[40px] md:min-h-[80px]" : "min-h-[80px]"
+              className={`rounded-xl px-1 pb-1 text-left ${hideOnMobileMonth} ${
+                !cell.courses || cell.courses.length === 0 ? "min-h-[56px] md:min-h-[80px]" : "min-h-[80px]"
               } ${
                 isToday
                   ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30"
@@ -191,7 +191,7 @@ export function MonthView({
                     <Link
                       key={course.id}
                       href={`/teacher/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
-                      className={`relative mt-1 block w-full rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
+                      className={`relative mt-1 block w-full rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
                         course.isVirtual
                           ? past
                             ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
@@ -201,31 +201,31 @@ export function MonthView({
                           : "border-white/10 bg-white/10 text-white"
                       }`}
                     >
-                      <div className="space-y-0.5 overflow-hidden pr-6">
+                      <div className="flex-1 space-y-0.5 overflow-hidden">
                         <p className="text-[9px] text-cyan-100 whitespace-nowrap">
                           {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
                           - {formatDuration(course.durationMinutes ?? 60)}
                         </p>
-                        <p className="truncate text-[11px] font-semibold text-white">
+                        <p className="text-[11px] font-semibold text-white leading-snug break-words">
                           {course.title ?? "Cours"}
                         </p>
-                        <p className="truncate text-[10px] text-cyan-100">
+                        <p className="text-[10px] text-cyan-100 break-words">
                           {course.teacherName}
                         </p>
-                        <p className="truncate text-[10px] text-slate-200">
+                        <p className="text-[10px] text-slate-200 break-words">
                           {course.studioName}
                         </p>
-                          {course.isVirtual && (
-                            <p
-                              className="truncate text-[12px] text-amber-100"
-                              title="Occurrence programmée · positions à définir"
-                              aria-label="Occurrence programmée"
-                            >
-                              🗓️
-                            </p>
-                          )}
+                        {course.isVirtual && (
+                          <p
+                            className="text-[12px] text-amber-100"
+                            title="Occurrence programmée · positions à définir"
+                            aria-label="Occurrence programmée"
+                          >
+                            🗓️
+                          </p>
+                        )}
                       </div>
-                      <div className="absolute bottom-1 right-1 flex flex-col items-end gap-1">
+                      <div className="mt-2 flex justify-end">
                         <span
                           className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
                         >
