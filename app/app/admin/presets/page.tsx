@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-import { createPresetAdminAction, deletePresetAdminAction, updatePresetImageAdminAction } from "./actions";
+import { createPresetAdminAction, deletePresetAdminAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";

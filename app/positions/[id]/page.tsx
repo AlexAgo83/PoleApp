@@ -33,24 +33,6 @@ const levelLabels: Record<PositionLevel, string> = {
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
 };
-
-function hexToRgba(color: string, alpha: number) {
-  if (!color || !color.startsWith("#")) return null;
-  let hex = color.slice(1);
-  if (hex.length === 3) {
-    hex = hex
-      .split("")
-      .map((c) => c + c)
-      .join("");
-  }
-  if (hex.length !== 6) return null;
-  const num = Number.parseInt(hex, 16);
-  const r = (num >> 16) & 255;
-  const g = (num >> 8) & 255;
-  const b = num & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
 export default async function PositionDetailPage({ params, searchParams }: Props) {
   const awaitedParams = await params;
   if (!awaitedParams?.id) {
@@ -126,21 +108,6 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     orderBy: { name: "asc" },
   });
   const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
-  const disciplineColors = new Map(
-    disciplineRows
-      .filter((d) => d.name)
-      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
-  );
-  const disciplineStyle = (name?: string | null) => {
-    if (!name) return undefined;
-    const color = disciplineColors.get(name.toLowerCase());
-    if (!color) return undefined;
-    return {
-      borderColor: color,
-      color,
-      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
-    };
-  };
 
   const position = await prisma.position.findUnique({
     where: { id: awaitedParams.id },
@@ -250,7 +217,6 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const encodedFrom = safeFrom ? encodeURIComponent(safeFrom) : undefined;
 
   const hasNav = (isFromPositionsList && navList.length > 0) || (isFromProgress && navList.length > 0);
-  const navLabel = isFromPositionsList ? "liste filtrée" : isFromProgress ? "progression" : "positions";
   const combos =
     (await prisma.preset.findMany({
       where: {
@@ -437,16 +403,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               <div className="space-y-4 text-slate-200">
                 <div className="space-y-2">
                   <p className="text-sm text-cyan-200">Description</p>
-                  <p className="text-sm text-slate-100">
+                  <p className="whitespace-pre-wrap text-sm leading-6 text-slate-100">
                     {position.description ?? "Aucune description"}
                   </p>
                 </div>
-                {position.tips && (
-                  <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-sm font-semibold text-white">Conseils</p>
-                    <p className="text-sm text-slate-100">{position.tips}</p>
-                  </div>
-                )}
                 {position.muscles.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-sm text-cyan-200">Muscles / articulations sollicités</p>
@@ -470,9 +430,15 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 {position.contraindications && (
                   <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-4">
                     <p className="text-sm font-semibold text-white">Contre-indications</p>
-                    <p className="text-sm text-slate-100">
+                    <p className="whitespace-pre-wrap text-sm leading-6 text-slate-100">
                       {position.contraindications}
                     </p>
+                  </div>
+                )}
+                {position.tips && (
+                  <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-sm font-semibold text-white">Conseils</p>
+                    <p className="whitespace-pre-wrap text-sm leading-6 text-slate-100">{position.tips}</p>
                   </div>
                 )}
               </div>

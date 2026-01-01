@@ -67,13 +67,6 @@ const disciplineSchema = z.object({
   color: z.string().trim().min(3).max(16),
 });
 
-function redirectWithFlash(message: string, type: "success" | "error" = "success"): never {
-  const params = new URLSearchParams();
-  params.set("flash", type);
-  params.set("flashMessage", message);
-  redirect(`/app/admin/school?${params.toString()}`);
-}
-
 export async function createDisciplineAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {

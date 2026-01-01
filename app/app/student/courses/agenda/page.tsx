@@ -27,15 +27,6 @@ function endOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
 }
 
-function formatDuration(minutes: number) {
-  const hrs = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (hrs > 0) {
-    return `${hrs}h${mins.toString().padStart(2, "0")}`;
-  }
-  return `${mins} min`;
-}
-
 export default async function StudentCoursesAgendaPage({
   searchParams,
 }: {

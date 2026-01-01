@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
-import { DisciplineMultiSelect } from "@/components/DisciplineMultiSelect";
 import { BuyCreditsButton } from "@/app/app/student/BuyCreditsButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";

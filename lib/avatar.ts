@@ -1,16 +1,10 @@
-import {
-  generateSignedUrl,
-  getDefaultAvatarPublicIds,
-  isCloudinaryEnabled,
-  isDefaultAvatarPublicId,
-} from "./cloudinary";
+import { generateSignedUrl, isCloudinaryEnabled, isDefaultAvatarPublicId } from "./cloudinary";
 
 type AvatarParams = {
   avatarPublicId?: string | null;
   avatarUrl?: string | null;
   placeholder: string;
   deliveryType?: "upload" | "authenticated";
-  seedKey?: string;
 };
 
 export function resolveAvatarUrl({
@@ -18,7 +12,6 @@ export function resolveAvatarUrl({
   avatarUrl,
   placeholder,
   deliveryType = "authenticated",
-  seedKey,
 }: AvatarParams) {
   const effectiveDelivery =
     avatarPublicId && isDefaultAvatarPublicId(avatarPublicId) ? "upload" : deliveryType;

@@ -68,12 +68,6 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
   const skip = (safePage - 1) * PAGE_SIZE;
-  const school = await prisma.school.findUnique({
-    where: { id: session.user.schoolId },
-    select: { name: true, photoUrl: true },
-  });
-  const schoolPhoto = school?.photoUrl?.trim() || COURSE_PLACEHOLDER;
-
   const teachers = await prisma.user.findMany({
     where: whereClause,
     select: {

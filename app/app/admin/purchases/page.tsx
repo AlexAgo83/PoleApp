@@ -7,12 +7,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { prisma } from "@/lib/prisma";
-
-type PurchaseRow = Prisma.PurchaseGetPayload<{
-  include: { user: { select: { name: true; email: true; isPremium: true; credits: true } } };
-}>;
 
 function formatEuro(cents: number) {
   return `${(cents / 100).toFixed(2)} €`;
