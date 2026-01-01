@@ -40,6 +40,12 @@ export async function GET(req: Request) {
   const studioParam = searchParams.get("studio") || undefined;
   const q = searchParams.get("q")?.trim() || undefined;
   const disciplineParam = searchParams.get("discipline")?.trim() || undefined;
+  const disciplineFilters = disciplineParam
+    ? disciplineParam
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+    : [];
   const levelParam = searchParams.get("level")?.trim() || undefined;
   const fromParam = searchParams.get("from") || undefined;
   const toParam = searchParams.get("to") || undefined;
@@ -62,9 +68,9 @@ export async function GET(req: Request) {
           OR: [{ title: { contains: q, mode: "insensitive" as Prisma.QueryMode } }],
         }
       : {}),
-    ...(disciplineParam
+    ...(disciplineFilters.length > 0
       ? {
-          discipline: { contains: disciplineParam, mode: "insensitive" as Prisma.QueryMode },
+          disciplineId: { in: disciplineFilters },
         }
       : {}),
     ...(levelParam
@@ -76,13 +82,32 @@ export async function GET(req: Request) {
 
   const courses = await prisma.course.findMany({
     where: whereBase,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      disciplineId: true,
+      date: true,
+      durationMinutes: true,
+      isVirtual: true,
       teacher: { select: { name: true, email: true } },
       studio: { select: { name: true } },
       _count: { select: { positions: true } },
     },
     orderBy: { date: "asc" },
   });
+
+  const disciplineIds = Array.from(new Set(courses.map((c: any) => c.disciplineId).filter(Boolean)));
+  const disciplineNameById =
+    disciplineIds.length > 0
+      ? Object.fromEntries(
+          (
+            await prisma.discipline.findMany({
+              where: { id: { in: disciplineIds } },
+              select: { id: true, name: true },
+            })
+          ).map((d) => [d.id, d.name])
+        )
+      : {};
 
   const daysInMonth = monthEnd.getDate();
   const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
@@ -111,6 +136,8 @@ export async function GET(req: Request) {
     courses: (cell.courses ?? []).map((course) => ({
       id: course.id,
       title: course.title,
+      disciplineId: course.disciplineId,
+      discipline: course.disciplineId ? disciplineNameById[course.disciplineId] ?? null : null,
       date: course.date instanceof Date ? course.date.toISOString() : course.date,
       durationMinutes: course.durationMinutes,
       teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
@@ -128,5 +155,6 @@ export async function GET(req: Request) {
     nextMonth: formatMonthKey(nextMonth),
     cells,
     hasCourses: courses.length > 0,
+    disciplineNameById,
   });
 }

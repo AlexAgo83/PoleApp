@@ -144,7 +144,10 @@ export default async function CoursesAgendaPage({
         : {}),
       ...(disciplineFilters.length > 0
         ? {
-            OR: disciplineFilters.map((d) => ({ discipline: { contains: d, mode: "insensitive" as const } })),
+            OR: [
+              { disciplineId: { in: disciplineFilters } },
+              { discipline: { in: disciplineFilters, mode: "insensitive" as const } },
+            ],
           }
         : {}),
       ...(levelFilter
@@ -161,11 +164,6 @@ export default async function CoursesAgendaPage({
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
-  const courseDistinctDisciplines = await prisma.course.findMany({
-    where: { schoolId: session.user.schoolId },
-    select: { discipline: true },
-    distinct: ["discipline"],
-  });
   const teachers = await prisma.user.findMany({
     where: { schoolId: session.user.schoolId, role: "TEACHER" },
     select: { id: true, name: true, email: true },
@@ -180,18 +178,10 @@ export default async function CoursesAgendaPage({
       })
       .catch(() => [])) ?? [];
   const disciplines = (() => {
-    const legacy = courseDistinctDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
     const merged: { id?: string; name: string; color?: string | null }[] = [...disciplineRows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
     return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
   })();
+  const disciplineNameById = new Map((disciplines as any[]).map((d) => [d.id, d.name]));
 
   const daysInMonth = monthEnd.getDate();
   const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
@@ -229,6 +219,8 @@ export default async function CoursesAgendaPage({
     courses: (cell.courses ?? []).map((course) => ({
       id: course.id,
       title: course.title,
+      disciplineId: (course as any).disciplineId ?? null,
+      discipline: disciplineNameById.get((course as any).disciplineId ?? "") ?? null,
       date: course.date instanceof Date ? course.date.toISOString() : course.date,
       durationMinutes: course.durationMinutes,
       teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
@@ -279,6 +271,8 @@ export default async function CoursesAgendaPage({
         return {
           id: course.id,
           title: course.title,
+          disciplineId: (course as any).disciplineId ?? null,
+          discipline: disciplineNameById.get((course as any).disciplineId ?? "") ?? null,
           date: course.date.toISOString(),
           durationMinutes: course.durationMinutes,
           teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
@@ -401,8 +395,8 @@ export default async function CoursesAgendaPage({
                     <input
                       type="checkbox"
                       name="discipline"
-                      value={d.name}
-                      defaultChecked={disciplineFilters.includes(d.name)}
+                      value={d.id ?? d.name}
+                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
                   <span
@@ -486,7 +480,7 @@ export default async function CoursesAgendaPage({
                   key={d}
                   className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200"
                 >
-                  Discipline : “{d}”
+                  Discipline : “{disciplineNameById.get(d) ?? d}”
                 </span>
               ))}
             {levelFilter && (

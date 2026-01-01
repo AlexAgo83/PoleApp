@@ -6,7 +6,8 @@ import { createPortal } from "react-dom";
 import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 type Student = { id: string; name: string | null; email: string };
-type Position = { id: string; name: string; type: string; discipline?: string | null };
+type Position = { id: string; name: string; type: string; discipline?: string | null; disciplineId?: string | null };
+type DisciplineOption = { id?: string; name: string; color?: string | null };
 type Teacher = { id: string; name: string | null; email: string };
 type Studio = { id: string; name: string };
 type ProgressRecord = {
@@ -40,7 +41,7 @@ type Props = {
   defaultPhotoUrl?: string | null;
   defaultDiscipline?: string | null;
   progressByStudent?: ProgressRecord[];
-  disciplines?: { name: string; color?: string }[];
+  disciplines?: DisciplineOption[];
   teacherFavorites?: Record<string, string[]>;
   studentsWithActiveInjury?: Record<string, number>;
   formId?: string;
@@ -247,7 +248,7 @@ export function CourseForm({
   const hasDefaultDisciplineInList =
     defaultDiscipline &&
     disciplines.some(
-      (d) => d.name.toLowerCase() === defaultDiscipline.toLowerCase()
+      (d) => (d.id && d.id === defaultDiscipline) || d.name.toLowerCase() === defaultDiscipline.toLowerCase()
     );
   const favoritePositionsForTeacher = useMemo(() => {
     return new Set(teacherFavorites[selectedTeacherId] ?? []);
@@ -255,7 +256,9 @@ export function CourseForm({
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions;
     const base = positions.filter(
-      (p) => (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase()
+      (p) =>
+        (p.disciplineId && p.disciplineId === selectedDiscipline) ||
+        (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase()
     );
     // Ensure already sélectionnées restent visibles même si leur discipline ne matche pas (édition d'un cours avec valeurs legacy)
     if (selectedPositions.length === 0) return base;
@@ -434,23 +437,23 @@ export function CourseForm({
           </label>
         </div>
           <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
-            <label className="text-sm text-slate-200">
-              Discipline
-              <select
-                name="discipline"
-                value={selectedDiscipline}
-                onChange={(e) => setSelectedDiscipline(e.target.value)}
-                required
-                className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-              >
-                <option value="">Sélectionner une discipline</option>
-                {disciplines.map((d) => (
-                  <option key={d.name} value={d.name}>
-                    {d.name}
-                  </option>
-                ))}
-                {!hasDefaultDisciplineInList && defaultDiscipline ? (
-                  <option value={defaultDiscipline}>{defaultDiscipline}</option>
+          <label className="text-sm text-slate-200">
+            Discipline
+            <select
+              name="disciplineId"
+              value={selectedDiscipline}
+              onChange={(e) => setSelectedDiscipline(e.target.value)}
+              required
+              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+            >
+              <option value="">Sélectionner une discipline</option>
+              {disciplines.map((d) => (
+                <option key={d.id ?? d.name} value={d.id ?? d.name}>
+                  {d.name}
+                </option>
+              ))}
+              {!hasDefaultDisciplineInList && defaultDiscipline ? (
+                <option value={defaultDiscipline}>{defaultDiscipline}</option>
                 ) : null}
               </select>
             </label>

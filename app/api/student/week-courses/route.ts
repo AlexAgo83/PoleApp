@@ -74,11 +74,7 @@ export async function GET(req: Request) {
         }
       : {}),
     ...(disciplineFilters.length > 0
-      ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-          })),
-        }
+      ? { disciplineId: { in: disciplineFilters } }
       : {}),
     ...(allowedSchoolIds && allowedSchoolIds.length > 0
       ? { schoolId: { in: allowedSchoolIds } }
@@ -102,7 +98,7 @@ export async function GET(req: Request) {
             select: {
               id: true,
               title: true,
-              discipline: true,
+              disciplineId: true,
               date: true,
               durationMinutes: true,
               isVirtual: true,
@@ -128,7 +124,7 @@ export async function GET(req: Request) {
           select: {
             id: true,
             title: true,
-            discipline: true,
+            disciplineId: true,
             date: true,
             durationMinutes: true,
             isVirtual: true,
@@ -158,6 +154,26 @@ export async function GET(req: Request) {
     return d;
   });
 
+  const disciplineIds = Array.from(
+    new Set(
+      agendaItems.flatMap((a) => {
+        const id = (a.course as any)?.disciplineId;
+        return id ? [id] : [];
+      })
+    )
+  );
+  const disciplineNameById =
+    disciplineIds.length > 0
+      ? Object.fromEntries(
+          (
+            await prisma.discipline.findMany({
+              where: { id: { in: disciplineIds } },
+              select: { id: true, name: true },
+            })
+          ).map((d) => [d.id, d.name])
+        )
+      : {};
+
   const days = weekDays.map((d) => {
     const dayStr = d.toDateString();
     const dayCourses = agendaItems.filter((a) => new Date(a.course.date).toDateString() === dayStr);
@@ -169,7 +185,11 @@ export async function GET(req: Request) {
       courses: dayCourses.map((a) => ({
         id: a.course.id,
         title: a.course.title,
-        discipline: a.course.discipline,
+        disciplineId: (a.course as any).disciplineId ?? null,
+        discipline:
+          (a.course as any).disciplineId && disciplineNameById[(a.course as any).disciplineId]
+            ? disciplineNameById[(a.course as any).disciplineId]
+            : null,
         date: a.course.date.toISOString(),
         durationMinutes: a.course.durationMinutes,
         isVirtual: a.course.isVirtual,
@@ -188,5 +208,6 @@ export async function GET(req: Request) {
     prevWeek: formatWeekKey(prevWeek),
     nextWeek: formatWeekKey(nextWeek),
     days,
+    disciplineNameById,
   });
 }

@@ -32,6 +32,7 @@ type CourseRow = {
   costCredits: number;
   photoUrl?: string | null;
   discipline?: string | null;
+  disciplineId?: string | null;
   isVirtual?: boolean;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { name: string } | null;
@@ -140,9 +141,7 @@ export default async function StudentCoursesPage({
     ...(studioFilter ? { studioId: studioFilter } : {}),
     ...(disciplineFilters.length > 0
       ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: "insensitive" as const },
-          })),
+          disciplineId: { in: disciplineFilters },
         }
       : {}),
     ...(withNotes ? { notes: { some: { studentId: session.user.id } } } : {}),
@@ -153,7 +152,7 @@ export default async function StudentCoursesPage({
     ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}),
   };
 
-  const [countsAndData, teachers, studios, courseDisciplinesRaw, disciplinesRaw] = await Promise.all([
+  const [countsAndData, teachers, studios, disciplinesRaw] = await Promise.all([
     (async () => {
       const mineWhere = {
         ...courseWhere,
@@ -227,45 +226,29 @@ export default async function StudentCoursesPage({
           orderBy: { name: "asc" },
         })
       : Promise.resolve([]),
-    session.user.schoolId
-      ? prisma.course.findMany({
-          where: { schoolId: session.user.schoolId },
-          select: { discipline: true },
-          distinct: ["discipline"],
-        })
-      : Promise.resolve([]),
-    session.user.schoolId
-      ? prisma.discipline
-          .findMany({
-            where: { schoolId: session.user.schoolId },
-            select: { id: true, name: true, color: true },
-            orderBy: { name: "asc" },
-          })
-          .catch(() => [])
-      : Promise.resolve([]),
+    prisma.discipline
+      .findMany({
+        select: { id: true, name: true, color: true },
+        orderBy: { name: "asc" },
+      })
+      .catch(() => []),
   ]);
   const disciplines = (() => {
-    const legacy = (courseDisciplinesRaw as { discipline: string | null }[])
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string | null }[] = [...disciplinesRaw];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
+    const merged: { id?: string; name: string; color?: string | null }[] = [...disciplinesRaw];
     return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
   })();
+  const disciplineNameById = new Map((disciplines as any[]).map((d) => [d.id, d.name]));
 
   const { totalCount, totalPages, currentPage, items } = countsAndData;
   const coursesList: { key: string; course: CourseRow; myAttendance: CourseRow["attendances"][number] | undefined }[] =
     (items as CourseRow[])
       .map((course) => {
         const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
+        const discipline =
+          (course.disciplineId ? disciplineNameById.get(course.disciplineId) : undefined) ?? course.discipline ?? undefined;
         return {
           key: course.id,
-          course,
+          course: { ...course, discipline, disciplineId: course.disciplineId ?? null },
           myAttendance,
         };
       })
@@ -411,8 +394,8 @@ export default async function StudentCoursesPage({
                     <input
                       type="checkbox"
                       name="discipline"
-                      value={d.name}
-                      defaultChecked={disciplineFilters.includes(d.name)}
+                      value={d.id ?? d.name}
+                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
                     <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />
@@ -434,8 +417,8 @@ export default async function StudentCoursesPage({
                         <input
                           type="checkbox"
                           name="discipline"
-                          value={d.name}
-                          defaultChecked={disciplineFilters.includes(d.name)}
+                          value={d.id ?? d.name}
+                          defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                           className="h-4 w-4 rounded border-white/20 bg-white/5"
                         />
                         <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />

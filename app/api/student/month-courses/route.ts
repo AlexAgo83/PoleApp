@@ -82,9 +82,7 @@ export async function GET(req: Request) {
       : {}),
     ...(disciplineFilters.length > 0
       ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-          })),
+          disciplineId: { in: disciplineFilters },
         }
       : {}),
     ...(allowedSchoolIds && allowedSchoolIds.length > 0
@@ -111,6 +109,7 @@ export async function GET(req: Request) {
                 id: true,
                 title: true,
                 discipline: true,
+                disciplineId: true,
                 date: true,
                 durationMinutes: true,
                 isVirtual: true,
@@ -138,6 +137,7 @@ export async function GET(req: Request) {
             id: true,
             title: true,
             discipline: true,
+            disciplineId: true,
             date: true,
             durationMinutes: true,
             isVirtual: true,
@@ -160,6 +160,26 @@ export async function GET(req: Request) {
             myAttendance: c.attendances?.[0],
           }))
         );
+
+  const disciplineIds = Array.from(
+    new Set(
+      agendaItems.flatMap((a) => {
+        const c: any = a.course;
+        return c?.disciplineId ? [c.disciplineId] : [];
+      })
+    )
+  );
+  const disciplineNameById =
+    disciplineIds.length > 0
+      ? Object.fromEntries(
+          (
+            await prisma.discipline.findMany({
+              where: { id: { in: disciplineIds } },
+              select: { id: true, name: true },
+            })
+          ).map((d) => [d.id, d.name])
+        )
+      : {};
 
   const daysInMonth = monthEnd.getDate();
   const firstDay = monthStart.getDay() === 0 ? 7 : monthStart.getDay(); // Monday=1 ... Sunday=7
@@ -188,7 +208,11 @@ export async function GET(req: Request) {
       id: a.id,
       courseId: a.courseId,
       title: a.course.title,
-      discipline: a.course.discipline,
+      disciplineId: (a.course as any).disciplineId ?? null,
+      discipline:
+        (a.course as any).disciplineId && disciplineNameById[(a.course as any).disciplineId]
+          ? disciplineNameById[(a.course as any).disciplineId]
+          : a.course.discipline,
       date: a.course.date instanceof Date ? a.course.date.toISOString() : a.course.date,
       durationMinutes: a.course.durationMinutes,
       teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
@@ -208,5 +232,6 @@ export async function GET(req: Request) {
     nextMonth: formatMonthKey(nextMonth),
     cells: responseCells,
     hasCourses: agendaItems.length > 0,
+    disciplineNameById,
   });
 }

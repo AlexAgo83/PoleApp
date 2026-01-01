@@ -22,7 +22,6 @@ export async function GET() {
     studios,
     progresses,
     disciplinesRaw,
-    courseDisciplines,
   ] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
@@ -31,7 +30,7 @@ export async function GET() {
     }),
     prisma.position.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, name: true, type: true, discipline: true },
+      select: { id: true, name: true, type: true, discipline: true, disciplineId: true },
     }),
     session.user.role === "SCHOOL_ADMIN"
       ? prisma.user.findMany({
@@ -58,11 +57,6 @@ export async function GET() {
       select: { id: true, name: true, color: true },
       orderBy: { name: "asc" },
     }),
-    prisma.course.findMany({
-      where: { schoolId },
-      select: { discipline: true },
-      distinct: ["discipline"],
-    }),
   ]);
 
   const [teacherFavoritesRows, injuries] = await Promise.all([
@@ -80,27 +74,14 @@ export async function GET() {
   ]);
 
   const fallbackDisciplines = [
-    { name: "Danse" },
-    { name: "Pole" },
-    { name: "Exotic" },
-    { name: "Souplesse" },
-    { name: "Pilates" },
+    { id: "danse-fallback", name: "Danse" },
+    { id: "pole-fallback", name: "Pole" },
+    { id: "exotic-fallback", name: "Exotic" },
+    { id: "souplesse-fallback", name: "Souplesse" },
+    { id: "pilates-fallback", name: "Pilates" },
   ];
 
-  const mergedDisciplines = (() => {
-    const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
-    const legacy = courseDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string; id?: string }[] = [...rows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
-    return merged.length > 0 ? merged : fallbackDisciplines;
-  })();
+  const mergedDisciplines = (disciplinesRaw ?? []).length > 0 ? disciplinesRaw : fallbackDisciplines;
 
   const teacherIdsForFavorites =
     session.user.role === "TEACHER" ? [session.user.id] : teachers.map((t) => t.id);

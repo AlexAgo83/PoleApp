@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+type DisciplineOption = { id: string; name: string };
 type DisciplineMultiSelectProps = {
-  options: string[];
+  options: DisciplineOption[];
   selected: string[];
   inputName: string;
   storageKey: string;
@@ -45,7 +46,8 @@ export function DisciplineMultiSelect({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
-        {displayOptions.map((value) => {
+        {displayOptions.map((opt) => {
+          const value = opt.id;
           const checked = selected.includes(value);
           return (
             <label
@@ -54,7 +56,7 @@ export function DisciplineMultiSelect({
             >
               <input type="checkbox" name={inputName} value={value} defaultChecked={checked} className="peer sr-only" />
               <span className="rounded-full px-2.5 py-0.5 transition peer-checked:border peer-checked:border-cyan-300/70 peer-checked:bg-cyan-500/20 peer-checked:text-white">
-                {value}
+                {opt.name}
               </span>
             </label>
           );

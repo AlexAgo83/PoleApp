@@ -39,7 +39,7 @@ export default async function EditPositionPage({ params }: Props) {
     redirect("/access-denied");
   }
 
-  const [muscles, disciplinesRaw, courseDisciplines] = await Promise.all([
+  const [muscles, disciplinesRaw] = await Promise.all([
     prisma.muscle.findMany({
       orderBy: { name: "asc" },
       select: { id: true, name: true, kind: true },
@@ -48,38 +48,20 @@ export default async function EditPositionPage({ params }: Props) {
       select: { id: true, name: true, color: true },
       orderBy: { name: "asc" },
     }),
-    prisma.course.findMany({
-      where: { schoolId: session.user.schoolId ?? undefined },
-      select: { discipline: true },
-      distinct: ["discipline"],
-    }),
   ]);
   const fallbackDisciplines = [
-    { name: "Danse" },
-    { name: "Pole" },
-    { name: "Exotic" },
-    { name: "Souplesse" },
-    { name: "Pilates" },
+    { id: "danse-fallback", name: "Danse" },
+    { id: "pole-fallback", name: "Pole" },
+    { id: "exotic-fallback", name: "Exotic" },
+    { id: "souplesse-fallback", name: "Souplesse" },
+    { id: "pilates-fallback", name: "Pilates" },
   ];
   const disciplines = (() => {
     const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
-    const legacy = courseDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string; id?: string }[] = [...rows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
-    if (
-      position.discipline &&
-      !merged.some((m) => m.name.toLowerCase() === position.discipline.toLowerCase())
-    ) {
-      merged.push({ name: position.discipline });
+    if (rows.length === 0 && position.discipline && !position.disciplineId) {
+      rows.push({ id: "legacy-position", name: position.discipline });
     }
-    return merged.length > 0 ? merged : fallbackDisciplines;
+    return rows.length > 0 ? rows : fallbackDisciplines;
   })();
   const selectedMuscleIds = position.muscles.map((m) => m.muscleId);
   return (
@@ -104,6 +86,7 @@ export default async function EditPositionPage({ params }: Props) {
             description: position.description,
             type: position.type,
             levelRequired: position.levelRequired,
+            disciplineId: position.disciplineId,
             discipline: position.discipline,
             grips: position.grips,
             tips: position.tips,

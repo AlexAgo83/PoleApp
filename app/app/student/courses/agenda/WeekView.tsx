@@ -11,6 +11,7 @@ type DayCourse = {
   teacherName: string;
   studioName: string;
   discipline?: string | null;
+  disciplineId?: string | null;
   past: boolean;
   myStatus: "CONFIRMED" | "WAITLIST" | null;
   waitlistRank: number | null;
@@ -79,11 +80,25 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
       if (filters.q) params.set("q", filters.q);
       const res = await fetch(`/api/student/week-courses?${params.toString()}`, { cache: "no-store" });
       if (!res.ok) return;
-      const json = (await res.json()) as { prevWeek: string; nextWeek: string; days: Day[] };
+      const json = (await res.json()) as {
+        prevWeek: string;
+        nextWeek: string;
+        days: Day[];
+        disciplineNameById?: Record<string, string>;
+      };
       setWeek(target);
       setPrev(json.prevWeek);
       setNext(json.nextWeek);
-      setDays(json.days);
+      const nameById = json.disciplineNameById ?? {};
+      setDays(
+        (json.days ?? []).map((day) => ({
+          ...day,
+          courses: (day.courses ?? []).map((course) => ({
+            ...course,
+            discipline: course.disciplineId ? nameById[course.disciplineId] ?? course.discipline : course.discipline,
+          })),
+        }))
+      );
     });
   };
 

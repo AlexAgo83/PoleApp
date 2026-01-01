@@ -189,9 +189,7 @@ export default async function StudentCoursesAgendaPage({
               : {}),
             ...(disciplineFilters.length > 0
               ? {
-                  OR: disciplineFilters.map((d) => ({
-                    discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-                  })),
+                  disciplineId: { in: disciplineFilters },
                 }
               : {}),
             ...(allowedSchoolIds && allowedSchoolIds.length > 0
@@ -211,6 +209,7 @@ export default async function StudentCoursesAgendaPage({
               id: true,
               title: true,
               discipline: true,
+              disciplineId: true,
               date: true,
               durationMinutes: true,
               maxSeats: true,
@@ -244,15 +243,14 @@ export default async function StudentCoursesAgendaPage({
               : {}),
             ...(disciplineFilters.length > 0
               ? {
-                  OR: disciplineFilters.map((d) => ({
-                    discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-                  })),
+                  disciplineId: { in: disciplineFilters },
                 }
               : {}),
           },
           include: {
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
+            disciplineId: true,
             _count: { select: { positions: true } },
             attendances: {
               where: { studentId: session.user.id },
@@ -273,9 +271,10 @@ export default async function StudentCoursesAgendaPage({
         ...(studioFilter ? { studioId: studioFilter } : {}),
         ...(disciplineFilters.length > 0
           ? {
-              OR: disciplineFilters.map((d) => ({
-                discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-              })),
+              OR: [
+                { disciplineId: { in: disciplineFilters } },
+                { discipline: { in: disciplineFilters, mode: "insensitive" as Prisma.QueryMode } },
+              ],
             }
           : {}),
         ...(allowedSchoolIds && allowedSchoolIds.length > 0
@@ -334,12 +333,6 @@ export default async function StudentCoursesAgendaPage({
       })
     : Promise.resolve([]);
 
-  const courseDisciplinesPromise = prisma.course.findMany({
-    where: { schoolId: session.user.schoolId ?? undefined },
-    select: { discipline: true },
-    distinct: ["discipline"],
-  });
-
   const disciplinesPromise = prisma.discipline
     .findMany({
       select: { id: true, name: true, color: true },
@@ -347,27 +340,18 @@ export default async function StudentCoursesAgendaPage({
     })
     .catch(() => []);
 
-  const [studios, teachers, courseDisciplines, disciplineRows] = await Promise.all([
+  const [studios, teachers, disciplineRows] = await Promise.all([
     studiosPromise,
     teachersPromise,
-    courseDisciplinesPromise,
     disciplinesPromise,
   ]);
 
   const disciplines = (() => {
     const rows = (disciplineRows ?? []).map((d) => ({ ...d })) as { id?: string; name: string; color?: string | null }[];
-    const legacy = courseDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string | null; id?: string }[] = [...rows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
-    return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
+    if (rows.length === 0) return FALLBACK_DISCIPLINES;
+    return rows;
   })();
+  const disciplineNameById = new Map((disciplines as any[]).map((d) => [d.id, d.name]));
 
   const initialWeekDays = weekDays.map((d, idx) => {
     const dayAttendances = attendancesByDay[idx];
@@ -381,7 +365,8 @@ export default async function StudentCoursesAgendaPage({
         return {
           id: a.course.id,
           title: a.course.title,
-          discipline: a.course.discipline,
+          discipline: disciplineNameById.get((a.course as any).disciplineId ?? "") ?? a.course.discipline,
+          disciplineId: (a.course as any).disciplineId ?? null,
           date: a.course.date.toISOString(),
           durationMinutes: a.course.durationMinutes,
           teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
@@ -442,7 +427,8 @@ export default async function StudentCoursesAgendaPage({
         id: a.id,
         courseId: a.courseId,
         title: a.course.title,
-        discipline: a.course.discipline,
+        discipline: disciplineNameById.get((a.course as any).disciplineId ?? "") ?? a.course.discipline,
+        disciplineId: (a.course as any).disciplineId ?? null,
         date: a.course.date instanceof Date ? a.course.date.toISOString() : a.course.date,
         durationMinutes: a.course.durationMinutes,
         teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
@@ -600,8 +586,8 @@ export default async function StudentCoursesAgendaPage({
                     <input
                       type="checkbox"
                       name="discipline"
-                      value={d.name}
-                      defaultChecked={disciplineFilters.includes(d.name)}
+                      value={d.id ?? d.name}
+                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
                     <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />
@@ -623,8 +609,8 @@ export default async function StudentCoursesAgendaPage({
                         <input
                           type="checkbox"
                           name="discipline"
-                          value={d.name}
-                          defaultChecked={disciplineFilters.includes(d.name)}
+                          value={d.id ?? d.name}
+                          defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                           className="h-4 w-4 rounded border-white/20 bg-white/5"
                         />
                         <span className="inline-flex h-3 w-3 rounded-full border border-white/20" style={{ backgroundColor: d.color ?? undefined }} />

@@ -14,7 +14,7 @@ const schema = z.object({
   description: z.string().optional(),
   type: z.nativeEnum(PositionType),
   levelRequired: z.nativeEnum(PositionLevel),
-  discipline: z.string().trim().min(1).default("Pole"),
+  disciplineId: z.string().trim().min(1),
   grips: z.string().optional(),
   tips: z.string().optional(),
   contraindications: z.string().optional(),
@@ -33,7 +33,7 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
 
   const data = schema.parse(input);
   const discipline = await prisma.discipline.findUnique({
-    where: { name: data.discipline },
+    where: { id: data.disciplineId },
     select: { id: true, name: true },
   });
 
@@ -43,8 +43,8 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
       description: data.description ?? data.tips,
       type: data.type,
       levelRequired: data.levelRequired,
-      discipline: discipline?.name ?? data.discipline,
-      disciplineId: discipline?.id ?? null,
+      discipline: discipline?.name ?? null,
+      disciplineId: discipline?.id ?? data.disciplineId,
       grips: data.grips ?? null,
       tips: data.tips,
       contraindications: data.contraindications,

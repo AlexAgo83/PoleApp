@@ -68,11 +68,6 @@ export default async function TeacherStudentsPage({
       select: { name: true, photoUrl: true },
     })
     .catch(() => null);
-  const courseDistinctDisciplines = await prisma.course.findMany({
-    where: { schoolId: session.user.schoolId },
-    select: { discipline: true },
-    distinct: ["discipline"],
-  });
   const disciplineRows =
     (await prisma.discipline
       .findMany({
@@ -82,16 +77,7 @@ export default async function TeacherStudentsPage({
       })
       .catch(() => [])) ?? [];
   const disciplines = (() => {
-    const legacy = courseDistinctDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
     const merged: { id?: string; name: string; color?: string | null }[] = [...disciplineRows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
     return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
   })();
   const userKey = session.user.id ?? "anon";
@@ -106,7 +92,9 @@ export default async function TeacherStudentsPage({
 
   const courseFilter: Prisma.CourseWhereInput = {
     ...(disciplineFilters.length > 0
-      ? { OR: disciplineFilters.map((d) => ({ discipline: { contains: d, mode: "insensitive" as const } })) }
+      ? {
+          disciplineId: { in: disciplineFilters },
+        }
       : {}),
   };
   if (session.user.role === "TEACHER") {
@@ -229,8 +217,8 @@ export default async function TeacherStudentsPage({
                     <input
                       type="checkbox"
                       name="discipline"
-                      value={d.name}
-                      defaultChecked={disciplineFilters.includes(d.name)}
+                      value={d.id ?? d.name}
+                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                       className="h-4 w-4 rounded border-white/20 bg-white/5"
                     />
                     <span

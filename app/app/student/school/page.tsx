@@ -40,6 +40,7 @@ type SchoolCourse = {
   id: string;
   title: string | null;
   discipline?: string | null;
+  disciplineId?: string | null;
   date: Date;
   durationMinutes: number | null;
   maxSeats: number | null;
@@ -264,7 +265,7 @@ export default async function StudentSchoolPage({
   const rangeStart = new Date(Math.min(explicitRangeStart.getTime(), weekRangeStart.getTime()));
   const rangeEnd = new Date(Math.max(explicitRangeEnd.getTime(), weekRangeEnd.getTime()));
 
-  const [teachers, courses] = await Promise.all([
+  const [teachers, courses, disciplines] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId, role: "TEACHER" },
       select: { id: true, name: true, email: true },
@@ -279,9 +280,7 @@ export default async function StudentSchoolPage({
         ...(onlyMine ? { attendances: { some: { studentId: session.user.id } } } : {}),
         ...(disciplineFilters.length > 0
           ? {
-              OR: disciplineFilters.map((d) => ({
-                discipline: { contains: d, mode: "insensitive" as Prisma.QueryMode },
-              })),
+              disciplineId: { in: disciplineFilters },
             }
           : {}),
         ...(q
@@ -292,6 +291,7 @@ export default async function StudentSchoolPage({
         id: true,
         title: true,
         discipline: true,
+        disciplineId: true,
         date: true,
         durationMinutes: true,
         maxSeats: true,
@@ -306,7 +306,13 @@ export default async function StudentSchoolPage({
       },
       orderBy: { date: "asc" },
     }),
+    prisma.discipline.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
+
+  const disciplineNameById = new Map(disciplines.map((d) => [d.id, d.name]));
 
   const agendaItems: Array<{
     id: string;
@@ -318,7 +324,11 @@ export default async function StudentSchoolPage({
     return {
       id: course.id,
       courseId: course.id,
-      course,
+      course: {
+        ...course,
+        discipline: disciplineNameById.get(course.disciplineId ?? "") ?? course.discipline ?? undefined,
+        disciplineId: course.disciplineId ?? undefined,
+      },
       myAttendance,
     };
   });
@@ -338,6 +348,7 @@ export default async function StudentSchoolPage({
         id: a.course.id,
         title: a.course.title,
         discipline: a.course.discipline ?? undefined,
+        disciplineId: a.course.disciplineId ?? undefined,
         date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
         durationMinutes: a.course.durationMinutes,
         teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
@@ -396,6 +407,7 @@ export default async function StudentSchoolPage({
       courseId: a.courseId,
       title: a.course.title,
       discipline: a.course.discipline ?? undefined,
+      disciplineId: a.course.disciplineId ?? undefined,
       date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
       durationMinutes: a.course.durationMinutes,
       teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
@@ -650,11 +662,11 @@ export default async function StudentSchoolPage({
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               >
                 <option value="">Toutes disciplines</option>
-                <option value="Pole">Pole</option>
-                <option value="Pole Exotic">Pole Exotic</option>
-                <option value="Souplesse">Souplesse</option>
-                <option value="Pilates">Pilates</option>
-                <option value="Conditioning">Conditioning</option>
+                {disciplines.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="text-sm text-slate-200 md:col-span-2">

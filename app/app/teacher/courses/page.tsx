@@ -97,14 +97,12 @@ export default async function TeacherCoursesPage({
       : {}),
     ...(disciplineFilters.length > 0
       ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: "insensitive" as const },
-          })),
+          disciplineId: { in: disciplineFilters },
         }
       : {}),
   };
 
-  const [totalCount, teachers, studios, courseDistinctDisciplines] = await Promise.all([
+  const [totalCount, teachers, studios, disciplineRows] = await Promise.all([
     prisma.course.count({ where: whereClause }),
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId, role: "TEACHER" },
@@ -116,34 +114,19 @@ export default async function TeacherCoursesPage({
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
-    prisma.course.findMany({
-      where: { schoolId: session.user.schoolId },
-      select: { discipline: true },
-      distinct: ["discipline"],
-    }),
-  ]);
-  const disciplineRows =
-    (await prisma.discipline
+    prisma.discipline
       .findMany({
-        where: { schoolId: session.user.schoolId },
         select: { id: true, name: true, color: true },
         orderBy: { name: "asc" },
       })
-      .catch(() => [])) ?? [];
+      .catch(() => []),
+  ]);
 
   const disciplines = (() => {
-    const legacy = courseDistinctDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
     const merged: { id?: string; name: string; color?: string | null }[] = [...disciplineRows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
     return merged.length > 0 ? merged : FALLBACK_DISCIPLINES;
   })();
+  const disciplineNameById = new Map((disciplines as any[]).map((d) => [d.id, d.name]));
   const teacherChip =
     teacherFilter
       ? teachers.find((t) => t.id === teacherFilter) ??
@@ -166,6 +149,7 @@ export default async function TeacherCoursesPage({
         positions: true,
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true } },
+        disciplineId: true,
         _count: { select: { notes: true, attendances: true, positions: true } },
       },
     })
@@ -314,17 +298,17 @@ export default async function TeacherCoursesPage({
               <div className="rounded-xl border border-white/10 bg-white/5 p-2">
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
                   {disciplines.slice(0, 6).map((d, idx) => (
-                    <label
-                      key={`${d.name}-primary-${idx}`}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
-                    >
-                      <input
-                        type="checkbox"
-                        name="discipline"
-                        value={d.name}
-                        defaultChecked={disciplineFilters.includes(d.name)}
-                        className="h-4 w-4 rounded border-white/20 bg-white/5"
-                      />
+                  <label
+                    key={`${d.name}-primary-${idx}`}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="discipline"
+                      value={d.id ?? d.name}
+                      defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
+                      className="h-4 w-4 rounded border-white/20 bg-white/5"
+                    />
                       <span
                         className="inline-flex h-3 w-3 rounded-full border border-white/20"
                         style={{ backgroundColor: d.color ?? undefined }}
@@ -347,8 +331,8 @@ export default async function TeacherCoursesPage({
                           <input
                             type="checkbox"
                             name="discipline"
-                            value={d.name}
-                            defaultChecked={disciplineFilters.includes(d.name)}
+                            value={d.id ?? d.name}
+                            defaultChecked={disciplineFilters.includes(d.id ?? d.name)}
                             className="h-4 w-4 rounded border-white/20 bg-white/5"
                           />
                           <span
@@ -402,7 +386,7 @@ export default async function TeacherCoursesPage({
                   key={d}
                   className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200"
                 >
-                  Discipline : “{d}”
+                  Discipline : “{disciplineNameById.get(d) ?? d}”
                 </span>
               ))}
             {teacherFilter && (
@@ -445,6 +429,7 @@ export default async function TeacherCoursesPage({
               `/app/teacher/courses?page=${currentPage}`
             )}`;
             const recStats = recommendationStats.get(course.id);
+            const disciplineName = course.disciplineId ? disciplineNameById.get(course.disciplineId) ?? null : null;
             return (
               <div
                 key={course.id}
@@ -466,6 +451,11 @@ export default async function TeacherCoursesPage({
                     <div className="min-w-[220px] flex-1 space-y-1">
                       <p className="text-sm text-slate-200 flex flex-wrap items-center gap-2">
                         <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
+                        {disciplineName && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5 text-[11px] text-indigo-50">
+                            {disciplineName}
+                          </span>
+                        )}
                         {course.studio && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-cyan-100">
                             Studio · {course.studio.name}

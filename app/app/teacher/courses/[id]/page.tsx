@@ -57,6 +57,7 @@ export default async function TeacherCourseDetailPage({
         costCredits: true,
         waitlistQuota: true,
         discipline: true,
+        disciplineId: true,
         photoUrl: true,
         isVirtual: true,
         teacher: { select: { name: true, email: true } },
@@ -117,11 +118,20 @@ export default async function TeacherCourseDetailPage({
         });
       }
       throw error;
-    });
+  });
 
   if (!course) {
     return notFound();
   }
+  const disciplineName =
+    course.disciplineId
+      ? (
+          await prisma.discipline.findFirst({
+            where: { id: course.disciplineId },
+            select: { name: true },
+          })
+        )?.name ?? course.discipline ?? null
+      : course.discipline ?? null;
 
   const resolvedSearch = (await searchParams) ?? {};
   const forceDiscovery = resolvedSearch.forceDiscovery === "1";
@@ -232,9 +242,9 @@ export default async function TeacherCourseDetailPage({
             <div className="space-y-1 text-sm text-slate-200">
               <p className="text-base text-white flex flex-wrap items-center gap-2">
                 <span>{teacherName}</span>
-                {course.discipline && (
+                {disciplineName && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-100">
-                    {course.discipline}
+                    {disciplineName}
                   </span>
                 )}
               </p>

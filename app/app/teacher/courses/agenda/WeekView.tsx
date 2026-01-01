@@ -10,6 +10,8 @@ type DayCourse = {
   durationMinutes: number | null;
   teacherName: string;
   studioName: string;
+  discipline?: string | null;
+  disciplineId?: string | null;
   past: boolean;
   isVirtual?: boolean;
   positionsCount?: number;
@@ -76,11 +78,25 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     if (filters.level) params.set("level", filters.level);
     const res = await fetch(`/api/teacher/week-courses?${params.toString()}`, { cache: "no-store" });
       if (!res.ok) return;
-      const json = (await res.json()) as { prevWeek: string; nextWeek: string; days: Day[] };
+      const json = (await res.json()) as {
+        prevWeek: string;
+        nextWeek: string;
+        days: Day[];
+        disciplineNameById?: Record<string, string>;
+      };
       setWeek(target);
       setPrev(json.prevWeek);
       setNext(json.nextWeek);
-      setDays(json.days);
+      const nameById = json.disciplineNameById ?? {};
+      setDays(
+        (json.days ?? []).map((day) => ({
+          ...day,
+          courses: (day.courses ?? []).map((course) => ({
+            ...course,
+            discipline: course.disciplineId ? nameById[course.disciplineId] ?? course.discipline : course.discipline,
+          })),
+        }))
+      );
     });
   };
 
@@ -205,6 +221,11 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                         <p className="truncate text-[10px] text-slate-200">
                           {course.studioName}
                         </p>
+                        {course.discipline && (
+                          <p className="truncate text-[10px] text-cyan-50/90">
+                            {course.discipline}
+                          </p>
+                        )}
                         {course.isVirtual && (
                           <p
                             className="truncate text-[12px] text-amber-100"
