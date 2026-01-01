@@ -93,9 +93,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         : {}),
       ...(disciplineFilters.length
         ? {
-            OR: disciplineFilters.map((d) => ({
-              discipline: { contains: d, mode: Prisma.QueryMode.insensitive },
-            })),
+            OR: [
+              { disciplineId: { in: disciplineFilters } },
+              { discipline: { in: disciplineFilters, mode: Prisma.QueryMode.insensitive } },
+            ],
           }
         : {}),
     };
@@ -121,9 +122,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     };
   })();
   const disciplineRows = await prisma.discipline.findMany({
-    select: { name: true, color: true },
+    select: { id: true, name: true, color: true },
     orderBy: { name: "asc" },
   });
+  const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
   const disciplineColors = new Map(
     disciplineRows
       .filter((d) => d.name)
@@ -166,6 +168,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     );
   }
 
+  const disciplineName = (position.disciplineId ? disciplineNameById.get(position.disciplineId) : null) ?? position.discipline ?? null;
   const cover =
     position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
@@ -311,7 +314,12 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                     : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
                 }`}
               >
-                {prevPosition ? `← ${prevPosition.name}` : "←"}
+                <span className="md:hidden" aria-hidden="true">
+                  ←
+                </span>
+                <span className="hidden md:inline">
+                  {prevPosition ? `← ${prevPosition.name}` : "←"}
+                </span>
               </Link>
               <Link
                 href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
@@ -322,7 +330,12 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                     : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
                 }`}
               >
-                {nextPosition ? `${nextPosition.name} →` : "→"}
+                <span className="md:hidden" aria-hidden="true">
+                  →
+                </span>
+                <span className="hidden md:inline">
+                  {nextPosition ? `${nextPosition.name} →` : "→"}
+                </span>
               </Link>
             </div>
           )}
@@ -378,17 +391,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
           <div className="space-y-4">
             <div className="grid gap-2 sm:grid-cols-2">
-              {position.discipline ? (
-                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
-                  <p className="text-sm font-semibold text-white">{position.discipline}</p>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
-                  <p className="text-sm font-semibold text-white">—</p>
-                </div>
-              )}
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
+                <p className="text-sm font-semibold text-white">{disciplineName ?? "—"}</p>
+              </div>
               <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-white/5 to-emerald-500/10 p-2.5 shadow-inner shadow-black/20">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Niveau requis</p>
                 <p className="text-sm font-semibold text-white">{levelLabels[position.levelRequired]}</p>

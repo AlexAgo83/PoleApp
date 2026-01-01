@@ -38,7 +38,7 @@ const courseSchema = z.object({
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid(),
   photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
-  discipline: z.string().trim().min(1),
+  disciplineId: z.string().trim().min(1),
   from: z.string().optional(),
   durationMinutes: z
     .number()
@@ -92,7 +92,7 @@ export async function createCourseAction(formData: FormData) {
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId"),
     photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
-    discipline: formData.get("discipline")?.toString().trim(),
+    disciplineId: formData.get("disciplineId")?.toString().trim() || formData.get("discipline")?.toString().trim(),
     durationMinutes: parseNumber(formData.get("durationMinutes"), 60),
     maxSeats: parseNumber(formData.get("maxSeats"), 30),
     waitlistQuota: parseNumber(formData.get("waitlistQuota"), 0),
@@ -109,14 +109,14 @@ export async function createCourseAction(formData: FormData) {
     throw new Error("Form invalid");
   }
 
-  const disciplineRecord = parsed.data.discipline
+  const disciplineRecord = parsed.data.disciplineId
     ? await prisma.discipline.findFirst({
-        where: { OR: [{ id: parsed.data.discipline }, { name: parsed.data.discipline }] },
+        where: { OR: [{ id: parsed.data.disciplineId }, { name: parsed.data.disciplineId }] },
         select: { id: true, name: true },
       })
     : null;
-  const disciplineName = disciplineRecord?.name ?? parsed.data.discipline;
-  const disciplineId = disciplineRecord?.id ?? null;
+  const disciplineName = disciplineRecord?.name ?? null;
+  const disciplineId = disciplineRecord?.id ?? parsed.data.disciplineId ?? null;
 
   const teacherId =
     session.user.role === "TEACHER"

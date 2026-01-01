@@ -21,14 +21,15 @@ export function EditPositionForm({
     description: string | null;
     type: PositionType;
     levelRequired: PositionLevel;
-    discipline: string;
+    disciplineId: string;
+    discipline?: string | null;
     grips: string | null;
     tips: string | null;
     contraindications: string | null;
     media: PositionMedia[];
   };
   muscles: Muscle[];
-  disciplines: Discipline[];
+  disciplines: (Discipline & { id?: string })[];
   selectedMuscleIds: string[];
 }) {
   const video = position.media.find((m) => m.kind === "VIDEO");
@@ -53,9 +54,9 @@ export function EditPositionForm({
         />
         <SelectField
           label="Discipline"
-          name="discipline"
-          options={disciplines.map((d) => d.name)}
-          defaultValue={position.discipline}
+          name="disciplineId"
+          options={disciplines.map((d) => ({ value: d.id ?? d.name, label: d.name }))}
+          defaultValue={position.disciplineId}
         />
         <Field
           label="Grips (séparés par virgule)"
@@ -155,7 +156,7 @@ function SelectField({
 }: {
   label: string;
   name: string;
-  options: (string | PositionType | PositionLevel)[];
+  options: (string | PositionType | PositionLevel | { value: string; label: string })[];
   defaultValue?: string | PositionType | PositionLevel | null;
 }) {
   return (
@@ -166,11 +167,17 @@ function SelectField({
         defaultValue={defaultValue ?? ""}
         className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
       >
-        {options.map((opt) => (
-          <option key={opt.toString()} value={opt.toString()}>
-            {opt}
-          </option>
-        ))}
+        {options.map((opt) =>
+          typeof opt === "object" && "value" in opt ? (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ) : (
+            <option key={opt.toString()} value={opt.toString()}>
+              {opt}
+            </option>
+          )
+        )}
       </select>
     </label>
   );

@@ -20,6 +20,12 @@ export async function GET(req: Request) {
   const studioParam = searchParams.get("studio") || undefined;
   const q = searchParams.get("q")?.trim() || undefined;
   const disciplineParam = searchParams.get("discipline")?.trim() || undefined;
+  const disciplineFilters = disciplineParam
+    ? disciplineParam
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+    : [];
   const levelParam = searchParams.get("level")?.trim() || undefined;
 
   const effectiveTeacher = teacherParam || undefined;
@@ -55,9 +61,9 @@ export async function GET(req: Request) {
             OR: [{ title: { contains: q, mode: "insensitive" } }],
           }
         : {}),
-      ...(disciplineParam
+      ...(disciplineFilters.length > 0
         ? {
-            discipline: { contains: disciplineParam, mode: "insensitive" },
+            disciplineId: { in: disciplineFilters },
           }
         : {}),
       ...(levelParam
@@ -66,7 +72,13 @@ export async function GET(req: Request) {
           }
         : {}),
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      disciplineId: true,
+      date: true,
+      durationMinutes: true,
+      isVirtual: true,
       teacher: { select: { name: true, email: true } },
       studio: { select: { name: true } },
       _count: { select: { positions: true } },
@@ -80,6 +92,25 @@ export async function GET(req: Request) {
     return d;
   });
 
+  const disciplineIds = Array.from(
+    new Set(
+      courses.flatMap((c: any) => {
+        return c?.disciplineId ? [c.disciplineId] : [];
+      })
+    )
+  );
+  const disciplineNameById =
+    disciplineIds.length > 0
+      ? Object.fromEntries(
+          (
+            await prisma.discipline.findMany({
+              where: { id: { in: disciplineIds } },
+              select: { id: true, name: true },
+            })
+          ).map((d) => [d.id, d.name])
+        )
+      : {};
+
   const days = weekDays.map((d) => {
     const dayStr = d.toDateString();
     const dayCourses = courses.filter((c) => new Date(c.date).toDateString() === dayStr);
@@ -91,6 +122,11 @@ export async function GET(req: Request) {
       courses: dayCourses.map((course) => ({
         id: course.id,
         title: course.title,
+        disciplineId: (course as any).disciplineId ?? null,
+        discipline:
+          (course as any).disciplineId && disciplineNameById[(course as any).disciplineId]
+            ? disciplineNameById[(course as any).disciplineId]
+            : null,
         date: course.date.toISOString(),
         durationMinutes: course.durationMinutes,
         teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
@@ -107,5 +143,6 @@ export async function GET(req: Request) {
     prevWeek: formatWeekKey(prevWeek),
     nextWeek: formatWeekKey(nextWeek),
     days,
+    disciplineNameById,
   });
 }

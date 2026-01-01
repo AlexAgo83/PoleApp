@@ -55,11 +55,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const baseWhere: Prisma.CourseWhereInput = {
     studioId,
     ...(teacherFilter ? { teacherId: teacherFilter } : {}),
-    ...(disciplineFilter
-      ? {
-          discipline: { contains: disciplineFilter, mode: Prisma.QueryMode.insensitive },
-        }
-      : {}),
+    ...(disciplineFilter ? { disciplineId: disciplineFilter } : {}),
     ...(q
       ? {
           title: { contains: q, mode: "insensitive" as Prisma.QueryMode },
@@ -69,7 +65,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
 
   const totalCount = await prisma.course.count({ where: baseWhere });
 
-  const [studio, teacherOptions, disciplineOptions] = await Promise.all([
+  const [studio, teacherOptions, disciplineOptions, disciplineRows] = await Promise.all([
     prisma.studio.findUnique({
       where: { id: studioId },
       include: {
@@ -83,6 +79,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 where: baseWhere,
                 include: {
                   teacher: { select: { id: true, name: true, email: true } },
+                  disciplineId: true,
                   _count: { select: { attendances: true, positions: true, notes: true } },
                 },
               },
@@ -97,9 +94,13 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
     }),
     prisma.course.findMany({
       where: { studioId },
-      select: { discipline: true },
-      distinct: ["discipline"],
-      orderBy: { discipline: "asc" },
+      select: { disciplineId: true },
+      distinct: ["disciplineId"],
+      orderBy: { disciplineId: "asc" },
+    }),
+    prisma.discipline.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
     }),
   ]);
 
@@ -110,6 +111,14 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const isAdmin = userRole === "SCHOOL_ADMIN";
   const schoolName = studio.school?.name ?? "École";
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const disciplineNameById = new Map((disciplineRows ?? []).map((d) => [d.id, d.name]));
+  const disciplineOptionList = Array.from(
+    new Set(
+      (disciplineOptions ?? [])
+        .map((d) => d.disciplineId)
+        .filter((id): id is string => Boolean(id))
+    )
+  ).map((id) => ({ id, name: disciplineNameById.get(id) ?? "Discipline" }));
   const returnHref =
     userRole === "SCHOOL_ADMIN"
       ? "/app/admin/studios"
@@ -145,7 +154,13 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             ...baseWhere,
             date: { gte: weekStart, lte: weekEnd },
           },
-          include: {
+          select: {
+            id: true,
+            title: true,
+            disciplineId: true,
+            date: true,
+            durationMinutes: true,
+            isVirtual: true,
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
             ...(isStudentRole
@@ -178,9 +193,10 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               return {
                 id: course.id,
                 title: course.title,
+                disciplineId: (course as any).disciplineId ?? null,
+                discipline: (course as any).disciplineId ? disciplineNameById.get((course as any).disciplineId) ?? null : null,
                 date: course.date instanceof Date ? course.date.toISOString() : course.date,
                 durationMinutes: course.durationMinutes,
-                discipline: course.discipline,
                 teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
                 studioName: course.studio?.name ?? "Studio",
                 past: isPastCourse(course.date as Date, course.durationMinutes),
@@ -203,6 +219,8 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             courses: dayCourses.map((course) => ({
               id: course.id,
               title: course.title,
+              disciplineId: (course as any).disciplineId ?? null,
+              discipline: (course as any).disciplineId ? disciplineNameById.get((course as any).disciplineId) ?? null : null,
               date: course.date instanceof Date ? course.date.toISOString() : course.date,
               durationMinutes: course.durationMinutes,
               teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
@@ -237,7 +255,13 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             ...baseWhere,
             date: { gte: monthStart, lte: monthEnd },
           },
-          include: {
+          select: {
+            id: true,
+            title: true,
+            disciplineId: true,
+            date: true,
+            durationMinutes: true,
+            isVirtual: true,
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
             ...(isStudentRole
@@ -319,6 +343,8 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 id: course.id,
                 courseId: course.id,
                 title: course.title,
+                disciplineId: (course as any).disciplineId ?? null,
+                discipline: (course as any).disciplineId ? disciplineNameById.get((course as any).disciplineId) ?? null : null,
                 date: course.date instanceof Date ? course.date.toISOString() : course.date,
                 durationMinutes: course.durationMinutes,
                 teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
@@ -368,7 +394,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             )}
             {disciplineFilter && (
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
-                Discipline : “{disciplineFilter}”
+                Discipline : “{disciplineNameById.get(disciplineFilter) ?? disciplineFilter}”
               </span>
             )}
             {q && (
@@ -607,13 +633,11 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                       className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
                     >
                       <option value="">Toutes disciplines</option>
-                      {disciplineOptions
-                        .filter((d) => d.discipline && d.discipline.trim().length > 0)
-                        .map((d) => (
-                          <option key={d.discipline} value={d.discipline ?? ""}>
-                            {d.discipline}
-                          </option>
-                        ))}
+                      {disciplineOptionList.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name}
+                        </option>
+                      ))}
                     </select>
                   </label>
                 </div>

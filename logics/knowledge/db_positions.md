@@ -123,7 +123,7 @@
 - Type: TRANSITION
 - Grip: Non renseigné
 
-## Back hook, back swing
+## Back hook & back swing
 **Description**
 > 1) On fait précéder le back hook d'un step around (plutôt aérien, on est en spinning !)
 >
@@ -135,7 +135,7 @@
 - Type: TRANSITION
 - Grip: Non renseigné
 
-## Basic cradle / tuck spin (ok)
+## Basic cradle & tuck spin
 **Description**
 > Il s’agit d’un cradle avec les deux mains en haut, comme pour une inversion
 > Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
@@ -182,7 +182,7 @@
 - Type: SPIN
 - Grip: Non renseigné
 
-## Boomerang to fireman cross leg
+## Boomerang to Fireman X-Leg
 **Description**
 > 1) ⁠Une fois en position de boomerang, on fait environ un tour complet.
 >
@@ -370,7 +370,7 @@
 - Type: SPIN
 - Grip: Non renseigné
 
-## Cradle & variantes (straight legs...)
+## Cradle & variantes SL
 **Description**
 > Le cradle est la base du Jamilla et de ses variantes, il est donc essentiel de bien en comprendre les appuis.
 > Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
@@ -674,7 +674,7 @@
 - Type: SPIN
 - Grip: Non renseigné
 
-## Floor combination / Floor combo
+## Floor combination & combo
 **Description**
 > Les combinaisons au sol sont très importantes en pole dance, comme dans beaucoup de disciplines gymniques. Elles permettent non seulement de remonter vers la barre à la fin d'un des nombreux mouvements qui se terminent au sol, mais aussi de « se reposer un peu » entre deux parties difficiles dans une chorégraphie, et de rendre cette dernière plus équilibrée visuellement, ou en termes de rythme.
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
@@ -1054,7 +1054,7 @@
 - Type: TRANSITION
 - Grip: Non renseigné
 
-## Jump & slide 2
+## Jump & slide v2
 **Description**
 > Le jump & slide consiste, comme son nom l'indique, à sauter vers le haut de la barre tout en s'y accrochant, puis à se laisser glisser le long de celle-ci.
 > Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
@@ -1065,7 +1065,7 @@
 - Type: TRANSITION
 - Grip: Non renseigné
 
-## Jump & slide variante 1
+## Jump & slide v1
 **Description**
 > Le jump & slide consiste, comme son nom l'indique, à sauter vers le haut de la barre tout en s'y accrochant, puis à se laisser glisser le long de celle-ci.
 > Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
@@ -1492,7 +1492,7 @@
 - Type: TRANSITION
 - Grip: Non renseigné
 
-## Pike (depuis inside et outside)
+## Pike (depuis in et out)
 **Description**
 > Entrée en pike jambes tendues vers le plafond en venant d'un grip inside ou outside, bassin en rétroversion pour protéger le dos.
 > Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
@@ -1582,7 +1582,7 @@
 - Type: TRICK
 - Grip: Non renseigné
 
-## Basic reverse Grab & Reverse grab one hand
+## Basic R-Grab & R-Grab One hand
 **Description**
 > Spin en reverse grab : première version à deux mains pour sentir l'ouverture d'épaule, puis variante à une main pour plus d'engagement.
 > Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
@@ -1681,7 +1681,7 @@
 - Type: SPIN
 - Grip: Non renseigné
 
-## Scorpio inside leg (Inside Leg Hang) (sorties V Jamilla, Inverted
+## Scorpio inside leg
 **Description**
 > Inside leg hang : jambe intérieure crochetée, buste dos à la barre, jambe libre tendue; base pour sorties V, Jamilla ou remontée en invert.
 > Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.

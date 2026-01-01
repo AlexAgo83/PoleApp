@@ -7,7 +7,7 @@ import { CourseFormLayout } from "./CourseFormLayout";
 import { createCourseAction } from "./actions";
 
 type Student = { id: string; name: string | null; email: string };
-type Position = { id: string; name: string; type: string; discipline?: string | null };
+type Position = { id: string; name: string; type: string; discipline?: string | null; disciplineId?: string | null };
 type Teacher = { id: string; name: string | null; email: string };
 type Studio = { id: string; name: string };
 type ProgressRecord = {
@@ -25,7 +25,7 @@ type NewCourseData = {
   studios: Studio[];
   defaultTeacherId?: string | null;
   defaultStudioId?: string | null;
-  disciplines: { name: string; color?: string }[];
+  disciplines: { id?: string; name: string; color?: string | null }[];
   teacherFavorites: Record<string, string[]>;
   studentsWithActiveInjury: Record<string, number>;
   progressByStudent: ProgressRecord[];

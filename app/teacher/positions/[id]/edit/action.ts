@@ -25,7 +25,7 @@ const schema = z.object({
   description: z.string().optional(),
   type: z.nativeEnum(PositionType),
   levelRequired: z.nativeEnum(PositionLevel),
-  discipline: z.string().min(1),
+  disciplineId: z.string().min(1),
   grips: z.string().optional(),
   tips: z.string().optional(),
   contraindications: z.string().optional(),
@@ -48,7 +48,7 @@ export async function updatePositionAction(formData: FormData) {
     description: formData.get("description") || undefined,
     type: formData.get("type"),
     levelRequired: formData.get("levelRequired"),
-    discipline: formData.get("discipline"),
+    disciplineId: formData.get("disciplineId"),
     grips: formData.get("grips") || undefined,
     tips: formData.get("tips") || undefined,
     contraindications: formData.get("contraindications") || undefined,
@@ -64,7 +64,7 @@ export async function updatePositionAction(formData: FormData) {
 
   const data = parsed.data;
   const discipline = await prisma.discipline.findUnique({
-    where: { name: data.discipline },
+    where: { id: data.disciplineId },
     select: { id: true, name: true },
   });
   const existing = await prisma.position.findUnique({
@@ -96,8 +96,8 @@ export async function updatePositionAction(formData: FormData) {
       description: data.description ?? data.tips,
       type: data.type,
       levelRequired: data.levelRequired,
-      discipline: discipline?.name ?? data.discipline,
-      disciplineId: discipline?.id ?? null,
+      discipline: discipline?.name ?? null,
+      disciplineId: discipline?.id ?? data.disciplineId,
       grips: data.grips ?? null,
       tips: data.tips,
       contraindications: data.contraindications,

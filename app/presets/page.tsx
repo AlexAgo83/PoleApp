@@ -70,9 +70,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       : {}),
     ...(disciplineFilters.length
       ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: "insensitive" },
-          })),
+          disciplineId: { in: disciplineFilters },
         }
       : {}),
   };
@@ -91,7 +89,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
 
-  const [presets, disciplineOptions, studentInfo, purchasedPresetIds] = await Promise.all([
+  const [presets, disciplineOptions, studentInfo, purchasedPresetIds, disciplineRows] = await Promise.all([
     prisma.preset.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -103,10 +101,10 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       },
     }),
     prisma.preset.findMany({
-      where: { ...(schoolId ? { schoolId } : {}), discipline: { not: null } },
-      select: { discipline: true },
-      distinct: ["discipline"],
-      orderBy: { discipline: "asc" },
+      where: { ...(schoolId ? { schoolId } : {}), disciplineId: { not: "" } },
+      select: { disciplineId: true },
+      distinct: ["disciplineId"],
+      orderBy: { disciplineId: "asc" },
     }),
     isStudent
       ? prisma.user.findUnique({
@@ -122,6 +120,10 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           })
           .then((rows) => new Set(rows.map((p) => p.offerId)))
       : Promise.resolve(new Set<string>()),
+    prisma.discipline.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
   const [packOffers, subscriptionOffers] = isStudent
     ? await Promise.all([
@@ -137,6 +139,10 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
   if (q) queryParams.set("q", q);
   if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
   if (priceFilter) queryParams.set("price", priceFilter);
+  const disciplineNameById = new Map((disciplineRows ?? []).map((d) => [d.id, d.name]));
+  const disciplineOptionList = Array.from(
+    new Set(disciplineOptions.map((d) => d.disciplineId).filter(Boolean))
+  ).map((id) => ({ id: id!, name: disciplineNameById.get(id!) ?? "Discipline" }));
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
@@ -227,17 +233,21 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               />
             </label>
-            <fieldset className="text-sm text-slate-200">
-              <legend className="mb-1">Disciplines</legend>
-              <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
-                <DisciplineMultiSelect
-                  options={disciplineOptions.map((d) => d.discipline ?? "").filter(Boolean)}
-                  selected={disciplineFilters}
-                  inputName="discipline"
-                  storageKey="disciplines:presets"
-                />
-              </div>
-            </fieldset>
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilters[0] ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplineOptionList.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="text-sm text-slate-200">
               Tarification
               <select

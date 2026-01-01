@@ -169,7 +169,6 @@ export default async function StudentCourseDetailPage({
         <div className="flex flex-col gap-4 md:flex-row md:items-stretch md:justify-between">
           <div className="flex flex-col gap-3 md:w-2/3">
             <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Élève</p>
               <h1 className="text-3xl font-semibold text-white">
                 {course.title ?? "Cours"}
               </h1>
@@ -278,12 +277,6 @@ export default async function StudentCourseDetailPage({
                 </div>
               )}
               <div className="flex w-full flex-wrap items-center justify-end gap-3 md:flex-nowrap">
-                <Link
-                  href={backHref}
-                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10"
-                >
-                  ← Retour à mes cours
-                </Link>
                 <ShareLinkButton
                   path={sharePath}
                   className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-semibold"

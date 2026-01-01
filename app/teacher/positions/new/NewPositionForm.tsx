@@ -19,7 +19,7 @@ const schema = z.object({
   imageUrl: z.string().url().optional(),
   videoUrl: z.string().url().optional(),
   videoPublicId: z.string().optional(),
-  discipline: z.string().min(1),
+  disciplineId: z.string().min(1),
   muscles: z.array(z.string()).optional(),
 });
 
@@ -30,7 +30,7 @@ export function NewPositionForm({
   disciplines,
 }: {
   muscles: Muscle[];
-  disciplines: { name: string; color?: string }[];
+  disciplines: { id?: string; name: string; color?: string }[];
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +57,7 @@ export function NewPositionForm({
       imageUrl: formData.get("imageUrl") || undefined,
       videoUrl: formData.get("videoUrl") || undefined,
       videoPublicId: formData.get("videoPublicId") || undefined,
-      discipline: formData.get("discipline"),
+      disciplineId: formData.get("disciplineId"),
       muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
     });
 
@@ -82,9 +82,9 @@ export function NewPositionForm({
         <SelectField label="Niveau requis" name="levelRequired" options={levels} />
         <SelectField
           label="Discipline"
-          name="discipline"
-          options={disciplines.map((d) => d.name)}
-          defaultValue={disciplines[0]?.name ?? "Danse"}
+          name="disciplineId"
+          options={disciplines.map((d) => ({ value: d.id ?? d.name, label: d.name }))}
+          defaultValue={disciplines[0]?.id ?? disciplines[0]?.name ?? "Pole"}
         />
         <Field label="Grips (séparés par virgule)" name="grips" placeholder="TRUE, CUP" />
       </div>
@@ -228,7 +228,7 @@ function SelectField({
 }: {
   label: string;
   name: string;
-  options: string[];
+  options: ({ value: string; label: string } | string)[];
   defaultValue?: string;
 }) {
   return (
@@ -239,11 +239,17 @@ function SelectField({
         defaultValue={defaultValue}
         className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
       >
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
+        {options.map((opt) =>
+          typeof opt === "object" && "value" in opt ? (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ) : (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          )
+        )}
       </select>
     </label>
   );

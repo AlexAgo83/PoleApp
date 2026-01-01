@@ -91,7 +91,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
     }),
     prisma.position.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, name: true, type: true, discipline: true },
+      select: { id: true, name: true, type: true, discipline: true, disciplineId: true },
     }),
     role === "SCHOOL_ADMIN"
       ? prisma.user.findMany({
@@ -118,11 +118,6 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       select: { id: true, name: true, color: true },
       orderBy: { name: "asc" },
     }),
-    prisma.course.findMany({
-      where: { schoolId },
-      select: { discipline: true },
-      distinct: ["discipline"],
-    }),
     prisma.teacherFavoritePosition.findMany({
       where: {
         teacherId: {
@@ -133,32 +128,13 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
     }),
   ]);
   const fallbackDisciplines = [
-    { name: "Danse" },
-    { name: "Pole" },
-    { name: "Exotic" },
-    { name: "Souplesse" },
-    { name: "Pilates" },
+    { id: "danse-fallback", name: "Danse" },
+    { id: "pole-fallback", name: "Pole" },
+    { id: "exotic-fallback", name: "Exotic" },
+    { id: "souplesse-fallback", name: "Souplesse" },
+    { id: "pilates-fallback", name: "Pilates" },
   ];
-  const mergedDisciplines = (() => {
-    const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
-    const legacy = courseDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string; id?: string }[] = [...rows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
-    if (
-      course.discipline &&
-      !merged.some((m) => m.name.toLowerCase() === course.discipline.toLowerCase())
-    ) {
-      merged.push({ name: course.discipline });
-    }
-    return merged.length > 0 ? merged : fallbackDisciplines;
-  })();
+  const mergedDisciplines = (disciplinesRaw ?? []).length > 0 ? disciplinesRaw : fallbackDisciplines;
   const studentsWithActiveInjury = (await prisma.studentInjury.findMany({
     where: { studentId: { in: students.map((s) => s.id) }, isActive: true },
     select: { studentId: true },
@@ -303,11 +279,11 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultStudioId={course.studioId ?? null}
           defaultDurationMinutes={course.durationMinutes ?? 60}
           defaultMaxSeats={course.maxSeats ?? 30}
-          defaultWaitlistQuota={course.waitlistQuota ?? 0}
-          defaultCostCredits={course.costCredits ?? 100}
-          defaultPhotoUrl={course.photoUrl ?? ""}
-          defaultDiscipline={course.discipline ?? ""}
-          disciplines={mergedDisciplines}
+      defaultWaitlistQuota={course.waitlistQuota ?? 0}
+      defaultCostCredits={course.costCredits ?? 100}
+      defaultPhotoUrl={course.photoUrl ?? ""}
+      defaultDiscipline={course.disciplineId ?? ""}
+      disciplines={mergedDisciplines}
           teacherFavorites={teacherFavoritesRows.reduce<Record<string, string[]>>((acc, row) => {
             if (!acc[row.teacherId]) acc[row.teacherId] = [];
             acc[row.teacherId].push(row.positionId);

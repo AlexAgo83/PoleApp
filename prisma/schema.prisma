@@ -149,8 +149,8 @@ model Position {
   description       String?
   levelRequired     PositionLevel
   type              PositionType
-  discipline        String        @default("Danse")
-  disciplineId      String?
+  discipline        String?
+  disciplineId      String
   grips             String?
   tips              String?
   contraindications String?
@@ -246,8 +246,8 @@ model Course {
   teacherId       String
   studioId        String?
   title           String?
-  discipline      String   @default("Danse")
-  disciplineId    String?
+  discipline      String?
+  disciplineId    String
   photoUrl        String?
   date            DateTime
   durationMinutes Int      @default(60)
@@ -569,7 +569,7 @@ model Preset {
   title            String
   description      String?
   discipline       String?
-  disciplineId     String?
+  disciplineId     String
   videoUrl         String?
   imageUrl         String?
   premiumRequired  Boolean   @default(false)

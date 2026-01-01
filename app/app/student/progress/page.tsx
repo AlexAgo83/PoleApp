@@ -137,9 +137,7 @@ export default async function StudentProgressPage({
     ...(visibleIds ? { id: { in: visibleIds } } : {}),
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
-    ...(disciplineFilter
-      ? { discipline: { contains: disciplineFilter, mode: Prisma.QueryMode.insensitive } }
-      : {}),
+    ...(disciplineFilter ? { disciplineId: { equals: disciplineFilter } } : {}),
     ...(q
       ? {
           name: { contains: q, mode: "insensitive" as Prisma.QueryMode },
@@ -169,17 +167,20 @@ export default async function StudentProgressPage({
     take: PAGE_SIZE,
   });
   const disciplineRows = await prisma.discipline.findMany({
-    select: { name: true, color: true },
+    select: { id: true, name: true, color: true },
     orderBy: { name: "asc" },
   });
-  const disciplineColors = new Map(
-    disciplineRows
-      .filter((d) => d.name)
-      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
+  const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
+  const disciplineColorsById = new Map(disciplineRows.map((d) => [d.id, d.color ?? null]));
+  const disciplineColorsByName = new Map(
+    disciplineRows.filter((d) => d.name).map((d) => [d.name.toLowerCase(), d.color ?? null]),
   );
-  const disciplineStyle = (name?: string | null) => {
-    if (!name) return undefined;
-    const color = disciplineColors.get(name.toLowerCase());
+  const disciplineStyle = (disciplineId?: string | null, name?: string | null) => {
+    const color = disciplineId
+      ? disciplineColorsById.get(disciplineId)
+      : name
+      ? disciplineColorsByName.get(name.toLowerCase())
+      : null;
     if (!color) return undefined;
     return {
       borderColor: color,
@@ -265,7 +266,7 @@ export default async function StudentProgressPage({
               >
                 <option value="">Toutes disciplines</option>
                 {disciplineRows.map((d) => (
-                  <option key={d.name} value={d.name}>
+                  <option key={d.id} value={d.id}>
                     {d.name}
                   </option>
                 ))}
@@ -350,6 +351,10 @@ export default async function StudentProgressPage({
                   : status === "PASSED"
                     ? 0.7
                     : 1.0;
+            const disciplineName = position.disciplineId
+              ? disciplineNameById.get(position.disciplineId) ?? null
+              : position.discipline ?? null;
+            const badgeStyle = disciplineStyle(position.disciplineId, position.discipline);
 
             return (
               <Link
@@ -382,10 +387,7 @@ export default async function StudentProgressPage({
                     aria-hidden
                   >
                     {showProgress ? (
-                      <span
-                        className="text-xs font-semibold"
-                        style={{ color: statusColor }}
-                      >
+                      <span className="text-xs font-semibold" style={{ color: statusColor }}>
                         {statusLabels[status as LearningStatus]}
                       </span>
                     ) : null}
@@ -399,16 +401,16 @@ export default async function StudentProgressPage({
                     </div>
                   </div>
                   <div className="absolute left-3 right-3 top-3 flex items-start justify-between gap-2">
-                    {position.discipline ? (
+                    {disciplineName ? (
                       <span
                         className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
-                        style={disciplineStyle(position.discipline)}
+                        style={badgeStyle}
                       >
-                        {position.discipline}
+                        {disciplineName}
                       </span>
-                      ) : (
-                        <span />
-                      )}
+                    ) : (
+                      <span />
+                    )}
                     <div className="flex flex-col items-end gap-2 text-right">
                       {showProgress ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">

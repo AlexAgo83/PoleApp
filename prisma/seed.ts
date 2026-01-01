@@ -602,7 +602,7 @@ async function seedPositions({
               },
             }
           : {}),
-        disciplineId,
+        disciplineId: disciplineId ?? undefined,
       },
     });
     createdPositions.push(created);
@@ -1594,12 +1594,14 @@ async function seedPresets(options: {
         .slice()
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
+      const disciplineName = disciplinePick?.name ?? preset.discipline ?? picked[0]?.discipline ?? PRIMARY_DISCIPLINE;
+      const disciplineId = disciplinePick?.id ?? picked[0]?.disciplineId ?? null;
       await prisma.preset.create({
         data: {
           title: preset.title,
           description: preset.description,
-          discipline: disciplinePick?.name ?? preset.discipline ?? picked[0]?.discipline ?? null,
-          disciplineId: disciplinePick?.id ?? picked[0]?.disciplineId ?? null,
+          discipline: disciplineName,
+          disciplineId: disciplineId ?? undefined,
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
           imageUrl: preset.imageUrl ?? null,

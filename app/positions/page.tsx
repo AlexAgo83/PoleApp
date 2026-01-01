@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 import { FilterPanel } from "@/components/FilterPanel";
+import { HydrationWrapper } from "@/components/HydrationWrapper";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
 import { BuyCreditsButton } from "@/app/app/student/BuyCreditsButton";
@@ -97,6 +98,30 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     disciplineFilters.length > 0,
   ].filter(Boolean).length;
 
+  const disciplineRows = await prisma.discipline.findMany({
+    select: { id: true, name: true, color: true },
+    orderBy: { name: "asc" },
+  });
+  const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
+  const disciplineFilterNames = disciplineFilters
+    .map((id) => disciplineNameById.get(id))
+    .filter((n): n is string => Boolean(n));
+  const disciplineColors = new Map(
+    disciplineRows
+      .filter((d) => d.name)
+      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
+  );
+  const disciplineStyle = (name?: string | null) => {
+    if (!name) return undefined;
+    const color = disciplineColors.get(name.toLowerCase());
+    if (!color) return undefined;
+    return {
+      borderColor: color,
+      color,
+      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
+    };
+  };
+
   const where: Prisma.PositionWhereInput = {
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
@@ -112,9 +137,12 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       : {}),
     ...(disciplineFilters.length
       ? {
-          OR: disciplineFilters.map((d) => ({
-            discipline: { contains: d, mode: Prisma.QueryMode.insensitive },
-          })),
+          OR: [
+            { disciplineId: { in: disciplineFilters } },
+            ...(disciplineFilterNames.length
+              ? [{ discipline: { in: disciplineFilterNames, mode: Prisma.QueryMode.insensitive } }]
+              : []),
+          ],
         }
       : {}),
   };
@@ -141,25 +169,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
       ])
     : [[], []];
-  const disciplineRows = await prisma.discipline.findMany({
-    select: { name: true, color: true },
-    orderBy: { name: "asc" },
-  });
-  const disciplineColors = new Map(
-    disciplineRows
-      .filter((d) => d.name)
-      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
-  );
-  const disciplineStyle = (name?: string | null) => {
-    if (!name) return undefined;
-    const color = disciplineColors.get(name.toLowerCase());
-    if (!color) return undefined;
-    return {
-      borderColor: color,
-      color,
-      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
-    };
-  };
   const queryParams = new URLSearchParams();
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
@@ -186,21 +195,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       _count: { select: { progress: true } },
     },
   });
-  const disciplineOptionsRaw = await prisma.position.findMany({
-    select: { discipline: true },
-    distinct: ["discipline"],
-    orderBy: { discipline: "asc" },
-  });
-  const disciplineOptions = disciplineOptionsRaw.reduce<{ discipline: string }[]>((acc, row) => {
-    const name = row.discipline?.trim();
-    if (!name) return acc;
-    const key = name.toLowerCase();
-    if (key === "danse") return acc;
-    if (!acc.some((d) => d.discipline.toLowerCase() === key)) {
-      acc.push({ discipline: name });
-    }
-    return acc;
-  }, []);
+  const disciplineOptions = disciplineRows.map((d) => ({ id: d.id, name: d.name }));
   const studentProgress = isStudent
     ? await prisma.studentPositionProgress.findMany({
         where: { studentId: session.user.id },
@@ -219,7 +214,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   };
   const canManage = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
 
-  return (
+  const content = (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
       <FoxPageHeader
         eyebrow={
@@ -242,9 +237,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       />
 
       <section className="panel relative space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-white">Positions</h2>
-          <div className="flex flex-wrap justify-end gap-2 md:gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-2 md:gap-3">
             <Link
               href="/presets"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -259,6 +254,30 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 Nouvelle position
               </Link>
             ) : null}
+            <div className="flex items-center gap-2 text-sm">
+              <Link
+                href={`/positions?page=${Math.max(1, currentPage - 1)}${qs ? `&${qs}` : ""}`}
+                aria-disabled={currentPage === 1}
+                className={`rounded-full border border-white/10 px-3 py-2 ${
+                  currentPage === 1
+                    ? "cursor-not-allowed text-slate-500"
+                    : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                }`}
+              >
+                Précédent
+              </Link>
+              <Link
+                href={`/positions?page=${Math.min(totalPages, currentPage + 1)}${qs ? `&${qs}` : ""}`}
+                aria-disabled={currentPage === totalPages}
+                className={`rounded-full border border-white/10 px-3 py-2 ${
+                  currentPage === totalPages
+                    ? "cursor-not-allowed text-slate-500"
+                    : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                }`}
+              >
+                Suivant
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -322,35 +341,23 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ))}
               </select>
             </label>
-            <fieldset className="text-sm text-slate-200">
-              <legend className="mb-1">Disciplines</legend>
-              <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
-                <div className="flex flex-wrap gap-2">
-                  {disciplineOptions.slice(0, 8).map((d) => {
-                    const value = d.discipline ?? "";
-                    if (!value) return null;
-                    const checked = disciplineFilters.includes(value);
-                    return (
-                      <label
-                        key={value}
-                        className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200"
-                      >
-                        <input
-                          type="checkbox"
-                          name="discipline"
-                          value={value}
-                          defaultChecked={checked}
-                          className="peer sr-only"
-                        />
-                        <span className="peer-checked:text-white peer-checked:border-cyan-300/70 peer-checked:bg-cyan-500/20 peer-checked:px-3 peer-checked:py-1 peer-checked:rounded-full peer-checked:border">
-                          {value}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            </fieldset>
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilters[0] ?? ""}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplineOptions.map((d) =>
+                  d.id ? (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ) : null
+                )}
+              </select>
+            </label>
             <label className="text-sm text-slate-200">
               Professeur (créateur)
               <select
@@ -381,14 +388,15 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 Réinitialiser
               </Link>
             </div>
-      </form>
-    </FilterPanel>
-    <div className="grid gap-4 md:grid-cols-3">
-      {positions.map((p) => {
-        const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];
-        const premiumContent =
-          Boolean(p.description) ||
-          Boolean(p.tips) ||
+          </form>
+        </FilterPanel>
+        <div className="grid gap-4 md:grid-cols-3">
+          {positions.map((p) => {
+            const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];
+            const disciplineName = disciplineNameById.get(p.disciplineId ?? "") ?? p.discipline ?? null;
+            const premiumContent =
+              Boolean(p.description) ||
+              Boolean(p.tips) ||
               p.media?.some((m) => m.kind === "VIDEO");
             const hasVideo = p.media?.some((m) => m.kind === "VIDEO");
             const showPremiumBadge = premiumContent && isStudent && !isPremium;
@@ -398,8 +406,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               progress?.learningStatus
                 ? statusLabels[progress.learningStatus]
                 : progress?.learningStatus
-                ? progressLabels[progress.learningStatus] ?? progress.learningStatus
-                : null;
+                  ? progressLabels[progress.learningStatus] ?? progress.learningStatus
+                  : null;
             const detailHref = `/positions/${p.id}?from=/positions?page=${currentPage}`;
             return (
               <Link
@@ -427,22 +435,22 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       fallbackSrc={POSITION_PLACEHOLDER}
                     />
                   )}
-                  {p.discipline ? (
+                  {disciplineName ? (
                     <span
                       className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
-                      style={disciplineStyle(p.discipline)}
+                      style={disciplineStyle(disciplineName)}
                     >
-                      {p.discipline}
+                      {disciplineName}
                     </span>
                   ) : null}
                   <div className="absolute inset-3 flex flex-col justify-between">
                     <div className="flex items-start justify-between gap-2">
-                      {p.discipline ? (
+                      {disciplineName ? (
                         <span
                           className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur"
-                          style={disciplineStyle(p.discipline)}
+                          style={disciplineStyle(disciplineName)}
                         >
-                          {p.discipline}
+                          {disciplineName}
                         </span>
                       ) : (
                         <span />
@@ -482,41 +490,41 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     </div>
                   </div>
                 </div>
-                  <div className="flex flex-1 flex-col gap-2 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-lg font-semibold text-white">{p.name}</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2" />
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
-                    </div>
-                    {canViewPremium && (p.tips || p.description) ? (
-                      <p className="text-sm text-slate-300 line-clamp-2">
-                        {p.tips ?? p.description ?? "Aucun détail"}
-                      </p>
-                    ) : null}
-                    {showPremiumBadge && (
-                      <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
-                        <p className="font-semibold">Accès Premium requis</p>
-                        <p className="text-amber-100/80">
-                          Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
-                        </p>
-                        <div className="mt-3 flex justify-end">
-                          <PremiumUpsellButton className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
-                            Devenir premium
-                          </PremiumUpsellButton>
-                        </div>
-                      </div>
-                    )}
-                    <div className="mt-auto flex items-center justify-between gap-2">
-                      <p className="text-xs text-slate-400">{p.grips ?? "Grip ?"}</p>
-                      {p.createdBy ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
-                          Créé par {p.createdBy.name ?? p.createdBy.email}
-                        </span>
-                      ) : null}
-                    </div>
+                <div className="flex flex-1 flex-col gap-2 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-lg font-semibold text-white">{p.name}</p>
                   </div>
+                  <div className="flex flex-wrap items-center gap-2" />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm text-cyan-200">{typeLabels[p.type]}</p>
+                  </div>
+                  {canViewPremium && (p.tips || p.description) ? (
+                    <p className="text-sm text-slate-300 line-clamp-2">
+                      {p.tips ?? p.description ?? "Aucun détail"}
+                    </p>
+                  ) : null}
+                  {showPremiumBadge && (
+                    <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
+                      <p className="font-semibold">Accès Premium requis</p>
+                      <p className="text-amber-100/80">
+                        Contenus détaillés (vidéos, tips) réservés aux élèves Premium.
+                      </p>
+                      <div className="mt-3 flex justify-end">
+                        <PremiumUpsellButton className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-[11px] font-semibold text-amber-50">
+                          Devenir premium
+                        </PremiumUpsellButton>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-auto flex items-center justify-between gap-2">
+                    <p className="text-xs text-slate-400">{p.grips ?? "Grip ?"}</p>
+                    {p.createdBy ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
+                        Créé par {p.createdBy.name ?? p.createdBy.email}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
               </Link>
             );
           })}
@@ -528,32 +536,38 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           <span>
             Page {currentPage} / {totalPages} · {totalCount} positions
           </span>
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/positions?page=${Math.max(1, currentPage - 1)}${qs ? `&${qs}` : ""}`}
-              aria-disabled={currentPage === 1}
-              className={`rounded-full border border-white/10 px-3 py-2 ${
-                currentPage === 1
-                  ? "cursor-not-allowed text-slate-500"
-                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              }`}
-            >
-              Précédent
-            </Link>
-            <Link
-              href={`/positions?page=${Math.min(totalPages, currentPage + 1)}${qs ? `&${qs}` : ""}`}
-              aria-disabled={currentPage === totalPages}
-              className={`rounded-full border border-white/10 px-3 py-2 ${
-                currentPage === totalPages
-                  ? "cursor-not-allowed text-slate-500"
-                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              }`}
-            >
-              Suivant
-            </Link>
-          </div>
         </div>
       </section>
     </main>
   );
+
+  const fallback = (
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-3 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
+      <div className="sticky top-0 z-20 w-full rounded-none bg-gradient-to-r from-slate-900/90 via-slate-900/90 to-slate-950/95 px-2 py-3 md:px-3 md:py-4">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-2xl bg-white/10" />
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-40 rounded bg-white/10" />
+            <div className="h-3 w-28 rounded bg-white/10" />
+          </div>
+        </div>
+      </div>
+      <section className="panel relative space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
+        <div className="flex items-center justify-between">
+          <div className="h-6 w-28 rounded bg-white/10" />
+          <div className="h-8 w-24 rounded-full bg-white/10" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <div
+              key={idx}
+              className="h-64 rounded-2xl border border-white/10 bg-white/5"
+            />
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+
+  return <HydrationWrapper fallback={fallback}>{content}</HydrationWrapper>;
 }

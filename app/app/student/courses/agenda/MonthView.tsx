@@ -10,6 +10,7 @@ type MonthCourse = {
   courseId: string;
   title: string | null;
   discipline?: string | null;
+  disciplineId?: string | null;
   date: string;
   durationMinutes: number | null;
   teacherName: string;
@@ -103,11 +104,21 @@ export function MonthView({
         nextMonth: string;
         cells: MonthCell[];
         hasCourses: boolean;
+        disciplineNameById?: Record<string, string>;
       };
       setMonth(data.monthValue ?? target);
       setPrev(data.prevMonth);
       setNext(data.nextMonth);
-      setCells(data.cells ?? []);
+      const nameById = data.disciplineNameById ?? {};
+      setCells(
+        (data.cells ?? []).map((cell) => ({
+          ...cell,
+          courses: cell.courses.map((c) => ({
+            ...c,
+            discipline: c.disciplineId ? nameById[c.disciplineId] ?? c.discipline : c.discipline,
+          })),
+        }))
+      );
       setHasAnyCourse(Boolean(data.hasCourses));
     });
   };

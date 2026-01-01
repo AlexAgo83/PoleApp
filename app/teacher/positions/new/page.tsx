@@ -17,7 +17,7 @@ export default async function NewPositionPage() {
   const homeHref = isAdmin ? "/app/admin" : "/app/teacher";
   const eyebrow = isAdmin ? "Espace admin" : "Espace prof";
 
-  const [muscles, disciplinesRaw, courseDisciplines] = await Promise.all([
+  const [muscles, disciplinesRaw] = await Promise.all([
     prisma.muscle.findMany({
       orderBy: { name: "asc" },
       select: { id: true, name: true, kind: true },
@@ -26,34 +26,16 @@ export default async function NewPositionPage() {
       select: { id: true, name: true, color: true },
       orderBy: { name: "asc" },
     }),
-    prisma.course.findMany({
-      where: { schoolId: session.user.schoolId ?? undefined },
-      select: { discipline: true },
-      distinct: ["discipline"],
-    }),
   ]);
 
   const fallbackDisciplines = [
-    { name: "Pole" },
-    { name: "Pole Exotic" },
-    { name: "Souplesse" },
-    { name: "Pilates" },
-    { name: "Conditioning" },
+    { id: "pole-fallback", name: "Pole" },
+    { id: "exotic-fallback", name: "Exotic" },
+    { id: "souplesse-fallback", name: "Souplesse" },
+    { id: "pilates-fallback", name: "Pilates" },
+    { id: "conditioning-fallback", name: "Conditioning" },
   ];
-  const disciplines = (() => {
-    const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
-    const legacy = courseDisciplines
-      .map((c) => c.discipline)
-      .filter((d): d is string => Boolean(d && d.trim().length > 0))
-      .map((d) => ({ name: d.trim(), color: undefined as string | undefined }));
-    const merged: { name: string; color?: string; id?: string }[] = [...rows];
-    legacy.forEach((d) => {
-      if (!merged.some((m) => m.name.toLowerCase() === d.name.toLowerCase())) {
-        merged.push(d);
-      }
-    });
-    return merged.length > 0 ? merged : fallbackDisciplines;
-  })();
+  const disciplines = disciplinesRaw.length > 0 ? disciplinesRaw : fallbackDisciplines;
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
