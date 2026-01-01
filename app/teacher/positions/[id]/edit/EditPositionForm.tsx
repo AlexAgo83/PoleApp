@@ -28,6 +28,7 @@ export function EditPositionForm({
     tips: string | null;
     contraindications: string | null;
     media: PositionMedia[];
+    videoPublicId?: string | null;
   };
   muscles: Muscle[];
   disciplines: (Discipline & { id?: string })[];
@@ -35,7 +36,7 @@ export function EditPositionForm({
   videoPreviewUrl?: string;
 }) {
   const video = position.media.find((m) => m.kind === "VIDEO");
-  const [videoPublicId, setVideoPublicId] = useState<string>(video?.publicId ?? "");
+  const [videoPublicId, setVideoPublicId] = useState<string>(position.videoPublicId ?? video?.publicId ?? "");
   const cover = position.media.find((m) => m.kind === "PHOTO");
   const [imagePublicId, setImagePublicId] = useState<string>(cover?.publicId ?? "");
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>(selectedMuscleIds);
