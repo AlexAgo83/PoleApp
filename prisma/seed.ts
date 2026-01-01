@@ -171,6 +171,22 @@ const muscleTargetsByType: Record<PositionType, string[]> = {
   STRENGTH: ["Grand dorsal", "Biceps brachial", "Triceps", "Fessiers", "Abdominaux profonds"],
 };
 
+const buildPositionDescription = (pos: { name: string; type: PositionType; level: PositionLevel }) => {
+  const intro = `${pos.name} est une position de type ${pos.type.toLowerCase()} destinée aux élèves de niveau ${pos.level.toLowerCase()}.`;
+  const technique =
+    " On recherche un placement précis des épaules, un engagement du centre et une attention constante sur les points de contact pour maintenir la ligne et la fluidité.";
+  const focus =
+    " Le travail met l'accent sur la respiration, la connexion au sol et la capacité à enchaîner sans à-coups, tout en conservant une marge de sécurité confortable.";
+  const coaching =
+    " Les consignes clés incluent : activer le grip, garder les hanches alignées, contrôler la descente et anticiper la sortie vers la transition suivante.";
+  const benefits =
+    " Cette position renforce la stabilité, améliore la proprioception et prépare les variations plus avancées en douceur, que ce soit en spin ou en static.";
+  const text = `${intro}${technique}${focus}${coaching}${benefits}`;
+  if (text.length >= 320) return text;
+  const padding = " Revoie les fondamentaux et ajuste ton tempo pour garder du contrôle.";
+  return (text + padding.repeat(4)).slice(0, 340);
+};
+
 const schoolsList = [
   "APEX",
   "Horizon",
@@ -452,7 +468,7 @@ async function seedPositions({
         discipline,
         levelRequired: pos.level,
         grips: pos.grips,
-        description: `${pos.name} (${pos.type.toLowerCase()} · niveau ${pos.level.toLowerCase()})`,
+        description: buildPositionDescription(pos),
         createdByUserId: creator?.id,
         media: {
           create: [
