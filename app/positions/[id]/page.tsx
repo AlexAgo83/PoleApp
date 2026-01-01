@@ -295,208 +295,175 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         ]}
         foxHref="/"
       />
-      <header className="panel flex flex-wrap items-center justify-between gap-4 p-4 md:p-6">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">
-            Position
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-semibold text-white">{position.name}</h1>
-            {position.discipline ? (
-              <span
-                className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold text-white"
-                style={disciplineStyle(position.discipline)}
-              >
-                {position.discipline}
-              </span>
-            ) : null}
-          </div>
+      <section className="panel p-4 md:p-6 lg:p-8">
+        <div className="mb-4 flex flex-wrap items-center gap-3 md:mb-6">
+          <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">{position.name}</h1>
         </div>
-      </header>
 
-      <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-        <div className="panel space-y-4 p-6">
-          {cover ? (
-            <SafeImage
-              src={cover.url}
-              alt={position.name}
-              width={960}
-              height={400}
-              className="w-full rounded-xl object-cover"
-              fallbackSrc={POSITION_PLACEHOLDER}
-            />
-          ) : (
-            <SafeImage
-              src={POSITION_PLACEHOLDER}
-              alt={position.name}
-              width={960}
-              height={400}
-              className="w-full rounded-xl object-cover"
-              fallbackSrc={POSITION_PLACEHOLDER}
-            />
-          )}
-          {canViewContent ? (
-            <div className="space-y-2 text-slate-200">
-              <p className="text-sm text-cyan-200">Description</p>
-              <p className="text-sm text-slate-100">
-                {position.description ?? "Aucune description"}
-              </p>
-              {position.muscles.length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-sm text-cyan-200">Muscles / articulations sollicités</p>
-                  <div className="flex flex-wrap gap-2">
-                    {position.muscles.map((m) => (
-                      <span
-                        key={m.muscleId}
-                        className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px] text-slate-100"
-                      >
-                        {m.muscle.name}
-                        {m.muscle.kind ? (
-                          <span className="ml-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
-                            {m.muscle.kind.toLowerCase()}
-                          </span>
-                        ) : null}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {position.tips && (
-                <div>
-                  <p className="text-sm text-cyan-200">Conseils</p>
-                  <p className="text-sm text-slate-100">{position.tips}</p>
-                </div>
-              )}
-              {position.contraindications && (
-                <div>
-                  <p className="text-sm text-cyan-200">Contre-indications</p>
-                  <p className="text-sm text-slate-100">
-                    {position.contraindications}
-                  </p>
-                </div>
-              )}
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-[1.35fr,1fr]">
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
+              <SafeImage
+                src={cover?.url ?? POSITION_PLACEHOLDER}
+                alt={position.name}
+                width={960}
+                height={400}
+                className="aspect-[16/9] w-full object-cover"
+                fallbackSrc={POSITION_PLACEHOLDER}
+              />
             </div>
-          ) : (
-            <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-              <p className="font-semibold text-white">Contenu Premium</p>
-              <p className="mt-1">
-                Description, conseils et vidéo sont réservés aux élèves premium.
-              </p>
-            </div>
-          )}
-        </div>
-        <aside className="panel space-y-4 p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            {position.discipline ? (
-              <span
-                className="rounded-full border px-3 py-1 text-[11px] font-semibold text-white"
-                style={disciplineStyle(position.discipline)}
-              >
-                {position.discipline}
-              </span>
-            ) : (
-              <span />
-            )}
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold text-slate-200">
-              Vu : {position._count?.progress ?? 0}
-            </span>
-          </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
-              <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Type</p>
-              <p className="text-lg font-semibold text-white">{typeLabels[position.type]}</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-white/5 to-emerald-500/10 p-4 shadow-inner shadow-black/20">
-              <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Niveau requis</p>
-              <p className="text-lg font-semibold text-white">{levelLabels[position.levelRequired]}</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-white/5 to-indigo-500/10 p-4 shadow-inner shadow-black/20">
-              <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Grips</p>
-              <p className="text-lg font-semibold text-white">{position.grips ?? "Non précisé"}</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-4 shadow-inner shadow-black/20">
-              <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-              <p className="text-lg font-semibold text-white">{position.createdBy?.name ?? "Seed"}</p>
-            </div>
-          </div>
-          {(video || showVideoPlaceholder) && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-              <div className="flex items-center justify-between gap-2">
-                <p className="font-semibold text-white">Vidéo</p>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full border border-cyan-400/40 bg-cyan-500/15 px-2 py-0.5 text-[11px] font-semibold text-cyan-50">
-                    🎥 Vidéo
-                  </span>
-                  {isStudent && !canViewContent && (
-                    <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-50">
-                      🔒 Premium
-                    </span>
-                  )}
-                </div>
-              </div>
-              {canViewContent ? (
+            {(video || showVideoPlaceholder) &&
+              (canViewContent ? (
                 video ? (
-                  <div
-                    className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/30"
-                    style={{ aspectRatio: "16 / 9" }}
-                  >
+                  <div style={{ aspectRatio: "16 / 9" }}>
                     <video
                       controls
                       poster={videoPoster}
-                      className="h-full w-full bg-black object-contain"
+                      className="h-full w-full rounded-lg border border-white/10 bg-black object-contain"
                       src={videoSrc}
                     >
                       Votre navigateur ne supporte pas la vidéo.
                     </video>
                   </div>
                 ) : (
-                  <p className="mt-2 text-xs text-slate-200">
+                  <div
+                    className="flex items-center justify-center rounded-lg border border-white/10 bg-black/40 text-xs text-slate-200"
+                    style={{ aspectRatio: "16 / 9" }}
+                  >
                     Aucune vidéo fournie pour le moment. Un lien sera ajouté prochainement.
-                  </p>
+                  </div>
                 )
               ) : (
-                <p className="mt-2 text-xs text-amber-100">
-                  Débloque cette position via un cours ou passe en Premium pour accéder à la vidéo.
-                </p>
-              )}
-            </div>
-          )}
-          {isStudent && !isPremium && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-              <p className="font-semibold text-white">Gating élève</p>
-              <p className="mt-2">
-                Élève gratuit : accès aux positions “débloquées” via cours.
-              </p>
-              <p className="mt-2">
-                Élève premium : accès complet.
-                <br />
-                Statut actuel :{" "}
-                <span className="font-semibold">
-                  {isPremium ? "Premium" : hasUnlocked ? "Gratuit (débloqué)" : "Gratuit / non débloqué"}
-                </span>
-              </p>
-            </div>
-          )}
-          {isStaff && (
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              {isOwner ? (
-                <Link
-                  href={`/teacher/positions/${position.id}/edit`}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/gear.svg" alt="" className="h-4 w-4" />
-                  Éditer
-                </Link>
+                <div className="relative overflow-hidden rounded-lg border border-amber-400/40 bg-amber-500/10 text-xs text-amber-100" style={{ aspectRatio: "16 / 9" }}>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-50">
+                      Contenu Premium
+                    </span>
+                    <p className="text-center">
+                      Débloque cette position via un cours ou passe en Premium pour accéder à la vidéo.
+                    </p>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {position.discipline ? (
+                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Discipline</p>
+                  <p className="text-lg font-semibold text-white">{position.discipline}</p>
+                </div>
               ) : (
-                <p className="text-xs font-semibold text-slate-300">
-                  Édition réservée au créateur ({position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}).
-                </p>
+                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Discipline</p>
+                  <p className="text-lg font-semibold text-white">—</p>
+                </div>
               )}
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-white/5 to-emerald-500/10 p-4 shadow-inner shadow-black/20">
+                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Niveau requis</p>
+                <p className="text-lg font-semibold text-white">{levelLabels[position.levelRequired]}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
+                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Type</p>
+                <p className="text-lg font-semibold text-white">{typeLabels[position.type]}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-white/5 to-indigo-500/10 p-4 shadow-inner shadow-black/20">
+                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Grips</p>
+                <p className="text-lg font-semibold text-white">{position.grips ?? "Non précisé"}</p>
+              </div>
+            {position.createdBy ? (
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-4 shadow-inner shadow-black/20">
+                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Créé par</p>
+                <p className="text-lg font-semibold text-white">
+                  {position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-4 shadow-inner shadow-black/20">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Créé par</p>
+                  <p className="text-lg font-semibold text-white">—</p>
+                </div>
+              )}
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-4 shadow-inner shadow-black/20">
+                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Vu</p>
+                <p className="text-lg font-semibold text-white">{position._count?.progress ?? 0}</p>
+              </div>
             </div>
-          )}
-        </aside>
+
+            {canViewContent ? (
+              <div className="space-y-4 text-slate-200">
+                <div className="space-y-2">
+                  <p className="text-sm text-cyan-200">Description</p>
+                  <p className="text-sm text-slate-100">
+                    {position.description ?? "Aucune description"}
+                  </p>
+                </div>
+                {position.tips && (
+                  <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-sm font-semibold text-white">Conseils</p>
+                    <p className="text-sm text-slate-100">{position.tips}</p>
+                  </div>
+                )}
+                {position.muscles.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-cyan-200">Muscles / articulations sollicités</p>
+                    <div className="flex flex-wrap gap-2">
+                      {position.muscles.map((m) => (
+                        <span
+                          key={m.muscleId}
+                          className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[12px] text-slate-100"
+                        >
+                          {m.muscle.name}
+                          {m.muscle.kind ? (
+                            <span className="ml-1 text-[10px] uppercase tracking-[0.08em] text-slate-400">
+                              {m.muscle.kind.toLowerCase()}
+                            </span>
+                          ) : null}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {position.contraindications && (
+                  <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-sm font-semibold text-white">Contre-indications</p>
+                    <p className="text-sm text-slate-100">
+                      {position.contraindications}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+                <p className="font-semibold text-white">Contenu Premium</p>
+                <p className="mt-1">
+                  Description, conseils et vidéo sont réservés aux élèves premium.
+                </p>
+              </div>
+            )}
+
+            {isStaff && (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                {isOwner ? (
+                  <Link
+                    href={`/teacher/positions/${position.id}/edit`}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/gear.svg" alt="" className="h-4 w-4" />
+                    Éditer
+                  </Link>
+                ) : (
+                  <p className="text-xs font-semibold text-slate-300">
+                    Édition réservée au créateur ({position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}).
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </section>
       <section className="panel space-y-4 border-indigo-400/20 p-4 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
