@@ -168,12 +168,10 @@ export default async function StudentProgressPage({
     skip,
     take: PAGE_SIZE,
   });
-  const disciplineRows = session.user.schoolId
-    ? await prisma.discipline.findMany({
-        where: { schoolId: session.user.schoolId },
-        select: { name: true, color: true },
-      })
-    : [];
+  const disciplineRows = await prisma.discipline.findMany({
+    select: { name: true, color: true },
+    orderBy: { name: "asc" },
+  });
   const disciplineColors = new Map(
     disciplineRows
       .filter((d) => d.name)

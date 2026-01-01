@@ -93,7 +93,6 @@ export async function createDisciplineAction(formData: FormData) {
       data: {
         name,
         color,
-        schoolId: session.user.schoolId,
       },
     });
     revalidatePath("/app/admin/school");
@@ -124,7 +123,7 @@ export async function updateDisciplineAction(formData: FormData) {
   }
   const { disciplineId, name, color } = parsed.data;
   const existing = await prisma.discipline.findFirst({
-    where: { id: disciplineId, schoolId: session.user.schoolId },
+    where: { id: disciplineId },
   });
   if (!existing) {
     redirect("/access-denied");
@@ -155,14 +154,19 @@ export async function deleteDisciplineAction(formData: FormData) {
     return;
   }
   const discipline = await prisma.discipline.findFirst({
-    where: { id: disciplineId, schoolId: session.user.schoolId },
+    where: { id: disciplineId },
   });
   if (!discipline) {
     redirect("/access-denied");
   }
 
   const usedCount = await prisma.course.count({
-    where: { schoolId: session.user.schoolId, discipline: discipline.name },
+    where: {
+      OR: [
+        { disciplineId: disciplineId },
+        { discipline: discipline.name },
+      ],
+    },
   });
   if (usedCount > 0) {
     return;

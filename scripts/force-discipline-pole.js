@@ -18,23 +18,22 @@ async function main() {
   const name = process.env.TARGET_DISCIPLINE?.trim() || "Pole";
   const color = process.env.TARGET_COLOR?.trim() || "#7c3aed";
 
-  const schools = await prisma.school.findMany({ select: { id: true } });
-  for (const school of schools) {
-    await prisma.discipline.upsert({
-      where: { schoolId_name: { schoolId: school.id, name } },
-      update: { color },
-      create: { schoolId: school.id, name, color },
-    });
-  }
+  const discipline = await prisma.discipline.upsert({
+    where: { name },
+    update: { color },
+    create: { name, color },
+  });
 
-  const [courses, positions] = await Promise.all([
-    prisma.course.updateMany({ data: { discipline: name } }),
-    prisma.position.updateMany({ data: { discipline: name } }),
+  const [courses, positions, presets] = await Promise.all([
+    prisma.course.updateMany({ data: { discipline: name, disciplineId: discipline.id } }),
+    prisma.position.updateMany({ data: { discipline: name, disciplineId: discipline.id } }),
+    prisma.preset.updateMany({ data: { discipline: name, disciplineId: discipline.id } }),
   ]);
 
-  console.log(`Discipline upserted for ${schools.length} school(s).`);
+  console.log(`Discipline upserted globally.`);
   console.log(`Courses updated: ${courses.count}`);
   console.log(`Positions updated: ${positions.count}`);
+  console.log(`Presets updated: ${presets.count}`);
 }
 
 main()

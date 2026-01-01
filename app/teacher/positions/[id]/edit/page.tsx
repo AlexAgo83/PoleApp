@@ -45,8 +45,7 @@ export default async function EditPositionPage({ params }: Props) {
       select: { id: true, name: true, kind: true },
     }),
     prisma.discipline.findMany({
-      where: { schoolId: session.user.schoolId ?? undefined },
-      select: { name: true, color: true },
+      select: { id: true, name: true, color: true },
       orderBy: { name: "asc" },
     }),
     prisma.course.findMany({

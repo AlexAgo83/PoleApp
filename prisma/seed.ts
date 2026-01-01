@@ -437,10 +437,12 @@ async function seedPositions({
   muscles,
   teachers,
   priorityTeacherId,
+  disciplines,
 }: {
   muscles: { id: string; name: string }[];
   teachers: { id: string }[];
   priorityTeacherId?: string | null;
+  disciplines: SeedDiscipline[];
 }) {
   const muscleMap = new Map(muscles.map((m) => [m.name, m.id]));
   const positionsByTeacher: Record<string, string[]> = {};
@@ -449,7 +451,9 @@ async function seedPositions({
   for (let i = 0; i < positionsData.length; i += 1) {
     const pos = positionsData[i];
     const image = POSITION_IMAGES[i % POSITION_IMAGES.length];
-    const discipline = disciplinesCatalog[i % disciplinesCatalog.length]?.name ?? PRIMARY_DISCIPLINE;
+    const disciplinePick = disciplines[i % disciplines.length] ?? disciplines[0];
+    const discipline = disciplinePick?.name ?? PRIMARY_DISCIPLINE;
+    const disciplineId = disciplinePick?.id ?? null;
     const muscleTargets = (muscleTargetsByType[pos.type] ?? [])
       .map((name) => muscleMap.get(name))
       .filter((id): id is string => Boolean(id))
@@ -490,6 +494,7 @@ async function seedPositions({
               },
             }
           : {}),
+        disciplineId,
       },
     });
     createdPositions.push(created);
@@ -500,20 +505,22 @@ async function seedPositions({
   return { createdPositions, positionsByTeacher };
 }
 
-async function seedDisciplines(schools: { id: string }[]) {
-  const bySchool: Record<string, { name: string; color?: string | null }[]> = {};
+type SeedDiscipline = { id: string; name: string; color?: string | null };
 
+async function seedDisciplines(schools: { id: string }[]) {
+  const bySchool: Record<string, SeedDiscipline[]> = {};
+  const rows = await Promise.all(
+    disciplinesCatalog.map((disc) =>
+      prisma.discipline.upsert({
+        where: { name: disc.name },
+        update: { color: disc.color },
+        create: { name: disc.name, color: disc.color },
+      })
+    )
+  );
+  const shared = rows.map((row) => ({ id: row.id, name: row.name, color: row.color }));
   for (const school of schools) {
-    const rows = await Promise.all(
-      disciplinesCatalog.map((disc) =>
-        prisma.discipline.upsert({
-          where: { schoolId_name: { schoolId: school.id, name: disc.name } },
-          update: { color: disc.color },
-          create: { schoolId: school.id, name: disc.name, color: disc.color },
-        })
-      )
-    );
-    bySchool[school.id] = rows.map((row) => ({ name: row.name, color: row.color }));
+    bySchool[school.id] = shared;
   }
 
   return bySchool;
@@ -726,8 +733,8 @@ async function seedCourses(schoolsData: {
   teachers: { id: string; schoolId: string; email?: string }[];
   students: { id: string; schoolId: string }[];
   admins: { id: string; schoolId: string }[];
-  positions: { id: string }[];
-  disciplinesBySchool: Record<string, { name: string; color?: string | null }[]>;
+  positions: { id: string; discipline?: string | null; disciplineId?: string | null }[];
+  disciplinesBySchool: Record<string, SeedDiscipline[]>;
   positionsByTeacher: Record<string, string[]>;
 }) {
   const { schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher } = schoolsData;
@@ -740,10 +747,10 @@ async function seedCourses(schoolsData: {
     const schoolStudents = students.filter((s) => s.schoolId === school.id);
     const schoolAdmin = admins.find((a) => a.schoolId === school.id);
     const teacherUsage = new Map<string, number>();
-    const disciplinePool =
+    const disciplinePool: SeedDiscipline[] =
       disciplinesBySchool[school.id] && disciplinesBySchool[school.id].length > 0
         ? disciplinesBySchool[school.id]
-        : disciplinesCatalog;
+        : disciplinesCatalog.map((d) => ({ id: undefined as unknown as string, name: d.name, color: d.color }));
     const reservedSlots: { start: Date; end: Date }[] = [];
 
     // studios
@@ -791,9 +798,9 @@ async function seedCourses(schoolsData: {
           ? positions.filter((p) => teacherPositions.includes(p.id))
           : [];
       const pool = preferredPositions.length > 0 ? preferredPositions : positions;
-      const courseDiscipline =
-        disciplinePool[(courseNameIdx + i) % disciplinePool.length]?.name ??
-        PRIMARY_DISCIPLINE;
+      const disciplineChoice = disciplinePool[(courseNameIdx + i) % disciplinePool.length];
+      const courseDiscipline = disciplineChoice?.name ?? PRIMARY_DISCIPLINE;
+      const courseDisciplineId = disciplineChoice?.id ?? null;
       const disciplinePoolPositions = pool.filter(
         (p: any) =>
           p.discipline && p.discipline.toLowerCase() === courseDiscipline.toLowerCase()
@@ -818,6 +825,7 @@ async function seedCourses(schoolsData: {
           studioId: studio.id,
           photoUrl,
           discipline: courseDiscipline,
+          disciplineId: courseDisciplineId,
           maxSeats: 30,
           costCredits: 100,
           positions: {
@@ -916,7 +924,9 @@ async function seedCourses(schoolsData: {
       if (reservedSlots.some((s) => edgeDate < s.end && s.start < new Date(edgeDate.getTime() + edge.duration * 60_000))) {
         continue;
       }
-      const disciplineName = disciplinePool[Math.floor(Math.random() * disciplinePool.length)]?.name ?? PRIMARY_DISCIPLINE;
+      const disciplinePick = disciplinePool[Math.floor(Math.random() * disciplinePool.length)];
+      const disciplineName = disciplinePick?.name ?? PRIMARY_DISCIPLINE;
+      const disciplineId = disciplinePick?.id ?? null;
       const disciplinePositions = positions.filter(
         (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
       );
@@ -934,6 +944,7 @@ async function seedCourses(schoolsData: {
           schoolId: school.id,
           studioId: studio.id,
           discipline: disciplineName,
+          disciplineId,
           maxSeats: edge.seats,
           costCredits: edge.cost,
           waitlistQuota: edge.waitlist,
@@ -1034,7 +1045,11 @@ async function seedCourses(schoolsData: {
         cursor.setDate(cursor.getDate() + 1);
       }
 
-      const disciplineName = tmpl.discipline ?? PRIMARY_DISCIPLINE;
+      const disciplinePick =
+        disciplinePool.find((d) => (tmpl.discipline ?? "").toLowerCase() === d.name.toLowerCase()) ??
+        disciplinePool[0];
+      const disciplineName = disciplinePick?.name ?? tmpl.discipline ?? PRIMARY_DISCIPLINE;
+      const disciplineId = disciplinePick?.id ?? null;
       const disciplinePositions = positions.filter(
         (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
       );
@@ -1056,6 +1071,7 @@ async function seedCourses(schoolsData: {
             schoolId: school.id,
             studioId: studio.id,
             discipline: disciplineName,
+            disciplineId,
             maxSeats: 20,
             costCredits: 100,
             recurrenceSeriesId: series.id,
@@ -1139,7 +1155,11 @@ async function seedCourses(schoolsData: {
       if ((studioCourseCount.get(studio.id) ?? 0) > 0) continue;
       const date = new Date(startBase);
       date.setHours(11, 0, 0, 0);
-      const disciplineName = PRIMARY_DISCIPLINE;
+      const disciplinePick =
+        disciplinePool.find((d) => d.name.toLowerCase() === PRIMARY_DISCIPLINE.toLowerCase()) ??
+        disciplinePool[0];
+      const disciplineName = disciplinePick?.name ?? PRIMARY_DISCIPLINE;
+      const disciplineId = disciplinePick?.id ?? null;
       const disciplinePositions = positions.filter(
         (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
       );
@@ -1158,6 +1178,7 @@ async function seedCourses(schoolsData: {
           schoolId: school.id,
           studioId: studio.id,
           discipline: disciplineName,
+          disciplineId,
           maxSeats: 20,
           costCredits: 100,
           photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
@@ -1445,14 +1466,21 @@ async function seedPurchases(students: { id: string; schoolId: string }[]) {
 
 async function seedPresets(options: {
   schools: { id: string }[];
-  positions: { id: string; name: string; discipline: string | null }[];
+  positions: { id: string; name: string; discipline: string | null; disciplineId?: string | null }[];
   teachers: { id: string; schoolId: string }[];
+  disciplinesBySchool: Record<string, SeedDiscipline[]>;
 }) {
-  const { schools, positions, teachers } = options;
+  const { schools, positions, teachers, disciplinesBySchool } = options;
   for (const school of schools) {
     const teacher = teachers.find((t) => t.schoolId === school.id) ?? null;
     const positionPool = positions.filter((p) => !!p.discipline);
     for (const preset of seedPresetsData) {
+      const disciplinePick = preset.discipline
+        ? (disciplinesBySchool[school.id] ?? []).find((d) => d.name === preset.discipline) ??
+          (disciplinesBySchool[school.id] ?? []).find(
+            (d) => d.name.toLowerCase() === preset.discipline.toLowerCase()
+          )
+        : null;
       const picked = positionPool
         .filter((p) => (preset.discipline ? p.discipline === preset.discipline : true))
         .slice()
@@ -1462,7 +1490,8 @@ async function seedPresets(options: {
         data: {
           title: preset.title,
           description: preset.description,
-          discipline: preset.discipline,
+          discipline: disciplinePick?.name ?? preset.discipline ?? picked[0]?.discipline ?? null,
+          disciplineId: disciplinePick?.id ?? picked[0]?.disciplineId ?? null,
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
           imageUrl: preset.imageUrl ?? null,
@@ -1510,18 +1539,20 @@ async function main() {
   const muscles = await seedMuscles();
   const { schools, teachers, students, admins } = await seedSchoolsAndUsers();
   const disciplinesBySchool = await seedDisciplines(schools);
+  const sharedDisciplines = disciplinesBySchool[schools[0].id] ?? [];
   await seedPartners(schools);
   const elzaTeacher = teachers.find((t) => t.email === "teacher@poleapp.test");
   const { createdPositions: positions, positionsByTeacher } = await seedPositions({
     muscles,
     teachers,
     priorityTeacherId: elzaTeacher?.id,
+    disciplines: sharedDisciplines,
   });
   await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
   await seedStudentFavorites({ students, positions });
   await seedStudentProgress({ students, positions, teachers });
   await seedStudentInjuries(students);
-  await seedPresets({ schools, positions, teachers });
+  await seedPresets({ schools, positions, teachers, disciplinesBySchool });
   await seedPurchases(students);
   await seedCourses({ schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher });
   await seedGameSessions(students);

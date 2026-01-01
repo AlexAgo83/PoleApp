@@ -84,6 +84,14 @@ export async function updateCourseAction(formData: FormData) {
   }
 
   const data = parsed.data;
+  const disciplineRecord = data.discipline
+    ? await prisma.discipline.findFirst({
+        where: { OR: [{ id: data.discipline }, { name: data.discipline }] },
+        select: { id: true, name: true },
+      })
+    : null;
+  const disciplineName = disciplineRecord?.name ?? data.discipline;
+  const disciplineId = disciplineRecord?.id ?? null;
 
   const existing = await prisma.course.findFirst({
     where: { id: data.id, schoolId: session.user.schoolId },
@@ -165,7 +173,8 @@ export async function updateCourseAction(formData: FormData) {
           date: data.date,
           teacherId: teacherToConnect,
           studioId: data.studioId,
-          discipline: data.discipline,
+          discipline: disciplineName,
+          disciplineId,
           durationMinutes: data.durationMinutes,
           maxSeats: data.maxSeats ?? 30,
           waitlistQuota: data.waitlistQuota ?? 0,
@@ -190,7 +199,8 @@ export async function updateCourseAction(formData: FormData) {
           date: data.date,
           teacherId: teacherToConnect,
           studioId: data.studioId,
-          discipline: data.discipline,
+          discipline: disciplineName,
+          disciplineId,
           durationMinutes: data.durationMinutes,
           waitlistQuota: data.waitlistQuota ?? 0,
           photoUrl: data.photoUrl ?? null,

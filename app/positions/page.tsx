@@ -141,12 +141,10 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
       ])
     : [[], []];
-  const disciplineRows = session.user.schoolId
-    ? await prisma.discipline.findMany({
-        where: { schoolId: session.user.schoolId },
-        select: { name: true, color: true },
-      })
-    : [];
+  const disciplineRows = await prisma.discipline.findMany({
+    select: { name: true, color: true },
+    orderBy: { name: "asc" },
+  });
   const disciplineColors = new Map(
     disciplineRows
       .filter((d) => d.name)

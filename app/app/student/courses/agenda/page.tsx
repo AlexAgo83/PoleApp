@@ -334,23 +334,18 @@ export default async function StudentCoursesAgendaPage({
       })
     : Promise.resolve([]);
 
-  const courseDisciplinesPromise = session.user.schoolId
-    ? prisma.course.findMany({
-        where: { schoolId: session.user.schoolId },
-        select: { discipline: true },
-        distinct: ["discipline"],
-      })
-    : Promise.resolve([]);
+  const courseDisciplinesPromise = prisma.course.findMany({
+    where: { schoolId: session.user.schoolId ?? undefined },
+    select: { discipline: true },
+    distinct: ["discipline"],
+  });
 
-  const disciplinesPromise = session.user.schoolId
-    ? prisma.discipline
-        .findMany({
-          where: { schoolId: session.user.schoolId },
-          select: { id: true, name: true, color: true },
-          orderBy: { name: "asc" },
-        })
-        .catch(() => [])
-    : Promise.resolve([]);
+  const disciplinesPromise = prisma.discipline
+    .findMany({
+      select: { id: true, name: true, color: true },
+      orderBy: { name: "asc" },
+    })
+    .catch(() => []);
 
   const [studios, teachers, courseDisciplines, disciplineRows] = await Promise.all([
     studiosPromise,

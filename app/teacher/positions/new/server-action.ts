@@ -32,6 +32,10 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
   }
 
   const data = schema.parse(input);
+  const discipline = await prisma.discipline.findUnique({
+    where: { name: data.discipline },
+    select: { id: true, name: true },
+  });
 
   const position = await prisma.position.create({
     data: {
@@ -39,7 +43,8 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
       description: data.description ?? data.tips,
       type: data.type,
       levelRequired: data.levelRequired,
-      discipline: data.discipline,
+      discipline: discipline?.name ?? data.discipline,
+      disciplineId: discipline?.id ?? null,
       grips: data.grips ?? null,
       tips: data.tips,
       contraindications: data.contraindications,

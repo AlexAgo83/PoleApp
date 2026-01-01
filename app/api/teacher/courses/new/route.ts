@@ -55,8 +55,7 @@ export async function GET() {
       },
     }),
     prisma.discipline.findMany({
-      where: { schoolId },
-      select: { name: true, color: true },
+      select: { id: true, name: true, color: true },
       orderBy: { name: "asc" },
     }),
     prisma.course.findMany({

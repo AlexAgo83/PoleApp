@@ -28,7 +28,7 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
 
   const [positions, presets, disciplines, totalPresets] = await Promise.all([
     prisma.position.findMany({
-      select: { id: true, name: true, discipline: true },
+      select: { id: true, name: true, discipline: true, disciplineId: true },
       orderBy: { name: "asc" },
       take: 30,
     }),
@@ -44,8 +44,7 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
     }),
     prisma.discipline
       .findMany({
-        where: { schoolId: session.user.schoolId },
-        select: { name: true },
+        select: { id: true, name: true },
         orderBy: { name: "asc" },
       })
       .catch(() => []),
