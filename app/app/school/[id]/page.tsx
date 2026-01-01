@@ -79,7 +79,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 where: baseWhere,
                 include: {
                   teacher: { select: { id: true, name: true, email: true } },
-                  disciplineId: true,
                   _count: { select: { attendances: true, positions: true, notes: true } },
                 },
               },
@@ -513,13 +512,11 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                     className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
                   >
                     <option value="">Toutes disciplines</option>
-                    {disciplineOptions
-                      .filter((d) => d.discipline && d.discipline.trim().length > 0)
-                      .map((d) => (
-                        <option key={d.discipline} value={d.discipline ?? ""}>
-                          {d.discipline}
-                        </option>
-                      ))}
+                    {disciplineOptionList.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name}
+                      </option>
+                    ))}
                   </select>
                 </label>
               </div>

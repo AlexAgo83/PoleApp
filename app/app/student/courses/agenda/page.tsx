@@ -241,7 +241,6 @@ export default async function StudentCoursesAgendaPage({
           include: {
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
-            disciplineId: true,
             _count: { select: { positions: true } },
             attendances: {
               where: { studentId: session.user.id },
@@ -574,11 +573,14 @@ export default async function StudentCoursesAgendaPage({
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               >
                 <option value="">Toutes disciplines</option>
-                {disciplines.map((d) => (
-                  <option key={d.id ?? d.name} value={d.id ?? d.name}>
-                    {d.name}
-                  </option>
-                ))}
+                {disciplines.map((d) => {
+                  const value = (d as { id?: string; name: string }).id ?? d.name;
+                  return (
+                    <option key={value} value={value}>
+                      {d.name}
+                    </option>
+                  );
+                })}
               </select>
             </label>
             <label className="text-sm text-slate-200">

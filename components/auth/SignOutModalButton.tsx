@@ -53,7 +53,7 @@ export function SignOutModalButton({
       <div
         className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
         aria-hidden="true"
-        onClick={isForced ? undefined : close}
+        onClick={isForced ? undefined : () => close()}
       />
       <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95 p-6 shadow-2xl shadow-indigo-900/40">
         <div className="flex items-start justify-between gap-3">

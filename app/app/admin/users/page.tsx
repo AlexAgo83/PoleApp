@@ -261,7 +261,6 @@ export default async function AdminUsersPage({
                       avatarPublicId: user.avatarPublicId,
                       avatarUrl: user.avatarUrl,
                       placeholder: USER_AVATAR_PLACEHOLDER,
-                      seedKey: user.id,
                     }) || USER_AVATAR_PLACEHOLDER
                   }
                   alt={`Avatar de ${user.name ?? user.email}`}

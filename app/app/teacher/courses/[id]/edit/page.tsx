@@ -40,6 +40,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       costCredits: true,
       waitlistQuota: true,
       discipline: true,
+      disciplineId: true,
       photoUrl: true,
       teacherId: true,
       studioId: true,
@@ -83,7 +84,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
 
-  const [students, positions, teachers, studios, progresses, disciplinesRaw, courseDisciplines, teacherFavoritesRows] = await Promise.all([
+  const [students, positions, teachers, studios, progresses, disciplinesRaw, teacherFavoritesRows] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId, role: "STUDENT" },
       select: { id: true, name: true, email: true },

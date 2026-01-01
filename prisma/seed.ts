@@ -146,6 +146,8 @@ const positionsData: Array<{
   grips?: string;
   discipline?: string;
   descriptionText?: string;
+  tips?: string;
+  contraindications?: string;
 }> = [];
 
 const normalizeHeading = (name: string) =>
@@ -1183,7 +1185,7 @@ async function seedCourses(schoolsData: {
         if (reservedSlots.some((s) => date < s.end && s.start < new Date(date.getTime() + tmpl.duration * 60_000))) {
           continue;
         }
-        await prisma.course.create({
+        const course = await prisma.course.create({
           data: {
             title: `${disciplineName} récurrent ${idx + 1}`,
             date,
@@ -1602,13 +1604,16 @@ async function seedPresets(options: {
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
       const disciplineName = disciplinePick?.name ?? preset.discipline ?? picked[0]?.discipline ?? PRIMARY_DISCIPLINE;
-      const disciplineId = disciplinePick?.id ?? picked[0]?.disciplineId ?? null;
+      const disciplineId =
+        disciplinePick?.id ??
+        picked[0]?.disciplineId ??
+        (disciplinesBySchool[school.id]?.[0]?.id ?? null);
       await prisma.preset.create({
         data: {
           title: preset.title,
           description: preset.description,
           discipline: disciplineName,
-          disciplineId: disciplineId ?? undefined,
+          disciplineId: disciplineId ?? "",
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
           imageUrl: preset.imageUrl ?? null,

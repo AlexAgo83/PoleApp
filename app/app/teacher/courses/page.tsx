@@ -303,11 +303,14 @@ export default async function TeacherCoursesPage({
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
               >
                 <option value="">Toutes disciplines</option>
-                {disciplines.map((d) => (
-                  <option key={d.id ?? d.name} value={d.id ?? d.name}>
-                    {d.name}
-                  </option>
-                ))}
+                {disciplines.map((d) => {
+                  const value = (d as { id?: string; name: string }).id ?? d.name;
+                  return (
+                    <option key={value} value={value}>
+                      {d.name}
+                    </option>
+                  );
+                })}
               </select>
             </label>
           <label className="mt-1 inline-flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 md:col-span-2">

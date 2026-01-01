@@ -76,7 +76,6 @@ export default async function ProfilePage({
     avatarPublicId: user.avatarPublicId,
     avatarUrl: user.avatarUrl,
     placeholder: avatarPlaceholder,
-    seedKey: user.id,
   });
 
   const resolvedSearch = (await searchParams) ?? {};

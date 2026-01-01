@@ -58,7 +58,6 @@ export default async function TeacherDashboard() {
     avatarPublicId: teacherUser?.avatarPublicId,
     avatarUrl: teacherUser?.avatarUrl ?? session?.user?.image ?? null,
     placeholder: AVATAR_PLACEHOLDER,
-    seedKey: teacherUser?.id ?? session?.user?.id,
   }) || null;
   const avatarInitial = (displayName?.[0] ?? "P").toUpperCase();
   const teacherProfileHref = session?.user?.id ? `/app/teachers/${session.user.id}` : "/app/profile";
