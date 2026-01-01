@@ -8,6 +8,20 @@ const nextConfig: NextConfig = {
       hostname,
     })),
   },
+  async redirects() {
+    return [
+      {
+        source: "/app",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/app/:path*",
+        destination: "/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
