@@ -60,7 +60,7 @@ export async function createPresetAdminAction(formData: FormData) {
       title: parsed.data.title,
       description: parsed.data.description,
       discipline: parsed.data.discipline,
-      disciplineId: disciplineRecord?.id ?? null,
+      disciplineId: disciplineRecord?.id ?? undefined,
       videoUrl: parsed.data.videoUrl || null,
       imageUrl: parsed.data.imageUrl || null,
       premiumRequired: parsed.data.premiumRequired ?? false,
