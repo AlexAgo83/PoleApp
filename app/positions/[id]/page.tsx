@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { SafeImage } from "@/components/SafeImage";
 import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
-import { normalizeFolderedPublicId } from "@/lib/media";
+import { isSeedPublicId, normalizeFolderedPublicId } from "@/lib/media";
 import { generateSignedUrl } from "@/lib/cloudinary";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
@@ -139,22 +139,23 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const disciplineName = (position.disciplineId ? disciplineNameById.get(position.disciplineId) : null) ?? position.discipline ?? null;
   const cover = position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
-  const normalizedVideoId = normalizeFolderedPublicId(video?.publicId, "poleapp/positions") ?? video?.publicId ?? null;
+  const normalizedVideoId =
+    normalizeFolderedPublicId(video?.publicId, "poleapp/positions") ?? video?.publicId ?? null;
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
-  const seedVideoIds = new Set(["01_xphtvq", "02_e8rhmg", "03_yjmfi7", "04_exjndq", "05_flr6zp", "06_shrnly"]);
   const videoId = normalizedVideoId ? normalizedVideoId.split("/").pop() ?? normalizedVideoId : undefined;
-  const isSeedVideo = videoId ? seedVideoIds.has(videoId) : false;
+  const isSeedVideo = isSeedPublicId(videoId);
   const videoSources = (() => {
     if (!normalizedVideoId || normalizedVideoId.length === 0) return [];
+    const seedPublicId = isSeedVideo && videoId ? videoId : normalizedVideoId;
     const sources: { src: string; type?: string }[] = [];
     if (isSeedVideo && cloudName) {
       // Seed: public upload
       sources.push({
-        src: `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}`,
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${seedPublicId}`,
         type: "video/mp4",
       });
       sources.push({
-        src: `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.mp4`,
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${seedPublicId}.mp4`,
         type: "video/mp4",
       });
       return sources;
@@ -182,7 +183,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const videoPoster =
     (normalizedVideoId &&
       (isSeedVideo && cloudName
-        ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.jpg`
+        ? `https://res.cloudinary.com/${cloudName}/video/upload/${videoId ?? normalizedVideoId}.jpg`
         : generateSignedUrl({
             publicId: normalizedVideoId,
             resourceType: "video",

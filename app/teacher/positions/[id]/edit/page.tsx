@@ -5,7 +5,7 @@ import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { generateSignedUrl } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
-import { normalizeFolderedPublicId } from "@/lib/media";
+import { isSeedPublicId, normalizeFolderedPublicId } from "@/lib/media";
 import { EditPositionForm } from "./EditPositionForm";
 import { deletePositionAction } from "./action";
 
@@ -71,12 +71,11 @@ export default async function EditPositionPage({ params }: Props) {
   const normalizedVideoId =
     normalizeFolderedPublicId(videoMedia?.publicId, "poleapp/positions") ?? videoMedia?.publicId ?? undefined;
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const seedVideoIds = new Set(["01_xphtvq", "02_e8rhmg", "03_yjmfi7", "04_exjndq", "05_flr6zp", "06_shrnly"]);
   const videoId = normalizedVideoId ? normalizedVideoId.split("/").pop() ?? normalizedVideoId : undefined;
-  const isSeedVideo = videoId ? seedVideoIds.has(videoId) : false;
+  const isSeedVideo = isSeedPublicId(videoId);
   const videoPreviewUrl =
     normalizedVideoId && cloudName && isSeedVideo
-      ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.mp4`
+      ? `https://res.cloudinary.com/${cloudName}/video/upload/${videoId}.mp4`
       : normalizedVideoId
         ? generateSignedUrl({
             publicId: normalizedVideoId,
