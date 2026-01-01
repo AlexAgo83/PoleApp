@@ -166,8 +166,14 @@ function parseDocPositions() {
     const extras: typeof positionsData = [];
     const seen = new Set(positionsData.map((p) => normalizeHeading(p.name)));
 
+    const normalizeText = (raw: string) =>
+      raw
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "");
+
     const mapType = (raw: string): PositionType | null => {
-      const t = raw.toLowerCase();
+      const t = normalizeText(raw);
       if (t.includes("spin")) return PositionType.SPIN;
       if (t.includes("transition")) return PositionType.TRANSITION;
       if (t.includes("warm") || t.includes("echauff") || t.includes("cool")) return PositionType.WARMUP;
@@ -176,7 +182,7 @@ function parseDocPositions() {
       return null;
     };
     const mapLevel = (raw: string): PositionLevel | null => {
-      const l = raw.toLowerCase();
+      const l = normalizeText(raw);
       if (l.includes("avanc")) return PositionLevel.ADVANCED;
       if (l.includes("inter")) return PositionLevel.INTERMEDIATE;
       if (l.includes("debut") || l.includes("init") || l.includes("innitiation")) return PositionLevel.BEGINNER;
