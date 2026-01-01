@@ -84,8 +84,8 @@ export async function GET(
   const role = session.user.role;
   const coursePath =
     role === "STUDENT"
-    ? `/app/student/courses/${course.id}`
-    : `/app/teacher/courses/${course.id}`;
+    ? `/student/courses/${course.id}`
+    : `/teacher/courses/${course.id}`;
   const courseUrl = `${baseUrl}${coursePath}`;
   const tz = globalSettings?.timezone || "Europe/Paris";
   const alarmMinutes = Number.isFinite(globalSettings?.icsDefaultAlarmMinutes)

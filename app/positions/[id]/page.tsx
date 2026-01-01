@@ -46,7 +46,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     decodedFrom && decodedFrom.startsWith("/") && !decodedFrom.startsWith("//") ? decodedFrom : undefined;
   const backHref = safeFrom ?? "/positions";
   const isFromPositionsList = Boolean(safeFrom && safeFrom.startsWith("/positions"));
-  const isFromProgress = Boolean(safeFrom && safeFrom.startsWith("/app/student/progress"));
+  const isFromProgress = Boolean(safeFrom && safeFrom.startsWith("/student/progress"));
   const filtersFromList = (() => {
     if (!isFromPositionsList || !safeFrom) return null;
     const url = new URL(`http://localhost${safeFrom}`);
@@ -469,7 +469,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                     const alreadyBought = purchasedPresetIds.has(combo.id);
                     const href =
                       premiumLocked && isStudent
-                        ? `/app/student/premium?from=${encodeURIComponent(`/positions/${position.id}`)}`
+                        ? `/student/premium?from=${encodeURIComponent(`/positions/${position.id}`)}`
                         : `/presets?highlight=${combo.id}`;
                     return (
                       <Link

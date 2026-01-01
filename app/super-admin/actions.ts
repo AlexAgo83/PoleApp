@@ -68,10 +68,10 @@ export async function forceDisciplinePoleAction(formData: FormData) {
 
   await logAudit("discipline:force", undefined, { name, color });
   revalidatePath(basePath);
-  revalidatePath("/app");
+  revalidatePath("/");
   revalidatePath("/positions");
-  revalidatePath("/app/teacher/courses");
-  revalidatePath("/app/student/courses");
+  revalidatePath("/teacher/courses");
+  revalidatePath("/student/courses");
   redirect(`${basePath}?flash=force-ok`);
 }
 

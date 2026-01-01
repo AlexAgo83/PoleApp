@@ -6,11 +6,11 @@ import { getServerSession } from "next-auth";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
-import { BuyCreditsButton } from "@/app/app/student/BuyCreditsButton";
+import { BuyCreditsButton } from "@/app/student/BuyCreditsButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
-import { buyPresetAction } from "@/app/app/student/actions";
+import { buyPresetAction } from "@/app/student/actions";
 import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 export const dynamic = "force-dynamic";
@@ -180,7 +180,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
             </Link>
             {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
               <Link
-                href={session.user.role === "SCHOOL_ADMIN" ? "/app/admin/presets" : "/app/teacher/presets"}
+                href={session.user.role === "SCHOOL_ADMIN" ? "/admin/presets" : "/teacher/presets"}
                 className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
                 <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">

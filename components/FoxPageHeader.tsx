@@ -123,24 +123,24 @@ export async function FoxPageHeader({
             : "Invité";
   const profileHref =
     session?.user?.role === "TEACHER" && session.user.id
-      ? `/app/teachers/${session.user.id}`
-      : "/app/profile";
+      ? `/teachers/${session.user.id}`
+      : "/profile";
   const schoolName = isSuperAdmin ? "Dashboard" : school?.name || title || "Mon école";
   const schoolImage = isSuperAdmin ? superAdminImage : school?.photoUrl ?? null;
   const eyebrowText = isSuperAdmin ? "Espace super-admin" : eyebrow ?? `Espace ${roleLabel.toLowerCase()}`;
   const navLinks =
     session?.user?.role === "STUDENT"
       ? [
-          { label: "Mon suivi", href: "/app/student/progress" },
-          { label: "Réserver", href: "/app/student/school" },
-          { label: "Mes cours", href: "/app/student/courses/agenda?view=month" },
+          { label: "Mon suivi", href: "/student/progress" },
+          { label: "Réserver", href: "/student/school" },
+          { label: "Mes cours", href: "/student/courses/agenda?view=month" },
         ]
       : session?.user?.role === "TEACHER"
-        ? [{ label: "Planning", href: "/app/teacher/courses/agenda?view=month" }]
+        ? [{ label: "Planning", href: "/teacher/courses/agenda?view=month" }]
         : session?.user?.role === "SCHOOL_ADMIN"
           ? [
-              { label: "Planning", href: "/app/teacher/courses/agenda?view=month" },
-              { label: "Utilisateurs", href: "/app/admin/users" },
+              { label: "Planning", href: "/teacher/courses/agenda?view=month" },
+              { label: "Utilisateurs", href: "/admin/users" },
             ]
           : [];
   const homeHref = session?.user?.role ? defaultHomeForRole(session.user.role) : (foxHref ?? "/");

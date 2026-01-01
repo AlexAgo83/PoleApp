@@ -39,7 +39,7 @@ export default async function EditPositionPage({ params }: Props) {
     redirect("/access-denied");
   }
   const isAdmin = role === "SCHOOL_ADMIN";
-  const homeHref = isAdmin ? "/app/admin" : "/app/teacher";
+  const homeHref = isAdmin ? "/admin" : "/teacher";
   const eyebrow = isAdmin ? "Espace admin" : "Espace prof";
 
   const [muscles, disciplinesRaw] = await Promise.all([
