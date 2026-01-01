@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { normalizeFolderedPublicId } from "@/lib/media";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -30,7 +31,12 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
     redirect("/access-denied");
   }
 
-  const data = schema.parse(input);
+  const parsed = schema.parse(input);
+  const data = {
+    ...parsed,
+    imagePublicId: normalizeFolderedPublicId(parsed.imagePublicId, "poleapp/positions") ?? undefined,
+    videoPublicId: normalizeFolderedPublicId(parsed.videoPublicId, "poleapp/positions") ?? undefined,
+  };
   const discipline = await prisma.discipline.findUnique({
     where: { id: data.disciplineId },
     select: { id: true, name: true },

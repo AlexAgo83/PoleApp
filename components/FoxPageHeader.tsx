@@ -136,7 +136,10 @@ export async function FoxPageHeader({
           { label: "Mes cours", href: "/student/courses/agenda?view=month" },
         ]
       : session?.user?.role === "TEACHER"
-        ? [{ label: "Planning", href: "/teacher/courses/agenda?view=month" }]
+        ? [
+            { label: "Planning", href: "/teacher/courses/agenda?view=month" },
+            { label: "Positions", href: "/teacher/positions" },
+          ]
         : session?.user?.role === "SCHOOL_ADMIN"
           ? [
               { label: "Planning", href: "/teacher/courses/agenda?view=month" },

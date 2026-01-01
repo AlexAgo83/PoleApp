@@ -8,6 +8,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
+import { isSeedPublicId } from "@/lib/media";
 
 const schema = z.object({
   teacherId: z.string().cuid(),
@@ -109,6 +110,7 @@ export async function updateTeacherProfileAction(formData: FormData) {
     previousPublicId &&
     previousPublicId !== newPublicId &&
     !isDefaultAvatarPublicId(previousPublicId) &&
+    !isSeedPublicId(previousPublicId) &&
     isCloudinaryEnabled()
   ) {
     try {
@@ -181,6 +183,7 @@ export async function updateTeacherAvatarAction(input: {
     previousPublicId &&
     previousPublicId !== newPublicId &&
     !isDefaultAvatarPublicId(previousPublicId) &&
+    !isSeedPublicId(previousPublicId) &&
     isCloudinaryEnabled()
   ) {
     try {
