@@ -191,14 +191,23 @@ function parseDocPositions() {
       const typeLine = body.match(/-+\s*Type:\s*([^\n]+)/i);
       const levelLine = body.match(/-+\s*Niveau:\s*([^\n]+)/i);
       const gripLine = body.match(/-+\s*Grip:\s*([^\n]+)/i);
+      const contraLine = body.match(/-+\s*Contre[- ]indications?:\s*([^\n]+)/i);
+      const tipsLine = body.match(/-+\s*Conseils?:\s*([^\n]+)/i);
       const descLines = [...body.matchAll(/^>\s?(.*)$/gm)].map((m) => m[1]?.trim()).filter(Boolean);
+      const cueLines = descLines.filter((l) => /^cues\s*:/i.test(l)).map((l) => l.replace(/^cues\s*:\s*/i, "").trim());
+      const descWithoutCues = descLines.filter((l) => !/^cues\s*:/i.test(l));
 
       const type = typeLine ? mapType(typeLine[1]) : null;
       const level = levelLine ? mapLevel(levelLine[1]) : null;
       if (!type || !level) continue;
 
       const grip = gripLine?.[1]?.includes("Non renseign") ? undefined : gripLine?.[1]?.trim() || undefined;
-      const descriptionText = descLines.length > 0 ? descLines.join(" ") : undefined;
+      // Conserve explicit sauts de ligne pour un rendu lisible côté UI
+      const descriptionText = descWithoutCues.length > 0 ? descWithoutCues.join("\n") : undefined;
+      const tipsText = [tipsLine?.[1]?.trim(), cueLines.length > 0 ? cueLines.join("\n") : undefined]
+        .filter(Boolean)
+        .join("\n") || undefined;
+      const contraindicationsText = contraLine?.[1]?.trim() || undefined;
 
       extras.push({
         name: heading,
@@ -207,6 +216,8 @@ function parseDocPositions() {
         discipline: "Pole",
         grips: grip,
         descriptionText,
+        tips: tipsText,
+        contraindications: contraindicationsText,
       });
       seen.add(norm);
     }
@@ -581,6 +592,8 @@ async function seedPositions({
         levelRequired: pos.level,
         grips: pos.grips,
         description: pos.descriptionText ?? buildPositionDescription(pos),
+        tips: pos.tips,
+        contraindications: pos.contraindications,
         createdByUserId: creator?.id,
         media: {
           create: [
@@ -1043,7 +1056,7 @@ async function seedCourses(schoolsData: {
           ? []
           : disciplinePositions.slice(0, Math.min(3, disciplinePositions.length));
 
-      const course = await prisma.course.create({
+      await prisma.course.create({
         data: {
           title: `Cours edge ${disciplineName}`,
           date: edgeDate,
@@ -1170,7 +1183,7 @@ async function seedCourses(schoolsData: {
         if (reservedSlots.some((s) => date < s.end && s.start < new Date(date.getTime() + tmpl.duration * 60_000))) {
           continue;
         }
-        const course = await prisma.course.create({
+        await prisma.course.create({
           data: {
             title: `${disciplineName} récurrent ${idx + 1}`,
             date,
@@ -1277,7 +1290,7 @@ async function seedCourses(schoolsData: {
           : positions.slice(0, 2);
       const teacher = schoolTeachers[0];
       if (!teacher) continue;
-      const course = await prisma.course.create({
+      await prisma.course.create({
         data: {
           title: `${disciplineName} studio ${studio.name}`,
           date,
@@ -1380,12 +1393,6 @@ async function seedStudentProgress(options: {
   );
   const fallback = polePositions.length > 0 ? polePositions : options.positions;
   if (fallback.length === 0) return;
-  const statuses: LearningStatus[] = [
-    LearningStatus.IN_PROGRESS,
-    LearningStatus.PASSED,
-    LearningStatus.MASTERED,
-    LearningStatus.NOT_STARTED,
-  ];
   const weightedPick = () => {
     const r = Math.random();
     if (r < 0.45) return LearningStatus.IN_PROGRESS;

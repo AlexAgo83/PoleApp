@@ -5,8 +5,6 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { isCloudinaryEnabled, signUpload } from "@/lib/cloudinary";
 
-const AVATAR_FOLDER = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
-
 const schema = z.object({
   folder: z.string().trim().min(1),
   publicId: z.string().trim().optional(),
@@ -36,8 +34,6 @@ export async function POST(request: Request) {
 
   try {
     const resourceType = parsed.data.resourceType ?? "image";
-    const isAvatar = parsed.data.folder.startsWith(AVATAR_FOLDER);
-    const isVideo = resourceType === "video";
     // On force en authenticated tous les uploads (avatars/images/vidéos) pour éviter les assets publics.
     const deliveryType = "authenticated";
     const accessMode = "authenticated";

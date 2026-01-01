@@ -17,11 +17,7 @@ type RoleCounts = {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboard({
-  searchParams: _searchParams,
-}: {
-  searchParams?: Promise<{ week?: string }>;
-}) {
+export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN") {
     redirect("/access-denied");
@@ -39,10 +35,6 @@ export default async function AdminDashboard({
     );
   }
 
-  const baseSchool = await prisma.school.findUnique({
-    where: { id: session.user.schoolId },
-    select: { id: true, name: true },
-  });
   let schoolWebsite: string | null = null;
   try {
     const withWebsite = await prisma.school.findUnique({

@@ -463,7 +463,7 @@
 ## Reverse grab basic
 **Description**
 > Premier truck où on lache la barre en côte de route pour ensuite la rattraper , c’est la base de beaucoup de truck inter et avance
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Épaules basses, centre engagé, appuis nets avant de gagner en amplitude.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Avancé
 - Type: SPIN
@@ -472,7 +472,7 @@
 ## Caterpillar
 **Description**
 > Progression de climb inversé : on ramène le buste vers la barre, genoux poitrine puis extension pour remonter centimètre par centimètre.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Respire, place tes appuis puis accélère seulement si la ligne reste propre.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: STRENGTH
@@ -532,7 +532,7 @@
 **Description**
 > Routine d'assouplissement des écarts latéraux et frontaux, combinant étirements actifs/passifs et renforcement des chaînes opposées.
 > Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
-> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
+> Cues : Presse la barre, serre les côtes et pointe les pieds pour stabiliser.
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Intermédiaire
 - Type: STRENGTH
@@ -914,7 +914,7 @@
 **Description**
 > Circuit mixant renforcement et étirements en utilisant la barre comme appui (squats, ouvertures de hanches, tirages légers).
 > Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
-> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
+> Cues : Regarde la sortie, garde le bassin neutre et répartis le poids sur les appuis.
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Débutant
 - Type: WARMUP
@@ -924,7 +924,7 @@
 **Description**
 > Mini routine de préparation avant un gros stretch : mobilisation articulaire puis étirements doux progressifs.
 > Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
-> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
+> Cues : Lâche pas le gainage : omoplates serrées, ventre actif, jambes toniques.
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Débutant
 - Type: WARMUP
@@ -934,7 +934,7 @@
 **Description**
 > Échauffement express des articulations majeures (chevilles, genoux, hanches, colonne, épaules, poignets) avant de monter sur la barre.
 > Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
-> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
+> Cues : Cherche la longueur : bras étirés, jambes pointées, nuque longue.
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Débutant
 - Type: WARMUP
@@ -973,7 +973,7 @@
 ## Cartwheel
 **Description**
 > Roue contrôlée avec appui main sur la barre, bascule latérale puis récupération debout sans perdre l'axe.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Monte lentement, vérifie chaque prise, puis ajoute la vitesse.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: SPIN
@@ -982,7 +982,7 @@
 ## Développé on pole
 **Description**
 > Développé jambe le long de la barre : on monte la jambe en extension contrôlée pour créer une ligne de danseuse.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Relâche les mains inutiles, ouvre la poitrine et garde les hanches face.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
@@ -991,7 +991,7 @@
 ## Mini Spin
 **Description**
 > Petit spin d'initiation proche du sol pour sentir la rotation et travailler le placement des mains.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Crochette fermement, expire en engageant le centre, puis déroule.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: SPIN
@@ -1137,120 +1137,24 @@
 >
 > 🎵 Hypnotised, purple disco machine, 3:15
 > DEBOUT
-> 1. Échauffement des épaules – Mobilité contrôlée
+> Échauffement des épaules – Mobilité contrôlée
 > Objectif : Mobiliser les épaules et les bras, tout en engageant la posture globale et en apprenant à bien dissocier les mouvements sans tension parasite. Ici, c’est la répétition (pas le poids) qui échauffe.
 > Position de départ :
 > • Pieds largeur bassin.
 > • Bâton tenu à largeur des épaules, paumes vers le bas, bras tendus le long du corps.
 > • Le bâton repose dans l’espace entre le pouce et l’index (doigts tendus).
 >
-> 1️⃣ Poitrine ⏱️ 1 min
+> a. Poitrine ⏱️ 1 min
 > → Plier les coudes, les garder le long du corps et non écartés, pour monter le bâton à hauteur d’épaules. Puis redescendre.
 >
-> 2️⃣ Bras levés ⏱️ 1 min
+> b. Bras levés ⏱️ 1 min
 > → Reprendre mouvement 1, mais après la montée aux épaules, on tend les bras au-dessus de la tête.
 > Puis on replie les coudes et on redescend.
 > ⚠️ On n’avance pas la tête ! Épaules toujours basses.
 >
-> 3️⃣ Derrière la tête ⏱️ 1 min
+> c. Derrière la tête ⏱️ 1 min
 > → Une fois les bras en l’air, plier les coudes vers l’arrière pour placer le bâton derrière la tête. Puis retendre les bras et redescendre.
 > ⚠️ Coudes serrés, tête ne bouge pas, et poitrine ouverte vers l’avant.
->
-> 🎵 Cloks, Coldplay & Rhythms del Mundo – 5:01
-> 2. Mobilité épaules/lombaires – Cercles autour du dos
-> Objectif : Travailler amplitude et souplesse d’épaules + ouverture de cage thoracique sans tension lombaire.
-> Position :
-> • Pieds largeur bassin.
-> • Mains aux extrémités du bâton. Plus les mains sont rapprochées, plus c’est dur !
-> • Bras tendus tout du long.
-> • Abdos gainés, nombril rentré, dos allongé.
->
-> 1️⃣ Lombaire ⏱️ 1 min chaque côté
-> 1. Lever un bras pour faire passer le bâton derrière les lombaires, puis continuer le cercle pour revenir devant soi.
-> 2. Alterner les bras (gauche/droite en premier).
-> 3. Pas de coudes pliés, poignets alignés, on tire sur le bâton pour bien ouvrir les épaules.
-> ⚠️ Attention :
-> • On ne remonte pas les épaules dans les oreilles.
-> • On ne sort pas les fesses → rétroversion légère.
-> • On monte la poitrine vers le plafond, on monte les côtes, on se grandit, on ouvre l’espace inter-scapulaire.
-> • On respire, on cherche la fluidité.
-> ⏱️ Répéter 1 min de chaque côté.
->
-> 3. Flancs – Bascule latérale
-> Objectif : Travailler les obliques, sans tricher avec les hanches.
-> Position :
-> • Pieds largeur bassin.
-> • Mains aux extrémités du bâton.
-> • Bâton vertical devant soi.
-> • Abdos engagés, poitrine ouverte.
->
-> 1️⃣ Inclinaison de flans ⏱️ x 8 de chaque côté
-> → Incliner le buste à droite, puis à gauche.
-> ⚠️ Ne pas bouger les hanches ! C’est uniquement le buste qui bouge.
-> Regardez dans le miroir pour vérifier que le bâton reste vertical et la poitrine bien ouverte.
->
-> 4. Twist buste – Rotation contrôlée
-> Objectif : Mobiliser la colonne en rotation, sans impliquer les hanches.
-> Position :
-> • Pieds largeur bassin.
-> • Bâton posé sur les omoplates (pas dans le cou !), extrémités posées dans les paumes, pouces derrière.
-> • Mains ouvertes.
-> • Regard fixe devant soi.
->
-> 1️⃣ Torsion buste ⏱️ x 8 de chaque côté
-> → Tourner le buste à droite puis à gauche, lentement, en gardant les hanches fixes et la tête droite.
-> ⚠️  Ne pas compenser avec le bassin ni le regard.
->
->
-> 5. Extension épaules – Vers le haut & derrière
-> Objectif : Ouverture thoracique + mobilité d’épaule sans compression lombaire.
-> Position :
-> • Mains largeur épaules, bâton devant soi.
->
-> 1️⃣ Montée ⏱️ x 8
-> → Envoyer le bâton vers le plafond, bras tendus.
-> ⚠️ Garder abdos et fessiers engagés, bassin rétroversé.
->
-> 2️⃣ Descente omoplates ⏱️ x 8
-> → Plier les coudes pour amener le bâton derrière les omoplates (le plus bas possible), puis retendre.
-> ⚠️ On pousse vers l’arrière ET vers le haut à chaque montée.
->  Attention à ne pas monter les épaules.
->
-> 🎵 Bag raiders, shooting stars 4:00
-> 6. Maintien bras tendus – Contrôle & stabilité
-> Objectif : Renforcement isométrique + contrôle de symétrie.
-> Position :
-> • Bâton tendu au-dessus de la tête, bras tendus.
->
-> 1️⃣ Bras tendus ⏱️ 20 sec max
-> → Tenir la position sans bouger.
-> ⚠️ Vérifier que les bras sont bien symétriques (miroir).
->  C’est intense : ne pas tenir trop longtemps.
->
->  7. Squat – Avec le bâton en guide postural
-> Objectif : Travailler la posture en squat, ouverture de hanche et contrôle du dos plat.
-> Position :
-> • Pieds largeur bassin.
-> • Bâton tenu à largeur d’épaules, bras tendus vers l’avant.
->
-> 1️⃣ Squat ⏱️ x 8
-> → Descendre en squat : fesses vers l’arrière, dos plat, genoux légèrement ouverts.
-> → Le bâton est poussé loin devant pour étirer le dos.
-> ⚠️ Poitrine sortie, abdos engagés, regard devant.
->
-> 2️⃣ Bounces ⏱️ x 8
-> → En bas, faire de petits “bounces” (petites impulsions).
-> ⚠️ Rester souple, ne pas forcer sur les genoux.
->
->
-> 📌 SOMMAIRE MÉMO-TECHNIQUE RAPIDE
-> 📍1. Épaules – Bâton poitrine → haut → derrière tête
-> 📍2. Cercle épaules – bras tendus, bâton fait le tour du dos
-> 📍3. Obliques – Bâton vertical, inclinaisons buste
-> 📍4. Twist – Bâton aux omoplates, tête fixe, hanches stables
-> 📍5. Montée / descente – Plafond → omoplates (bras tendus)
-> 📍6. Maintien bras haut – Isométrie
-> 📍7. Squats – Fesses arrière, bâton loin devant, dos plat
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Avancé
 - Type: WARMUP
@@ -1446,7 +1350,7 @@
 **Description**
 > Retour au calme au sol : étirements doux dos/épaules/ischios, respiration et relâchement des poignets.
 > But : abaisser le rythme cardiaque, relâcher la chaîne postérieure et les épaules après les grips.
-> Cues : respirations longues, étirements doux sans à-coups, garder le bassin et la nuque relâchés.
+> Cues : Contrôle la rotation avec le regard et ferme la côte pour ne pas partir en arrière.
 - Muscles / articulations sollicitées: Étirements/retour au calme : chaîne postérieure (ischios, mollets, dos), ouverture épaules/pectoraux et hanches ; décompression colonne et poignets.
 - Niveau: Intermédiaire
 - Type: WARMUP
@@ -1456,7 +1360,7 @@
 **Description**
 > Bloc renfo + mobilité directement sur la pole : tirages, montées contrôlées, ouvertures de hanches et étirements assistés.
 > Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
-> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
+> Cues : Ancre les épaules, serre les adducteurs, laisse les genoux souples.
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Intermédiaire
 - Type: WARMUP
@@ -1466,7 +1370,7 @@
 **Description**
 > Préparation articulaire ciblée (poignets, épaules, hanches, colonne) avant un travail de souplesse plus intense.
 > Objectif : monter la température corporelle et lubrifier les articulations avant les grips.
-> Cues : respirer régulièrement, rester dans des amplitudes confortables, chercher la fluidité plutôt que la vitesse.
+> Cues : Active l'avant-bras, maintiens la jambe d'appui longue et stable.
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Intermédiaire
 - Type: WARMUP
@@ -1486,7 +1390,7 @@
 ## Switch (2 sens)
 **Description**
 > Transition qui change le sens de rotation : pivot du bassin et des appuis pour repartir dans l'autre direction.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Commence petit, ajuste l'angle, puis étends seulement si le grip reste solide.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1495,7 +1399,7 @@
 ## Pike (depuis in et out)
 **Description**
 > Entrée en pike jambes tendues vers le plafond en venant d'un grip inside ou outside, bassin en rétroversion pour protéger le dos.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Épaules basses, centre engagé, appuis nets avant de gagner en amplitude.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1504,7 +1408,7 @@
 ## Viva 1 & Viva 2
 **Description**
 > Deux variantes du Viva : ligne cambrée autour de la barre avec extension de jambe et ouverture de poitrine, à partir d'un hook ou d'un invert.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Respire, place tes appuis puis accélère seulement si la ligne reste propre.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
@@ -1513,7 +1417,7 @@
 ## Bird
 **Description**
 > Pose face à la barre, genou intérieur crocheté, jambe extérieure tendue sur le côté, poitrine ouverte en diagonale.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Presse la barre, serre les côtes et pointe les pieds pour stabiliser.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1522,7 +1426,7 @@
 ## Star
 **Description**
 > Position diagonale en étoile : buste incliné, jambe haute tendue et jambe basse en appui/extension pour créer une grande ligne.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Regarde la sortie, garde le bassin neutre et répartis le poids sur les appuis.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1531,7 +1435,7 @@
 ## Starfish
 **Description**
 > Inversion en étoile ouverte avec quatre appuis écartés, bassin loin de la barre pour montrer l'étirement.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Lâche pas le gainage : omoplates serrées, ventre actif, jambes toniques.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
@@ -1540,7 +1444,7 @@
 ## Wrist seat
 **Description**
 > Assise où le poids repose sur les poignets en appui derrière la barre, buste droit et jambes serrées ou légèrement ouvertes.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Cherche la longueur : bras étirés, jambes pointées, nuque longue.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1549,7 +1453,7 @@
 ## Spin Off Dismount
 **Description**
 > Démontée en rotation : on relâche la barre pour quitter la figure en tournant et se poser en douceur.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Monte lentement, vérifie chaque prise, puis ajoute la vitesse.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1558,7 +1462,7 @@
 ## Carousel to Reverse Grab
 **Description**
 > Enchaînement du carousel vers une prise reverse grab pour relancer la rotation avec l'épaule ouverte.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Relâche les mains inutiles, ouvre la poitrine et garde les hanches face.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1567,7 +1471,7 @@
 ## Climb Straignt Legs
 **Description**
 > Montée avec jambes tendues et serrées le long de la barre, demandant plus de gainage et d'adducteurs qu'une montée classique.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Crochette fermement, expire en engageant le centre, puis déroule.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: STRENGTH
@@ -1576,7 +1480,7 @@
 ## Butterfly
 **Description**
 > Depuis un invert/chopper, buste face au sol, jambe d'accroche fléchie et jambe libre tendue, bras en V pour former un papillon.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Contrôle la rotation avec le regard et ferme la côte pour ne pas partir en arrière.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
@@ -1585,7 +1489,7 @@
 ## Basic R-Grab & R-Grab One hand
 **Description**
 > Spin en reverse grab : première version à deux mains pour sentir l'ouverture d'épaule, puis variante à une main pour plus d'engagement.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Ancre les épaules, serre les adducteurs, laisse les genoux souples.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1594,7 +1498,7 @@
 ## Rising Godess
 **Description**
 > Transition fluide du sol vers la verticale avec cambré et ouverture de poitrine, bras en couronne pour allonger la ligne.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Active l'avant-bras, maintiens la jambe d'appui longue et stable.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1603,7 +1507,7 @@
 ## Helicopter
 **Description**
 > Rotation en invert straddle, jambes qui moulinent comme des pales pour tourner en douceur autour de la barre.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Commence petit, ajuste l'angle, puis étends seulement si le grip reste solide.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
@@ -1612,7 +1516,7 @@
 ## Basic Teddy & Teddy One Handed
 **Description**
 > Teddy : hold latéral plaqué sous l'aisselle, jambes en écart; version one handed en relâchant la main basse pour plus de difficulté.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Épaules basses, centre engagé, appuis nets avant de gagner en amplitude.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1621,7 +1525,7 @@
 ## Cross Ankle Release
 **Description**
 > Suspension inversée par chevilles croisées avec mains libres, buste éloigné pour stabiliser.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Respire, place tes appuis puis accélère seulement si la ligne reste propre.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1630,7 +1534,7 @@
 ## V on pole
 **Description**
 > Position en V assis sur la barre : bassin ancré, jambes tendues en V vers le haut, regard devant.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Presse la barre, serre les côtes et pointe les pieds pour stabiliser.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1639,7 +1543,7 @@
 ## Concord
 **Description**
 > Figure statique avec ouverture de hanche et torse éloigné de la barre, créant une diagonale forte; demande engagement d'épaule et squeeze de jambe.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Regarde la sortie, garde le bassin neutre et répartis le poids sur les appuis.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1648,7 +1552,7 @@
 ## Snake dismount
 **Description**
 > Sortie en glissant en spirale autour de la barre, déroulant la colonne jusqu'au sol.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Lâche pas le gainage : omoplates serrées, ventre actif, jambes toniques.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1657,7 +1561,7 @@
 ## Spin Up Attitude
 **Description**
 > Spin qui remonte jusqu'en position debout, jambe extérieure en attitude pour finir sur une ligne dansée.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Cherche la longueur : bras étirés, jambes pointées, nuque longue.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1666,7 +1570,7 @@
 ## Head CirclesWalk
 **Description**
 > Marche lente autour de la barre en effectuant des cercles de tête pour mobiliser la nuque et travailler la fluidité.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Monte lentement, vérifie chaque prise, puis ajoute la vitesse.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1675,7 +1579,7 @@
 ## Cradle Splits
 **Description**
 > Cradle où les jambes s'ouvrent en grand écart pendant la rotation avant de se refermer pour la sortie.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Relâche les mains inutiles, ouvre la poitrine et garde les hanches face.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1684,7 +1588,7 @@
 ## Scorpio inside leg
 **Description**
 > Inside leg hang : jambe intérieure crochetée, buste dos à la barre, jambe libre tendue; base pour sorties V, Jamilla ou remontée en invert.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Crochette fermement, expire en engageant le centre, puis déroule.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
@@ -1693,7 +1597,7 @@
 ## Jamila
 **Description**
 > Depuis un cradle, on ouvre les jambes en V et on accroche l'extérieur du genou à la barre pour passer en diagonale contrôlée.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Contrôle la rotation avec le regard et ferme la côte pour ne pas partir en arrière.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
@@ -1702,7 +1606,7 @@
 ## Fireman Horizontal Leg
 **Description**
 > Variation du fireman où la jambe extérieure reste tendue à l'horizontale, créant une ligne plus longue.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Ancre les épaules, serre les adducteurs, laisse les genoux souples.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
@@ -1711,7 +1615,7 @@
 ## Gemini : outside Leg Hang
 **Description**
 > Outside leg hang : jambe extérieure crochetée, poitrine ouverte vers le sol, jambe libre tendue ou en split pour allonger la pose.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Active l'avant-bras, maintiens la jambe d'appui longue et stable.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
@@ -1720,7 +1624,7 @@
 ## Handstand variation Dismount
 **Description**
 > Sortie depuis un handstand assisté sur la barre : on contrôle la descente en pivotant ou en pliant les bras pour revenir au sol.
-> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
+> Cues : Commence petit, ajuste l'angle, puis étends seulement si le grip reste solide.
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
