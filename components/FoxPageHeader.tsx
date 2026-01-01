@@ -107,7 +107,6 @@ export async function FoxPageHeader({
       userRecord?.avatarUrl ??
       null,
     placeholder: AVATAR_PLACEHOLDER,
-    seedKey: session?.user?.id ?? "user",
   });
 
   const roleLabel =

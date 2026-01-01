@@ -143,7 +143,6 @@ export default async function TeacherStudentDetailPage({
     avatarPublicId: student.avatarPublicId,
     avatarUrl: student.avatarUrl,
     placeholder: STUDENT_AVATAR_PLACEHOLDER,
-    seedKey: student.id,
   });
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
   const studentDisplayName = student.name?.trim() || student.email || "Élève";

@@ -62,7 +62,7 @@ export default async function EditPositionPage({ params }: Props) {
   const disciplines = (() => {
     const rows = (disciplinesRaw ?? []).map((d) => ({ ...d }));
     if (rows.length === 0 && position.discipline && !position.disciplineId) {
-      rows.push({ id: "legacy-position", name: position.discipline });
+      rows.push({ id: "legacy-position", name: position.discipline, color: "#0ea5e9" });
     }
     return rows.length > 0 ? rows : fallbackDisciplines;
   })();

@@ -91,7 +91,6 @@ export default async function TeacherPublicProfilePage({
     avatarPublicId: teacher.avatarPublicId,
     avatarUrl: teacher.avatarUrl,
     placeholder: TEACHER_AVATAR_PLACEHOLDER,
-    seedKey: teacher.id,
   });
   const favoritePositions =
     teacher.favoritePositions

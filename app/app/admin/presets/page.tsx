@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -37,8 +38,8 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
     ...(q
       ? {
           OR: [
-            { title: { contains: q, mode: "insensitive" } },
-            { description: { contains: q, mode: "insensitive" } },
+            { title: { contains: q, mode: Prisma.QueryMode.insensitive } },
+            { description: { contains: q, mode: Prisma.QueryMode.insensitive } },
           ],
         }
       : {}),
@@ -46,7 +47,7 @@ export default async function AdminPresetsPage({ searchParams }: { searchParams?
       ? {
           OR: [
             { disciplineId: disciplineFilter },
-            { discipline: { equals: disciplineFilter, mode: "insensitive" } },
+            { discipline: { equals: disciplineFilter, mode: Prisma.QueryMode.insensitive } },
           ],
         }
       : {}),

@@ -35,6 +35,9 @@ export async function createPresetAction(formData: FormData) {
         select: { id: true, name: true },
       })
     : null;
+  const fallbackDisciplineId = await prisma.discipline
+    .findFirst({ select: { id: true }, orderBy: { name: "asc" } })
+    .then((d) => d?.id);
   const parsed = presetSchema.safeParse({
     title: formData.get("title")?.toString().trim(),
     description: formData.get("description")?.toString().trim() || undefined,
@@ -55,7 +58,7 @@ export async function createPresetAction(formData: FormData) {
       title: parsed.data.title,
       description: parsed.data.description,
       discipline: parsed.data.discipline,
-      disciplineId: disciplineRecord?.id ?? null,
+      disciplineId: disciplineRecord?.id ?? fallbackDisciplineId ?? parsed.data.discipline ?? "",
       videoUrl: parsed.data.videoUrl || null,
       imageUrl: parsed.data.imageUrl || null,
       premiumRequired: parsed.data.premiumRequired ?? false,

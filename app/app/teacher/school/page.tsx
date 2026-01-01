@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { SafeImage } from "@/components/SafeImage";
 import { FilterPanel } from "@/components/FilterPanel";

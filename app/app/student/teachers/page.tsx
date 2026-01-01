@@ -148,7 +148,6 @@ export default async function StudentTeachersPage({
                   avatarPublicId: teacher.avatarPublicId,
                   avatarUrl: teacher.avatarUrl,
                   placeholder: TEACHER_AVATAR_PLACEHOLDER,
-                  seedKey: teacher.id,
                 }) || TEACHER_AVATAR_PLACEHOLDER;
               return (
                 <article
