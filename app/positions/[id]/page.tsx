@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { SafeImage } from "@/components/SafeImage";
 import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
+import { normalizeFolderedPublicId } from "@/lib/media";
 import { generateSignedUrl } from "@/lib/cloudinary";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
@@ -138,28 +139,29 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const disciplineName = (position.disciplineId ? disciplineNameById.get(position.disciplineId) : null) ?? position.discipline ?? null;
   const cover = position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
+  const normalizedVideoId = normalizeFolderedPublicId(video?.publicId, "poleapp/positions") ?? video?.publicId ?? null;
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
   const seedVideoIds = new Set(["01_xphtvq", "02_e8rhmg", "03_yjmfi7", "04_exjndq", "05_flr6zp", "06_shrnly"]);
-  const videoId = video?.publicId ? video.publicId.split("/").pop() ?? video.publicId : undefined;
+  const videoId = normalizedVideoId ? normalizedVideoId.split("/").pop() ?? normalizedVideoId : undefined;
   const isSeedVideo = videoId ? seedVideoIds.has(videoId) : false;
   const videoSources = (() => {
-    if (!video?.publicId || video.publicId.length === 0) return [];
+    if (!normalizedVideoId || normalizedVideoId.length === 0) return [];
     const sources: { src: string; type?: string }[] = [];
     if (isSeedVideo && cloudName) {
       // Seed: public upload
       sources.push({
-        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}`,
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}`,
         type: "video/mp4",
       });
       sources.push({
-        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.mp4`,
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.mp4`,
         type: "video/mp4",
       });
       return sources;
     }
     // Uploads authentifiés : signed en priorité, fallback public si jamais
     const signed = generateSignedUrl({
-      publicId: video.publicId,
+      publicId: normalizedVideoId,
       resourceType: "video",
       deliveryType: "authenticated",
       expiresInSeconds: 3600,
@@ -167,35 +169,35 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     if (signed) sources.push({ src: signed, type: "video/mp4" });
     if (cloudName) {
       sources.push({
-        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}`,
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}`,
         type: "video/mp4",
       });
       sources.push({
-        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.mp4`,
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.mp4`,
         type: "video/mp4",
       });
     }
     return sources;
   })();
   const videoPoster =
-    (video?.publicId &&
+    (normalizedVideoId &&
       (isSeedVideo && cloudName
-        ? `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.jpg`
+        ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.jpg`
         : generateSignedUrl({
-            publicId: video.publicId,
+            publicId: normalizedVideoId,
             resourceType: "video",
             deliveryType: "authenticated",
             expiresInSeconds: 3600,
             format: "jpg",
           }) ??
           generateSignedUrl({
-            publicId: video.publicId,
+            publicId: normalizedVideoId,
             resourceType: "video",
             deliveryType: "upload",
             expiresInSeconds: 3600,
             format: "jpg",
           }) ??
-          (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.jpg` : null))) ??
+          (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.jpg` : null))) ??
     (cover?.publicId && cloudName
       ? `https://res.cloudinary.com/${cloudName}/image/upload/${cover.publicId}`
       : null) ??

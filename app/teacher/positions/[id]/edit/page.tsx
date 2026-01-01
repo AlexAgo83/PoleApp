@@ -5,6 +5,7 @@ import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { generateSignedUrl } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
+import { normalizeFolderedPublicId } from "@/lib/media";
 import { EditPositionForm } from "./EditPositionForm";
 import { deletePositionAction } from "./action";
 
@@ -67,27 +68,29 @@ export default async function EditPositionPage({ params }: Props) {
   })();
   const selectedMuscleIds = position.muscles.map((m) => m.muscleId);
   const videoMedia = position.media.find((m) => m.kind === "VIDEO");
+  const normalizedVideoId =
+    normalizeFolderedPublicId(videoMedia?.publicId, "poleapp/positions") ?? videoMedia?.publicId ?? undefined;
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const seedVideoIds = new Set(["01_xphtvq", "02_e8rhmg", "03_yjmfi7", "04_exjndq", "05_flr6zp", "06_shrnly"]);
-  const videoId = videoMedia?.publicId ? videoMedia.publicId.split("/").pop() ?? videoMedia.publicId : undefined;
+  const videoId = normalizedVideoId ? normalizedVideoId.split("/").pop() ?? normalizedVideoId : undefined;
   const isSeedVideo = videoId ? seedVideoIds.has(videoId) : false;
   const videoPreviewUrl =
-    videoMedia?.publicId && cloudName && isSeedVideo
-      ? `https://res.cloudinary.com/${cloudName}/video/upload/${videoMedia.publicId}.mp4`
-      : videoMedia?.publicId
+    normalizedVideoId && cloudName && isSeedVideo
+      ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.mp4`
+      : normalizedVideoId
         ? generateSignedUrl({
-            publicId: videoMedia.publicId,
+            publicId: normalizedVideoId,
             resourceType: "video",
             deliveryType: "authenticated",
             expiresInSeconds: 3600,
           }) ??
           generateSignedUrl({
-            publicId: videoMedia.publicId,
+            publicId: normalizedVideoId,
             resourceType: "video",
             deliveryType: "upload",
             expiresInSeconds: 3600,
           }) ??
-          (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${videoMedia.publicId}.mp4` : undefined)
+          (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.mp4` : undefined)
         : undefined;
   return (
     <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
@@ -107,8 +110,9 @@ export default async function EditPositionPage({ params }: Props) {
             grips: position.grips,
             tips: position.tips,
             contraindications: position.contraindications,
-            media: position.media,
-          }}
+          media: position.media,
+          videoPublicId: normalizedVideoId ?? null,
+        }}
           muscles={muscles}
           disciplines={disciplines}
           selectedMuscleIds={selectedMuscleIds}

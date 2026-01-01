@@ -31,6 +31,11 @@ export async function POST(request: Request) {
     console.error("[cloudinary-signature] invalid payload", parsed.error.flatten());
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
   }
+  const folderPrefix = parsed.data.folder.replace(/\/+$/, "");
+  const normalizedPublicId =
+    parsed.data.publicId && parsed.data.publicId.startsWith(`${folderPrefix}/`)
+      ? parsed.data.publicId.slice(folderPrefix.length + 1)
+      : parsed.data.publicId;
 
   try {
     const resourceType = parsed.data.resourceType ?? "image";
@@ -39,7 +44,7 @@ export async function POST(request: Request) {
 
     const data = signUpload({
       folder: parsed.data.folder,
-      publicId: parsed.data.publicId,
+      publicId: normalizedPublicId,
       resourceType,
       deliveryType,
       accessMode,
