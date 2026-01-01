@@ -16,8 +16,7 @@ const schema = z.object({
   grips: z.string().optional(),
   tips: z.string().optional(),
   contraindications: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  videoUrl: z.string().url().optional(),
+  imagePublicId: z.string().optional(),
   videoPublicId: z.string().optional(),
   disciplineId: z.string().min(1),
   muscles: z.array(z.string()).optional(),
@@ -41,6 +40,7 @@ export function NewPositionForm({
   const [addingMuscle, setAddingMuscle] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [videoPublicId, setVideoPublicId] = useState<string>("");
+  const [imagePublicId, setImagePublicId] = useState<string>("");
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -54,8 +54,7 @@ export function NewPositionForm({
       grips: formData.get("grips") || undefined,
       tips: formData.get("tips") || undefined,
       contraindications: formData.get("contraindications") || undefined,
-      imageUrl: formData.get("imageUrl") || undefined,
-      videoUrl: formData.get("videoUrl") || undefined,
+      imagePublicId: imagePublicId || undefined,
       videoPublicId: formData.get("videoPublicId") || undefined,
       disciplineId: formData.get("disciplineId"),
       muscles: formData.getAll("muscles").map((m) => m.toString()).filter(Boolean),
@@ -91,7 +90,20 @@ export function NewPositionForm({
       <Field label="Description" name="description" textarea />
       <Field label="Conseils" name="tips" textarea />
       <Field label="Contre-indications" name="contraindications" textarea />
-      <Field label="Image URL (placeholder accepté)" name="imageUrl" />
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-slate-100">Image (Cloudinary publicId)</p>
+        <CloudinaryUpload
+          label="Uploader une image"
+          folder="poleapp/positions"
+          resourceType="image"
+          deliveryType="upload"
+          accept="image/*"
+          maxSizeMB={10}
+          currentPublicId={imagePublicId || undefined}
+          onChange={(_, publicId) => setImagePublicId(publicId ?? "")}
+        />
+        <input type="hidden" name="imagePublicId" value={imagePublicId} />
+      </div>
       <div className="space-y-2">
         <p className="text-sm font-semibold text-slate-100">Vidéo (Cloudinary)</p>
         <CloudinaryUpload
@@ -108,7 +120,6 @@ export function NewPositionForm({
             setVideoPublicId(publicId ?? "");
           }}
         />
-        <input type="hidden" name="videoUrl" value={videoUrl} />
         <input type="hidden" name="videoPublicId" value={videoPublicId} />
       </div>
       <div className="space-y-2">

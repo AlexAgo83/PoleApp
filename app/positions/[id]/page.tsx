@@ -4,12 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SafeImage } from "@/components/SafeImage";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 import { generateSignedUrl } from "@/lib/cloudinary";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -136,26 +136,70 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   }
 
   const disciplineName = (position.disciplineId ? disciplineNameById.get(position.disciplineId) : null) ?? position.discipline ?? null;
-  const cover =
-    position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
+  const cover = position.media.find((m) => m.kind === MediaKind.PHOTO) ?? position.media[0];
   const video = position.media.find((m) => m.kind === MediaKind.VIDEO);
-  const deliveryTypeForVideo: "upload" | "authenticated" =
-    video?.url?.includes("/authenticated/") ? "authenticated" : "upload";
-  const signedVideoUrl =
-    video?.publicId && video.publicId.length > 0
-      ? generateSignedUrl({
-          publicId: video.publicId,
-          resourceType: "video",
-          deliveryType: deliveryTypeForVideo,
-        })
-      : null;
-  const videoSrc = signedVideoUrl ?? video?.url ?? undefined;
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+  const seedVideoIds = new Set(["01_xphtvq", "02_e8rhmg", "03_yjmfi7", "04_exjndq", "05_flr6zp", "06_shrnly"]);
+  const videoId = video?.publicId ? video.publicId.split("/").pop() ?? video.publicId : undefined;
+  const isSeedVideo = videoId ? seedVideoIds.has(videoId) : false;
+  const videoSources = (() => {
+    if (!video?.publicId || video.publicId.length === 0) return [];
+    const sources: { src: string; type?: string }[] = [];
+    if (isSeedVideo && cloudName) {
+      // Seed: public upload
+      sources.push({
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}`,
+        type: "video/mp4",
+      });
+      sources.push({
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.mp4`,
+        type: "video/mp4",
+      });
+      return sources;
+    }
+    // Uploads authentifiés : signed en priorité, fallback public si jamais
+    const signed = generateSignedUrl({
+      publicId: video.publicId,
+      resourceType: "video",
+      deliveryType: "authenticated",
+      expiresInSeconds: 3600,
+    });
+    if (signed) sources.push({ src: signed, type: "video/mp4" });
+    if (cloudName) {
+      sources.push({
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}`,
+        type: "video/mp4",
+      });
+      sources.push({
+        src: `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.mp4`,
+        type: "video/mp4",
+      });
+    }
+    return sources;
+  })();
   const videoPoster =
-    signedVideoUrl && video?.publicId
-      ? undefined
-      : video?.url && video.url.includes("/upload/")
-        ? video.url.replace("/upload/", "/upload/so_0/")
-        : POSITION_PLACEHOLDER;
+    (video?.publicId &&
+      (isSeedVideo && cloudName
+        ? `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.jpg`
+        : generateSignedUrl({
+            publicId: video.publicId,
+            resourceType: "video",
+            deliveryType: "authenticated",
+            expiresInSeconds: 3600,
+            format: "jpg",
+          }) ??
+          generateSignedUrl({
+            publicId: video.publicId,
+            resourceType: "video",
+            deliveryType: "upload",
+            expiresInSeconds: 3600,
+            format: "jpg",
+          }) ??
+          (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${video.publicId}.jpg` : null))) ??
+    (cover?.publicId && cloudName
+      ? `https://res.cloudinary.com/${cloudName}/image/upload/${cover.publicId}`
+      : null) ??
+    POSITION_PLACEHOLDER;
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
   const hasUnlocked = isStudent
@@ -318,7 +362,8 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           <div className="space-y-4">
             <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
               <SafeImage
-                src={cover?.url ?? POSITION_PLACEHOLDER}
+                publicId={cover?.publicId}
+                src={POSITION_PLACEHOLDER}
                 alt={position.name}
                 width={960}
                 height={400}
@@ -335,8 +380,12 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                       controls
                       poster={videoPoster}
                       className="h-full w-full rounded-lg border border-white/10 bg-black object-contain"
-                      src={videoSrc}
+                      preload="metadata"
+                      playsInline
                     >
+                      {videoSources.map((s, idx) => (
+                        <source key={`${s.src}-${idx}`} src={s.src} type={s.type} />
+                      ))}
                       Votre navigateur ne supporte pas la vidéo.
                     </video>
                   </div>

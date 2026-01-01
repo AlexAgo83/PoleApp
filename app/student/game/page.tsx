@@ -357,6 +357,9 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     );
   }
 
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const mediaUrlFromPublicId = (publicId?: string | null, kind: "image" | "video" = "image") =>
+    publicId && cloudName ? `https://res.cloudinary.com/${cloudName}/${kind}/upload/${publicId}` : "";
   const eligibleMeta = eligible.map((p) => ({
     id: p.id,
     name: p.name,
@@ -364,7 +367,10 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     levelRequired: p.levelRequired,
     type: p.type,
     grips: p.grips,
-    media: p.media,
+    media: (p.media ?? []).map((m) => ({
+      ...m,
+      url: mediaUrlFromPublicId(m.publicId, m.kind === "VIDEO" ? "video" : "image"),
+    })),
   }));
   const questions: GameQuestion[] = buildGameQuestions(selectedMode, eligibleMeta);
 

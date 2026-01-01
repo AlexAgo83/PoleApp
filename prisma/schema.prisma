@@ -198,8 +198,7 @@ model PositionMedia {
   id         String    @id @default(cuid())
   positionId String
   kind       MediaKind
-  url        String
-  publicId   String?
+  publicId   String
   createdAt  DateTime  @default(now())
   position   Position  @relation(fields: [positionId], references: [id])
 }
@@ -570,8 +569,8 @@ model Preset {
   description      String?
   discipline       String?
   disciplineId     String
-  videoUrl         String?
-  imageUrl         String?
+  videoPublicId    String?
+  imagePublicId    String?
   premiumRequired  Boolean   @default(false)
   priceCredits     Int?
   usageCount       Int       @default(0)

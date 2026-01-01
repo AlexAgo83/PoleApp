@@ -2,8 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
+import { generateSignedUrl } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import { EditPositionForm } from "./EditPositionForm";
 import { deletePositionAction } from "./action";
@@ -40,7 +40,6 @@ export default async function EditPositionPage({ params }: Props) {
   }
   const isAdmin = role === "SCHOOL_ADMIN";
   const homeHref = isAdmin ? "/admin" : "/teacher";
-  const eyebrow = isAdmin ? "Espace admin" : "Espace prof";
 
   const [muscles, disciplinesRaw] = await Promise.all([
     prisma.muscle.findMany({
@@ -67,59 +66,71 @@ export default async function EditPositionPage({ params }: Props) {
     return rows.length > 0 ? rows : fallbackDisciplines;
   })();
   const selectedMuscleIds = position.muscles.map((m) => m.muscleId);
+  const videoMedia = position.media.find((m) => m.kind === "VIDEO");
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const seedVideoIds = new Set(["01_xphtvq", "02_e8rhmg", "03_yjmfi7", "04_exjndq", "05_flr6zp", "06_shrnly"]);
+  const videoId = videoMedia?.publicId ? videoMedia.publicId.split("/").pop() ?? videoMedia.publicId : undefined;
+  const isSeedVideo = videoId ? seedVideoIds.has(videoId) : false;
+  const videoPreviewUrl =
+    videoMedia?.publicId && cloudName && isSeedVideo
+      ? `https://res.cloudinary.com/${cloudName}/video/upload/${videoMedia.publicId}.mp4`
+      : videoMedia?.publicId
+        ? generateSignedUrl({
+            publicId: videoMedia.publicId,
+            resourceType: "video",
+            deliveryType: "authenticated",
+            expiresInSeconds: 3600,
+          }) ??
+          generateSignedUrl({
+            publicId: videoMedia.publicId,
+            resourceType: "video",
+            deliveryType: "upload",
+            expiresInSeconds: 3600,
+          }) ??
+          (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${videoMedia.publicId}.mp4` : undefined)
+        : undefined;
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        title="Éditer la position"
-        eyebrow={eyebrow}
-        foxHref={homeHref}
-        buttons={[
-          { label: "Mon espace", href: homeHref, icon: <img src="/house.svg" alt="" className="h-4 w-4" /> },
-          { label: "Déconnexion", href: "/api/auth/signout" },
-        ]}
-      />
+    <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
+      <section className="panel mt-2 space-y-3 p-4 md:p-6">
+        <p className="text-sm text-slate-200">
+          Mets à jour les informations principales de la position. Les médias supplémentaires viendront plus tard.
+        </p>
+        <EditPositionForm
+          position={{
+            id: position.id,
+            name: position.name,
+            description: position.description,
+            type: position.type,
+            levelRequired: position.levelRequired,
+            disciplineId: position.disciplineId,
+            discipline: position.discipline,
+            grips: position.grips,
+            tips: position.tips,
+            contraindications: position.contraindications,
+            media: position.media,
+          }}
+          muscles={muscles}
+          disciplines={disciplines}
+          selectedMuscleIds={selectedMuscleIds}
+          videoPreviewUrl={videoPreviewUrl}
+        />
+      </section>
 
-      <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
-        <section className="panel space-y-3 p-4 md:p-6">
-          <p className="text-sm text-slate-200">
-            Mets à jour les informations principales de la position. Les médias supplémentaires viendront plus tard.
-          </p>
-          <EditPositionForm
-            position={{
-              id: position.id,
-              name: position.name,
-              description: position.description,
-              type: position.type,
-              levelRequired: position.levelRequired,
-              disciplineId: position.disciplineId,
-              discipline: position.discipline,
-              grips: position.grips,
-              tips: position.tips,
-              contraindications: position.contraindications,
-              media: position.media,
-            }}
-            muscles={muscles}
-            disciplines={disciplines}
-            selectedMuscleIds={selectedMuscleIds}
-          />
-        </section>
-
-        <section className="panel mt-4 border-red-500/30 bg-red-500/5 p-6">
-          <h2 className="text-lg font-semibold text-white">Supprimer cette position</h2>
-          <p className="text-sm text-slate-200">
-            Action irréversible. Les liens cours/progression seront supprimés.
-          </p>
-          <form action={deletePositionAction} className="mt-4">
-            <input type="hidden" name="positionId" value={position.id} />
-            <ConfirmDeleteButton
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
-            >
-              Supprimer
-            </ConfirmDeleteButton>
-          </form>
-        </section>
-      </div>
-    </main>
+      <section className="panel mt-4 border-red-500/30 bg-red-500/5 p-6">
+        <h2 className="text-lg font-semibold text-white">Supprimer cette position</h2>
+        <p className="text-sm text-slate-200">
+          Action irréversible. Les liens cours/progression seront supprimés.
+        </p>
+        <form action={deletePositionAction} className="mt-4">
+          <input type="hidden" name="positionId" value={position.id} />
+          <ConfirmDeleteButton
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
+          >
+            Supprimer
+          </ConfirmDeleteButton>
+        </form>
+      </section>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -13,9 +12,6 @@ export default async function NewPositionPage() {
   if (!role || (role !== "TEACHER" && role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
-  const isAdmin = role === "SCHOOL_ADMIN";
-  const homeHref = isAdmin ? "/admin" : "/teacher";
-  const eyebrow = isAdmin ? "Espace admin" : "Espace prof";
 
   const [muscles, disciplinesRaw] = await Promise.all([
     prisma.muscle.findMany({
@@ -38,23 +34,13 @@ export default async function NewPositionPage() {
   const disciplines = disciplinesRaw.length > 0 ? disciplinesRaw : fallbackDisciplines;
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
-      <FoxPageHeader
-        title="Créer une position"
-        eyebrow={eyebrow}
-        foxHref={homeHref}
-        buttons={[
-          { label: "Mon espace", href: homeHref, icon: <img src="/house.svg" alt="" className="h-4 w-4" /> },
-          { label: "Déconnexion", href: "/api/auth/signout" },
-        ]}
-      />
-
-      <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
-        <section className="panel space-y-3 p-4 md:p-6">
-          <h2 className="text-lg font-semibold text-white">Créer une nouvelle position</h2>
-          <NewPositionForm muscles={muscles} disciplines={disciplines} />
-        </section>
-      </div>
-    </main>
+    <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
+      <section className="panel mt-2 space-y-3 p-4 md:p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold text-white">Créer une nouvelle position</h1>
+        </div>
+        <NewPositionForm muscles={muscles} disciplines={disciplines} />
+      </section>
+    </div>
   );
 }

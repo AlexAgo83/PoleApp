@@ -21,30 +21,6 @@ import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 const prisma = new PrismaClient();
 
 const PASSWORD = "change-me-password";
-const POSITION_IMAGES = [
-  "https://i.postimg.cc/W4Mwp4Zr/Gemini-Generated-Image-6bpiby6bpiby6bpi.png",
-  "https://i.postimg.cc/zfnFDfh0/Gemini-Generated-Image-70zf9e70zf9e70zf.png",
-  "https://i.postimg.cc/tghNRg6r/Gemini-Generated-Image-9laspe9laspe9las.png",
-  "https://i.postimg.cc/7LvNyz5X/Gemini-Generated-Image-9nbncc9nbncc9nbn.png",
-  "https://i.postimg.cc/BvWCGFjM/Gemini-Generated-Image-ak3205ak3205ak32.png",
-  "https://i.postimg.cc/k5xvM5SS/Gemini-Generated-Image-dq72fedq72fedq72.png",
-  "https://i.postimg.cc/s2p4f2Wm/Gemini-Generated-Image-nafbbenafbbenafb.png",
-  "https://i.postimg.cc/d08jQ0C9/Gemini-Generated-Image-r3jjhnr3jjhnr3jj.png",
-  "https://i.postimg.cc/2547j5Wd/Gemini-Generated-Image-q7a2l7q7a2l7q7a2.png",
-  "https://i.postimg.cc/SKWfQK9f/Gemini-Generated-Image-ob9xeuob9xeuob9x.png",
-  "https://i.postimg.cc/fbxfWbdj/Gemini-Generated-Image-nr8lxdnr8lxdnr8l.png",
-  "https://i.postimg.cc/xdK3jdmv/Gemini-Generated-Image-w69zmgw69zmgw69z.png",
-  "https://i.postimg.cc/JzmTFnh6/Gemini-Generated-Image-59vczf59vczf59vc.png",
-  "https://i.postimg.cc/jSK815jZ/Gemini-Generated-Image-5nkvun5nkvun5nkv.png",
-  "https://i.postimg.cc/Qds6ztMz/Gemini-Generated-Image-5x1h3e5x1h3e5x1h.png",
-  "https://i.postimg.cc/13PWdtzW/Gemini-Generated-Image-8df1hr8df1hr8df1.png",
-  "https://i.postimg.cc/T3Gksw-Pt/Gemini-Generated-Image-tqk096tqk096tqk0.png",
-  "https://i.postimg.cc/CxYv21KQ/Gemini-Generated-Image-x6c36yx6c36yx6c3.png",
-  "https://i.postimg.cc/g01pRsPN/Gemini_Generated_Image_4nvmg14nvmg14nvm.png",
-  "https://i.postimg.cc/zf4NW71p/Gemini_Generated_Image_s8vw7ls8vw7ls8vw.png",
-  "https://i.postimg.cc/mrK4MjGm/Gemini_Generated_Image_y1xzydy1xzydy1xz.png",
-];
-
 const POSITION_VIDEOS = [
   {
     url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/01_xphtvq.mp4",
@@ -420,7 +396,7 @@ const seedPresetsData = [
     discipline: "Pole",
     premiumRequired: true,
     description: "Combo court pour débutants, axé fluidité et musicalité.",
-    imageUrl: "https://i.postimg.cc/65XPDS0n/Gemini-Generated-Image-r18l7or18l7or18l.png",
+    imagePublicId: "ps_001_fe48zf",
   },
   {
     title: "Preset Crédit 150",
@@ -428,7 +404,7 @@ const seedPresetsData = [
     premiumRequired: false,
     priceCredits: 150,
     description: "Preset achetable en crédits, avec focus exotic.",
-    imageUrl: "https://i.postimg.cc/65XPDS0d/Gemini-Generated-Image-qoeoe9qoeoe9qoeo.png",
+    imagePublicId: "ps_002_r2gphs",
   },
 ];
 
@@ -567,11 +543,32 @@ async function seedPositions({
   const positionsByTeacher: Record<string, string[]> = {};
   const cycleDisciplines =
     disciplines.filter((d) => d.name.toLowerCase() !== "pole") ?? disciplines;
+  const photoPool = [
+    "po_01_haci3z",
+    "po_02_fl8akp",
+    "po_03_tdkgoo",
+    "po_04_xysi2j",
+    "po_05_xlfq5t",
+    "po_06_lx7gwx",
+    "po_07_xisr9g",
+    "po_08_aexxm6",
+    "po_09_guym8w",
+    "po_10_olw4fz",
+    "po_11_cygxow",
+    "po_12_g9vukb",
+    "po_13_vdwgew",
+    "po_14_nrxlmz",
+    "po_15_o3nbw9",
+    "po_16_dqdlc4",
+    "po_17_rocm06",
+    "po_18_xaekjy",
+    "po_19_dfrqlk",
+    "po_20_akrajr",
+  ];
 
   const createdPositions = [];
   for (let i = 0; i < positionsData.length; i += 1) {
     const pos = positionsData[i];
-    const image = POSITION_IMAGES[i % POSITION_IMAGES.length];
     const disciplinePick =
       (pos.discipline
         ? disciplines.find((d) => d.name.toLowerCase() === pos.discipline!.toLowerCase())
@@ -606,14 +603,17 @@ async function seedPositions({
         media: {
           create: [
             {
-              url: image,
+              publicId: photoPool[i % photoPool.length],
               kind: MediaKind.PHOTO,
             },
-            {
-              url: videoAsset.url,
-              publicId: videoAsset.publicId,
-              kind: MediaKind.VIDEO,
-            },
+            ...(videoAsset?.publicId
+              ? [
+                  {
+                    publicId: videoAsset.publicId,
+                    kind: MediaKind.VIDEO,
+                  } satisfies Prisma.PositionMediaCreateWithoutPositionInput,
+                ]
+              : []),
           ],
         },
         ...(muscleTargets.length > 0
@@ -1622,7 +1622,7 @@ async function seedPresets(options: {
           disciplineId: disciplineId ?? "",
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
-          imageUrl: preset.imageUrl ?? null,
+          imagePublicId: preset.imagePublicId ?? null,
           usageCount: 0,
           schoolId: school.id,
           createdByUserId: teacher?.id,
