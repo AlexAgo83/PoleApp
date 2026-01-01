@@ -9,15 +9,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled } from "@/lib/cloudinary";
-
-const RESERVED_POSITION_VIDEO_PUBLIC_IDS = new Set([
-  "01_xphtvq",
-  "02_e8rhmg",
-  "03_yjmfi7",
-  "04_exjndq",
-  "05_flr6zp",
-  "06_shrnly",
-]);
+import { isSeedPublicId, normalizeFolderedPublicId } from "@/lib/media";
 
 const schema = z.object({
   id: z.string().min(1),
@@ -61,6 +53,9 @@ export async function updatePositionAction(formData: FormData) {
   }
 
   const data = parsed.data;
+
+  const cleanedVideoPublicId = normalizeFolderedPublicId(data.videoPublicId, "poleapp/positions");
+  const cleanedImagePublicId = normalizeFolderedPublicId(data.imagePublicId, "poleapp/positions");
   const discipline = await prisma.discipline.findUnique({
     where: { id: data.disciplineId },
     select: { id: true, name: true },
@@ -76,14 +71,15 @@ export async function updatePositionAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  if (
-    isCloudinaryEnabled() &&
-    existing.media.some((m) => m.kind === MediaKind.VIDEO && m.publicId && m.publicId !== data.videoPublicId)
-  ) {
-    const old = existing.media.find((m) => m.kind === MediaKind.VIDEO && m.publicId);
-    if (old?.publicId && !RESERVED_POSITION_VIDEO_PUBLIC_IDS.has(old.publicId)) {
+  const existingVideo = existing.media.find((m) => m.kind === MediaKind.VIDEO && m.publicId);
+  const existingImage = existing.media.find((m) => m.kind === MediaKind.PHOTO && m.publicId);
+  const nextVideoPublicId = cleanedVideoPublicId ?? existingVideo?.publicId ?? null;
+  const nextImagePublicId = cleanedImagePublicId ?? existingImage?.publicId ?? null;
+
+  if (isCloudinaryEnabled() && existingVideo && nextVideoPublicId !== existingVideo.publicId) {
+    if (existingVideo.publicId && !isSeedPublicId(existingVideo.publicId)) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      destroyAsset(old.publicId, "video", "authenticated").catch(() => {});
+      destroyAsset(existingVideo.publicId, "video", "authenticated").catch(() => {});
     }
   }
 
@@ -100,16 +96,12 @@ export async function updatePositionAction(formData: FormData) {
       tips: data.tips,
       contraindications: data.contraindications,
       media:
-        data.imagePublicId || data.videoPublicId
+        nextImagePublicId || nextVideoPublicId
           ? {
               deleteMany: { positionId: data.id },
               create: [
-                ...(data.imagePublicId
-                  ? [{ kind: MediaKind.PHOTO, publicId: data.imagePublicId }]
-                  : []),
-                ...(data.videoPublicId
-                  ? [{ kind: MediaKind.VIDEO, publicId: data.videoPublicId ?? null }]
-                  : []),
+                ...(nextImagePublicId ? [{ kind: MediaKind.PHOTO, publicId: nextImagePublicId }] : []),
+                ...(nextVideoPublicId ? [{ kind: MediaKind.VIDEO, publicId: nextVideoPublicId }] : []),
               ],
             }
           : undefined,
@@ -125,6 +117,9 @@ export async function updatePositionAction(formData: FormData) {
   });
 
   revalidatePath("/positions");
+  revalidatePath(`/positions/${data.id}`);
+  revalidatePath("/teacher/positions");
+  revalidatePath(`/teacher/positions/${data.id}/edit`);
   redirect(`/positions/${data.id}?from=/positions`);
 }
 
@@ -169,7 +164,7 @@ export async function deletePositionAction(formData: FormData) {
 
   if (isCloudinaryEnabled()) {
     existing.media
-      .filter((m) => m.publicId && !RESERVED_POSITION_VIDEO_PUBLIC_IDS.has(m.publicId))
+      .filter((m) => m.publicId && !isSeedPublicId(m.publicId))
       .forEach((m) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         destroyAsset(

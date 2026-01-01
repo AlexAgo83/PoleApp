@@ -8,6 +8,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
+import { isSeedPublicId } from "@/lib/media";
 
 const schema = z.object({
   firstName: z
@@ -156,6 +157,7 @@ export async function updateAvatarAction(payload: { avatarUrl?: string | null; a
     previousPublicId &&
     previousPublicId !== newPublicId &&
     !isDefaultAvatarPublicId(previousPublicId) &&
+    !isSeedPublicId(previousPublicId) &&
     isCloudinaryEnabled()
   ) {
     try {

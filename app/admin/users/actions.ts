@@ -15,6 +15,7 @@ import {
   isDefaultAvatarPublicId,
   randomDefaultAvatarPublicId,
 } from "@/lib/cloudinary";
+import { isSeedPublicId } from "@/lib/media";
 
 const basePath = "/admin/users";
 
@@ -210,7 +211,7 @@ export async function deleteUserAction(formData: FormData) {
 
   try {
     await prisma.user.delete({ where: { id: data.userId } });
-    if (avatarToDelete && isCloudinaryEnabled()) {
+    if (avatarToDelete && isCloudinaryEnabled() && !isSeedPublicId(avatarToDelete)) {
       destroyAsset(avatarToDelete, "image", "authenticated").catch((err) => {
         console.warn("[admin-user-delete] failed to destroy avatar", err);
       });

@@ -18,8 +18,16 @@ export default async function AppLayout({
         : session?.user
           ? "Espace élève"
           : "Espace";
+  const teacherShortcuts =
+    session?.user?.role === "TEACHER"
+      ? [
+          { label: "Planning", href: "/teacher/courses/agenda?view=month" },
+          { label: "Positions", href: "/teacher/positions" },
+        ]
+      : [];
   const headerButtons = session?.user
     ? [
+        ...teacherShortcuts,
         {
           label: "Mon espace",
           href: defaultHomeForRole(session.user.role),

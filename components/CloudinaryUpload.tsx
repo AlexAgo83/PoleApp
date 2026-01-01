@@ -130,12 +130,22 @@ export function CloudinaryUpload({
           ? "c_fill,g_auto,h_720,w_1280,q_auto,f_auto"
           : undefined;
     try {
+      const normalizedForSignature = (() => {
+        if (!currentPublicId) return undefined;
+        const trimmed = currentPublicId.trim().replace(/^\/+|\/+$/g, "");
+        const folderPrefix = `${folder.replace(/\/+$/, "")}/`;
+        if (trimmed.startsWith(folderPrefix)) {
+          return trimmed.slice(folderPrefix.length);
+        }
+        return trimmed;
+      })();
+
       const sigRes = await fetch("/api/uploads/signature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           folder,
-          publicId: currentPublicId ?? undefined,
+          publicId: normalizedForSignature,
           resourceType,
           deliveryType: forceAuthenticated ? "authenticated" : deliveryType,
           accessMode: forceAuthenticated || deliveryType === "authenticated" ? "authenticated" : undefined,

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { destroyAsset, isCloudinaryEnabled } from "@/lib/cloudinary";
+import { isSeedPublicId } from "@/lib/media";
 
 const schema = z.object({
   publicId: z.string().trim().min(1),
@@ -25,6 +26,9 @@ export async function DELETE(request: Request) {
   if (!parsed.success) {
     console.error("[cloudinary-destroy] invalid payload", parsed.error.flatten());
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
+  }
+  if (isSeedPublicId(parsed.data.publicId)) {
+    return NextResponse.json({ ok: true, skipped: true });
   }
 
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
