@@ -12,19 +12,13 @@ const DEFAULT_DISCIPLINES = [
 ];
 
 async function run() {
-  const schools = await prisma.school.findMany({ select: { id: true, name: true } });
-  console.log(`Found ${schools.length} school(s) to backfill disciplines.`);
-
-  for (const school of schools) {
-    console.log(`\nSchool: ${school.name} (${school.id})`);
-    for (const disc of DEFAULT_DISCIPLINES) {
-      const upserted = await prisma.discipline.upsert({
-        where: { schoolId_name: { schoolId: school.id, name: disc.name } },
-        update: { color: disc.color },
-        create: { schoolId: school.id, name: disc.name, color: disc.color },
-      });
-      console.log(` - ${upserted.name} (${upserted.color})`);
-    }
+  for (const disc of DEFAULT_DISCIPLINES) {
+    const upserted = await prisma.discipline.upsert({
+      where: { name: disc.name },
+      update: { color: disc.color },
+      create: { name: disc.name, color: disc.color },
+    });
+    console.log(`Upserted discipline ${upserted.name} (${upserted.color})`);
   }
 }
 

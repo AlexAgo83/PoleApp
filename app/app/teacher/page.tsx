@@ -105,7 +105,7 @@ export default async function TeacherDashboard() {
     prisma.user.count({
       where: { schoolId: session.user.schoolId, role: "STUDENT" },
     }),
-    prisma.discipline.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.discipline.count(),
     prisma.user.count({
       where: {
         schoolId: session.user.schoolId,

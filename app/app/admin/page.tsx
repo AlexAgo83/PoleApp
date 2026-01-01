@@ -108,7 +108,7 @@ export default async function AdminDashboard({
     }),
     prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
     prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
-    prisma.discipline.count({ where: { schoolId: session.user.schoolId } }),
+    prisma.discipline.count(),
     prisma.preset.count({ where: { schoolId: session.user.schoolId } }),
     prisma.user.count({
       where: {

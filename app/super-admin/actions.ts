@@ -49,35 +49,24 @@ export async function forceDisciplinePoleAction(formData: FormData) {
   const name = formData.get("name")?.toString().trim() || defaultForcedDiscipline.name;
   const color = formData.get("color")?.toString().trim() || defaultForcedDiscipline.color;
   const confirm = formData.get("confirm")?.toString().trim().toUpperCase();
-  const schoolId = formData.get("schoolId")?.toString().trim();
 
   if (confirm !== "FORCE") {
     redirect(`${basePath}?flash=force-invalid`);
   }
 
-  const schools = await prisma.school.findMany({
-    select: { id: true },
-    where: schoolId ? { id: schoolId } : undefined,
+  const discipline = await prisma.discipline.upsert({
+    where: { name },
+    update: { color },
+    create: { name, color },
   });
-  if (schools.length === 0) {
-    redirect(`${basePath}?flash=force-invalid`);
-  }
 
   await prisma.$transaction(async (tx) => {
-    await Promise.all(
-      schools.map((school) =>
-        tx.discipline.upsert({
-          where: { schoolId_name: { schoolId: school.id, name } },
-          update: { color },
-          create: { schoolId: school.id, name, color },
-        })
-      )
-    );
-    await tx.course.updateMany({ data: { discipline: name } });
-    await tx.position.updateMany({ data: { discipline: name } });
+    await tx.course.updateMany({ data: { discipline: name, disciplineId: discipline.id } });
+    await tx.position.updateMany({ data: { discipline: name, disciplineId: discipline.id } });
+    await tx.preset.updateMany({ data: { discipline: name, disciplineId: discipline.id } });
   });
 
-  await logAudit("discipline:force", undefined, { name, color, schools: schools.length, scoped: Boolean(schoolId) });
+  await logAudit("discipline:force", undefined, { name, color });
   revalidatePath(basePath);
   revalidatePath("/app");
   revalidatePath("/positions");
@@ -88,19 +77,16 @@ export async function forceDisciplinePoleAction(formData: FormData) {
 
 export async function backfillDisciplinesAction() {
   await requireSuperAdmin();
-  const schools = await prisma.school.findMany({ select: { id: true, name: true } });
-  for (const school of schools) {
-    await Promise.all(
-      defaultDisciplines.map((disc) =>
-        prisma.discipline.upsert({
-          where: { schoolId_name: { schoolId: school.id, name: disc.name } },
-          update: { color: disc.color },
-          create: { schoolId: school.id, name: disc.name, color: disc.color },
-        })
-      )
-    );
-  }
-  await logAudit("discipline:backfill", undefined, { schools: schools.length, items: defaultDisciplines.length });
+  await Promise.all(
+    defaultDisciplines.map((disc) =>
+      prisma.discipline.upsert({
+        where: { name: disc.name },
+        update: { color: disc.color },
+        create: { name: disc.name, color: disc.color },
+      })
+    )
+  );
+  await logAudit("discipline:backfill", undefined, { items: defaultDisciplines.length });
   revalidatePath(basePath);
 }
 

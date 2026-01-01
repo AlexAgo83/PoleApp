@@ -83,7 +83,6 @@ model School {
   courses  Course[]
   studios  Studio[]
   partners Partner[]
-  disciplines Discipline[]
   gameSessions GameSession[]
   presets  Preset[]
   recurrenceSeries CourseRecurrenceSeries[]
@@ -93,14 +92,15 @@ model School {
 
 model Discipline {
   id        String   @id @default(cuid())
-  schoolId  String
   name      String
   color     String   @default("#7c3aed")
   createdAt DateTime @default(now())
 
-  school School @relation(fields: [schoolId], references: [id])
+  positions Position[]
+  courses   Course[]
+  presets   Preset[]
 
-  @@unique([schoolId, name])
+  @@unique([name])
 }
 
 model User {
@@ -150,6 +150,7 @@ model Position {
   levelRequired     PositionLevel
   type              PositionType
   discipline        String        @default("Danse")
+  disciplineId      String?
   grips             String?
   tips              String?
   contraindications String?
@@ -157,6 +158,7 @@ model Position {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   createdBy         User?         @relation("CreatedPositions", fields: [createdByUserId], references: [id])
+  disciplineRef     Discipline?   @relation(fields: [disciplineId], references: [id])
 
   media         PositionMedia[]
   progress      StudentPositionProgress[]
@@ -169,6 +171,7 @@ model Position {
   presetLinks   PresetPosition[]
 
   @@unique([name])
+  @@index([disciplineId])
 }
 
 model Muscle {
@@ -244,6 +247,7 @@ model Course {
   studioId        String?
   title           String?
   discipline      String   @default("Danse")
+  disciplineId    String?
   photoUrl        String?
   date            DateTime
   durationMinutes Int      @default(60)
@@ -264,10 +268,12 @@ model Course {
   recurrenceSeriesId String?
   recurrenceSeries   CourseRecurrenceSeries? @relation(fields: [recurrenceSeriesId], references: [id])
   isVirtual    Boolean  @default(false)
+  disciplineRef Discipline? @relation(fields: [disciplineId], references: [id])
 
   @@index([schoolId, date])
   @@index([teacherId])
   @@index([studioId])
+  @@index([disciplineId])
 }
 
 model CourseAttendance {
@@ -563,6 +569,7 @@ model Preset {
   title            String
   description      String?
   discipline       String?
+  disciplineId     String?
   videoUrl         String?
   imageUrl         String?
   premiumRequired  Boolean   @default(false)
@@ -574,8 +581,10 @@ model Preset {
   positions        PresetPosition[]
   school           School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   createdBy        User?     @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  disciplineRef    Discipline? @relation(fields: [disciplineId], references: [id])
 
   @@index([schoolId])
+  @@index([disciplineId])
 }
 
 model PresetPosition {

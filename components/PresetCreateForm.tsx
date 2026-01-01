@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-type Position = { id: string; name: string; discipline: string | null };
-type Discipline = { name: string };
+type Position = { id: string; name: string; discipline: string | null; disciplineId?: string | null };
+type Discipline = { id?: string; name: string };
 type Teacher = { id: string; name: string | null; email: string | null };
 
 type Props = {
@@ -30,7 +30,11 @@ export function PresetCreateForm({
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions.slice(0, maxPositions);
     return positions
-      .filter((p) => (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase())
+      .filter((p) => {
+        if (!selectedDiscipline) return true;
+        if (p.disciplineId && p.disciplineId === selectedDiscipline) return true;
+        return (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase();
+      })
       .slice(0, maxPositions);
   }, [positions, selectedDiscipline, maxPositions]);
 
@@ -56,7 +60,7 @@ export function PresetCreateForm({
         >
           <option value="">(Toutes)</option>
           {disciplines.map((d) => (
-            <option key={d.name} value={d.name}>
+            <option key={d.id ?? d.name} value={d.id ?? d.name}>
               {d.name}
             </option>
           ))}

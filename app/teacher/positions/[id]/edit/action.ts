@@ -63,6 +63,10 @@ export async function updatePositionAction(formData: FormData) {
   }
 
   const data = parsed.data;
+  const discipline = await prisma.discipline.findUnique({
+    where: { name: data.discipline },
+    select: { id: true, name: true },
+  });
   const existing = await prisma.position.findUnique({
     where: { id: data.id },
     select: { id: true, createdByUserId: true, media: true },
@@ -92,7 +96,8 @@ export async function updatePositionAction(formData: FormData) {
       description: data.description ?? data.tips,
       type: data.type,
       levelRequired: data.levelRequired,
-      discipline: data.discipline,
+      discipline: discipline?.name ?? data.discipline,
+      disciplineId: discipline?.id ?? null,
       grips: data.grips ?? null,
       tips: data.tips,
       contraindications: data.contraindications,

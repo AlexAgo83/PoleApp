@@ -26,10 +26,19 @@ export async function createPresetAction(formData: FormData) {
   }
 
   const rawPositionIds = formData.getAll("positionIds").map((id) => id.toString());
+  const disciplineInput = formData.get("discipline")?.toString().trim() || undefined;
+  const disciplineRecord = disciplineInput
+    ? await prisma.discipline.findFirst({
+        where: {
+          OR: [{ id: disciplineInput }, { name: disciplineInput }],
+        },
+        select: { id: true, name: true },
+      })
+    : null;
   const parsed = presetSchema.safeParse({
     title: formData.get("title")?.toString().trim(),
     description: formData.get("description")?.toString().trim() || undefined,
-    discipline: formData.get("discipline")?.toString().trim() || undefined,
+    discipline: disciplineRecord?.name ?? disciplineInput ?? undefined,
     videoUrl: formData.get("videoUrl")?.toString().trim() || undefined,
     imageUrl: formData.get("imageUrl")?.toString().trim() || undefined,
     premiumRequired: formData.get("premiumRequired") === "on",
@@ -46,6 +55,7 @@ export async function createPresetAction(formData: FormData) {
       title: parsed.data.title,
       description: parsed.data.description,
       discipline: parsed.data.discipline,
+      disciplineId: disciplineRecord?.id ?? null,
       videoUrl: parsed.data.videoUrl || null,
       imageUrl: parsed.data.imageUrl || null,
       premiumRequired: parsed.data.premiumRequired ?? false,

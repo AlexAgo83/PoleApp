@@ -90,7 +90,7 @@ export default async function AdminSchoolPage({
     skip: (currentStudioPage - 1) * 6,
     take: 6,
   });
-  const disciplineCount = await prisma.discipline.count({ where: { schoolId: session.user.schoolId } });
+  const disciplineCount = await prisma.discipline.count();
   const disciplineTotalPages = Math.max(1, Math.ceil(disciplineCount / 6));
   const currentDisciplinePage = Math.min(disciplinePage, disciplineTotalPages);
   const redirectParams = new URLSearchParams();
@@ -99,7 +99,6 @@ export default async function AdminSchoolPage({
   const redirectToSchool =
     redirectParams.toString().length > 0 ? `/app/admin/school?${redirectParams.toString()}` : "/app/admin/school";
   const disciplines = await prisma.discipline.findMany({
-    where: { schoolId: session.user.schoolId },
     select: { id: true, name: true, color: true },
     orderBy: { name: "asc" },
     skip: (currentDisciplinePage - 1) * 6,

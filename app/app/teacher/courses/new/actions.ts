@@ -109,6 +109,15 @@ export async function createCourseAction(formData: FormData) {
     throw new Error("Form invalid");
   }
 
+  const disciplineRecord = parsed.data.discipline
+    ? await prisma.discipline.findFirst({
+        where: { OR: [{ id: parsed.data.discipline }, { name: parsed.data.discipline }] },
+        select: { id: true, name: true },
+      })
+    : null;
+  const disciplineName = disciplineRecord?.name ?? parsed.data.discipline;
+  const disciplineId = disciplineRecord?.id ?? null;
+
   const teacherId =
     session.user.role === "TEACHER"
       ? session.user.id
@@ -207,7 +216,8 @@ export async function createCourseAction(formData: FormData) {
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
           studioId: parsed.data.studioId,
-          discipline: parsed.data.discipline,
+          discipline: disciplineName,
+          disciplineId,
           durationMinutes: parsed.data.durationMinutes,
           maxSeats: parsed.data.maxSeats ?? 30,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
@@ -229,7 +239,8 @@ export async function createCourseAction(formData: FormData) {
           schoolId: session.user.schoolId!,
           teacherId: teacherId ?? session.user.id,
           studioId: parsed.data.studioId,
-          discipline: parsed.data.discipline,
+          discipline: disciplineName,
+          disciplineId,
           durationMinutes: parsed.data.durationMinutes,
           waitlistQuota: parsed.data.waitlistQuota ?? 0,
           photoUrl: parsed.data.photoUrl ?? null,
@@ -293,7 +304,8 @@ export async function createCourseAction(formData: FormData) {
             schoolId: session.user.schoolId!,
             teacherId: teacherId ?? session.user.id,
             studioId: parsed.data.studioId,
-            discipline: parsed.data.discipline,
+            discipline: disciplineName,
+            disciplineId,
             durationMinutes: parsed.data.durationMinutes,
             maxSeats: parsed.data.maxSeats ?? 30,
             waitlistQuota: parsed.data.waitlistQuota ?? 0,
