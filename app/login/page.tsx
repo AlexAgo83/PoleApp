@@ -24,7 +24,8 @@ const presets: PresetUser[] = [
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  const callbackUrlParam = searchParams.get("callbackUrl");
+  const callbackUrl = callbackUrlParam && callbackUrlParam.trim().length > 0 ? callbackUrlParam : null;
   const signupSuccess = searchParams.get("signup") === "success";
   const { data: session, status } = useSession();
 
@@ -66,7 +67,7 @@ function LoginContent() {
       email,
       password,
       redirect: false,
-      callbackUrl,
+      callbackUrl: callbackUrl ?? undefined,
     });
 
     if (result?.error) {
