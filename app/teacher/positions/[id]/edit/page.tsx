@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { SessionNavBar } from "@/components/SessionNavBar";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
+import { FoxPageHeader } from "@/components/FoxPageHeader";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EditPositionForm } from "./EditPositionForm";
@@ -38,6 +38,9 @@ export default async function EditPositionPage({ params }: Props) {
   ) {
     redirect("/access-denied");
   }
+  const isAdmin = role === "SCHOOL_ADMIN";
+  const homeHref = isAdmin ? "/app/admin" : "/app/teacher";
+  const eyebrow = isAdmin ? "Espace admin" : "Espace prof";
 
   const [muscles, disciplinesRaw] = await Promise.all([
     prisma.muscle.findMany({
@@ -65,55 +68,58 @@ export default async function EditPositionPage({ params }: Props) {
   })();
   const selectedMuscleIds = position.muscles.map((m) => m.muscleId);
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-4 px-2 py-6 md:gap-6 md:px-6 md:py-10">
-      <SessionNavBar session={session} />
-      <header className="panel p-4 md:p-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-          Professeur / Admin
-        </p>
-        <h1 className="text-3xl font-semibold text-white">Éditer la position</h1>
-        <p className="text-slate-200">
-          Mets à jour les informations principales de la position. Les médias supplémentaires
-          viendront plus tard.
-        </p>
-      </header>
+    <main className="flex min-h-screen w-full flex-col gap-4">
+      <FoxPageHeader
+        title="Éditer la position"
+        eyebrow={eyebrow}
+        foxHref={homeHref}
+        buttons={[
+          { label: "Mon espace", href: homeHref, icon: <img src="/house.svg" alt="" className="h-4 w-4" /> },
+          { label: "Déconnexion", href: "/api/auth/signout" },
+        ]}
+      />
 
-      <section className="panel p-4 md:p-6">
-        <EditPositionForm
-          position={{
-            id: position.id,
-            name: position.name,
-            description: position.description,
-            type: position.type,
-            levelRequired: position.levelRequired,
-            disciplineId: position.disciplineId,
-            discipline: position.discipline,
-            grips: position.grips,
-            tips: position.tips,
-            contraindications: position.contraindications,
-            media: position.media,
-          }}
-          muscles={muscles}
-          disciplines={disciplines}
-          selectedMuscleIds={selectedMuscleIds}
-        />
-      </section>
+      <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
+        <section className="panel space-y-3 p-4 md:p-6">
+          <p className="text-sm text-slate-200">
+            Mets à jour les informations principales de la position. Les médias supplémentaires viendront plus tard.
+          </p>
+          <EditPositionForm
+            position={{
+              id: position.id,
+              name: position.name,
+              description: position.description,
+              type: position.type,
+              levelRequired: position.levelRequired,
+              disciplineId: position.disciplineId,
+              discipline: position.discipline,
+              grips: position.grips,
+              tips: position.tips,
+              contraindications: position.contraindications,
+              media: position.media,
+            }}
+            muscles={muscles}
+            disciplines={disciplines}
+            selectedMuscleIds={selectedMuscleIds}
+          />
+        </section>
 
-      <section className="panel border-red-500/30 bg-red-500/5 p-6">
-        <h2 className="text-lg font-semibold text-white">Supprimer cette position</h2>
-        <p className="text-sm text-slate-200">
-          Action irréversible. Les liens cours/progression seront supprimés.
-        </p>
-        <form action={deletePositionAction} className="mt-4">
-          <input type="hidden" name="positionId" value={position.id} />
-          <ConfirmDeleteButton
-            type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
-          >
-            Supprimer
-          </ConfirmDeleteButton>
-        </form>
-      </section>
+        <section className="panel mt-4 border-red-500/30 bg-red-500/5 p-6">
+          <h2 className="text-lg font-semibold text-white">Supprimer cette position</h2>
+          <p className="text-sm text-slate-200">
+            Action irréversible. Les liens cours/progression seront supprimés.
+          </p>
+          <form action={deletePositionAction} className="mt-4">
+            <input type="hidden" name="positionId" value={position.id} />
+            <ConfirmDeleteButton
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-400"
+            >
+              Supprimer
+            </ConfirmDeleteButton>
+          </form>
+        </section>
+      </div>
     </main>
   );
 }
