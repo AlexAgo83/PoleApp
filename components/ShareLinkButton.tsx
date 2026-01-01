@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 type Props = {
-  path: string; // ex: /app/student/courses/123
+  path: string; // ex: /student/courses/123
   label?: string;
   className?: string;
 };

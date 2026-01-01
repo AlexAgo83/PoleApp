@@ -21,7 +21,7 @@ const moduleSections = [
   },
   {
     title: "Cours",
-    href: "/app/teacher/courses",
+    href: "/teacher/courses",
     description: "Création cours, présences, notes, durée et mise à jour progression.",
     status: "Étape 5-9",
     role: "Professeur",
@@ -29,7 +29,7 @@ const moduleSections = [
   },
   {
     title: "Élèves",
-    href: "/app/teacher/students",
+    href: "/teacher/students",
     description:
       "Fiches élèves, progression, blessures visibles par professeur.",
     status: "Étapes 3-4",
@@ -38,7 +38,7 @@ const moduleSections = [
   },
   {
     title: "Mini-jeu",
-    href: "/app/student/game",
+    href: "/student/game",
     description: "6 modes (photo/type/niveau/grips/description + blitz), historique et leaderboard.",
     status: "Étape 6-9",
     role: "Élève / Prof / Admin",
@@ -54,7 +54,7 @@ const moduleSections = [
   },
   {
     title: "Agenda (élève)",
-    href: "/app/student/courses/agenda",
+    href: "/student/courses/agenda",
     description: "Vue agenda mensuelle + semaine, filtres studios/profs/« mes cours » sans scroll mobile.",
     status: "Étape 9",
     role: "Élève",
@@ -62,7 +62,7 @@ const moduleSections = [
   },
   {
     title: "Agenda (prof/admin)",
-    href: "/app/teacher/courses/agenda",
+    href: "/teacher/courses/agenda",
     description: "Agenda cours avec filtres studio/prof, navigation mois + vue semaine.",
     status: "Étape 9",
     role: "Professeur / Admin",
@@ -70,7 +70,7 @@ const moduleSections = [
   },
   {
     title: "École (élève)",
-    href: "/app/student/school",
+    href: "/student/school",
     description: "Studios/partenaires + agenda école (semaine/mois) et prochains cours.",
     status: "Étape 9",
     role: "Élève",
@@ -78,7 +78,7 @@ const moduleSections = [
   },
   {
     title: "Crédits & achats",
-    href: "/app/student",
+    href: "/student",
     description: "Solde crédits visible, bouton Acheter des crédits (demo) et règles d’inscription.",
     status: "Étape 9",
     role: "Élève",
@@ -86,7 +86,7 @@ const moduleSections = [
   },
   {
     title: "Facturation (admin)",
-    href: "/app/admin/billing",
+    href: "/admin/billing",
     description: "Factures cours avec filtres/statuts, export CSV, backfill, actions guidées.",
     status: billingStatus,
     role: "Admin",
@@ -94,7 +94,7 @@ const moduleSections = [
   },
   {
     title: "Facturation (prof)",
-    href: "/app/teacher/billing",
+    href: "/teacher/billing",
     description: "Vue lecture factures de mes cours (montants/statuts).",
     status: billingStatus,
     role: "Professeur",
@@ -102,7 +102,7 @@ const moduleSections = [
   },
   {
     title: "Studios & partenaires",
-    href: "/app/admin/studios",
+    href: "/admin/studios",
     description: "Gestion studios (toggle lecture/édition), accès partenaires et navigation admin.",
     status: "Étape 9",
     role: "Admin",
@@ -110,7 +110,7 @@ const moduleSections = [
   },
   {
     title: "Profile",
-    href: "/app/profile",
+    href: "/profile",
     description: "Consulter et mettre à jour prénom/nom, voir email, rôle et école.",
     status: "Étape 8",
     role: "Élève / Professeur / Admin",

@@ -7,7 +7,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { HydrationWrapper } from "@/components/HydrationWrapper";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
-import { BuyCreditsButton } from "@/app/app/student/BuyCreditsButton";
+import { BuyCreditsButton } from "@/app/student/BuyCreditsButton";
 import { authOptions } from "@/lib/auth";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
