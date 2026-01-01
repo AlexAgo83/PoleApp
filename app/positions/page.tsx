@@ -287,6 +287,32 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           </div>
         )}
 
+        <details className="group text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+              Légende
+              <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+              <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
+            </span>
+          </summary>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {[
+              { label: "Nouveauté", className: "border-[#2563eb] bg-[#2563eb] text-white" },
+              { label: "Initié", className: "border-[#f59e0b] bg-[#f59e0b] text-white" },
+              { label: "Passé", className: "border-[#10b981] bg-[#10b981] text-white" },
+              { label: "Fluide chorégraphié", className: "border-[#7c3aed] bg-[#7c3aed] text-white" },
+              { label: "Vu : compteur de cours", className: "border border-white/20 bg-white/10 text-slate-200" },
+            ].map((item) => (
+              <span
+                key={item.label}
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
+              >
+                ● {item.label}
+              </span>
+            ))}
+          </div>
+        </details>
+
         <FilterPanel
           storageKey="filters:positions"
           title="Filtres"

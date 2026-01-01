@@ -1,4 +1,6 @@
 ## Echauffement innitiation
+- Type: Warmup
+- Niveau: Débutant
 **Description**
 > 🔥 Échauffement Initiation Pole Dance
 > Durée : ~12–15 min

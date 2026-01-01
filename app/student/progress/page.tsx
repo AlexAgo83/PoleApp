@@ -219,23 +219,32 @@ export default async function StudentProgressPage({
             {lockedCount} position(s) verrouillées. Passe en premium pour tout voir.
           </div>
         )}
-        <div className="flex flex-wrap gap-2 text-xs">
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.NOT_STARTED.solid}`}>
-            ● {statusLabels.NOT_STARTED}
-          </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.IN_PROGRESS.solid}`}>
-            ● {statusLabels.IN_PROGRESS}
-          </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.PASSED.solid}`}>
-            ● {statusLabels.PASSED}
-          </span>
-          <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.MASTERED.solid}`}>
-            ● {statusLabels.MASTERED}
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-3 py-1 font-semibold text-cyan-100">
-            ● Vu : compteur de cours
-          </span>
-        </div>
+        <details className="group text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+              Légende
+              <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+              <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
+            </span>
+          </summary>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.NOT_STARTED.solid}`}>
+              ● {statusLabels.NOT_STARTED}
+            </span>
+            <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.IN_PROGRESS.solid}`}>
+              ● {statusLabels.IN_PROGRESS}
+            </span>
+            <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.PASSED.solid}`}>
+              ● {statusLabels.PASSED}
+            </span>
+            <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-semibold ${statusStyles.MASTERED.solid}`}>
+              ● {statusLabels.MASTERED}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/40 bg-cyan-500/15 px-3 py-1 font-semibold text-cyan-100">
+              ● Vu : compteur de cours
+            </span>
+          </div>
+        </details>
         <FilterPanel
           storageKey="filters:student-progress"
           title="Filtres"
