@@ -110,7 +110,7 @@
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Débutant
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Back arch
 **Description**
@@ -121,7 +121,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Back hook & back swing
 **Description**
@@ -133,7 +133,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Basic cradle & tuck spin
 **Description**
@@ -144,7 +144,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Double main haute
 
 ## Boomerang (ok)
 **Description**
@@ -152,7 +152,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Boomerang to back hook
 **Description**
@@ -167,7 +167,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Boomerang to carousel
 **Description**
@@ -180,7 +180,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Boomerang to Fireman X-Leg
 **Description**
@@ -192,7 +192,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Chair glide
 **Description**
@@ -203,7 +203,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Chair straight legs
 **Description**
@@ -214,7 +214,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Cool Down
 **Description**
@@ -320,7 +320,7 @@
 - Muscles / articulations sollicitées: Étirements/retour au calme : chaîne postérieure (ischios, mollets, dos), ouverture épaules/pectoraux et hanches ; décompression colonne et poignets.
 - Niveau: Débutant
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Marche désaxée
 **Description**
@@ -331,7 +331,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Fireman cross Leg
 **Description**
@@ -341,7 +341,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## 🔒 Close front hook
 **Description**
@@ -352,7 +352,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## ⏩ Open Front hook
 **Description**
@@ -360,7 +360,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Corkscrew attitude
 **Description**
@@ -368,7 +368,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Cradle & variantes SL
 **Description**
@@ -390,7 +390,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Double main haute
 
 ## Développé en pole
 **Description**
@@ -400,7 +400,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Diagonale
 **Description**
@@ -413,7 +413,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## ⏪ Back hook
 **Description**
@@ -424,7 +424,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Carousel
 **Description**
@@ -439,7 +439,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Pirouette
 **Description**
@@ -450,7 +450,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Step around
 **Description**
@@ -458,7 +458,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Reverse grab basic
 **Description**
@@ -467,7 +467,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Avancé
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Reverse grab
 
 ## Caterpillar
 **Description**
@@ -476,7 +476,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: STRENGTH
-- Grip: Non renseigné
+- Grip: Forearm climb
 
 ## Choré 1 inter
 **Description**
@@ -486,7 +486,7 @@
 - Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Choré 2 inter
 **Description**
@@ -496,7 +496,7 @@
 - Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Choré 3 inter
 **Description**
@@ -506,7 +506,7 @@
 - Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Choré 4 inter
 **Description**
@@ -516,7 +516,7 @@
 - Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Choré 5 inter
 **Description**
@@ -526,7 +526,7 @@
 - Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Travail des ecarts
 **Description**
@@ -536,7 +536,7 @@
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Intermédiaire
 - Type: STRENGTH
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Kneeling arch
 **Description**
@@ -547,7 +547,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Crucifix
 **Description**
@@ -558,7 +558,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Armpit grip
 
 ## Seat
 **Description**
@@ -569,7 +569,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Cuisse + aisselle
 
 ## Climb
 **Description**
@@ -581,7 +581,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: STRENGTH
-- Grip: Non renseigné
+- Grip: Basic climb
 
 ## B Hook
 **Description**
@@ -592,7 +592,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Ballerina
 **Description**
@@ -603,7 +603,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Forearm brace
 
 ## Basic Climb
 **Description**
@@ -614,7 +614,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: STRENGTH
-- Grip: Non renseigné
+- Grip: Basic climb
 
 ## Basic Invert
 **Description**
@@ -622,7 +622,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Débutant
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Chair
 **Description**
@@ -639,7 +639,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Cradle (enroulé horizontal)
 **Description**
@@ -650,7 +650,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Double main haute
 
 ## Cross knee release
 **Description**
@@ -661,7 +661,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Genou + main
 
 ## Extended Leg Whip (hook)
 **Description**
@@ -672,7 +672,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Floor combination & combo
 **Description**
@@ -680,7 +680,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Heel Attitude
 **Description**
@@ -690,7 +690,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Inverted V
 **Description**
@@ -701,7 +701,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Knee Attitude
 **Description**
@@ -712,7 +712,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Pirouette Low
 **Description**
@@ -720,7 +720,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Marche Lente
 **Description**
@@ -731,7 +731,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Pirouette Complète
 **Description**
@@ -742,7 +742,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Plié-tête
 **Description**
@@ -750,7 +750,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Reverse (Heel Attitude)
 **Description**
@@ -761,7 +761,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Standing Spin
 **Description**
@@ -772,7 +772,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Waves
 **Description**
@@ -781,7 +781,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Echauffement deb
 **Description**
@@ -908,7 +908,7 @@
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Avancé
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Renfo stretch à la barre
 **Description**
@@ -918,7 +918,7 @@
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Débutant
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Pré-Stretch
 **Description**
@@ -928,7 +928,7 @@
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Débutant
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Echauffement articulaire
 **Description**
@@ -938,7 +938,7 @@
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Débutant
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Fireman push up
 **Description**
@@ -949,7 +949,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: STRENGTH
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Floor bow and arrow
 **Description**
@@ -960,7 +960,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Forwards
 **Description**
@@ -968,7 +968,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Handspring grip
 
 ## Cartwheel
 **Description**
@@ -977,7 +977,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Développé on pole
 **Description**
@@ -986,7 +986,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Mini Spin
 **Description**
@@ -995,7 +995,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Forwards to reverse
 **Description**
@@ -1007,7 +1007,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: One-hand hook
 
 ## Front hook d’une main
 **Description**
@@ -1018,7 +1018,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Front Hook to Back Hook
 **Description**
@@ -1030,7 +1030,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Appui tête/bras
 
 ## Head stand
 **Description**
@@ -1041,7 +1041,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Armpit + cuisse
 
 ## Inverted crucifix
 **Description**
@@ -1052,7 +1052,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Jump & slide v2
 **Description**
@@ -1063,7 +1063,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Jump & slide v1
 **Description**
@@ -1074,7 +1074,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Layout
 **Description**
@@ -1085,7 +1085,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Marche dynamique
 **Description**
@@ -1096,7 +1096,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## No leg attitude
 **Description**
@@ -1107,7 +1107,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Pirouette enchainées
 **Description**
@@ -1118,7 +1118,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Pole circle
 **Description**
@@ -1129,7 +1129,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Renforcement avec baton
 **Description**
@@ -1254,7 +1254,7 @@
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Avancé
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Salutations au soleil
 **Description**
@@ -1385,7 +1385,7 @@
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Avancé
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Side spin
 **Description**
@@ -1396,7 +1396,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Sitting spin
 **Description**
@@ -1407,7 +1407,7 @@
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Slide
 **Description**
@@ -1418,7 +1418,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Step around aérien
 **Description**
@@ -1429,7 +1429,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Base grip
 
 ## Stepping turn
 **Description**
@@ -1440,7 +1440,7 @@
 - Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 - Niveau: Débutant
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Cool down au sol
 **Description**
@@ -1450,7 +1450,7 @@
 - Muscles / articulations sollicitées: Étirements/retour au calme : chaîne postérieure (ischios, mollets, dos), ouverture épaules/pectoraux et hanches ; décompression colonne et poignets.
 - Niveau: Intermédiaire
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Renfo & Stretch sur la pole
 **Description**
@@ -1460,7 +1460,7 @@
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Intermédiaire
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Echauffement articulaire pré-stretch
 **Description**
@@ -1470,7 +1470,7 @@
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Intermédiaire
 - Type: WARMUP
-- Grip: Non renseigné
+- Grip: Cuisses opposées
 
 ## Superman
 **Description**
@@ -1481,7 +1481,7 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Switch (2 sens)
 **Description**
@@ -1490,7 +1490,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Pike (depuis in et out)
 **Description**
@@ -1499,7 +1499,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Viva 1 & Viva 2
 **Description**
@@ -1508,7 +1508,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Outside leg hang
 
 ## Bird
 **Description**
@@ -1517,7 +1517,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Forearm split
 
 ## Star
 **Description**
@@ -1526,7 +1526,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Forearm split
 
 ## Starfish
 **Description**
@@ -1535,7 +1535,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Wrist grip
 
 ## Wrist seat
 **Description**
@@ -1544,7 +1544,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Spin Off Dismount
 **Description**
@@ -1553,7 +1553,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Reverse grab
 
 ## Carousel to Reverse Grab
 **Description**
@@ -1562,7 +1562,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Basic climb
 
 ## Climb Straignt Legs
 **Description**
@@ -1571,7 +1571,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: STRENGTH
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Butterfly
 **Description**
@@ -1580,7 +1580,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Reverse grab
 
 ## Basic R-Grab & R-Grab One hand
 **Description**
@@ -1589,7 +1589,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Rising Godess
 **Description**
@@ -1598,7 +1598,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Helicopter
 **Description**
@@ -1607,7 +1607,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Forearm brace
 
 ## Basic Teddy & Teddy One Handed
 **Description**
@@ -1616,7 +1616,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Chevilles croisées
 
 ## Cross Ankle Release
 **Description**
@@ -1625,7 +1625,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## V on pole
 **Description**
@@ -1634,7 +1634,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Concord
 **Description**
@@ -1643,7 +1643,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Snake dismount
 **Description**
@@ -1652,7 +1652,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Spin Up Attitude
 **Description**
@@ -1661,7 +1661,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Sans barre
 
 ## Head CirclesWalk
 **Description**
@@ -1670,7 +1670,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Double main haute
 
 ## Cradle Splits
 **Description**
@@ -1679,7 +1679,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Inside leg hang
 
 ## Scorpio inside leg
 **Description**
@@ -1688,7 +1688,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Jamila
 **Description**
@@ -1697,7 +1697,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Split grip
 
 ## Fireman Horizontal Leg
 **Description**
@@ -1706,7 +1706,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Outside leg hang
 
 ## Gemini : outside Leg Hang
 **Description**
@@ -1715,7 +1715,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: TRICK
-- Grip: Non renseigné
+- Grip: Handstand grip
 
 ## Handstand variation Dismount
 **Description**
@@ -1724,7 +1724,7 @@
 - Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 - Niveau: Intermédiaire
 - Type: SPIN
-- Grip: Non renseigné
+- Grip: Appui tête/bras
 
 ## Head stand to cross knee
 **Description**
@@ -1735,4 +1735,4 @@
 - Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 - Niveau: Intermédiaire
 - Type: TRANSITION
-- Grip: Non renseigné
+- Grip: Appui tête/bras
