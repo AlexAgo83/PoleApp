@@ -74,7 +74,12 @@ export async function GET(req: Request) {
         }
       : {}),
     ...(disciplineFilters.length > 0
-      ? { disciplineId: { in: disciplineFilters } }
+      ? {
+          OR: [
+            { disciplineId: { in: disciplineFilters } },
+            { discipline: { in: disciplineFilters, mode: "insensitive" as Prisma.QueryMode } },
+          ],
+        }
       : {}),
     ...(allowedSchoolIds && allowedSchoolIds.length > 0
       ? { schoolId: { in: allowedSchoolIds } }

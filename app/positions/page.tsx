@@ -517,7 +517,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     </div>
                   )}
                   <div className="mt-auto flex items-center justify-between gap-2">
-                    <p className="text-xs text-slate-400">{p.grips ?? "Grip ?"}</p>
+                    <p className="text-xs text-slate-400">{p.grips ?? ""}</p>
                     {p.createdBy ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-200">
                         Créé par {p.createdBy.name ?? p.createdBy.email}

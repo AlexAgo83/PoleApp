@@ -322,6 +322,13 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 </span>
               </Link>
               <Link
+                href="/positions"
+                className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                title="Retour à la liste"
+              >
+                ↑
+              </Link>
+              <Link
                 href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
                 aria-disabled={!nextPosition}
                 className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
