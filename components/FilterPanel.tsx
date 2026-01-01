@@ -28,9 +28,11 @@ export function FilterPanel({
   titleClassName,
 }: FilterPanelProps) {
   const fullKey = `${userKey}:${storageKey}`;
-  const [open, setOpen] = useState<boolean | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     try {
       const saved = localStorage.getItem(fullKey);
       if (saved === "true" || saved === "false") {
@@ -41,24 +43,22 @@ export function FilterPanel({
     } catch {
       // ignore
     }
-    setOpen(false);
   }, [fullKey]);
 
   useEffect(() => {
-    if (open === null) return;
+    if (!hydrated) return;
     try {
       localStorage.setItem(fullKey, open ? "true" : "false");
     } catch {
       // ignore
     }
-  }, [fullKey, open]);
-
-  const resolvedOpen = open ?? undefined;
+  }, [fullKey, open, hydrated]);
 
   return (
     <details
       className={className ? `group ${className}` : "group"}
-      open={resolvedOpen}
+      open={hydrated ? open : undefined}
+      suppressHydrationWarning
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >
       <summary

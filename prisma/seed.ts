@@ -13,6 +13,8 @@ import {
   LearningStatus,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import fs from "fs";
+import path from "path";
 
 import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 
@@ -97,10 +99,15 @@ const injuryTypes = [
   "Bras",
 ];
 
-const positionsData = [
-  { name: "Fireman Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
-  { name: "Chair Spin", type: PositionType.SPIN, level: PositionLevel.BEGINNER, grips: "TRUE" },
-  { name: "Back Hook Spin", type: PositionType.SPIN, level: PositionLevel.INTERMEDIATE, grips: "TRUE" },
+const positionsBase: Array<{
+  name: string;
+  type: PositionType;
+  level: PositionLevel;
+  grips?: string;
+  discipline?: string;
+  descriptionText?: string;
+}> = [
+  // Autres disciplines (inchangées, affectées en rotation hors Pole)
   { name: "Jasmine", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: "CUP" },
   { name: "Gemini", type: PositionType.TRICK, level: PositionLevel.INTERMEDIATE, grips: "CUP" },
   { name: "Scorpio", type: PositionType.TRICK, level: PositionLevel.ADVANCED, grips: "CUP" },
@@ -131,6 +138,99 @@ const positionsData = [
   { name: "Side Climb", type: PositionType.STRENGTH, level: PositionLevel.INTERMEDIATE, grips: "TRUE" },
   { name: "Phoenix Spin", type: PositionType.SPIN, level: PositionLevel.ADVANCED, grips: "TRUE" },
 ];
+
+const positionsData: Array<{
+  name: string;
+  type: PositionType;
+  level: PositionLevel;
+  grips?: string;
+  discipline?: string;
+  descriptionText?: string;
+}> = [];
+
+const normalizeHeading = (name: string) =>
+  name
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[^a-z0-9]+/gi, " ")
+    .trim()
+    .toLowerCase();
+
+function parseDocPositions() {
+  try {
+    const docPath = path.resolve(process.cwd(), "logics/knowledge/db_positions.md");
+    const content = fs.readFileSync(docPath, "utf8");
+    const blockRegex = /^##\s+(.+)\n([\s\S]*?)(?=^##\s+|\Z)/gm;
+    const extras: typeof positionsData = [];
+    const seen = new Set(positionsData.map((p) => normalizeHeading(p.name)));
+
+    const mapType = (raw: string): PositionType | null => {
+      const t = raw.toLowerCase();
+      if (t.includes("spin")) return PositionType.SPIN;
+      if (t.includes("transition")) return PositionType.TRANSITION;
+      if (t.includes("warm") || t.includes("echauff") || t.includes("cool")) return PositionType.WARMUP;
+      if (t.includes("renfo") || t.includes("strength")) return PositionType.STRENGTH;
+      if (t.includes("trick")) return PositionType.TRICK;
+      return null;
+    };
+    const mapLevel = (raw: string): PositionLevel | null => {
+      const l = raw.toLowerCase();
+      if (l.includes("avanc")) return PositionLevel.ADVANCED;
+      if (l.includes("inter")) return PositionLevel.INTERMEDIATE;
+      if (l.includes("debut") || l.includes("init") || l.includes("innitiation")) return PositionLevel.BEGINNER;
+      return null;
+    };
+
+    let match;
+    while ((match = blockRegex.exec(content)) !== null) {
+      const heading = match[1].trim();
+      const body = match[2];
+      const norm = normalizeHeading(heading);
+      if (!norm || seen.has(norm)) continue;
+
+      const typeLine = body.match(/-+\s*Type:\s*([^\n]+)/i);
+      const levelLine = body.match(/-+\s*Niveau:\s*([^\n]+)/i);
+      const gripLine = body.match(/-+\s*Grip:\s*([^\n]+)/i);
+      const descLines = [...body.matchAll(/^>\s?(.*)$/gm)].map((m) => m[1]?.trim()).filter(Boolean);
+
+      const type = typeLine ? mapType(typeLine[1]) : null;
+      const level = levelLine ? mapLevel(levelLine[1]) : null;
+      if (!type || !level) continue;
+
+      const grip = gripLine?.[1]?.includes("Non renseign") ? undefined : gripLine?.[1]?.trim() || undefined;
+      const descriptionText = descLines.length > 0 ? descLines.join(" ") : undefined;
+
+      extras.push({
+        name: heading,
+        type,
+        level,
+        discipline: "Pole",
+        grips: grip,
+        descriptionText,
+      });
+      seen.add(norm);
+    }
+    return extras;
+  } catch {
+    return [];
+  }
+}
+
+// Positions Pole issues du fichier normalisé
+const positionNameSet = new Set<string>();
+const addPositions = (items: typeof positionsData) => {
+  for (const item of items) {
+    const norm = normalizeHeading(item.name);
+    if (positionNameSet.has(norm)) continue;
+    positionNameSet.add(norm);
+    positionsData.push(item);
+  }
+};
+
+// Positions Pole issues du fichier normalisé
+addPositions(parseDocPositions());
+// Autres disciplines conservées
+addPositions(positionsBase);
 
 const disciplinesCatalog = [
   { name: "Pole", color: "#0ea5e9" },
@@ -446,13 +546,21 @@ async function seedPositions({
 }) {
   const muscleMap = new Map(muscles.map((m) => [m.name, m.id]));
   const positionsByTeacher: Record<string, string[]> = {};
+  const cycleDisciplines =
+    disciplines.filter((d) => d.name.toLowerCase() !== "pole") ?? disciplines;
 
   const createdPositions = [];
   for (let i = 0; i < positionsData.length; i += 1) {
     const pos = positionsData[i];
     const image = POSITION_IMAGES[i % POSITION_IMAGES.length];
-    const disciplinePick = disciplines[i % disciplines.length] ?? disciplines[0];
-    const discipline = disciplinePick?.name ?? PRIMARY_DISCIPLINE;
+    const disciplinePick =
+      (pos.discipline
+        ? disciplines.find((d) => d.name.toLowerCase() === pos.discipline!.toLowerCase())
+        : null) ??
+      (cycleDisciplines.length > 0
+        ? cycleDisciplines[i % cycleDisciplines.length]
+        : disciplines[i % disciplines.length] ?? disciplines[0]);
+    const discipline = disciplinePick?.name ?? pos.discipline ?? PRIMARY_DISCIPLINE;
     const disciplineId = disciplinePick?.id ?? null;
     const muscleTargets = (muscleTargetsByType[pos.type] ?? [])
       .map((name) => muscleMap.get(name))
@@ -472,7 +580,7 @@ async function seedPositions({
         discipline,
         levelRequired: pos.level,
         grips: pos.grips,
-        description: buildPositionDescription(pos),
+        description: pos.descriptionText ?? buildPositionDescription(pos),
         createdByUserId: creator?.id,
         media: {
           create: [
