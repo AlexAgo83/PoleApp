@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { isCloudinaryEnabled, signUpload } from "@/lib/cloudinary";
+import { isSeedPublicId } from "@/lib/media";
 
 const schema = z.object({
   folder: z.string().trim().min(1),
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
     parsed.data.publicId && parsed.data.publicId.startsWith(`${folderPrefix}/`)
       ? parsed.data.publicId.slice(folderPrefix.length + 1)
       : parsed.data.publicId;
+  const effectivePublicId = isSeedPublicId(normalizedPublicId) ? undefined : normalizedPublicId;
 
   try {
     const resourceType = parsed.data.resourceType ?? "image";
@@ -44,7 +46,7 @@ export async function POST(request: Request) {
 
     const data = signUpload({
       folder: parsed.data.folder,
-      publicId: normalizedPublicId,
+      publicId: effectivePublicId,
       resourceType,
       deliveryType,
       accessMode,

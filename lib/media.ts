@@ -62,8 +62,11 @@ export const SEED_MEDIA_IDS = new Set([...seedPositionVideos, ...seedPositionPho
 
 export function isSeedPublicId(publicId?: string | null): boolean {
   if (!publicId) return false;
-  const base = publicId.split("/").pop()?.trim();
+  const parts = publicId.split("/").filter(Boolean);
+  const base = parts.pop()?.trim();
   if (!base) return false;
+  // si le publicId a un préfixe de dossier, on considère que ce n'est pas un asset seed (évite de bloquer les uploads utilisateur)
+  if (parts.length > 0) return false;
   return SEED_MEDIA_IDS.has(base);
 }
 
