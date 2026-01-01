@@ -51,6 +51,8 @@ export async function FoxPageHeader({
   const session = await getServerSession(authOptions).catch(() => null);
   let userRecord: { avatarUrl: string | null; avatarPublicId: string | null; name: string | null; email: string | null } | null = null;
   let school: { name: string | null; photoUrl: string | null } | null = null;
+  let userLookupAttempted = false;
+  let userLookupFailed = false;
   if (session?.user?.schoolId) {
     try {
       school = await prisma.school.findUnique({
@@ -61,16 +63,19 @@ export async function FoxPageHeader({
       // ignore db errors for header rendering
     }
   }
-  if (!profileImageUrl && session?.user?.id) {
+  if (session?.user?.id) {
+    userLookupAttempted = true;
     try {
       userRecord = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { avatarUrl: true, avatarPublicId: true, name: true, email: true },
       });
     } catch {
+      userLookupFailed = true;
       // ignore db errors for header rendering
     }
   }
+  const shouldForceLogoutModal = Boolean(session?.user?.id && userLookupAttempted && !userLookupFailed && !userRecord);
   const style = {
     backgroundImage: backgroundImage
       ? `${baseOverlay}, url(${backgroundImage})`
@@ -205,6 +210,7 @@ export async function FoxPageHeader({
               roleLabel={roleLabel}
               profileHref={profileHref}
               navLinks={navLinks}
+              forceLogoutModal={shouldForceLogoutModal}
             />
           </div>
         </div>

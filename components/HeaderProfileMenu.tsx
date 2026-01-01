@@ -12,9 +12,17 @@ type Props = {
   roleLabel: string;
   profileHref: string;
   navLinks?: { label: string; href: string }[];
+  forceLogoutModal?: boolean;
 };
 
-export function HeaderProfileMenu({ avatarSrc, name, roleLabel, profileHref, navLinks = [] }: Props) {
+export function HeaderProfileMenu({
+  avatarSrc,
+  name,
+  roleLabel,
+  profileHref,
+  navLinks = [],
+  forceLogoutModal = false,
+}: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -91,6 +99,7 @@ export function HeaderProfileMenu({ avatarSrc, name, roleLabel, profileHref, nav
           className="mt-1 flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
           ariaLabel="Se déconnecter"
           onOpenChange={() => setOpen(false)}
+          forceOpen={forceLogoutModal}
         >
           Déconnexion
         </SignOutModalButton>

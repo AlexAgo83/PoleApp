@@ -1,5 +1,3 @@
-# Positions
-
 ## Echauffement innitiation
 **Description**
 > 🔥 Échauffement Initiation Pole Dance
@@ -112,13 +110,18 @@
 - Niveau: Innitiation
 - Type: 🔥 Echauffement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 
 ## Back arch
 **Description**
 > Cette transition est surtout un moyen très visuel de se redresser à la fin de certains spins, comme par exemple le extended leg whip.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Back hook, back swing
 **Description**
@@ -130,13 +133,18 @@
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Basic cradle / tuck spin (ok)
 **Description**
 > Il s’agit d’un cradle avec les deux mains en haut, comme pour une inversion
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Boomerang (ok)
 **Description**
@@ -144,6 +152,7 @@
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Boomerang to back hook
 **Description**
@@ -158,6 +167,7 @@
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Boomerang to carousel
 **Description**
@@ -170,6 +180,7 @@
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Boomerang to fireman cross leg
 **Description**
@@ -181,20 +192,29 @@
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Chair glide
 **Description**
 > C'est tout simplement une chaise (chair), mais les jambes, au lieu de rester fléchies pendant tout le spin vont se tendre et se replier alternativement, en faisant ce que l'on appelle en anglais des kicks.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Chair straight legs
 **Description**
 > Cette fois, les deux jambes sont tendues et horizontales dès le début, et le restent jusqu'au moment d'atterrir, généralement en push-up. Le travail musculaire est évidemment encore plus intense.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Cool Down
 **Description**
@@ -300,6 +320,7 @@
 - Niveau: Debutant 2, Débutant 1, Innitiation
 - Type: 🧊 Cool Down
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Étirements/retour au calme : chaîne postérieure (ischios, mollets, dos), ouverture épaules/pectoraux et hanches ; décompression colonne et poignets.
 
 ## Marche désaxée
 **Description**
@@ -310,6 +331,7 @@
 - Niveau: Innitiation
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Fireman cross Leg
 **Description**
@@ -319,13 +341,18 @@
 - Niveau: Innitiation
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## 🔒 Close front hook
 **Description**
 > Cette fois-ci, nous ne ferons plus face à la pole, mais nous serons placés de côté pendant tout le spin
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Innitiation
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## ⏩ Open Front hook
 **Description**
@@ -333,6 +360,7 @@
 - Niveau: Innitiation
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Corkscrew attitude
 **Description**
@@ -340,21 +368,29 @@
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Cradle & variantes (straight legs...)
 **Description**
 > Le cradle est la base du Jamilla et de ses variantes, il est donc essentiel de bien en comprendre les appuis.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
-- Grip: main haute (exterieur) : baseball grip
-main basse (interieur) : full bracket
+- Grip: main haute (exterieur) : baseball grip / main basse (interieur) : full bracket
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Cradle extension
 **Description**
 > C’est un cradle classique, sauf que la jambe la plus haute est tendue, dès la préparation du spin et pendant toute sa durée.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Développé en pole
 **Description**
@@ -364,6 +400,7 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Diagonale
 **Description**
@@ -376,13 +413,18 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## ⏪ Back hook
 **Description**
 > C’est le même mais en marche arrière. En fait on tombe dans le même sens, mais on fait un demi-tour sur soi-même avant de décoller du sol, ce qui fait que l’on se retrouve en marche arrière au moment du spin.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Innitiation
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Carousel
 **Description**
@@ -397,13 +439,18 @@ main basse (interieur) : full bracket
 - Niveau: Innitiation
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Pirouette
 **Description**
 > C’est la transition à tout faire, toujours utile. Il s’agit d’un pivot sur soi-même, et sur un pied.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Innitiation
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Step around
 **Description**
@@ -411,116 +458,163 @@ main basse (interieur) : full bracket
 - Niveau: Innitiation
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Reverse grab basic
 **Description**
 > Premier truck où on lache la barre en côte de route pour ensuite la rattraper , c’est la base de beaucoup de truck inter et avance
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Caterpillar
 **Description**
-> Non renseigné
+> Progression de climb inversé : on ramène le buste vers la barre, genoux poitrine puis extension pour remonter centimètre par centimètre.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Choré 1 inter
 **Description**
-> Non renseigné
+> Combo intermédiaire chorégraphié mêlant spins basiques et transitions fluides sur 8 comptes, avec focus musicalité.
+> Construction : phrases de 4 à 8 comptes, travail d'intention du regard et des bras pour porter la musicalité.
+> Cohérence : alterner niveaux (sol/barre) et rythmes lents/rapides, garder les appuis précis pour ne pas perdre la rotation.
 - Niveau: Inter
 - Type: 💃 Choré
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 
 ## Choré 2 inter
 **Description**
-> Non renseigné
+> Enchaînement intermédiaire orienté fluidité au sol/barre, travail des accents musicaux et des bras.
+> Construction : phrases de 4 à 8 comptes, travail d'intention du regard et des bras pour porter la musicalité.
+> Cohérence : alterner niveaux (sol/barre) et rythmes lents/rapides, garder les appuis précis pour ne pas perdre la rotation.
 - Niveau: Inter
 - Type: 💃 Choré
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 
 ## Choré 3 inter
 **Description**
-> Non renseigné
+> Combo intermédiaire plus dynamique, ajout de pivots rapides et de variations de niveau pour jouer avec le rythme.
+> Construction : phrases de 4 à 8 comptes, travail d'intention du regard et des bras pour porter la musicalité.
+> Cohérence : alterner niveaux (sol/barre) et rythmes lents/rapides, garder les appuis précis pour ne pas perdre la rotation.
 - Niveau: Inter
 - Type: 💃 Choré
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 
 ## Choré 4 inter
 **Description**
-> Non renseigné
+> Enchaînement intermédiaire mettant l'accent sur les contrastes lents/rapides et les sorties contrôlées de la barre.
+> Construction : phrases de 4 à 8 comptes, travail d'intention du regard et des bras pour porter la musicalité.
+> Cohérence : alterner niveaux (sol/barre) et rythmes lents/rapides, garder les appuis précis pour ne pas perdre la rotation.
 - Niveau: Inter
 - Type: 💃 Choré
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 
 ## Choré 5 inter
 **Description**
-> Non renseigné
+> Version chorégraphique davantage dansée : transitions en continu, regard et bras guidant la musicalité.
+> Construction : phrases de 4 à 8 comptes, travail d'intention du regard et des bras pour porter la musicalité.
+> Cohérence : alterner niveaux (sol/barre) et rythmes lents/rapides, garder les appuis précis pour ne pas perdre la rotation.
 - Niveau: Inter
 - Type: danse
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Travail cardio/postural global, engagement centre, adducteurs/fessiers et épaules ; appuis chevilles/genoux/hanches, mobilité colonne.
 
 ## Travail des ecarts
 **Description**
-> Non renseigné
+> Routine d'assouplissement des écarts latéraux et frontaux, combinant étirements actifs/passifs et renforcement des chaînes opposées.
+> Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
+> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
 - Niveau: Inter
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Kneeling arch
 **Description**
 > Parfait pour terminer un carrousel (ça peut aussi fonctionner par exemple avec un Front Hook ou un Back Hook, en adaptant un peu le placement)
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Innitiation
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Crucifix
 **Description**
 > S'agit de se placer comme debout sur la barre
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Innitiation
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Seat
 **Description**
 > On est cette fois assis sur la barre, jambes croisées
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Innitiation
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Climb
 **Description**
 > 🧑‍🎓 :
 > 🖥️ :
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Innitiation
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## B Hook
 **Description**
-> /
+> Crochet arrière de base : on pivote et accroche le genou intérieur pour enchaîner vers un back spin ou une pose en suspension.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Débutant 1
 - Type: 🌉 Transition
-- Grip: 🦵 inter : accroche la pole à l’interieur du genou, cuisse horizontale, pied pointé vers le sol 
-🦵 exter : jambe d’appui de terre droite 
-
-✋ inter : baseball grip
-✋ exter : port de bras
+- Grip: 🦵 inter : accroche la pole à l’interieur du genou, cuisse horizontale, pied pointé vers le sol / 🦵 exter : jambe d’appui de terre droite / ✋ inter : baseball grip / ✋ exter : port de bras
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Ballerina
 **Description**
-> /
+> Figure esthétique dos tourné à la barre, poitrine ouverte et jambe extérieure tendue derrière en attitude, main haute pour allonger la ligne.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Basic Climb
 **Description**
 > Voici la manière la plus simple, tout en restant esthétique, de grimper à la barre.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Débutant 1
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Basic Invert
 **Description**
@@ -528,6 +622,7 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Chair
 **Description**
@@ -535,8 +630,8 @@ main basse (interieur) : full bracket
 > On est donc en l'air comme dans le carousel, mais de côte, et en position assise.
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
-- Grip: 🤚 inter : baseball (à verifier)
-🤚 exter : half-bracket grip.
+- Grip: 🤚 inter : baseball (à verifier) / 🤚 exter : half-bracket grip.
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Corkscrew (enroulé dorsal)
 **Description**
@@ -544,27 +639,40 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Cradle (enroulé horizontal)
 **Description**
 > Ce spin est totalement différent des précédents, puisque le corps va cette fois tourner autour de la barre en position horizontale et ramassé en boule. De plus, il tourne dans le sens inverse au sens habituel.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Cross knee release
 **Description**
 > Ce trick part du seat. Là aussi, c'est un incontournable.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Débutant 1
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Extended Leg Whip (hook)
 **Description**
-> /
+> Variation du leg whip où la jambe extérieure reste tendue en grand battement avant de s'accrocher en hook.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Floor combination / Floor combo
 **Description**
@@ -572,6 +680,7 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Heel Attitude
 **Description**
@@ -581,20 +690,29 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Inverted V
 **Description**
 > Indispensable : c'est la base de l'acrobatie.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Débutant 1
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Knee Attitude
 **Description**
 > 🚨 dans le livre, le bas extérieur est mis en baseball grippe, alors que dans mes notes le bras extérieur se place en full bracket grip
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Pirouette Low
 **Description**
@@ -602,20 +720,29 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Marche Lente
 **Description**
-> /
+> Marche contrôlée autour de la barre, rythme ralenti pour travailler posture, appuis et regard.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Pirouette Complète
 **Description**
 > La pirouette complète est la suite logique d'une pirouette basique, puisque l'on fait cette fois un tour complet, pour revenir au point de départ.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Plié-tête
 **Description**
@@ -623,20 +750,29 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Reverse (Heel Attitude)
 **Description**
 > Le reverse est également une attitude (les deux jambes pliées en ouverture, position appelée aussi sunwheel, notamment aux USA, ou stag legs en Australie) mais en marche arrière, sur le même principe que le back hook.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Standing Spin
 **Description**
-> /
+> Spin debout avec impulsion légère, buste éloigné de la barre et jambes serrées ou en léger écart pour contrôler la vitesse.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Débutant 1
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Waves
 **Description**
@@ -645,13 +781,18 @@ main basse (interieur) : full bracket
 - Niveau: Débutant 1
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Diagonale
 **Description**
 > C’est un dérivé du seat très joli en spinning mode.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Echauffement deb
 **Description**
@@ -778,48 +919,70 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2, Débutant 1
 - Type: 🔥 Echauffement
 - Grip: /
+- Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 
 ## Renfo stretch à la barre
 **Description**
-> Non renseigné
+> Circuit mixant renforcement et étirements en utilisant la barre comme appui (squats, ouvertures de hanches, tirages légers).
+> Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
+> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
 - Niveau: Débutant 1
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Pré-Stretch
 **Description**
-> Non renseigné
+> Mini routine de préparation avant un gros stretch : mobilisation articulaire puis étirements doux progressifs.
+> Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
+> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
 - Niveau: Débutant 1
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Echauffement articulaire
 **Description**
-> Non renseigné
+> Échauffement express des articulations majeures (chevilles, genoux, hanches, colonne, épaules, poignets) avant de monter sur la barre.
+> Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
+> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
 - Niveau: Débutant 1
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 
 ## Fireman push up
 **Description**
-> C'est aussi la plus simple et élégante façon de monter en spinning.
+> Montée en spinning à partir du sol : mains en prise de base, impulsion légère pour crocheter les jambes autour de la barre.
+> Entrée : lancer la jambe extérieure pour créer le déséquilibre, serrer immédiatement les chevilles et tirer/repousser avec les bras.
+> Contrôle : épaules basses, bassin loin de la barre pour garder l'élan sans s'effondrer, pieds pointés.
+> Sortie : ralentir la rotation en rapprochant le buste de la barre puis déposer un pied après l'autre avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Fireman push up
 **Description**
 > Pour commencer à monter. C’est aussi la plus simple et élégant, façon de monter un spinning.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Floor bow and arrow
 **Description**
 > Cette fois, on va passer en équilibre sur les mains, en sortant là aussi d’un Cross Knee Release, notamment.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Debutant 2
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Forwards
 **Description**
@@ -827,27 +990,34 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Cartwheel
 **Description**
-> Non renseigné
+> Roue contrôlée avec appui main sur la barre, bascule latérale puis récupération debout sans perdre l'axe.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Débutant 1
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Développé on pole
 **Description**
-> Non renseigné
+> Développé jambe le long de la barre : on monte la jambe en extension contrôlée pour créer une ligne de danseuse.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Débutant 1
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Mini Spin
 **Description**
-> Non renseigné
+> Petit spin d'initiation proche du sol pour sentir la rotation et travailler le placement des mains.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Débutant 1
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Forwards to reverse
 **Description**
@@ -859,13 +1029,18 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Front hook d’une main
 **Description**
 > Le front hook version spinning mode est parfait pour commencer, et comprendre le placement spécifique.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Front Hook to Back Hook
 **Description**
@@ -877,69 +1052,106 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Head stand
 **Description**
 > Le Head stand est d’abord une manière différente de sortir d’un cross knee release , par exemple, et une alternative plus facile et sécurisant au head stand (équilibres sur les mains).
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Debutant 2
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Inverted crucifix
 **Description**
 > Il s’agit tout simplement, après le Basic Invert, de lâcher la barre des deux mains, puis d’amener tout le corps à faire face à la barre en ouvrant les bras.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Debutant 2
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Jump & slide 2
 **Description**
 > Le jump & slide consiste, comme son nom l'indique, à sauter vers le haut de la barre tout en s'y accrochant, puis à se laisser glisser le long de celle-ci.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Jump & slide variante 1
 **Description**
 > Le jump & slide consiste, comme son nom l'indique, à sauter vers le haut de la barre tout en s'y accrochant, puis à se laisser glisser le long de celle-ci.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Layout
 **Description**
 > Partant d’un simple seat on va aller s’allonger en l’air horizontalement sur la barre.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Debutant 2
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Marche dynamique
 **Description**
-> /
+> Marche énergique autour de la barre, transfert de poids accentué et bras actifs pour préparer les spins.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## No leg attitude
 **Description**
-> Non renseigné
+> Attitude sans accroche de jambe : jambe libre pliée et ouverte, maintien du corps grâce au grip bras et au gainage.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Debutant 2, Débutant 1
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Pirouette enchainées
 **Description**
-> /
+> Suite de pirouettes sur un ou deux points d'appui, avec spotting pour garder l'axe et enchaîner sans s'arrêter.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Pole circle
 **Description**
 > Ce mouvement évoque un mélange entre un demi step around et une demie pirouette, puisque le pas ne fait pas tout le tour de la barre mais seulement la moitié, et que l'on ne passe pas sous son bras.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Renforcement avec baton
 **Description**
@@ -1064,6 +1276,7 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Salutations au soleil
 **Description**
@@ -1194,41 +1407,62 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Side spin
 **Description**
 > C'est une figure vraiment particulière, qui ne ressemble à aucune autre de ce niveau.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Sitting spin
 **Description**
 > Ce spin est un classique enroulé autour de la barre, mais les deux jambes sont tendues à l'horizontale, comme si on était assis en lair jambes tendues devant soi.
+> Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
+> Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
+> Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
 - Niveau: Debutant 2
 - Type: 🌪️ Spin
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 
 ## Slide
 **Description**
 > Cette version à un côté plus langoureux, et plus adapté à un rythme musical lent (cf. développé en pole)
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Step around aérien
 **Description**
-> /
+> Step around avec petit saut : les deux pieds quittent le sol brièvement pour donner de l'amplitude au passage autour de la barre.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Stepping turn
 **Description**
 > C'est une transition très danse classique, très gracieuse. Pour cette même raison, elle demande beaucoup de soin dans ses plus petits détails.
+> Usage : sert de liaison pour relancer le flow ou changer d'axe sans à-coups.
+> Placement : épaules alignées, bassin engagé, appui clair sur le pied extérieur; mains guident la direction.
+> Sortie : regarder la figure suivante, contrôler la vitesse pour garder la musicalité.
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Waves
 **Description**
@@ -1237,255 +1471,336 @@ main basse (interieur) : full bracket
 - Niveau: Debutant 2
 - Type: 🌉 Transition
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage central et contrôle scapulaire, adducteurs/fessiers pour le contact jambe/barre ; articulations hanches, colonne, épaules, chevilles.
 
 ## Cool down au sol
 **Description**
-> Non renseigné
+> Retour au calme au sol : étirements doux dos/épaules/ischios, respiration et relâchement des poignets.
+> But : abaisser le rythme cardiaque, relâcher la chaîne postérieure et les épaules après les grips.
+> Cues : respirations longues, étirements doux sans à-coups, garder le bassin et la nuque relâchés.
 - Niveau: Inter
 - Type: 🧊 Cool Down
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Étirements/retour au calme : chaîne postérieure (ischios, mollets, dos), ouverture épaules/pectoraux et hanches ; décompression colonne et poignets.
 
 ## Travail des écarts
 **Description**
-> Non renseigné
+> Travail progressif des écarts latéraux et frontaux mêlant étirements actifs, passifs et renforcement des chaînes opposées.
+> Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
+> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
 - Niveau: Inter
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Renfo & Stretch sur la pole
 **Description**
-> Non renseigné
+> Bloc renfo + mobilité directement sur la pole : tirages, montées contrôlées, ouvertures de hanches et étirements assistés.
+> Structure : alternance blocs renfo et mobilité; veiller au tempo régulier et au contrôle postural.
+> Cues : nombril rentré, épaules basses, bassin neutre; adapter l'amplitude selon la souplesse pour éviter les compensations.
 - Niveau: Inter
 - Type: 💪 Renforcement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 
 ## Echauffement articulaire pré-stretch
 **Description**
-> Non renseigné
+> Préparation articulaire ciblée (poignets, épaules, hanches, colonne) avant un travail de souplesse plus intense.
+> Objectif : monter la température corporelle et lubrifier les articulations avant les grips.
+> Cues : respirer régulièrement, rester dans des amplitudes confortables, chercher la fluidité plutôt que la vitesse.
 - Niveau: Inter
 - Type: 🔥 Echauffement
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 
 ## Superman
 **Description**
-> Non renseigné
+> Figure ventre vers le sol, corps horizontal, jambes écartées serrant la barre et appui main/hanche pour verrouiller.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Inter
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
 
 ## Switch (2 sens)
 **Description**
-> Non renseigné
+> Transition qui change le sens de rotation : pivot du bassin et des appuis pour repartir dans l'autre direction.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Pike (depuis inside et outside)
 **Description**
-> Non renseigné
+> Entrée en pike jambes tendues vers le plafond en venant d'un grip inside ou outside, bassin en rétroversion pour protéger le dos.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Viva 1 & Viva 2
 **Description**
-> Non renseigné
+> Deux variantes du Viva : ligne cambrée autour de la barre avec extension de jambe et ouverture de poitrine, à partir d'un hook ou d'un invert.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Bird
 **Description**
-> Non renseigné
+> Pose face à la barre, genou intérieur crocheté, jambe extérieure tendue sur le côté, poitrine ouverte en diagonale.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Star
 **Description**
-> Non renseigné
+> Position diagonale en étoile : buste incliné, jambe haute tendue et jambe basse en appui/extension pour créer une grande ligne.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Starfish
 **Description**
-> Non renseigné
+> Inversion en étoile ouverte avec quatre appuis écartés, bassin loin de la barre pour montrer l'étirement.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Wrist seat
 **Description**
-> Non renseigné
+> Assise où le poids repose sur les poignets en appui derrière la barre, buste droit et jambes serrées ou légèrement ouvertes.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Spin Off Dismount
 **Description**
-> Non renseigné
+> Démontée en rotation : on relâche la barre pour quitter la figure en tournant et se poser en douceur.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Carousel to Reverse Grab
 **Description**
-> Non renseigné
+> Enchaînement du carousel vers une prise reverse grab pour relancer la rotation avec l'épaule ouverte.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Climb Straignt Legs
 **Description**
-> Non renseigné
+> Montée avec jambes tendues et serrées le long de la barre, demandant plus de gainage et d'adducteurs qu'une montée classique.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Butterfly
 **Description**
-> Non renseigné
+> Depuis un invert/chopper, buste face au sol, jambe d'accroche fléchie et jambe libre tendue, bras en V pour former un papillon.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Basic reverse Grab & Reverse grab one hand
 **Description**
-> Non renseigné
+> Spin en reverse grab : première version à deux mains pour sentir l'ouverture d'épaule, puis variante à une main pour plus d'engagement.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Rising Godess
 **Description**
-> Non renseigné
+> Transition fluide du sol vers la verticale avec cambré et ouverture de poitrine, bras en couronne pour allonger la ligne.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Helicopter
 **Description**
-> Non renseigné
+> Rotation en invert straddle, jambes qui moulinent comme des pales pour tourner en douceur autour de la barre.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Boomerang to Back hook
 **Description**
-> Non renseigné
+> Combo boomerang puis pivot du bassin pour accrocher en back hook et repartir en rotation arrière.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Basic Teddy & Teddy One Handed
 **Description**
-> Non renseigné
+> Teddy : hold latéral plaqué sous l'aisselle, jambes en écart; version one handed en relâchant la main basse pour plus de difficulté.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Cross Ankle Release
 **Description**
-> Non renseigné
+> Suspension inversée par chevilles croisées avec mains libres, buste éloigné pour stabiliser.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## V on pole
 **Description**
-> Non renseigné
+> Position en V assis sur la barre : bassin ancré, jambes tendues en V vers le haut, regard devant.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Concord
 **Description**
-> Non renseigné
+> Figure statique avec ouverture de hanche et torse éloigné de la barre, créant une diagonale forte; demande engagement d'épaule et squeeze de jambe.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Caterpillar
 **Description**
-> Non renseigné
+> Progression de climb inversé : on ramène le buste vers la barre, genoux poitrine puis extension pour remonter centimètre par centimètre.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Snake dismount
 **Description**
-> Non renseigné
+> Sortie en glissant en spirale autour de la barre, déroulant la colonne jusqu'au sol.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Fireman push-up
 **Description**
-> Non renseigné
+> Renforcement : push-ups avec mains sur ou près de la barre, activation pectoraux/épaules/triceps.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Spin Up Attitude
 **Description**
-> Non renseigné
+> Spin qui remonte jusqu'en position debout, jambe extérieure en attitude pour finir sur une ligne dansée.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Head CirclesWalk
 **Description**
-> Non renseigné
+> Marche lente autour de la barre en effectuant des cercles de tête pour mobiliser la nuque et travailler la fluidité.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Cradle Splits
 **Description**
-> Non renseigné
+> Cradle où les jambes s'ouvrent en grand écart pendant la rotation avant de se refermer pour la sortie.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Scorpio inside leg (Inside Leg Hang) (sorties V Jamilla, Inverted
 **Description**
-> Non renseigné
+> Inside leg hang : jambe intérieure crochetée, buste dos à la barre, jambe libre tendue; base pour sorties V, Jamilla ou remontée en invert.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Jamila
 **Description**
-> Non renseigné
+> Depuis un cradle, on ouvre les jambes en V et on accroche l'extérieur du genou à la barre pour passer en diagonale contrôlée.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Fireman Horizontal Leg
 **Description**
-> Non renseigné
+> Variation du fireman où la jambe extérieure reste tendue à l'horizontale, créant une ligne plus longue.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Gemini : outside Leg Hang
 **Description**
-> Non renseigné
+> Outside leg hang : jambe extérieure crochetée, poitrine ouverte vers le sol, jambe libre tendue ou en split pour allonger la pose.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Handstand variation Dismount
 **Description**
-> Non renseigné
+> Sortie depuis un handstand assisté sur la barre : on contrôle la descente en pivotant ou en pliant les bras pour revenir au sol.
+> Cues : stabiliser la ceinture scapulaire, engager le centre et maintenir des appuis précis avant d'ajouter de l'amplitude.
 - Niveau: Inter
 - Type: Non renseigné
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Engagement global : ceinture scapulaire, gainage, adducteurs/fessiers ; articulations épaules, hanches, colonne, poignets/chevilles.
 
 ## Head stand to cross knee
 **Description**
-> Non renseigné
+> Depuis un headstand, on accroche un genou croisé sur la barre puis on lève le bassin pour remonter ou enchaîner.
+> Pré-requis : gainage fort et serrage d'adducteurs avant de décoller.
+> Placement : installer le grip principal puis éloigner le bassin de la barre, épaules basses et scapulas serrées.
+> Stabilité : respirer, pointer les pieds, maintenir la ligne avant de choisir la sortie (retour au sol ou transition).
 - Niveau: Débutant 1
 - Type: 🤸🏼 Trick
 - Grip: Non renseigné
+- Muscles / articulations sollicitées: Gainage global (abdos/lombaires), dorsaux/deltoïdes/biceps, adducteurs + ischios/quadriceps ; articulations hanches, épaules, colonne, poignets.
