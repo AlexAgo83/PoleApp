@@ -296,8 +296,38 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         foxHref="/"
       />
       <section className="panel p-4 md:p-6 lg:p-8">
-        <div className="mb-4 flex flex-wrap items-center gap-3 md:mb-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 md:mb-6">
           <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">{position.name}</h1>
+          {hasNav && (
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={
+                  prevPosition
+                    ? `/positions/${prevPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`
+                    : "#"
+                }
+                aria-disabled={!prevPosition}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                  prevPosition
+                    ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                    : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+                }`}
+              >
+                {prevPosition ? `← ${prevPosition.name}` : "←"}
+              </Link>
+              <Link
+                href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
+                aria-disabled={!nextPosition}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                  nextPosition
+                    ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                    : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+                }`}
+              >
+                {nextPosition ? `${nextPosition.name} →` : "→"}
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-[1.35fr,1fr]">
@@ -349,46 +379,46 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           </div>
 
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-2">
               {position.discipline ? (
-                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Discipline</p>
-                  <p className="text-lg font-semibold text-white">{position.discipline}</p>
+                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
+                  <p className="text-sm font-semibold text-white">{position.discipline}</p>
                 </div>
               ) : (
-                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Discipline</p>
-                  <p className="text-lg font-semibold text-white">—</p>
+                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
+                  <p className="text-sm font-semibold text-white">—</p>
                 </div>
               )}
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-white/5 to-emerald-500/10 p-4 shadow-inner shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Niveau requis</p>
-                <p className="text-lg font-semibold text-white">{levelLabels[position.levelRequired]}</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-white/5 to-emerald-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Niveau requis</p>
+                <p className="text-sm font-semibold text-white">{levelLabels[position.levelRequired]}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-4 shadow-inner shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Type</p>
-                <p className="text-lg font-semibold text-white">{typeLabels[position.type]}</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Type</p>
+                <p className="text-sm font-semibold text-white">{typeLabels[position.type]}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-white/5 to-indigo-500/10 p-4 shadow-inner shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Grips</p>
-                <p className="text-lg font-semibold text-white">{position.grips ?? "Non précisé"}</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-white/5 to-indigo-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Grips</p>
+                <p className="text-sm font-semibold text-white">{position.grips ?? "Non précisé"}</p>
               </div>
             {position.createdBy ? (
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-4 shadow-inner shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-                <p className="text-lg font-semibold text-white">
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
+                <p className="text-sm font-semibold text-white">
                   {position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}
                   </p>
                 </div>
               ) : (
-                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-4 shadow-inner shadow-black/20">
-                  <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-                  <p className="text-lg font-semibold text-white">—</p>
+                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
+                  <p className="text-sm font-semibold text-white">—</p>
                 </div>
               )}
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-4 shadow-inner shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.12em] text-slate-300">Vu</p>
-                <p className="text-lg font-semibold text-white">{position._count?.progress ?? 0}</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Vu</p>
+                <p className="text-sm font-semibold text-white">{position._count?.progress ?? 0}</p>
               </div>
             </div>
 
@@ -444,6 +474,99 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               </div>
             )}
 
+            {combos.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Combos associés</p>
+                    <p className="text-sm text-slate-300">Présélections contenant cette position.</p>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+                    {combos.length} trouvé{combos.length > 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {combos.map((combo) => {
+                    const cost = combo.priceCredits ?? 0;
+                    const premiumLocked = isStudent && combo.premiumRequired && !isPremium;
+                    const alreadyBought = purchasedPresetIds.has(combo.id);
+                    const href =
+                      premiumLocked && isStudent
+                        ? `/app/student/premium?from=${encodeURIComponent(`/positions/${position.id}`)}`
+                        : `/presets?highlight=${combo.id}`;
+                    return (
+                      <Link
+                        key={combo.id}
+                        href={href}
+                        className={`group flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/10 transition hover:border-cyan-300/60 hover:bg-white/10 ${
+                          premiumLocked ? "opacity-80" : ""
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+                            {combo.discipline ? (
+                              <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">
+                                {combo.discipline}
+                              </span>
+                            ) : null}
+                            {combo.premiumRequired ? (
+                              <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">
+                                Premium
+                              </span>
+                            ) : cost > 0 ? (
+                              <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">
+                                {cost} crédits
+                              </span>
+                            ) : (
+                              <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">
+                                Gratuit
+                              </span>
+                            )}
+                            {combo.createdBy ? (
+                              <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
+                                {combo.createdBy.name ?? combo.createdBy.email}
+                              </span>
+                            ) : null}
+                          </div>
+                          <span className="text-[11px] font-semibold text-slate-300">
+                            {combo.usageCount} vue{combo.usageCount > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-lg font-semibold text-white">{combo.title}</p>
+                          <p className="text-sm text-slate-300 line-clamp-2">
+                            {combo.description || "Combo sans description"}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-xs font-semibold text-slate-200">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {premiumLocked ? (
+                              <span className="rounded-full border border-amber-400/60 bg-amber-500/15 px-2 py-0.5 text-amber-50">
+                                🔒 Premium requis
+                              </span>
+                            ) : alreadyBought ? (
+                              <span className="rounded-full border border-emerald-400/60 bg-emerald-500/15 px-2 py-0.5 text-emerald-50">
+                                Déjà acheté
+                              </span>
+                            ) : (
+                              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200 group-hover:border-cyan-400/60">
+                                Voir le combo
+                              </span>
+                            )}
+                          </div>
+                          {combo.priceCredits && combo.priceCredits > 0 ? (
+                            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-200">
+                              {combo.priceCredits} crédits
+                            </span>
+                          ) : null}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {isStaff && (
               <div className="flex flex-wrap items-center justify-end gap-2">
                 {isOwner ? (
@@ -465,139 +588,6 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           </div>
         </div>
       </section>
-      <section className="panel space-y-4 border-indigo-400/20 p-4 md:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Combos associés</p>
-            <h2 className="text-xl font-semibold text-white">Présélections / combos contenant cette position</h2>
-            <p className="text-sm text-slate-300">Jusqu’à 10 combos/presets liés, filtrés sur ton école.</p>
-          </div>
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
-            {combos.length} trouvé{combos.length > 1 ? "s" : ""}
-          </span>
-        </div>
-        {combos.length === 0 ? (
-          <p className="text-sm text-slate-300">Aucun combo associé pour le moment.</p>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {combos.map((combo) => {
-              const cost = combo.priceCredits ?? 0;
-              const premiumLocked = isStudent && combo.premiumRequired && !isPremium;
-              const alreadyBought = purchasedPresetIds.has(combo.id);
-              const href =
-                premiumLocked && isStudent
-                  ? `/app/student/premium?from=${encodeURIComponent(`/positions/${position.id}`)}`
-                  : `/presets?highlight=${combo.id}`;
-              return (
-                <Link
-                  key={combo.id}
-                  href={href}
-                  className={`group flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 shadow-inner shadow-indigo-900/10 transition hover:border-cyan-300/60 hover:bg-white/10 ${
-                    premiumLocked ? "opacity-80" : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
-                      {combo.discipline ? (
-                        <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">
-                          {combo.discipline}
-                        </span>
-                      ) : null}
-                      {combo.premiumRequired ? (
-                        <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">
-                          Premium
-                        </span>
-                      ) : cost > 0 ? (
-                        <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">
-                          {cost} crédits
-                        </span>
-                      ) : (
-                        <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">
-                          Gratuit
-                        </span>
-                      )}
-                      {combo.createdBy ? (
-                        <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
-                          {combo.createdBy.name ?? combo.createdBy.email}
-                        </span>
-                      ) : null}
-                    </div>
-                    <span className="text-[11px] font-semibold text-slate-300">
-                      {combo.usageCount} vue{combo.usageCount > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold text-white">{combo.title}</p>
-                    <p className="text-sm text-slate-300 line-clamp-2">
-                      {combo.description || "Combo sans description"}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between gap-2 text-xs font-semibold text-slate-200">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {premiumLocked ? (
-                        <span className="rounded-full border border-amber-400/60 bg-amber-500/15 px-2 py-0.5 text-amber-50">
-                          🔒 Premium requis
-                        </span>
-                      ) : alreadyBought ? (
-                        <span className="rounded-full border border-emerald-400/60 bg-emerald-500/15 px-2 py-0.5 text-emerald-50">
-                          Déjà acheté
-                        </span>
-                      ) : (
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200 group-hover:border-cyan-400/60">
-                          Voir le combo
-                        </span>
-                      )}
-                    </div>
-                    {combo.priceCredits && combo.priceCredits > 0 ? (
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-200">
-                        {combo.priceCredits} crédits
-                      </span>
-                    ) : null}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </section>
-      {hasNav && (
-        <nav className="panel flex flex-wrap items-center justify-between gap-3 p-4 md:p-5">
-          <div className="flex flex-col">
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Navigation</p>
-            <p className="text-sm text-slate-200">Parcourir la {navLabel}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={
-                prevPosition
-                  ? `/positions/${prevPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`
-                  : "#"
-              }
-              aria-disabled={!prevPosition}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                prevPosition
-                  ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
-                  : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
-              }`}
-            >
-              ←
-              {prevPosition ? <span className="text-xs text-slate-300">({prevPosition.name})</span> : null}
-            </Link>
-            <Link
-              href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
-              aria-disabled={!nextPosition}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                nextPosition
-                  ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
-                  : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
-              }`}
-            >
-              →
-              {nextPosition ? <span className="text-xs text-slate-300">({nextPosition.name})</span> : null}
-            </Link>
-          </div>
-        </nav>
-      )}
     </main>
   );
 }
