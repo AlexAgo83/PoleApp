@@ -170,19 +170,22 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                   return (
                     <Link
                       key={course.id}
-                      href={`/teacher/courses/${course.id}?from=/admin`}
-                      className={`relative rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
-                        course.isVirtual
-                          ? course.past
-                            ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
+                    href={`/teacher/courses/${course.id}?from=/admin`}
+                    className={`relative rounded-md border px-2 py-2 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-2.5 md:py-2 ${
+                      course.isVirtual
+                        ? course.past
+                          ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
                             : "border-amber-300/70 bg-amber-500/20 text-white"
                           : course.past
                           ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                           : "border-white/10 bg-white/10 text-white"
-                      }`}
-                      title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
-                    >
-                      <div className="space-y-0.5 overflow-hidden pr-6">
+                    }`}
+                    title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
+                  >
+                      <div
+                        className="space-y-0.5 overflow-hidden pr-6"
+                        style={{ textShadow: "0 2px 14px rgba(0,0,0,0.75)" }}
+                      >
                         <p className="text-[9px] text-cyan-100 whitespace-nowrap">
                           {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
                           - {formatDuration(course.durationMinutes ?? 60)}

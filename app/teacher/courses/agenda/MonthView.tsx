@@ -208,16 +208,18 @@ export function MonthView({
                       style={
                         course.photoPublicId && CLOUD_NAME
                           ? {
-                              backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.7), rgba(15,25,45,0.65)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_600,h_360/${course.photoPublicId})`,
-                              backgroundBlendMode: "soft-light",
-                              backgroundColor: "rgba(8,12,20,0.55)",
+                              backgroundImage: `linear-gradient(135deg, rgba(86,123,255,0.24), rgba(196,88,255,0.2)), linear-gradient(135deg, rgba(10,15,30,0.06), rgba(15,25,45,0.05)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:1600,w_600,h_360/${course.photoPublicId})`,
+                              backgroundBlendMode: "normal, soft-light",
                               backgroundSize: "cover",
                               backgroundPosition: "center",
                             }
                           : undefined
                       }
-                    >
-                      <div className="flex-1 space-y-0.5 overflow-hidden">
+                      >
+                      <div
+                        className="flex-1 space-y-0.5 overflow-hidden"
+                        style={{ textShadow: "0 2px 14px rgba(0,0,0,0.75)" }}
+                      >
                         <p className="text-[9px] text-cyan-100 whitespace-nowrap">
                           {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
                           - {formatDuration(course.durationMinutes ?? 60)}
