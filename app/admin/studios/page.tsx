@@ -8,7 +8,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
 import { StudioCard } from "./StudioCard";
-import { CloudinaryUpload } from "@/components/CloudinaryUpload";
+import { CloudinaryField } from "@/components/CloudinaryField";
 
 export const dynamic = "force-dynamic";
 
@@ -147,19 +147,15 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
             </label>
             <label className="text-sm text-slate-200">
               Photo (Cloudinary)
-              <CloudinaryUpload
+              <CloudinaryField
+                name="photoPublicId"
                 label="Uploader une image"
                 folder="poleapp/studios"
                 resourceType="image"
                 deliveryType="upload"
                 accept="image/*"
                 maxSizeMB={8}
-                onChange={(_, publicId) => {
-                  const input = document.querySelector<HTMLInputElement>("#studio-photo-public-id");
-                  if (input) input.value = publicId ?? "";
-                }}
               />
-              <input type="hidden" id="studio-photo-public-id" name="photoPublicId" />
             </label>
             <div className="md:col-span-2 flex justify-end">
               <button

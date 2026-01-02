@@ -6,7 +6,7 @@ import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
-import { CloudinaryUpload } from "@/components/CloudinaryUpload";
+import { CloudinaryField } from "@/components/CloudinaryField";
 import { createStudioAction } from "../studios/actions";
 import { StudioCard as AdminStudioCard } from "../studios/StudioCard";
 import { CollapsibleSection } from "./CollapsibleSection";
@@ -181,20 +181,16 @@ export default async function AdminSchoolPage({
               </label>
               <label className="block text-sm text-slate-200">
                 Photo (Cloudinary)
-                <CloudinaryUpload
+                <CloudinaryField
+                  name="photoPublicId"
                   label="Uploader une image"
                   folder="poleapp/schools"
                   resourceType="image"
                   deliveryType="upload"
                   accept="image/*"
                   maxSizeMB={8}
-                  currentPublicId={schoolPhotoPublicId || undefined}
-                  onChange={(_, publicId) => {
-                    const input = document.querySelector<HTMLInputElement>("#school-photo-public-id");
-                    if (input) input.value = publicId ?? "";
-                  }}
+                  currentPublicId={schoolPhotoPublicId ?? undefined}
                 />
-                <input type="hidden" id="school-photo-public-id" name="photoPublicId" defaultValue={schoolPhotoPublicId ?? ""} />
               </label>
               <label className="block text-sm text-slate-200">
                 Site web (optionnel)
@@ -439,19 +435,15 @@ export default async function AdminSchoolPage({
                 </label>
                 <label className="text-sm text-slate-200 md:col-span-2">
                   Photo (Cloudinary)
-                  <CloudinaryUpload
+                  <CloudinaryField
+                    name="photoPublicId"
                     label="Uploader une image"
                     folder="poleapp/studios"
                     resourceType="image"
                     deliveryType="upload"
                     accept="image/*"
                     maxSizeMB={8}
-                    onChange={(_, publicId) => {
-                      const input = document.querySelector<HTMLInputElement>("#admin-studio-photo-public-id");
-                      if (input) input.value = publicId ?? "";
-                    }}
                   />
-                  <input type="hidden" id="admin-studio-photo-public-id" name="photoPublicId" />
                 </label>
                 <div className="md:col-span-2 flex justify-end">
                   <button
