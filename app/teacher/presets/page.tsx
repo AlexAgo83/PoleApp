@@ -13,6 +13,7 @@ import { createPresetAction, deletePresetAction } from "./actions";
 import { SafeImage } from "@/components/SafeImage";
 import { PresetCreateForm } from "@/components/PresetCreateForm";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
+import { FilterPanel } from "@/components/FilterPanel";
 
 type SearchParams =
   | { page?: string; q?: string; discipline?: string; price?: string }
@@ -29,6 +30,7 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
   const q = params.q?.toString().trim() || "";
   const disciplineFilter = params.discipline?.toString().trim() || "";
   const priceFilter = params.price?.toString() || "";
+  const activeFilters = [q, disciplineFilter, priceFilter].filter(Boolean).length;
   const take = 9;
   const skip = (page - 1) * take;
   const whereClause = {
@@ -58,7 +60,7 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
       : {}),
   } as const;
 
-  const [positions, presets, disciplines, totalPresets] = await Promise.all([
+  const [positions, presets, disciplines, teachers, totalPresets] = await Promise.all([
     prisma.position.findMany({
       select: { id: true, name: true, discipline: true, disciplineId: true },
       orderBy: { name: "asc" },
@@ -80,6 +82,13 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
         orderBy: { name: "asc" },
       })
       .catch(() => []),
+    session.user.role === "SCHOOL_ADMIN"
+      ? prisma.user.findMany({
+          where: { schoolId: session.user.schoolId, role: "TEACHER" },
+          select: { id: true, name: true, email: true },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve([]),
     prisma.preset.count({ where: whereClause }),
   ]);
   const totalPages = Math.max(1, Math.ceil(totalPresets / take));
@@ -104,61 +113,72 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
             Positions
           </Link>
         </div>
-        <h2 className="text-lg font-semibold text-white">Presets existants</h2>
-        <form className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 md:grid-cols-4 md:items-end" method="get">
-          <label className="text-sm text-slate-200">
-            Recherche
-            <input
-              type="text"
-              name="q"
-              defaultValue={q}
-              placeholder="Titre ou description"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            />
-          </label>
-          <label className="text-sm text-slate-200">
-            Discipline
-            <select
-              name="discipline"
-              defaultValue={disciplineFilter}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Toutes disciplines</option>
-              {disciplines.map((d) => (
-                <option key={d.id ?? d.name} value={d.id ?? d.name}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm text-slate-200">
-            Tarification
-            <select
-              name="price"
-              defaultValue={priceFilter}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            >
-              <option value="">Toutes</option>
-              <option value="premium">Premium requis</option>
-              <option value="credits">Payant en crédits</option>
-              <option value="free">Gratuit</option>
-            </select>
-          </label>
-          <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-1">
-            <button
-              type="submit"
-              className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-            >
-              Filtrer
-            </button>
-            <Link
-              href="/teacher/presets"
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            >
-              Réinitialiser
-            </Link>
-          </div>
-        </form>
+        <FilterPanel
+          storageKey="filters:presets"
+          userKey={session.user.id ?? "anon"}
+          title="Filtres"
+          activeCount={activeFilters}
+          className="space-y-3"
+          contentClassName="mt-3"
+        >
+          <form
+            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200 md:grid-cols-4 md:items-end"
+            method="get"
+          >
+            <label className="text-sm text-slate-200">
+              Recherche
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Titre ou description"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              />
+            </label>
+            <label className="text-sm text-slate-200">
+              Discipline
+              <select
+                name="discipline"
+                defaultValue={disciplineFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes disciplines</option>
+                {disciplines.map((d) => (
+                  <option key={d.id ?? d.name} value={d.id ?? d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm text-slate-200">
+              Tarification
+              <select
+                name="price"
+                defaultValue={priceFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Toutes</option>
+                <option value="premium">Premium requis</option>
+                <option value="credits">Payant en crédits</option>
+                <option value="free">Gratuit</option>
+              </select>
+            </label>
+            <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-1">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+              >
+                Filtrer
+              </button>
+              <Link
+                href="/teacher/presets"
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
+            </div>
+          </form>
+        </FilterPanel>
         {presets.length === 0 ? (
           <p className="text-slate-300">Aucun preset pour le moment.</p>
         ) : (
@@ -265,10 +285,11 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
             <PresetCreateForm
               positions={positions}
               disciplines={disciplines}
+              teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : undefined}
               action={createPresetAction}
               currentUserLabel={`(Moi) ${session.user.name ?? session.user.email}`}
               maxPositions={12}
-              showTeacherSelect={false}
+              showTeacherSelect={session.user.role === "SCHOOL_ADMIN"}
             />
           </div>
         </details>
