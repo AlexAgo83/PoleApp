@@ -10,6 +10,8 @@ import { authOptions } from "@/lib/auth";
 import { generateSignedUrl } from "@/lib/cloudinary";
 import { isSeedPublicId, normalizeFolderedPublicId } from "@/lib/media";
 import { prisma } from "@/lib/prisma";
+import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
+import { buyPresetAction } from "@/app/student/actions";
 
 type Props = {
   params: { id: string };
@@ -115,6 +117,16 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
   const lockedReason = preset.premiumRequired
     ? "Contenu réservé aux élèves premium et aux achats validés."
     : "Achetez ce preset pour débloquer la description et la vidéo.";
+  const price = preset.priceCredits ?? 0;
+  const showPremiumCta = isStudent && preset.premiumRequired && !hasPurchase && !session.user.isPremium;
+  const showBuyCta =
+    isStudent &&
+    !hasPurchase &&
+    price > 0 &&
+    (
+      (!preset.premiumRequired) ||
+      (preset.premiumRequired && session.user.isPremium)
+    );
 
   const formatTime = (seconds: number | null | undefined) => {
     if (seconds === null || seconds === undefined) return "";
@@ -172,9 +184,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
           {canViewContent ? (
             <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
           ) : (
-            <p className="text-sm text-amber-100">
-              {lockedReason}
-            </p>
+              <p className="text-sm text-amber-100">{lockedReason}</p>
           )}
         </div>
         <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
@@ -215,6 +225,26 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-3">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-50">Contenu verrouillé</span>
                   <p className="text-center">{lockedReason}</p>
+                  {showPremiumCta || showBuyCta ? (
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      {showPremiumCta ? (
+                        <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
+                          Passer premium
+                        </PremiumUpsellButton>
+                      ) : null}
+                      {showBuyCta ? (
+                        <form action={buyPresetAction} className="flex flex-wrap items-center gap-2">
+                          <input type="hidden" name="presetId" value={preset.id} />
+                          <button
+                            type="submit"
+                            className="rounded-full border border-cyan-300/70 bg-cyan-500/20 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-200 hover:bg-cyan-500/30"
+                          >
+                            Acheter ({preset.priceCredits} crédits)
+                          </button>
+                        </form>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             )}
