@@ -56,9 +56,15 @@ const seedPositionPhotos = [
   "po_19_dfrqlk",
   "po_20_akrajr",
 ];
-const seedPresetImages = ["ps_001_fe48zf", "ps_002_r2gphs"];
+const seedPresetImages = ["ps_001_wcashm", "ps_002_fhyron", "ps_003_xauurl", "ps_004_c1vw8c", "ps_005_xbzstp", "ps_006_xesgal"];
+const seedPresetVideos = ["ps_001_qo2alr"];
 
-export const SEED_MEDIA_IDS = new Set([...seedPositionVideos, ...seedPositionPhotos, ...seedPresetImages]);
+export const SEED_MEDIA_IDS = new Set([
+  ...seedPositionVideos,
+  ...seedPositionPhotos,
+  ...seedPresetImages,
+  ...seedPresetVideos,
+]);
 
 export function isSeedPublicId(publicId?: string | null): boolean {
   if (!publicId) return false;
