@@ -178,7 +178,7 @@ export function StudioMonthView({
                 !cell.courses || cell.courses.length === 0 ? "min-h-[56px] md:min-h-[80px]" : "min-h-[80px]"
               }`}
             >
-              <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+              <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white pt-0.5 pl-0.5">
                 <span className="flex items-center gap-1">
                   <span
                     className={`text-[10px] uppercase tracking-wide md:text-xs ${

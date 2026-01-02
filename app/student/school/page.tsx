@@ -14,6 +14,12 @@ import { WeekView as StudentWeekView } from "../courses/agenda/WeekView";
 export const dynamic = "force-dynamic";
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 const NOW_MS = Date.now();
+const LEGEND_ITEMS = [
+  { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
+  { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
+  { label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+  { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
+];
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -297,6 +303,7 @@ export default async function StudentSchoolPage({
         durationMinutes: true,
         maxSeats: true,
         photoPublicId: true,
+        isVirtual: true,
         waitlistQuota: true,
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { id: true, name: true } },
@@ -348,6 +355,7 @@ export default async function StudentSchoolPage({
       courses: dayAttendances.map((a) => ({
         id: a.course.id,
         title: a.course.title,
+        photoPublicId: a.course.photoPublicId ?? null,
         discipline: a.course.discipline ?? undefined,
         disciplineId: a.course.disciplineId ?? undefined,
         date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
@@ -357,6 +365,8 @@ export default async function StudentSchoolPage({
         past: isPastCourse(a.course.date, a.course.durationMinutes),
         myStatus: a.myAttendance?.status ?? null,
         waitlistRank: a.myAttendance?.waitlistRank ?? null,
+        positionsCount: a.course.positions?.length ?? 0,
+        isVirtual: (a.course as any)?.isVirtual ?? false,
       })),
     };
   });
@@ -407,6 +417,7 @@ export default async function StudentSchoolPage({
       id: a.course.id,
       courseId: a.courseId,
       title: a.course.title,
+      photoPublicId: a.course.photoPublicId ?? null,
       discipline: a.course.discipline ?? undefined,
       disciplineId: a.course.disciplineId ?? undefined,
       date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
@@ -416,14 +427,10 @@ export default async function StudentSchoolPage({
       myStatus: a.myAttendance?.status ?? null,
       waitlistRank: a.myAttendance?.waitlistRank ?? null,
       past: isPastCourse(a.course.date, a.course.durationMinutes),
+      positionsCount: a.course.positions?.length ?? 0,
+      isVirtual: (a.course as any)?.isVirtual ?? false,
     })),
   }));
-  const legendItems = [
-    { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
-    { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
-    { label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
-    { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
-  ];
   const buildViewHref = (mode: "week" | "month") => {
     const nextParams = new URLSearchParams(paramsForLinks);
     if (mode === "week") {
@@ -582,7 +589,7 @@ export default async function StudentSchoolPage({
             </span>
           </summary>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {legendItems.map((item) => (
+            {LEGEND_ITEMS.map((item) => (
               <span
                 key={item.label}
                 className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}

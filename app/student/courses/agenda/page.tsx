@@ -365,6 +365,7 @@ export default async function StudentCoursesAgendaPage({
         return {
           id: a.course.id,
           title: a.course.title,
+          photoPublicId: (a.course as any).photoPublicId ?? null,
           discipline: disciplineNameById.get((a.course as any).disciplineId ?? "") ?? a.course.discipline,
           disciplineId: (a.course as any).disciplineId ?? null,
           date: a.course.date.toISOString(),
@@ -427,6 +428,7 @@ export default async function StudentCoursesAgendaPage({
         id: a.id,
         courseId: a.courseId,
         title: a.course.title,
+        photoPublicId: (a.course as any).photoPublicId ?? null,
         discipline: disciplineNameById.get((a.course as any).disciplineId ?? "") ?? a.course.discipline,
         disciplineId: (a.course as any).disciplineId ?? null,
         date: a.course.date instanceof Date ? a.course.date.toISOString() : a.course.date,
