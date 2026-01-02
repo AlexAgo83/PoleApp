@@ -12,7 +12,7 @@ export async function GET() {
     return NextResponse.json({ notifications: [], unreadCount: 0 }, { status: 200 });
   }
 
-  const notifications = await fetchNotifications(session.user.id, 20);
+  const notifications = await fetchNotifications(session.user.id, 50);
   const unreadCount = notifications.filter((n) => !n.readAt).length;
 
   return NextResponse.json({

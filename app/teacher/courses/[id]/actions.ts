@@ -281,6 +281,21 @@ export async function updateCourseAction(formData: FormData) {
       link: `/teacher/courses/${data.id}`,
     });
   }
+  const admins = await prisma.user.findMany({
+    where: { schoolId: session.user.schoolId, role: "SCHOOL_ADMIN" },
+    select: { id: true },
+  });
+  if (admins.length > 0) {
+    await createNotifications(
+      admins.map((admin) => ({
+        userId: admin.id,
+        kind: NotificationKind.ADMIN_COURSE_UPDATED,
+        title: "Cours mis à jour",
+        body: `${courseLabel} — ${dateLabel}`,
+        link: `/teacher/courses/${data.id}`,
+      }))
+    );
+  }
 
   revalidatePath("/teacher/courses");
   revalidatePath(`/teacher/courses/${data.id}`);
@@ -539,6 +554,21 @@ export async function deleteCourseAction(formData: FormData) {
       body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
       link: `/teacher/courses/${course.id}`,
     });
+  }
+  const admins = await prisma.user.findMany({
+    where: { schoolId: session.user.schoolId, role: "SCHOOL_ADMIN" },
+    select: { id: true },
+  });
+  if (admins.length > 0) {
+    await createNotifications(
+      admins.map((admin) => ({
+        userId: admin.id,
+        kind: NotificationKind.ADMIN_COURSE_CANCELLED,
+        title: "Cours annulé",
+        body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
+        link: `/teacher/courses/${course.id}`,
+      }))
+    );
   }
 
   revalidatePath("/teacher/courses");

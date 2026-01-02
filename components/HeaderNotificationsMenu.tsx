@@ -18,13 +18,23 @@ type NotificationResponse = {
   unreadCount: number;
 };
 
+const sortByCreatedAtDesc = (list: Notification[]) =>
+  [...list].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
 async function bulkDelete(ids: string[]) {
   if (ids.length === 0) return;
-  await fetch("/api/notifications/delete", {
+  const res = await fetch("/api/notifications/delete", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ ids }),
+    cache: "no-store",
+    keepalive: true,
   });
+  if (!res.ok) {
+    throw new Error("delete failed");
+  }
 }
 
 function formatDate(iso: string) {
@@ -50,7 +60,14 @@ export function HeaderNotificationsMenu() {
       const res = await fetch("/api/notifications", { cache: "no-store" });
       if (!res.ok) return;
       const json = (await res.json()) as NotificationResponse;
-      setData(json);
+      const sorted = sortByCreatedAtDesc(json.notifications ?? []);
+      setData({
+        notifications: sorted,
+        unreadCount:
+          typeof json.unreadCount === "number"
+            ? json.unreadCount
+            : sorted.filter((n) => !n.readAt).length,
+      });
     } finally {
       setLoading(false);
     }
@@ -78,27 +95,56 @@ export function HeaderNotificationsMenu() {
   }, []);
 
   const markReadAndNavigate = async (notif: Notification) => {
-    await fetch("/api/notifications/delete", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ids: [notif.id] }),
-    });
-    setData((prev) => ({
-      unreadCount: prev.unreadCount - (!notif.readAt ? 1 : 0),
-      notifications: prev.notifications.filter((n) => n.id !== notif.id),
-    }));
-    if (notif.link) {
-      router.push(notif.link);
+    try {
+      await fetch("/api/notifications/read", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        cache: "no-store",
+        keepalive: true,
+        body: JSON.stringify({ ids: [notif.id] }),
+      });
+    } catch (err) {
+      // ignore errors, we still optimistically mark read
+    } finally {
+      setData((prev) => ({
+        unreadCount: prev.unreadCount - (!notif.readAt ? 1 : 0),
+        notifications: prev.notifications.map((n) =>
+          n.id === notif.id ? { ...n, readAt: new Date().toISOString() } : n
+        ),
+      }));
+      if (notif.link) {
+        router.push(notif.link);
+      }
+      setOpen(false);
     }
-    setOpen(false);
+  };
+
+  const deleteOne = async (notif: Notification) => {
+    try {
+      await bulkDelete([notif.id]);
+      setData((prev) => ({
+        unreadCount: prev.unreadCount - (!notif.readAt ? 1 : 0),
+        notifications: prev.notifications.filter((n) => n.id !== notif.id),
+      }));
+      // Reload to ensure server state is reflected (avoid ghost reappear on reopen)
+      await load();
+    } catch (err) {
+      // fallback: reload to reflect server state
+      await load();
+    }
   };
 
   const unreadBadge = data.unreadCount > 0;
   const deleteAll = async () => {
     const ids = data.notifications.map((n) => n.id);
     if (ids.length === 0) return;
-    await bulkDelete(ids);
-    setData({ notifications: [], unreadCount: 0 });
+    try {
+      await bulkDelete(ids);
+      setData({ notifications: [], unreadCount: 0 });
+      await load();
+    } catch (err) {
+      await load();
+    }
   };
 
   return (
@@ -170,7 +216,22 @@ export function HeaderNotificationsMenu() {
                       {notif.body ? <p className="text-xs text-slate-300">{notif.body}</p> : null}
                       <p className="text-[11px] text-slate-500">{formatDate(notif.createdAt)}</p>
                     </div>
-                    {!notif.readAt && <span className="mt-0.5 h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />}
+                    <div className="flex items-center gap-2">
+                      {!notif.readAt && <span className="mt-0.5 h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />}
+                      <button
+                        type="button"
+                        className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-300 transition hover:border-rose-300/70 hover:bg-rose-500/15 hover:text-rose-100"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          void deleteOne(notif);
+                        }}
+                        aria-label="Supprimer la notification"
+                        title="Supprimer"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>

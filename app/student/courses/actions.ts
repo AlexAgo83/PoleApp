@@ -9,7 +9,7 @@ import { Prisma, NotificationKind } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createNotification } from "@/lib/notifications";
+import { createNotification, createNotifications } from "@/lib/notifications";
 
 const purchaseSchema = z.object({
   courseId: z.string().cuid(),
@@ -197,6 +197,21 @@ type CourseWithCounts = {
       link: `/teacher/courses/${course.id}`,
     };
     await createNotification(teacherNotification);
+  }
+  const admins = await prisma.user.findMany({
+    where: { schoolId: session.user.schoolId ?? undefined, role: "SCHOOL_ADMIN" },
+    select: { id: true },
+  });
+  if (admins.length > 0) {
+    await createNotifications(
+      admins.map((admin) => ({
+        userId: admin.id,
+        kind: NotificationKind.ADMIN_COURSE_SIGNUP,
+        title: "Nouvelle inscription",
+        body: `${studentName} → ${course.title ?? "Cours"} (${new Date(course.date).toLocaleString("fr-FR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })})`,
+        link: course.teacherId ? `/teacher/courses/${course.id}` : undefined,
+      }))
+    );
   }
   if (finalStatus === "WAITLIST") {
     await createNotification({
