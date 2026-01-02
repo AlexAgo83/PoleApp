@@ -101,7 +101,6 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
 
   const priceLabel = PRICE_LABEL(preset.priceCredits, preset.premiumRequired ?? false);
   const isStudent = session?.user?.role === "STUDENT";
-  const isPremium = Boolean(session?.user?.isPremium);
   const hasPurchase = isStudent
     ? Boolean(
         await prisma.purchase.findFirst({

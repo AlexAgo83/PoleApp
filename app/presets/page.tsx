@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -95,8 +94,16 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       orderBy: { createdAt: "desc" },
       skip,
       take: PAGE_SIZE,
-      include: {
-        positions: { include: { position: { select: { name: true } } } },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        discipline: true,
+        premiumRequired: true,
+        priceCredits: true,
+        imagePublicId: true,
+        createdByUserId: true,
+        positions: { select: { position: { select: { name: true } } } },
         createdBy: { select: { name: true, email: true } },
       },
     }),

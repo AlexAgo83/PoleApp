@@ -1,4 +1,5 @@
 import { MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -307,16 +308,23 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const encodedFrom = safeFrom ? encodeURIComponent(safeFrom) : undefined;
 
   const currentPath = `/positions/${position.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`;
-  const hasNav = (isFromPositionsList && navList.length > 0) || (isFromProgress && navList.length > 0);
   const combos =
     (await prisma.preset.findMany({
       where: {
         positions: { some: { positionId: position.id } },
         ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}),
       },
-      include: { createdBy: { select: { name: true, email: true } } },
       orderBy: [{ usageCount: "desc" }, { createdAt: "desc" }],
       take: 10,
+      select: {
+        id: true,
+        title: true,
+        discipline: true,
+        imagePublicId: true,
+        priceCredits: true,
+        premiumRequired: true,
+        createdBy: { select: { name: true, email: true } },
+      },
     })) ?? [];
   const seenByCurrentUser = isStudent
     ? Math.max(
@@ -368,7 +376,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           {
             label: "Mon espace",
             href: homeForRole,
-            icon: <img src="/house.svg" alt="" className="h-4 w-4" />,
+            icon: <Image src="/house.svg" alt="" className="h-4 w-4" width={16} height={16} priority />,
           },
           ...(session?.user ? [{ label: "Déconnexion", href: "/api/auth/signout" }] : []),
         ]}
