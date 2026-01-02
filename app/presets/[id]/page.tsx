@@ -110,9 +110,11 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
       )
     : false;
   const isFree = (preset.priceCredits ?? 0) <= 0;
-  const canViewContent = !isStudent || isPremium || hasPurchase || (!preset.premiumRequired && isFree);
+  const isAdmin = session?.user?.role === "SCHOOL_ADMIN";
+  const isTeacher = session?.user?.role === "TEACHER";
+  const canViewContent = isAdmin || isTeacher || ((!isStudent && !preset.premiumRequired && isFree) || hasPurchase);
   const lockedReason = preset.premiumRequired
-    ? "Contenu réservé aux élèves premium."
+    ? "Contenu réservé aux élèves premium et aux achats validés."
     : "Achetez ce preset pour débloquer la description et la vidéo.";
 
   const formatTime = (seconds: number | null | undefined) => {
@@ -210,49 +212,56 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
                 <p className="text-[11px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-                <p className="font-semibold text-white">{preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}</p>
+                {preset.createdBy?.id ? (
+                  <Link
+                    href={`/teachers/${preset.createdBy.id}`}
+                    className="font-semibold text-white underline-offset-2 hover:underline"
+                  >
+                    {preset.createdBy.name ?? preset.createdBy.email ?? "Inconnu"}
+                  </Link>
+                ) : (
+                  <p className="font-semibold text-white">{preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}</p>
+                )}
               </div>
             </div>
-            {isStudent && !canViewContent ? (
-              <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-                <p className="font-semibold text-white">Contenu Premium</p>
-                <p className="mt-1">
-                  {lockedReason}
-                </p>
-              </div>
-            ) : null}
             <div className="space-y-2">
               <p className="text-sm font-semibold text-white">Timeline</p>
-              {preset.positions.length > 0 ? (
-                <div className="space-y-2">
-                  {preset.positions.map((pp) => (
-                    <div
-                      key={pp.positionId}
-                      className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-white"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.12em] text-indigo-100">
-                          #{pp.order ?? 0}
-                        </span>
-                        {pp.timestampSeconds !== null && pp.timestampSeconds !== undefined && (
-                          <span className="rounded-full border border-cyan-300/50 bg-cyan-500/15 px-2 py-0.5 text-cyan-50 text-xs">
-                            {formatTime(pp.timestampSeconds)}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-base font-semibold">{pp.position.name}</p>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-200">
+              {canViewContent ? (
+                preset.positions.length > 0 ? (
+                  <div className="space-y-2">
+                    {preset.positions.map((pp) => (
+                      <Link
+                        key={pp.positionId}
+                        href={`/positions/${pp.positionId}?from=${encodeURIComponent(`/presets/${preset.id}`)}`}
+                        className="block rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.12em] text-indigo-100">
+                              #{pp.order ?? 0}
+                            </span>
+                            <p className="text-base font-semibold">{pp.position.name}</p>
+                          </div>
+                          {pp.timestampSeconds !== null && pp.timestampSeconds !== undefined && (
+                            <span className="rounded-full border border-cyan-300/50 bg-cyan-500/15 px-2 py-0.5 text-cyan-50 text-xs">
+                              {formatTime(pp.timestampSeconds)}
+                            </span>
+                          )}
+                        </div>
                         {pp.note ? (
-                          <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-slate-100">
-                            {pp.note}
-                          </span>
+                          <p className="text-xs text-slate-200">{pp.note}</p>
                         ) : null}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-300">Aucune position liée.</p>
+                )
               ) : (
-                <p className="text-sm text-slate-300">Aucune position liée.</p>
+                <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+                  <p className="font-semibold text-white">Contenu verrouillé</p>
+                  <p className="mt-1">{lockedReason}</p>
+                </div>
               )}
             </div>
             {canEdit && (session.user.role === "SCHOOL_ADMIN" || session.user.id === preset.createdBy?.id) ? (
