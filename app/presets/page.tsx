@@ -23,6 +23,9 @@ type SearchParams =
       discipline?: string;
       price?: string;
       flash?: string;
+      owner?: string;
+      purchase?: string;
+      media?: string;
     }
   | Promise<{
       page?: string;
@@ -30,6 +33,9 @@ type SearchParams =
       discipline?: string;
       price?: string;
       flash?: string;
+      owner?: string;
+      purchase?: string;
+      media?: string;
     }>;
 
 export default async function PresetsCatalogPage({ searchParams }: { searchParams?: SearchParams }) {
@@ -54,8 +60,28 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       .map((d) => d.trim())
       .filter(Boolean) ?? [];
   const priceFilter = params.price?.toString() || "";
+  const ownerFilter = params.owner?.toString() || "";
+  const purchaseFilter = params.purchase?.toString() || "";
+  const mediaFilter = params.media?.toString() || "";
   const rawPage = Number(params.page ?? "1");
   const flash = params.flash?.toString() || "";
+
+  const [studentInfo, purchasedPresetRows]: [
+    { credits: number; isPremium: boolean } | null,
+    { offerId: string }[]
+  ] = isStudent
+    ? await Promise.all([
+        prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { credits: true, isPremium: true },
+        }),
+        prisma.purchase.findMany({
+          where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+          select: { offerId: true },
+        }),
+      ])
+    : [null, []];
+  const purchasedPresetIds = isStudent ? new Set(purchasedPresetRows.map((p) => p.offerId)) : new Set<string>();
 
   const where: Prisma.PresetWhereInput = {
     ...(schoolId ? { schoolId } : {}),
@@ -85,13 +111,26 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
     where.premiumRequired = false;
     where.priceCredits = 0;
   }
+  if (ownerFilter === "me" && isTeacherOrAdmin) {
+    where.createdByUserId = session.user.id;
+  }
+  if (mediaFilter === "image") {
+    where.imagePublicId = { not: null };
+  } else if (mediaFilter === "video") {
+    where.videoPublicId = { not: null };
+  }
+  if (purchaseFilter === "bought" && isStudent) {
+    where.id = { in: purchasedPresetIds.size ? Array.from(purchasedPresetIds) : ["__none__"] };
+  } else if (purchaseFilter === "notBought" && isStudent && purchasedPresetIds.size > 0) {
+    where.id = { notIn: Array.from(purchasedPresetIds) };
+  }
 
   const totalCount = await prisma.preset.count({ where });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
   const skip = (currentPage - 1) * PAGE_SIZE;
 
-  const [presets, disciplineOptions, studentInfo, purchasedPresetIds, disciplineRows] = await Promise.all([
+  const [presets, disciplineOptions, disciplineRows] = await Promise.all([
     prisma.preset.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -108,20 +147,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       distinct: ["disciplineId"],
       orderBy: { disciplineId: "asc" },
     }),
-    isStudent
-      ? prisma.user.findUnique({
-          where: { id: session.user.id },
-          select: { credits: true, isPremium: true },
-        })
-      : null,
-    isStudent
-      ? prisma.purchase
-          .findMany({
-            where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
-            select: { offerId: true },
-          })
-          .then((rows) => new Set(rows.map((p) => p.offerId)))
-      : Promise.resolve(new Set<string>()),
     prisma.discipline.findMany({
       select: { id: true, name: true },
       orderBy: { name: "asc" },
@@ -134,13 +159,23 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       ])
     : [[], []];
 
-  const activeFilters = [q && q.length > 0, disciplineFilters.length > 0, priceFilter].filter(Boolean).length;
+  const activeFilters = [
+    q && q.length > 0,
+    disciplineFilters.length > 0,
+    priceFilter,
+    ownerFilter,
+    purchaseFilter,
+    mediaFilter,
+  ].filter(Boolean).length;
   const hasCredits = studentInfo?.credits ?? 0;
   const hasPremium = studentInfo?.isPremium ?? false;
   const queryParams = new URLSearchParams();
   if (q) queryParams.set("q", q);
   if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
   if (priceFilter) queryParams.set("price", priceFilter);
+  if (ownerFilter) queryParams.set("owner", ownerFilter);
+  if (purchaseFilter) queryParams.set("purchase", purchaseFilter);
+  if (mediaFilter) queryParams.set("media", mediaFilter);
   const disciplineNameById = new Map((disciplineRows ?? []).map((d) => [d.id, d.name]));
   const disciplineOptionList = Array.from(
     new Set(disciplineOptions.map((d) => d.disciplineId).filter(Boolean))
@@ -208,10 +243,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           </div>
         )}
 
-        <p className="text-sm text-slate-300">
-          Page {currentPage} / {totalPages} · {totalCount} presets
-        </p>
-
         <FilterPanel
           storageKey="filters:presets-catalog"
           title="Filtres"
@@ -221,9 +252,9 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           contentClassName="mt-3"
         >
           <form
-            key={`filters-${q || "all"}-${disciplineFilters.join("|") || "all"}-${priceFilter || "all"}`}
+            key={`filters-${q || "all"}-${disciplineFilters.join("|") || "all"}-${priceFilter || "all"}-${ownerFilter || "all"}-${purchaseFilter || "all"}-${mediaFilter || "all"}`}
             method="get"
-            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Recherche
@@ -261,6 +292,45 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 <option value="premium">Premium requis</option>
                 <option value="credits">Payant en crédits</option>
                 <option value="free">Gratuit</option>
+              </select>
+            </label>
+            {isTeacherOrAdmin ? (
+              <label className="text-sm text-slate-200">
+                Créateur
+                <select
+                  name="owner"
+                  defaultValue={ownerFilter}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                >
+                  <option value="">Tous</option>
+                  <option value="me">Mes combos</option>
+                </select>
+              </label>
+            ) : null}
+            {isStudent ? (
+              <label className="text-sm text-slate-200">
+                Achats
+                <select
+                  name="purchase"
+                  defaultValue={purchaseFilter}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                >
+                  <option value="">Tous</option>
+                  <option value="bought">Déjà achetés</option>
+                  <option value="notBought">Non achetés</option>
+                </select>
+              </label>
+            ) : null}
+            <label className="text-sm text-slate-200">
+              Médias
+              <select
+                name="media"
+                defaultValue={mediaFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                <option value="image">Avec image</option>
+                <option value="video">Avec vidéo</option>
               </select>
             </label>
             <div className="flex items-end justify-end">

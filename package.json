@@ -1,6 +1,6 @@
 {
   "name": "poleapp",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "private": true,
   "scripts": {
     "prebuild": "prisma generate",
