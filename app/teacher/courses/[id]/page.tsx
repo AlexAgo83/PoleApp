@@ -61,7 +61,7 @@ export default async function TeacherCourseDetailPage({
         disciplineId: true,
         photoPublicId: true,
         isVirtual: true,
-        teacher: { select: { name: true, email: true } },
+        teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { name: true, address: true } },
         attendances: {
           include: {
@@ -93,7 +93,7 @@ export default async function TeacherCourseDetailPage({
         return prisma.course.findUnique({
           where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
-            teacher: { select: { name: true, email: true } },
+            teacher: { select: { id: true, name: true, email: true } },
             studio: { select: { name: true, address: true } },
             attendances: {
               include: {
@@ -176,8 +176,6 @@ export default async function TeacherCourseDetailPage({
     course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.learningStatus ?? LearningStatus.NOT_STARTED]),
   );
 
-  const teacherName =
-    course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const rawFrom = resolvedSearch.from;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
@@ -245,7 +243,17 @@ export default async function TeacherCourseDetailPage({
             </div>
             <div className="space-y-1 text-sm text-slate-200">
               <p className="text-base text-white flex flex-wrap items-center gap-2">
-                <span>{teacherName}</span>
+                {course.teacher?.id ? (
+                  <Link
+                    href={`/teachers/${course.teacher.id}?from=${encodeURIComponent(`/teacher/courses/${course.id}`)}`}
+                    className="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-500/10 px-3 py-1 text-[13px] font-semibold text-cyan-50 underline-offset-4 transition hover:border-cyan-200 hover:bg-cyan-500/20 hover:underline"
+                    title="Voir la fiche professeur"
+                  >
+                    <span>{course.teacher.name ?? course.teacher.email ?? "Professeur"}</span>
+                  </Link>
+                ) : (
+                  <span>{course.teacher?.name ?? course.teacher?.email ?? "Professeur"}</span>
+                )}
                 {disciplineName && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-100">
                     {disciplineName}
