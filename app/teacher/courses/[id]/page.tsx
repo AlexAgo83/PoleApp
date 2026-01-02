@@ -13,6 +13,7 @@ import { LocalDateTime } from "@/components/LocalDateTime";
 import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
@@ -58,7 +59,7 @@ export default async function TeacherCourseDetailPage({
         waitlistQuota: true,
         discipline: true,
         disciplineId: true,
-        photoUrl: true,
+        photoPublicId: true,
         isVirtual: true,
         teacher: { select: { name: true, email: true } },
         studio: { select: { name: true, address: true } },
@@ -190,7 +191,10 @@ export default async function TeacherCourseDetailPage({
   const seatsUsed = course._count?.attendances ?? 0;
   const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
   const cost = course.costCredits ?? 100;
-  const coursePhoto = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
+  const coursePhoto =
+    course.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+      : COURSE_PHOTO_PLACEHOLDER;
   const NOW_MS = Date.now();
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,

@@ -8,6 +8,7 @@ type DayCourse = {
   title: string | null;
   date: string;
   durationMinutes: number | null;
+  photoPublicId?: string | null;
   teacherName: string;
   studioName: string;
   discipline?: string | null;

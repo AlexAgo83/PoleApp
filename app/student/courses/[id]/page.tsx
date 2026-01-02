@@ -10,6 +10,7 @@ import { LocalDateTime } from "@/components/LocalDateTime";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 
 const NOW_MS = Date.now();
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
@@ -64,7 +65,7 @@ export default async function StudentCourseDetailPage({
         costCredits: true,
         waitlistQuota: true,
         discipline: true,
-        photoUrl: true,
+        photoPublicId: true,
         isVirtual: true,
         school: { select: { name: true } },
         teacher: { select: { id: true, name: true, email: true } },
@@ -134,7 +135,10 @@ export default async function StudentCourseDetailPage({
   const cost = course.costCredits ?? 100;
   const waitlistQuota = course.waitlistQuota ?? 0;
   const waitlistFull = waitlistQuota > 0 && waitlistCount >= waitlistQuota;
-  const coursePhoto = course.photoUrl?.trim() || COURSE_PLACEHOLDER;
+  const coursePhoto =
+    course.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+      : COURSE_PLACEHOLDER;
   const myAttendance = course.attendances[0];
   const isWaitlist = myAttendance?.status === "WAITLIST";
   const isAttending = Boolean(myAttendance);

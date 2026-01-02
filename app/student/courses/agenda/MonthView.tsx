@@ -9,6 +9,7 @@ type MonthCourse = {
   id: string;
   courseId: string;
   title: string | null;
+  photoPublicId?: string | null;
   discipline?: string | null;
   disciplineId?: string | null;
   date: string;

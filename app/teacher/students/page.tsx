@@ -4,7 +4,7 @@ import { AttendanceStatus, Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { FilterPanel } from "@/components/FilterPanel";
-import { AVATAR_PLACEHOLDER, COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
@@ -62,12 +62,6 @@ export default async function TeacherStudentsPage({
   if (!session?.user?.schoolId) {
     return null;
   }
-  const school = await prisma.school
-    .findUnique({
-      where: { id: session.user.schoolId },
-      select: { name: true, photoUrl: true },
-    })
-    .catch(() => null);
   const disciplineRows =
     (await prisma.discipline
       .findMany({
@@ -155,7 +149,6 @@ export default async function TeacherStudentsPage({
     take: PAGE_SIZE,
   });
 
-  const schoolPhoto = school?.photoUrl?.trim() || COURSE_PLACEHOLDER;
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel space-y-4 border-indigo-400/15 p-6">

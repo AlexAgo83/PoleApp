@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 10;
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 const NOW_MS = Date.now();
 const FALLBACK_DISCIPLINES = [
   { name: "Pole", color: "#0ea5e9" },
@@ -385,14 +386,17 @@ export default async function TeacherCoursesPage({
         )}
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => {
-            const isPast = new Date(course.date).getTime() < NOW_MS;
-            const seatsUsed = course._count?.attendances ?? course.attendances.length ?? 0;
-            const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
-            const cost = course.costCredits ?? 100;
-            const faded = isPast ? "opacity-60" : "";
-            const photoUrl = course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER;
-            const detailHref = `/teacher/courses/${course.id}?from=${encodeURIComponent(
-              `/teacher/courses?page=${currentPage}`
+          const isPast = new Date(course.date).getTime() < NOW_MS;
+          const seatsUsed = course._count?.attendances ?? course.attendances.length ?? 0;
+          const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
+          const cost = course.costCredits ?? 100;
+          const faded = isPast ? "opacity-60" : "";
+          const courseImage =
+            course.photoPublicId && CLOUD_NAME
+              ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+              : COURSE_PHOTO_PLACEHOLDER;
+          const detailHref = `/teacher/courses/${course.id}?from=${encodeURIComponent(
+            `/teacher/courses?page=${currentPage}`
             )}`;
             const recStats = recommendationStats.get(course.id);
             const disciplineName = course.disciplineId ? disciplineNameById.get(course.disciplineId) ?? null : null;
@@ -407,7 +411,7 @@ export default async function TeacherCoursesPage({
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
                     <SafeImage
-                      src={photoUrl}
+                      src={courseImage}
                       alt={course.title ?? "Cours"}
                       width={96}
                       height={64}

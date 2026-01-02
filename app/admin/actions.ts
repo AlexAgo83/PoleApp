@@ -13,7 +13,7 @@ const updateSchoolSchema = z.object({
   schoolId: z.string().cuid(),
   name: z.string().min(2, "Nom trop court"),
   website: z.string().trim().url({ message: "URL invalide" }).or(z.literal("")).optional(),
-  photoUrl: z.string().trim().url({ message: "URL invalide" }).or(z.literal("")).optional(),
+  photoPublicId: z.string().trim().max(512).optional(),
 });
 
 export async function updateSchoolAction(formData: FormData) {
@@ -26,7 +26,7 @@ export async function updateSchoolAction(formData: FormData) {
     schoolId: formData.get("schoolId"),
     name: formData.get("name"),
     website: (formData.get("website") ?? "") as string,
-    photoUrl: (formData.get("photoUrl") ?? "") as string,
+    photoPublicId: (formData.get("photoPublicId") ?? "") as string,
   });
 
   if (!parsed.success) {
@@ -40,23 +40,15 @@ export async function updateSchoolAction(formData: FormData) {
   const trimmedName = parsed.data.name.trim();
   const website =
     parsed.data.website && parsed.data.website.length > 0 ? parsed.data.website : null;
-  const photoUrl =
-    parsed.data.photoUrl && parsed.data.photoUrl.length > 0 ? parsed.data.photoUrl : null;
+  const photoPublicId =
+    parsed.data.photoPublicId && parsed.data.photoPublicId.length > 0
+      ? parsed.data.photoPublicId
+      : null;
 
-  // Mise à jour sûre : Prisma pour nom/website, RAW pour photo (si colonne présente)
   await prisma.school.update({
     where: { id: parsed.data.schoolId },
-    data: { name: trimmedName, website },
+    data: { name: trimmedName, website, photoPublicId },
   });
-  if (photoUrl !== null) {
-    try {
-      await prisma.$executeRaw`
-        UPDATE "School" SET "photoUrl" = ${photoUrl}::text WHERE "id" = ${parsed.data.schoolId}
-      `;
-    } catch {
-      // colonne absente : ignorer
-    }
-  }
 
   revalidatePath("/admin");
   revalidatePath("/admin/school");

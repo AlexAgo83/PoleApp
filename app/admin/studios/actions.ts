@@ -11,14 +11,14 @@ import { prisma } from "@/lib/prisma";
 const createSchema = z.object({
   name: z.string().trim().min(1),
   address: z.string().trim().optional(),
-  photoUrl: z.string().trim().url().max(2048).optional(),
+  photoPublicId: z.string().trim().max(512).optional(),
 });
 
 const updateSchema = z.object({
   id: z.string().cuid(),
   name: z.string().trim().min(1),
   address: z.string().trim().optional(),
-  photoUrl: z.string().trim().url().max(2048).optional(),
+  photoPublicId: z.string().trim().max(512).optional(),
 });
 
 const deleteSchema = z.object({
@@ -47,7 +47,7 @@ export async function createStudioAction(formData: FormData) {
   const parsed = createSchema.safeParse({
     name: formData.get("name"),
     address: formData.get("address") || undefined,
-    photoUrl: formData.get("photoUrl") || undefined,
+    photoPublicId: formData.get("photoPublicId")?.toString().trim() || undefined,
   });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
@@ -57,7 +57,7 @@ export async function createStudioAction(formData: FormData) {
     data: {
       name: parsed.data.name,
       address: parsed.data.address || null,
-      photoUrl: parsed.data.photoUrl || null,
+      photoPublicId: parsed.data.photoPublicId || null,
       schoolId,
     },
   });
@@ -75,7 +75,7 @@ export async function updateStudioAction(formData: FormData) {
     id: formData.get("studioId"),
     name: formData.get("name"),
     address: formData.get("address") || undefined,
-    photoUrl: formData.get("photoUrl") || undefined,
+    photoPublicId: formData.get("photoPublicId")?.toString().trim() || undefined,
   });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
@@ -94,7 +94,7 @@ export async function updateStudioAction(formData: FormData) {
     data: {
       name: parsed.data.name,
       address: parsed.data.address || null,
-      photoUrl: parsed.data.photoUrl || null,
+      photoPublicId: parsed.data.photoPublicId || null,
     },
   });
 

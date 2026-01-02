@@ -3,6 +3,7 @@
 import { LearningStatus, RecurrenceFrequency } from "@prisma/client";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { CloudinaryUpload } from "@/components/CloudinaryUpload";
 import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 type Student = { id: string; name: string | null; email: string };
@@ -38,7 +39,7 @@ type Props = {
   defaultMaxSeats?: number;
   defaultWaitlistQuota?: number;
   defaultCostCredits?: number;
-  defaultPhotoUrl?: string | null;
+  defaultPhotoPublicId?: string | null;
   defaultDiscipline?: string | null;
   progressByStudent?: ProgressRecord[];
   disciplines?: DisciplineOption[];
@@ -116,7 +117,7 @@ export function CourseForm({
   defaultMaxSeats = 30,
   defaultWaitlistQuota = 0,
   defaultCostCredits = 100,
-  defaultPhotoUrl = "",
+  defaultPhotoPublicId = "",
   defaultDiscipline = "",
   progressByStudent = [],
   disciplines = [],
@@ -153,7 +154,7 @@ export function CourseForm({
   const [maxSeatsValue, setMaxSeatsValue] = useState(String(defaultMaxSeats));
   const [waitlistValue, setWaitlistValue] = useState(String(defaultWaitlistQuota ?? 0));
   const [costValue, setCostValue] = useState(String(defaultCostCredits));
-  const [photoValue, setPhotoValue] = useState(defaultPhotoUrl ?? "");
+  const [photoPublicId, setPhotoPublicId] = useState(defaultPhotoPublicId ?? "");
   const [notes, setNotes] = useState<Record<string, Note>>(defaultNotes);
   const [lastGeneratedCount, setLastGeneratedCount] = useState(0);
   const [selectedTeacherId, setSelectedTeacherId] = useState(
@@ -296,7 +297,17 @@ export function CourseForm({
       last.focus({ preventScroll: true });
     }
     needsRefocus.current = false;
-  }, [titleValue, dateValue, studioValue, durationValue, maxSeatsValue, waitlistValue, costValue, photoValue, selectedDiscipline]);
+  }, [
+    titleValue,
+    dateValue,
+    studioValue,
+    durationValue,
+    maxSeatsValue,
+    waitlistValue,
+    costValue,
+    photoPublicId,
+    selectedDiscipline,
+  ]);
 
   const confirmSubmit = () => {
     setAllowSubmit(true);
@@ -392,19 +403,33 @@ export function CourseForm({
                 </label>
                 <label className="text-sm text-slate-200">
                   Fin de série (incluse)
-                    <input
-                      type="date"
-                      name="recurrenceUntil"
-                      min={resolvedDefaultDateOnly}
-                      value={recurrenceUntil}
-                      onChange={(e) => setRecurrenceUntil(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-                    />
-                  </label>
-                </div>
-              )}
-            </div>
-          )}
+                  <input
+                    type="date"
+                    name="recurrenceUntil"
+                    min={resolvedDefaultDateOnly}
+                    value={recurrenceUntil}
+                    onChange={(e) => setRecurrenceUntil(e.target.value)}
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+        )}
+        <label className="text-sm text-slate-200">
+          Photo (Cloudinary)
+          <CloudinaryUpload
+            label="Uploader une image"
+            folder="poleapp/courses"
+            resourceType="image"
+            deliveryType="upload"
+            accept="image/*"
+            maxSizeMB={8}
+            currentPublicId={photoPublicId || undefined}
+            onChange={(_, publicId) => setPhotoPublicId(publicId ?? "")}
+          />
+          <input type="hidden" name="photoPublicId" value={photoPublicId} />
+        </label>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm text-slate-200">
             Date
@@ -523,18 +548,6 @@ export function CourseForm({
                 </option>
               ))}
             </select>
-          </label>
-          <label className="text-sm text-slate-200">
-            Photo (URL, optionnelle)
-            <input
-              type="url"
-              name="photoUrl"
-              placeholder="https://…"
-              value={photoValue}
-              onChange={(e) => setPhotoValue(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
-            />
-            <p className="mt-1 text-xs text-slate-400">Laisse vide pour utiliser un placeholder.</p>
           </label>
         </div>
 
