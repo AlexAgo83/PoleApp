@@ -85,6 +85,7 @@ export async function updateInvoiceStatusAction(formData: FormData) {
       title: "Facture mise à jour",
       body: `Statut: ${statusStr} — cours ${invoice.course.title ?? invoice.courseId}`,
       link: `/teacher/billing`,
+      courseId: invoice.courseId,
     });
   }
   if (redirectTo) {

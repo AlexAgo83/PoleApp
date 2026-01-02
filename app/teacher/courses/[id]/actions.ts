@@ -269,6 +269,7 @@ export async function updateCourseAction(formData: FormData) {
         title: "Cours mis à jour",
         body: `${courseLabel} — ${dateLabel}`,
         link: `/student/courses/${data.id}`,
+        courseId: data.id,
       }))
     );
   }
@@ -279,6 +280,7 @@ export async function updateCourseAction(formData: FormData) {
       title: "Cours mis à jour",
       body: `${courseLabel} — ${dateLabel}`,
       link: `/teacher/courses/${data.id}`,
+      courseId: data.id,
     });
   }
   const admins = await prisma.user.findMany({
@@ -293,6 +295,7 @@ export async function updateCourseAction(formData: FormData) {
         title: "Cours mis à jour",
         body: `${courseLabel} — ${dateLabel}`,
         link: `/teacher/courses/${data.id}`,
+        courseId: data.id,
       }))
     );
   }
@@ -393,6 +396,7 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
         title: "Nouvelle note",
         body: `${courseLabel} — ${count} position${count > 1 ? "s" : ""}`,
         link: `/student/courses/${courseId}`,
+        courseId,
       }))
     );
   }
@@ -507,12 +511,39 @@ export async function deleteCourseAction(formData: FormData) {
           .then((rows) => rows.map((r) => r.id))
       : [];
   const idsToDelete = [course.id, ...extraVirtualCourses];
-  const attendees = await prisma.courseAttendance.findMany({
-    where: { courseId: { in: idsToDelete } },
-    select: { studentId: true },
-  });
+  let attendancesWithCourse: { studentId: string; courseId: string }[] = [];
 
   await prisma.$transaction(async (tx) => {
+    attendancesWithCourse = await tx.courseAttendance.findMany({
+      where: { courseId: { in: idsToDelete } },
+      select: { studentId: true, courseId: true },
+    });
+
+    const coursesToDelete = await tx.course.findMany({
+      where: { id: { in: idsToDelete } },
+      select: { id: true, costCredits: true },
+    });
+    const costMap = new Map<string, number>(
+      coursesToDelete.map((c) => [c.id, c.costCredits ?? 0])
+    );
+    const refundByUser = new Map<string, number>();
+    for (const attendance of attendancesWithCourse) {
+      const cost = costMap.get(attendance.courseId) ?? 0;
+      if (cost <= 0) continue;
+      refundByUser.set(
+        attendance.studentId,
+        (refundByUser.get(attendance.studentId) ?? 0) + cost
+      );
+    }
+    if (refundByUser.size > 0) {
+      for (const [studentId, amount] of refundByUser) {
+        await tx.user.update({
+          where: { id: studentId },
+          data: { credits: { increment: amount } },
+        });
+      }
+    }
+
     await tx.courseAttendance.deleteMany({ where: { courseId: { in: idsToDelete } } });
     await tx.coursePosition.deleteMany({ where: { courseId: { in: idsToDelete } } });
     await tx.courseNote.deleteMany({ where: { courseId: { in: idsToDelete } } });
@@ -534,7 +565,11 @@ export async function deleteCourseAction(formData: FormData) {
   });
 
   const dateLabel = course.date ? formatCourseDate(new Date(course.date)) : null;
-  const studentIds = Array.from(new Set(attendees.map((a) => a.studentId).filter(Boolean) as string[]));
+  const studentIds = Array.from(
+    new Set(
+      attendancesWithCourse.map((a) => a.studentId).filter(Boolean) as string[]
+    )
+  );
   if (studentIds.length > 0) {
     await createNotifications(
       studentIds.map((studentId) => ({
@@ -543,6 +578,7 @@ export async function deleteCourseAction(formData: FormData) {
         title: "Cours annulé",
         body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
         link: "/student/courses",
+        courseId: course.id,
       }))
     );
   }
@@ -553,6 +589,7 @@ export async function deleteCourseAction(formData: FormData) {
       title: "Cours annulé",
       body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
       link: `/teacher/courses/${course.id}`,
+      courseId: course.id,
     });
   }
   const admins = await prisma.user.findMany({
@@ -567,6 +604,7 @@ export async function deleteCourseAction(formData: FormData) {
         title: "Cours annulé",
         body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
         link: `/teacher/courses/${course.id}`,
+        courseId: course.id,
       }))
     );
   }
