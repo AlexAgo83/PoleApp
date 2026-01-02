@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 
 import { FoxPageHeader } from "@/components/FoxPageHeader";
@@ -31,7 +32,7 @@ export default async function AppLayout({
         {
           label: "Mon espace",
           href: defaultHomeForRole(session.user.role),
-          icon: <img src="/house.svg" alt="" className="h-4 w-4" />,
+          icon: <Image src="/house.svg" alt="" className="h-4 w-4" width={16} height={16} priority />,
         },
         { label: "Déconnexion", href: "/api/auth/signout" },
       ]

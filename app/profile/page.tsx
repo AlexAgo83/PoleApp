@@ -19,11 +19,7 @@ const roleLabels: Record<string, string> = {
 const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 const TEACHER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
-export default async function ProfilePage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ saved?: string }>;
-}) {
+export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -79,8 +75,6 @@ export default async function ProfilePage({
     placeholder: avatarPlaceholder,
   });
 
-  const resolvedSearch = (await searchParams) ?? {};
-  const saved = resolvedSearch.saved === "1";
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
 
   return (

@@ -1,4 +1,5 @@
 import { PositionLevel, PositionType, Prisma } from "@prisma/client";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
@@ -98,30 +99,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     disciplineFilters.length > 0,
   ].filter(Boolean).length;
 
-  const disciplineRows = await prisma.discipline.findMany({
-    select: { id: true, name: true, color: true },
-    orderBy: { name: "asc" },
-  });
-  const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
-  const disciplineFilterNames = disciplineFilters
-    .map((id) => disciplineNameById.get(id))
-    .filter((n): n is string => Boolean(n));
-  const disciplineColors = new Map(
-    disciplineRows
-      .filter((d) => d.name)
-      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
-  );
-  const disciplineStyle = (name?: string | null) => {
-    if (!name) return undefined;
-    const color = disciplineColors.get(name.toLowerCase());
-    if (!color) return undefined;
-    return {
-      borderColor: color,
-      color,
-      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
-    };
-  };
-
   const where: Prisma.PositionWhereInput = {
     ...(typeFilter ? { type: typeFilter } : {}),
     ...(levelFilter ? { levelRequired: levelFilter } : {}),
@@ -176,32 +153,71 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
   if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
   const qs = queryParams.toString();
-  const creatorOptions = await prisma.user.findMany({
-    where: {
-      role: "TEACHER",
-      createdPositions: { some: {} },
-    },
-    select: { id: true, name: true, email: true },
-    orderBy: { name: "asc" },
-  });
-  const positions = await prisma.position.findMany({
-    where,
-    orderBy: { updatedAt: "desc" },
-    skip,
-    take: PAGE_SIZE,
-    include: {
-      media: true,
-      createdBy: { select: { id: true, name: true, email: true } },
-      _count: { select: { progress: true } },
-    },
-  });
+  const [disciplineRows, creatorOptions, positions, studentProgress] = await Promise.all([
+    prisma.discipline.findMany({
+      select: { id: true, name: true, color: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.user.findMany({
+      where: {
+        role: "TEACHER",
+        createdPositions: { some: {} },
+      },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.position.findMany({
+      where,
+      orderBy: { updatedAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        disciplineId: true,
+        discipline: true,
+        levelRequired: true,
+        description: true,
+        tips: true,
+        grips: true,
+        media: {
+          select: { id: true, kind: true, publicId: true },
+          orderBy: { kind: "asc" },
+          take: 2,
+        },
+        createdBy: { select: { id: true, name: true, email: true } },
+        _count: { select: { progress: true } },
+      },
+    }),
+    isStudent
+      ? prisma.studentPositionProgress.findMany({
+          where: { studentId: session.user.id },
+          select: { positionId: true, learningStatus: true },
+        })
+      : Promise.resolve([] as { positionId: string; learningStatus: string }[]),
+  ]);
+  const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
+  const disciplineFilterNames = disciplineFilters
+    .map((id) => disciplineNameById.get(id))
+    .filter((n): n is string => Boolean(n));
+  const disciplineColors = new Map(
+    disciplineRows
+      .filter((d) => d.name)
+      .map((d) => [d.name.toLowerCase(), d.color ?? null]),
+  );
+  const disciplineStyle = (name?: string | null) => {
+    if (!name) return undefined;
+    const color = disciplineColors.get(name.toLowerCase());
+    if (!color) return undefined;
+    return {
+      borderColor: color,
+      color,
+      backgroundColor: hexToRgba(color, 0.16) ?? undefined,
+    };
+  };
+
   const disciplineOptions = disciplineRows.map((d) => ({ id: d.id, name: d.name }));
-  const studentProgress = isStudent
-    ? await prisma.studentPositionProgress.findMany({
-        where: { studentId: session.user.id },
-        select: { positionId: true, learningStatus: true },
-      })
-    : [];
   const progressMap = new Map(studentProgress.map((p) => [p.positionId, p]));
   const progressBadgeClass: Record<string, string> = {
     NOT_STARTED: "border-[#2563eb] bg-[#2563eb] text-white",
@@ -229,7 +245,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           {
             label: "Mon espace",
             href: homeForRole,
-            icon: <img src="/house.svg" alt="" className="h-4 w-4" />,
+            icon: <Image src="/house.svg" alt="" className="h-4 w-4" width={16} height={16} priority />,
           },
           { label: "Déconnexion", href: "/api/auth/signout" },
         ]}
