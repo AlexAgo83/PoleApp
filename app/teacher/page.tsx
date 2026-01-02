@@ -201,28 +201,6 @@ export default async function TeacherDashboard() {
             </div>
           </Link>
           <Link
-            href="/teacher/positions"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="7" r="4" />
-                  <path d="M5 21c0-3.5 3.5-6 7-6s7 2.5 7 6" />
-                  <path d="M9 14c0-1.5 1.5-3 3-3s3 1.5 3 3" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Positions
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Créer, éditer et gérer tes figures
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
             href={teacherProfileHref}
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
