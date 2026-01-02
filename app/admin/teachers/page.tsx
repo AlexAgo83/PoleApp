@@ -74,7 +74,6 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
       id: true,
       name: true,
       email: true,
-      avatarUrl: true,
       avatarPublicId: true,
       isPremium: true,
       createdAt: true,
@@ -154,7 +153,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
                       src={
                         resolveAvatarUrl({
                           avatarPublicId: teacher.avatarPublicId,
-                          avatarUrl: teacher.avatarUrl,
+                          avatarUrl: null,
                           placeholder: TEACHER_AVATAR_PLACEHOLDER,
                         }) || TEACHER_AVATAR_PLACEHOLDER
                       }

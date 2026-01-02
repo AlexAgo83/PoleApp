@@ -108,6 +108,7 @@ model User {
   email         String                    @unique
   name          String?
   age           Int?
+  avatarUrl     String?
   avatarPublicId String?
   diplomas      String?
   passwordHash  String

@@ -20,12 +20,6 @@ const schema = z.object({
     .min(1, "Âge invalide")
     .max(120, "Âge invalide")
     .optional(),
-  avatarUrl: z
-    .string()
-    .trim()
-    .url("URL invalide")
-    .max(2048, "URL trop longue")
-    .optional(),
   avatarPublicId: z.string().trim().max(512).optional(),
   diplomas: z.string().trim().max(2000, "Texte trop long").optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
@@ -46,7 +40,6 @@ export async function updateTeacherProfileAction(formData: FormData) {
     firstName: (formData.get("firstName") as string | null)?.trim() || "",
     lastName: (formData.get("lastName") as string | null)?.trim() || "",
     age: (formData.get("age") as string | null)?.trim() || undefined,
-    avatarUrl: (formData.get("avatarUrl") as string | null)?.trim() || undefined,
     avatarPublicId: (formData.get("avatarPublicId") as string | null)?.trim() || undefined,
     diplomas: (formData.get("diplomas") as string | null)?.trim() || undefined,
     favoritePositions: formData.getAll("favoritePositions").map((value) => value.toString()),
@@ -72,9 +65,6 @@ export async function updateTeacherProfileAction(formData: FormData) {
     age: parsed.data.age ?? null,
     diplomas: parsed.data.diplomas ?? null,
   };
-  if (parsed.data.avatarUrl !== undefined) {
-    updateData.avatarUrl = parsed.data.avatarUrl ?? null;
-  }
   if (parsed.data.avatarPublicId !== undefined) {
     updateData.avatarPublicId = parsed.data.avatarPublicId ?? null;
   }
@@ -125,20 +115,12 @@ export async function updateTeacherProfileAction(formData: FormData) {
 
 const avatarSchema = z.object({
   teacherId: z.string().cuid(),
-  avatarUrl: z
-    .string()
-    .trim()
-    .url("URL invalide")
-    .max(2048, "URL trop longue")
-    .nullable()
-    .optional(),
   avatarPublicId: z.string().trim().max(512).nullable().optional(),
   returnTo: z.string().trim().optional(),
 });
 
 export async function updateTeacherAvatarAction(input: {
   teacherId: string;
-  avatarUrl: string | null;
   avatarPublicId: string | null;
   returnTo?: string;
 }) {
@@ -152,7 +134,6 @@ export async function updateTeacherAvatarAction(input: {
 
   const parsed = avatarSchema.safeParse({
     teacherId: input.teacherId,
-    avatarUrl: input.avatarUrl?.trim() || undefined,
     avatarPublicId: input.avatarPublicId?.trim() || undefined,
     returnTo: input.returnTo?.trim() || undefined,
   });
@@ -172,7 +153,6 @@ export async function updateTeacherAvatarAction(input: {
   await prisma.user.update({
     where: { id: parsed.data.teacherId },
     data: {
-      avatarUrl: parsed.data.avatarUrl ?? null,
       avatarPublicId: parsed.data.avatarPublicId ?? null,
     },
   });

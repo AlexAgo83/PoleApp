@@ -54,7 +54,6 @@ export default async function TeacherPublicProfilePage({
       name: true,
       email: true,
       age: true,
-      avatarUrl: true,
       avatarPublicId: true,
       diplomas: true,
       school: { select: { name: true } },
@@ -89,7 +88,7 @@ export default async function TeacherPublicProfilePage({
 
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: teacher.avatarPublicId,
-    avatarUrl: teacher.avatarUrl,
+    avatarUrl: null,
     placeholder: TEACHER_AVATAR_PLACEHOLDER,
   });
   const favoritePositions =
