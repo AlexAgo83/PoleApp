@@ -299,12 +299,17 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 >
                   <Link href={detailHref ?? "#"} className="space-y-3 block">
                     {preset.imagePublicId ? (
-                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
-                        <SafeImage
-                          publicId={preset.imagePublicId}
-                          alt={preset.title}
-                          className="h-full w-full object-cover"
-                        />
+                      <div className="-mx-4 -mt-4 overflow-hidden rounded-t-2xl border-b border-white/10">
+                        <div className="relative">
+                          <SafeImage
+                            publicId={preset.imagePublicId}
+                            alt={preset.title}
+                            width={480}
+                            height={360}
+                            className="aspect-[4/3] w-full object-cover"
+                          />
+                          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-black/25" />
+                        </div>
                       </div>
                     ) : null}
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
@@ -326,7 +331,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xl font-semibold text-white">{preset.title}</h3>
-                      <p className="text-sm text-slate-200">{preset.description || "Pas de description"}</p>
+                      <p className="text-sm text-slate-200 line-clamp-2">{preset.description || "Pas de description"}</p>
                     </div>
                     {preset.positions.length > 0 ? (
                       <p className="text-xs text-slate-300">
