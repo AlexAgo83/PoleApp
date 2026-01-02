@@ -16,6 +16,20 @@ type Props = {
   currentUserLabel?: string;
   maxPositions?: number;
   showTeacherSelect?: boolean;
+  initialPreset?: {
+    id?: string;
+    title?: string;
+    description?: string | null;
+    discipline?: string | null;
+    disciplineId?: string | null;
+    videoPublicId?: string | null;
+    imagePublicId?: string | null;
+    premiumRequired?: boolean | null;
+    priceCredits?: number | null;
+    positionIds?: string[];
+    teacherId?: string | null;
+  };
+  submitLabel?: string;
 };
 
 export function PresetCreateForm({
@@ -26,23 +40,31 @@ export function PresetCreateForm({
   currentUserLabel,
   maxPositions = 16,
   showTeacherSelect = true,
+  initialPreset,
+  submitLabel,
 }: Props) {
-  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
-  const [imagePublicId, setImagePublicId] = useState<string>("");
-  const [videoPublicId, setVideoPublicId] = useState<string>("");
-  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [selectedDiscipline, setSelectedDiscipline] = useState<string>(
+    initialPreset?.disciplineId ?? initialPreset?.discipline ?? ""
+  );
+  const [imagePublicId, setImagePublicId] = useState<string>(initialPreset?.imagePublicId ?? "");
+  const [videoPublicId, setVideoPublicId] = useState<string>(initialPreset?.videoPublicId ?? "");
+  const [selectedPositions, setSelectedPositions] = useState<string[]>(initialPreset?.positionIds ?? []);
   const [formError, setFormError] = useState<string | null>(null);
+  const isEdit = Boolean(initialPreset?.id);
 
   const filteredPositions = useMemo(() => {
-    if (!selectedDiscipline) return positions.slice(0, maxPositions);
-    return positions
-      .filter((p) => {
-        if (!selectedDiscipline) return true;
-        if (p.disciplineId && p.disciplineId === selectedDiscipline) return true;
-        return (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase();
-      })
-      .slice(0, maxPositions);
-  }, [positions, selectedDiscipline, maxPositions]);
+    const baseList = !selectedDiscipline
+      ? positions
+      : positions.filter((p) => {
+          if (!selectedDiscipline) return true;
+          if (p.disciplineId && p.disciplineId === selectedDiscipline) return true;
+          return (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase();
+        });
+    const selectedItems = positions.filter((p) => selectedPositions.includes(p.id));
+    const merged = [...selectedItems, ...baseList];
+    const deduped = Array.from(new Map(merged.map((p) => [p.id, p])).values());
+    return deduped.slice(0, maxPositions);
+  }, [positions, selectedDiscipline, maxPositions, selectedPositions]);
 
   const labelForTeacher = (t: Teacher) => t.name ?? t.email ?? "Professeur";
   const togglePosition = (id: string) => {
@@ -62,11 +84,13 @@ export function PresetCreateForm({
 
   return (
     <form action={action} onSubmit={handleSubmit} className="space-y-4">
+      {initialPreset?.id ? <input type="hidden" name="id" value={initialPreset.id} /> : null}
       <label className="text-sm text-slate-200">
         Titre
         <input
           name="title"
           required
+          defaultValue={initialPreset?.title ?? ""}
           className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
         />
       </label>
@@ -91,8 +115,23 @@ export function PresetCreateForm({
         <textarea
           name="description"
           rows={3}
+          defaultValue={initialPreset?.description ?? ""}
           className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
         />
+      </label>
+      <label className="text-sm text-slate-200">
+        Image (Cloudinary)
+        <CloudinaryUpload
+          label="Uploader une image"
+          folder="poleapp/presets"
+          resourceType="image"
+          deliveryType="upload"
+          accept="image/*"
+          maxSizeMB={10}
+          currentPublicId={imagePublicId || undefined}
+          onChange={(_, publicId) => setImagePublicId(publicId ?? "")}
+        />
+        <input type="hidden" name="imagePublicId" value={imagePublicId} />
       </label>
       <label className="text-sm text-slate-200">
         Vidéo (Cloudinary)
@@ -108,28 +147,13 @@ export function PresetCreateForm({
         />
         <input type="hidden" name="videoPublicId" value={videoPublicId} />
       </label>
-      <label className="text-sm text-slate-200">
-        Image (Cloudinary)
-        <CloudinaryUpload
-          label="Uploader une image"
-          folder="poleapp/presets"
-          resourceType="image"
-          deliveryType="upload"
-          accept="image/*"
-          maxSizeMB={10}
-          currentPublicId={imagePublicId || undefined}
-          onChange={(_, publicId) => setImagePublicId(publicId ?? "")}
-        />
-        <input type="hidden" name="imagePublicId" value={imagePublicId} />
-        <span className="text-xs text-slate-400">Facultatif, améliore l’aperçu du preset.</span>
-      </label>
       {showTeacherSelect ? (
         <label className="text-sm text-slate-200">
           Professeur (créateur)
           <select
             name="teacherId"
             className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-            defaultValue=""
+            defaultValue={initialPreset?.teacherId ?? ""}
           >
             <option value="">{currentUserLabel ?? "Moi"}</option>
             {teachers.map((t) => (
@@ -142,7 +166,12 @@ export function PresetCreateForm({
       ) : null}
       <div className="flex flex-wrap items-center gap-4 text-sm text-slate-200">
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="premiumRequired" className="h-4 w-4" />
+          <input
+            type="checkbox"
+            name="premiumRequired"
+            className="h-4 w-4"
+            defaultChecked={initialPreset?.premiumRequired ?? false}
+          />
           <span>Premium requis</span>
         </label>
         <label className="inline-flex items-center gap-2">
@@ -152,6 +181,7 @@ export function PresetCreateForm({
             type="number"
             min={0}
             placeholder="ex: 150"
+            defaultValue={initialPreset?.priceCredits ?? ""}
             className="w-24 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-cyan-400"
           />
         </label>
@@ -199,7 +229,7 @@ export function PresetCreateForm({
           type="submit"
           className="rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-200"
         >
-          Créer
+          {submitLabel ?? (isEdit ? "Enregistrer" : "Créer")}
         </button>
       </div>
     </form>
