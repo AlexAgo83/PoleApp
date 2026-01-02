@@ -168,9 +168,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               </Link>
             )}
             <div className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
-              <span className="hidden text-xs md:inline">
-                Page {currentPage} / {totalPages} · {totalCount} presets
-              </span>
               <div className="flex items-center gap-1">
                 <Link
                   aria-label="Page précédente"
@@ -505,6 +502,11 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           </div>
         )}
 
+        <div className="flex flex-wrap items-center justify-between text-sm text-slate-300">
+          <span>
+            Page {currentPage} / {totalPages} · {totalCount} presets
+          </span>
+        </div>
       </section>
     </main>
   );

@@ -264,7 +264,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                 }`}
               >
-                Précédent
+                ←
               </Link>
               <Link
                 href={`/positions?page=${Math.min(totalPages, currentPage + 1)}${qs ? `&${qs}` : ""}`}
@@ -275,7 +275,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
                 }`}
               >
-                Suivant
+                →
               </Link>
             </div>
           </div>
