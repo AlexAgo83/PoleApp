@@ -45,7 +45,8 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
   });
   if (!preset) notFound();
 
-  const normalizedVideoId = normalizeFolderedPublicId(preset.videoPublicId, "poleapp/presets") ?? preset.videoPublicId ?? null;
+  const normalizedVideoId =
+    normalizeFolderedPublicId(preset.videoPublicId, "poleapp/presets") ?? preset.videoPublicId ?? null;
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
   const videoId = normalizedVideoId ? normalizedVideoId.split("/").pop() ?? normalizedVideoId : undefined;
   const isSeedVideo = isSeedPublicId(videoId);
@@ -91,7 +92,9 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
             format: "jpg",
           }) ??
           (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.jpg` : null))) ??
-    null;
+    (preset.imagePublicId && cloudName
+      ? `https://res.cloudinary.com/${cloudName}/image/upload/${preset.imagePublicId}`
+      : null);
 
   const priceLabel = PRICE_LABEL(preset.priceCredits, preset.premiumRequired ?? false);
 
