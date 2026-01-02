@@ -170,11 +170,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           </div>
         </div>
         {isStudent ? null : null}
-        {flash === "ok" && (
-          <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-100 border border-emerald-400/40">
-            Achat enregistré.
-          </p>
-        )}
         {flash === "already" && (
           <p className="rounded-lg bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 border border-cyan-400/40">
             Preset déjà acheté.
@@ -238,19 +233,17 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 <option value="free">Gratuit</option>
               </select>
             </label>
-            {isTeacherOrAdmin ? (
-              <label className="text-sm text-slate-200">
-                Créateur
-                <select
-                  name="owner"
-                  defaultValue={ownerFilter}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                >
-                  <option value="">Tous</option>
-                  <option value="me">Mes combos</option>
-                </select>
-              </label>
-            ) : null}
+            <label className="text-sm text-slate-200">
+              Mes combos
+              <select
+                name="owner"
+                defaultValue={ownerFilter}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              >
+                <option value="">Tous</option>
+                <option value="me">Mes combos</option>
+              </select>
+            </label>
             {isStudent ? (
               <label className="text-sm text-slate-200">
                 Achats
@@ -419,16 +412,9 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                     ) : (
                       <p className="text-xs text-slate-400">Aucune position liée.</p>
                     )}
-                    <p className="text-xs text-slate-400">Usage : unique</p>
                   </Link>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-xs text-slate-300">
-                      {isStudent
-                        ? alreadyBought
-                          ? "Déjà acheté"
-                          : ""
-                        : ""}
-                    </div>
+                    <div className="text-xs text-slate-300" />
                     {isStudent ? (
                       <form action={buyPresetAction} className="flex flex-wrap items-center gap-2">
                         <input type="hidden" name="presetId" value={preset.id} />

@@ -76,8 +76,12 @@ export function buildPresetFilters({
     where.premiumRequired = false;
     where.priceCredits = 0;
   }
-  if (ownerFilter === "me" && isTeacherOrAdmin && userId) {
-    where.createdByUserId = userId;
+  if (ownerFilter === "me") {
+    if (isTeacherOrAdmin && userId) {
+      where.createdByUserId = userId;
+    } else if (isStudent) {
+      where.id = { in: purchasedPresetIds.size ? Array.from(purchasedPresetIds) : ["__none__"] };
+    }
   }
   if (mediaFilter === "image") {
     where.imagePublicId = { not: null };
