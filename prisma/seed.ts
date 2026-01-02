@@ -590,6 +590,7 @@ async function resetAll() {
     "GameSession",
     "StudentInjury",
     "InjuryType",
+    "Notification",
     "User",
     "School"
     CASCADE;`);
@@ -1632,8 +1633,21 @@ async function seedGameSessions(students: { id: string; schoolId: string }[]) {
 }
 
 async function seedNotificationsSamples() {
+  const admins = await prisma.user.findMany({
+    where: { role: Role.SCHOOL_ADMIN },
+    select: { id: true, schoolId: true },
+  });
+  const adminsBySchool = new Map<string | null, { id: string }[]>();
+  admins.forEach((admin) => {
+    adminsBySchool.set(admin.schoolId ?? null, [...(adminsBySchool.get(admin.schoolId ?? null) ?? []), { id: admin.id }]);
+  });
+
   const courses = await prisma.course.findMany({
-    include: {
+    select: {
+      id: true,
+      title: true,
+      date: true,
+      schoolId: true,
       teacher: { select: { id: true, name: true, email: true } },
       attendances: { include: { student: { select: { id: true, name: true, email: true } } } },
       notes: { include: { student: { select: { id: true, name: true, email: true } }, position: { select: { name: true } } } },
@@ -1706,6 +1720,31 @@ async function seedNotificationsSamples() {
         link: `/teacher/billing`,
       });
     }
+    const adminsForSchool = adminsBySchool.get(course.schoolId ?? null) ?? [];
+    if (adminsForSchool.length > 0) {
+      if (course.attendances.length > 0) {
+        const attendee = course.attendances[0];
+        const studentName = attendee.student?.name ?? attendee.student?.email ?? "Élève";
+        adminsForSchool.forEach((admin) =>
+          notifications.push({
+            userId: admin.id,
+            kind: NotificationKind.ADMIN_COURSE_SIGNUP,
+            title: "Nouvelle inscription",
+            body: `${studentName} → ${course.title ?? "Cours"}${dateLabel ? ` (${dateLabel})` : ""}`,
+            link: `/teacher/courses/${course.id}`,
+          })
+        );
+      }
+      adminsForSchool.forEach((admin) =>
+        notifications.push({
+          userId: admin.id,
+          kind: NotificationKind.ADMIN_COURSE_UPDATED,
+          title: "Cours mis à jour",
+          body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
+          link: `/teacher/courses/${course.id}`,
+        })
+      );
+    }
   }
 
   const existingByUser = new Set(notifications.map((n) => n.userId));
@@ -1760,6 +1799,82 @@ async function seedNotificationsSamples() {
         : "Cours récent",
       link: attendance?.course ? `/student/courses/${attendance.course.id}` : "/student/courses",
     });
+  }
+
+  if (notifications.length > 0) {
+    await prisma.notification.createMany({
+      data: notifications,
+      skipDuplicates: true,
+    });
+  }
+}
+
+async function seedAdminNotifications() {
+  const admins = await prisma.user.findMany({
+    where: { role: Role.SCHOOL_ADMIN },
+    select: { id: true, schoolId: true },
+  });
+  if (admins.length === 0) return;
+
+  const adminsBySchool = new Map<string | null, { id: string }[]>();
+  admins.forEach((admin) => {
+    adminsBySchool.set(admin.schoolId ?? null, [...(adminsBySchool.get(admin.schoolId ?? null) ?? []), { id: admin.id }]);
+  });
+
+  const courses = await prisma.course.findMany({
+    select: {
+      id: true,
+      title: true,
+      date: true,
+      schoolId: true,
+      attendances: { select: { studentId: true } },
+    },
+  });
+
+  const notifications: Array<{
+    userId: string;
+    kind: NotificationKind;
+    title: string;
+    body?: string | null;
+    link?: string | null;
+  }> = [];
+
+  const formatCourseDate = (date: Date | string | null | undefined) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  for (const course of courses) {
+    const adminsForSchool = adminsBySchool.get(course.schoolId ?? null) ?? [];
+    if (adminsForSchool.length === 0) continue;
+    const dateLabel = formatCourseDate(course.date);
+    adminsForSchool.forEach((admin) => {
+      notifications.push({
+        userId: admin.id,
+        kind: NotificationKind.ADMIN_COURSE_UPDATED,
+        title: "Cours mis à jour",
+        body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
+        link: `/teacher/courses/${course.id}`,
+      });
+    });
+    const firstSignup = course.attendances[0];
+    if (firstSignup) {
+      adminsForSchool.forEach((admin) => {
+        notifications.push({
+          userId: admin.id,
+          kind: NotificationKind.ADMIN_COURSE_SIGNUP,
+          title: "Nouvelle inscription",
+          body: `${course.title ?? "Cours"}${dateLabel ? ` (${dateLabel})` : ""}`,
+          link: `/teacher/courses/${course.id}`,
+        });
+      });
+    }
   }
 
   if (notifications.length > 0) {
@@ -1975,6 +2090,7 @@ async function main() {
   await seedPurchases(students);
   await seedCourses({ schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher });
   await seedNotificationsSamples();
+  await seedAdminNotifications();
   await seedGameSessions(students);
 }
 
