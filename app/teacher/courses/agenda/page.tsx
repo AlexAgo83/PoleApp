@@ -147,7 +147,19 @@ export default async function CoursesAgendaPage({
           }
         : {}),
     },
-    include: { teacher: { select: { name: true, email: true } }, studio: { select: { name: true } } },
+    select: {
+      id: true,
+      title: true,
+      photoPublicId: true,
+      disciplineId: true,
+      discipline: true,
+      date: true,
+      durationMinutes: true,
+      isVirtual: true,
+      teacher: { select: { name: true, email: true } },
+      studio: { select: { name: true } },
+      _count: { select: { positions: true } },
+    },
     orderBy: { date: "asc" },
   });
   const studios = await prisma.studio.findMany({
@@ -209,13 +221,16 @@ export default async function CoursesAgendaPage({
     courses: (cell.courses ?? []).map((course) => ({
       id: course.id,
       title: course.title,
+      photoPublicId: (course as any).photoPublicId ?? null,
       disciplineId: (course as any).disciplineId ?? null,
       discipline: disciplineNameById.get((course as any).disciplineId ?? "") ?? null,
       date: course.date instanceof Date ? course.date.toISOString() : course.date,
       durationMinutes: course.durationMinutes,
       teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
       studioName: course.studio?.name ?? "Studio non renseigné",
+      positionsCount: course._count?.positions,
       past: isPastCourse(course.date, course.durationMinutes),
+      isVirtual: course.isVirtual,
     })),
   }));
   const hasMonthCourses = courses.length > 0;
@@ -261,12 +276,15 @@ export default async function CoursesAgendaPage({
         return {
           id: course.id,
           title: course.title,
+          photoPublicId: (course as any).photoPublicId ?? null,
           disciplineId: (course as any).disciplineId ?? null,
           discipline: disciplineNameById.get((course as any).disciplineId ?? "") ?? null,
           date: course.date.toISOString(),
           durationMinutes: course.durationMinutes,
           teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
           studioName: course.studio?.name ?? "Studio non renseigné",
+          positionsCount: course._count?.positions,
+          isVirtual: course.isVirtual,
           past,
         };
       }),

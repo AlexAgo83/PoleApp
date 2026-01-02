@@ -103,6 +103,7 @@ export async function GET(req: Request) {
             select: {
               id: true,
               title: true,
+              photoPublicId: true,
               disciplineId: true,
               date: true,
               durationMinutes: true,
@@ -129,6 +130,7 @@ export async function GET(req: Request) {
           select: {
             id: true,
             title: true,
+            photoPublicId: true,
             disciplineId: true,
             date: true,
             durationMinutes: true,
@@ -190,6 +192,7 @@ export async function GET(req: Request) {
       courses: dayCourses.map((a) => ({
         id: a.course.id,
         title: a.course.title,
+        photoPublicId: (a.course as any).photoPublicId ?? null,
         disciplineId: (a.course as any).disciplineId ?? null,
         discipline:
           (a.course as any).disciplineId && disciplineNameById[(a.course as any).disciplineId]

@@ -5,10 +5,12 @@ import { useState, useTransition } from "react";
 import clsx from "clsx";
 
 import { MonthNav } from "@/components/MonthNav";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 type MonthCourse = {
   id: string;
   title: string | null;
+  photoPublicId?: string | null;
   discipline?: string | null;
   disciplineId?: string | null;
   date: string;
@@ -165,7 +167,7 @@ export function MonthView({
                   : "border border-white/10 bg-white/5"
               }`}
             >
-              <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+              <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white pt-0.5 pl-0.5">
                 <span className="flex items-center gap-1">
                   <span
                     className={`text-[10px] uppercase tracking-wide md:text-xs ${
@@ -178,7 +180,9 @@ export function MonthView({
                     {cell.day ?? "—"}
                   </span>
                 </span>
-                <span className="text-[11px] text-cyan-100">{(cell.courses?.length ?? 0)} cours</span>
+                {cell.courses && cell.courses.length > 0 && (
+                  <span className="text-[11px] text-cyan-100">{cell.courses.length} cours</span>
+                )}
               </div>
               {cell.courses &&
                 cell.courses.slice(0, 3).map((course) => {
@@ -200,6 +204,17 @@ export function MonthView({
                           ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                           : "border-white/10 bg-white/10 text-white"
                       }`}
+                      style={
+                        course.photoPublicId && CLOUD_NAME
+                          ? {
+                              backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.25), rgba(15,25,45,0.22)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_600,h_360/${course.photoPublicId})`,
+                              backgroundBlendMode: "soft-light",
+                              backgroundColor: "rgba(8,12,20,0.35)",
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }
+                          : undefined
+                      }
                     >
                       <div className="flex-1 space-y-0.5 overflow-hidden">
                         <p className="text-[9px] text-cyan-100 whitespace-nowrap">

@@ -88,6 +88,7 @@ export async function GET(req: Request) {
     select: {
       id: true,
       title: true,
+      photoPublicId: true,
       disciplineId: true,
       date: true,
       durationMinutes: true,
@@ -139,6 +140,7 @@ export async function GET(req: Request) {
     courses: (cell.courses ?? []).map((course) => ({
       id: course.id,
       title: course.title,
+      photoPublicId: (course as any).photoPublicId ?? null,
       disciplineId: course.disciplineId,
       discipline: course.disciplineId ? disciplineNameById[course.disciplineId] ?? null : null,
       date: course.date instanceof Date ? course.date.toISOString() : course.date,

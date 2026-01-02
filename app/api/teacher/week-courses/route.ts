@@ -78,6 +78,7 @@ export async function GET(req: Request) {
     select: {
       id: true,
       title: true,
+      photoPublicId: true,
       disciplineId: true,
       date: true,
       durationMinutes: true,
@@ -124,12 +125,13 @@ export async function GET(req: Request) {
       isPast: d < new Date(new Date().setHours(0, 0, 0, 0)),
       courses: dayCourses.map((course) => ({
         id: course.id,
-        title: course.title,
-        disciplineId: (course as any).disciplineId ?? null,
-        discipline:
-          (course as any).disciplineId && disciplineNameById[(course as any).disciplineId]
-            ? disciplineNameById[(course as any).disciplineId]
-            : null,
+      title: course.title,
+      photoPublicId: (course as any).photoPublicId ?? null,
+      disciplineId: (course as any).disciplineId ?? null,
+      discipline:
+        (course as any).disciplineId && disciplineNameById[(course as any).disciplineId]
+          ? disciplineNameById[(course as any).disciplineId]
+          : null,
         date: course.date.toISOString(),
         durationMinutes: course.durationMinutes,
         teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
