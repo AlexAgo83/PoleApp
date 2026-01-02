@@ -150,7 +150,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-2xl font-semibold text-white">Presets & combos</h2>
-          <div className="flex flex-wrap justify-end gap-2 md:w-auto">
+          <div className="flex flex-wrap items-center justify-end gap-2 md:w-auto">
             <Link
               href="/positions"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -167,6 +167,51 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 </span>
               </Link>
             )}
+            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-200">
+              <span className="hidden text-xs md:inline">
+                Page {currentPage} / {totalPages} · {totalCount} presets
+              </span>
+              <div className="flex items-center gap-1">
+                <Link
+                  aria-label="Page précédente"
+                  className={`rounded-full border px-2 py-1 text-xs font-semibold transition ${
+                    currentPage > 1
+                      ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                      : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+                  }`}
+                  href={
+                    currentPage > 1
+                      ? `?${(() => {
+                          const params = new URLSearchParams(Object.fromEntries(queryParams.entries()));
+                          params.set("page", String(Math.max(1, currentPage - 1)));
+                          return params.toString();
+                        })()}`
+                      : "#"
+                  }
+                >
+                  ←
+                </Link>
+                <Link
+                  aria-label="Page suivante"
+                  className={`rounded-full border px-2 py-1 text-xs font-semibold transition ${
+                    currentPage < totalPages
+                      ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
+                      : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+                  }`}
+                  href={
+                    currentPage < totalPages
+                      ? `?${(() => {
+                          const params = new URLSearchParams(Object.fromEntries(queryParams.entries()));
+                          params.set("page", String(Math.min(totalPages, currentPage + 1)));
+                          return params.toString();
+                        })()}`
+                      : "#"
+                  }
+                >
+                  →
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
         {isStudent ? null : null}
@@ -460,35 +505,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           </div>
         )}
 
-        <div className="flex items-center justify-between text-sm text-slate-300">
-          <span>
-            Page {currentPage} / {totalPages} · {totalCount} presets
-          </span>
-          <div className="flex items-center gap-2">
-            {currentPage > 1 && (
-              <Link
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-                href={`?${new URLSearchParams({
-                  ...Object.fromEntries(queryParams.entries()),
-                  page: String(Math.max(1, currentPage - 1)),
-                }).toString()}`}
-              >
-                Précédent
-              </Link>
-            )}
-            {currentPage < totalPages && (
-              <Link
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white hover:border-cyan-300/60 hover:bg-cyan-500/20"
-                href={`?${new URLSearchParams({
-                  ...Object.fromEntries(queryParams.entries()),
-                  page: String(Math.min(totalPages, currentPage + 1)),
-                }).toString()}`}
-              >
-                Suivant
-              </Link>
-            )}
-          </div>
-        </div>
       </section>
     </main>
   );
