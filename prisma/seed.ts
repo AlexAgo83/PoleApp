@@ -11,6 +11,7 @@ import {
   InvoiceStatus,
   ManualFinancialStatus,
   LearningStatus,
+  NotificationKind,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import fs from "fs";
@@ -1630,6 +1631,145 @@ async function seedGameSessions(students: { id: string; schoolId: string }[]) {
   }
 }
 
+async function seedNotificationsSamples() {
+  const courses = await prisma.course.findMany({
+    include: {
+      teacher: { select: { id: true, name: true, email: true } },
+      attendances: { include: { student: { select: { id: true, name: true, email: true } } } },
+      notes: { include: { student: { select: { id: true, name: true, email: true } }, position: { select: { name: true } } } },
+      invoices: { select: { id: true, status: true, courseId: true } },
+    },
+  });
+
+  const notifications: Array<{
+    userId: string;
+    kind: NotificationKind;
+    title: string;
+    body?: string | null;
+    link?: string | null;
+  }> = [];
+
+  const formatCourseDate = (date: Date | string | null | undefined) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  for (const course of courses) {
+    const dateLabel = formatCourseDate(course.date);
+    if (course.teacher && course.attendances.length > 0) {
+      const attendee = course.attendances[0];
+      const studentName = attendee.student?.name ?? attendee.student?.email ?? "Élève";
+      notifications.push({
+        userId: course.teacher.id,
+        kind: NotificationKind.COURSE_SIGNUP,
+        title: "Nouvelle inscription",
+        body: `${studentName} s'est inscrit(e) à ${course.title ?? "un cours"}${dateLabel ? ` (${dateLabel})` : ""}`,
+        link: `/teacher/courses/${course.id}`,
+      });
+    }
+
+    const uniqueStudents = new Set(course.attendances.map((a) => a.student?.id).filter(Boolean) as string[]);
+    uniqueStudents.forEach((studentId) => {
+      notifications.push({
+        userId: studentId,
+        kind: NotificationKind.COURSE_UPDATED,
+        title: "Cours mis à jour",
+        body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
+        link: `/student/courses/${course.id}`,
+      });
+    });
+
+    course.notes.forEach((note) => {
+      if (!note.student?.id) return;
+      notifications.push({
+        userId: note.student.id,
+        kind: NotificationKind.NOTE_ADDED,
+        title: "Nouvelle note",
+        body: `${course.title ?? "Cours"} — ${note.position?.name ?? "Position"}`,
+        link: `/student/courses/${course.id}`,
+      });
+    });
+
+    if (course.teacher && course.invoices.length > 0) {
+      const invoice = course.invoices[0];
+      notifications.push({
+        userId: course.teacher.id,
+        kind: NotificationKind.INVOICE_STATUS,
+        title: "Facture mise à jour",
+        body: `${invoice.status} — ${course.title ?? "Cours"}`,
+        link: `/teacher/billing`,
+      });
+    }
+  }
+
+  const existingByUser = new Set(notifications.map((n) => n.userId));
+  const teacherMain = await prisma.user.findFirst({ where: { email: "teacher@poleapp.test" } });
+  if (teacherMain && !existingByUser.has(teacherMain.id)) {
+    const course = await prisma.course.findFirst({
+      where: { teacherId: teacherMain.id },
+      orderBy: { date: "desc" },
+    });
+    notifications.push({
+      userId: teacherMain.id,
+      kind: NotificationKind.COURSE_UPDATED,
+      title: "Cours mis à jour",
+      body: `${course?.title ?? "Cours"}${course?.date ? ` — ${formatCourseDate(course.date)}` : ""}`,
+      link: course ? `/teacher/courses/${course.id}` : "/teacher/courses",
+    });
+    existingByUser.add(teacherMain.id);
+  }
+
+  const studentMain = await prisma.user.findFirst({ where: { email: "student1@poleapp.test" } });
+  if (studentMain && !existingByUser.has(studentMain.id)) {
+    const attendance = await prisma.courseAttendance.findFirst({
+      where: { studentId: studentMain.id },
+      include: { course: true },
+      orderBy: { createdAt: "desc" },
+    });
+    notifications.push({
+      userId: studentMain.id,
+      kind: NotificationKind.NOTE_ADDED,
+      title: "Nouvelle note",
+      body: attendance?.course
+        ? `${attendance.course.title ?? "Cours"}${attendance.course.date ? ` — ${formatCourseDate(attendance.course.date)}` : ""}`
+        : "Cours récent",
+      link: attendance?.course ? `/student/courses/${attendance.course.id}` : "/student/courses",
+    });
+    existingByUser.add(studentMain.id);
+  }
+
+  const studentSecondary = await prisma.user.findFirst({ where: { email: "student2@poleapp.test" } });
+  if (studentSecondary && !existingByUser.has(studentSecondary.id)) {
+    const attendance = await prisma.courseAttendance.findFirst({
+      where: { studentId: studentSecondary.id },
+      include: { course: true },
+      orderBy: { createdAt: "desc" },
+    });
+    notifications.push({
+      userId: studentSecondary.id,
+      kind: NotificationKind.COURSE_UPDATED,
+      title: "Cours mis à jour",
+      body: attendance?.course
+        ? `${attendance.course.title ?? "Cours"}${attendance.course.date ? ` — ${formatCourseDate(attendance.course.date)}` : ""}`
+        : "Cours récent",
+      link: attendance?.course ? `/student/courses/${attendance.course.id}` : "/student/courses",
+    });
+  }
+
+  if (notifications.length > 0) {
+    await prisma.notification.createMany({
+      data: notifications,
+      skipDuplicates: true,
+    });
+  }
+}
+
 async function seedGlobalSettingsAndOffers() {
   const timezone = process.env.GLOBAL_TIMEZONE || "Europe/Paris";
   const icsAlarm = Number.parseInt(process.env.GLOBAL_ICS_ALARM_MINUTES || "30", 10);
@@ -1834,6 +1974,7 @@ async function main() {
   await seedPresets({ schools, positions, teachers, disciplinesBySchool });
   await seedPurchases(students);
   await seedCourses({ schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher });
+  await seedNotificationsSamples();
   await seedGameSessions(students);
 }
 

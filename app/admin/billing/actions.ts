@@ -3,12 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { InvoiceStatus } from "@prisma/client";
+import { InvoiceStatus, NotificationKind } from "@prisma/client";
 import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
+import { createNotification } from "@/lib/notifications";
 
 const updateInvoiceSchema = z.object({
   invoiceId: z.string().min(1),
@@ -77,6 +78,15 @@ export async function updateInvoiceStatusAction(formData: FormData) {
     })
   );
   revalidatePath("/admin/billing");
+  if (invoice.course.teacherId) {
+    await createNotification({
+      userId: invoice.course.teacherId,
+      kind: NotificationKind.INVOICE_STATUS,
+      title: "Facture mise à jour",
+      body: `Statut: ${statusStr} — cours ${invoice.course.title ?? invoice.courseId}`,
+      link: `/teacher/billing`,
+    });
+  }
   if (redirectTo) {
     redirect(redirectTo);
   }

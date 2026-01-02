@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
-import { Prisma } from "@prisma/client";
+import { Prisma, NotificationKind } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "@/lib/notifications";
 
 const purchaseSchema = z.object({
   courseId: z.string().cuid(),
@@ -27,12 +28,15 @@ export async function purchaseCourseAction(formData: FormData) {
 
 type CourseWithCounts = {
   id: string;
+  title?: string | null;
   date: Date;
   durationMinutes: number | null;
   maxSeats?: number | null;
   costCredits?: number | null;
   waitlistQuota?: number | null;
   isVirtual?: boolean;
+  teacherId?: string | null;
+  teacher?: { id: string; name: string | null; email: string | null } | null;
   _count: { attendances: number; positions: number };
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
 };
@@ -43,12 +47,15 @@ type CourseWithCounts = {
       where: { id: parsed.data.courseId, schoolId: session.user.schoolId ?? undefined },
       select: {
         id: true,
+        title: true,
         date: true,
         durationMinutes: true,
         maxSeats: true,
         costCredits: true,
         waitlistQuota: true,
         isVirtual: true,
+        teacherId: true,
+        teacher: { select: { id: true, name: true, email: true } },
         _count: { select: { attendances: true, positions: true } },
         attendances: {
           where: { studentId: session.user.id },
@@ -65,10 +72,13 @@ type CourseWithCounts = {
         where: { id: parsed.data.courseId, schoolId: session.user.schoolId ?? undefined },
         select: {
           id: true,
+          title: true,
           date: true,
           durationMinutes: true,
           maxSeats: true,
           costCredits: true,
+          teacherId: true,
+          teacher: { select: { id: true, name: true, email: true } },
           _count: { select: { attendances: true, positions: true } },
           attendances: {
             where: { studentId: session.user.id },
@@ -102,6 +112,8 @@ type CourseWithCounts = {
   }
 
   const cost = course.costCredits ?? 100;
+  let finalStatus: "CONFIRMED" | "WAITLIST" = "CONFIRMED";
+  let finalWaitlistRank: number | null = null;
 
   await prisma.$transaction(async (tx) => {
     const creditResult = await tx.user.updateMany({
@@ -167,13 +179,34 @@ type CourseWithCounts = {
     if (isFull && !waitlistAvailable) {
       throw new Error("Liste d'attente complète pour ce cours");
     }
-    const status: "CONFIRMED" | "WAITLIST" = isFull ? "WAITLIST" : "CONFIRMED";
-    const waitlistRank = status === "WAITLIST" ? waitlistCount + 1 : null;
+    finalStatus = isFull ? "WAITLIST" : "CONFIRMED";
+    finalWaitlistRank = finalStatus === "WAITLIST" ? waitlistCount + 1 : null;
 
     await tx.courseAttendance.create({
-      data: { courseId: course.id, studentId: session.user.id, status, waitlistRank },
+      data: { courseId: course.id, studentId: session.user.id, status: finalStatus, waitlistRank: finalWaitlistRank },
     });
   });
+
+  const studentName = session.user.name ?? session.user.email ?? "Élève";
+  if (course.teacherId) {
+    const teacherNotification = {
+      userId: course.teacherId,
+      kind: NotificationKind.COURSE_SIGNUP,
+      title: "Nouvelle inscription",
+      body: `${studentName} s'est inscrit(e) à ${course.title ?? "un cours"} (${new Date(course.date).toLocaleString("fr-FR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })})`,
+      link: `/teacher/courses/${course.id}`,
+    };
+    await createNotification(teacherNotification);
+  }
+  if (finalStatus === "WAITLIST") {
+    await createNotification({
+      userId: session.user.id,
+      kind: NotificationKind.WAITLIST,
+      title: "Inscription en liste d'attente",
+      body: `${course.title ?? "Cours"} — vous êtes en file d'attente (rang ${finalWaitlistRank ?? "?"})`,
+      link: `/student/courses/${course.id}`,
+    });
+  }
 
   revalidatePath("/student/courses");
   revalidatePath("/student/courses/agenda");

@@ -1,6 +1,6 @@
 "use server";
 
-import { LearningStatus, Prisma, SuggestionTag } from "@prisma/client";
+import { LearningStatus, NotificationKind, Prisma, SuggestionTag } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -9,6 +9,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCourseSuggestions } from "@/lib/courseGenerator";
+import { createNotification, createNotifications } from "@/lib/notifications";
 
 const updateSchema = z.object({
   id: z.string().cuid(),
@@ -52,6 +53,14 @@ const updateNotesSchema = z.object({
     )
     .default([]),
 });
+
+const formatCourseDate = (date: Date) =>
+  date.toLocaleString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 export async function updateCourseAction(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -250,6 +259,29 @@ export async function updateCourseAction(formData: FormData) {
     durationMinutes: data.durationMinutes,
   });
 
+  const courseLabel = data.title || "Cours";
+  const dateLabel = formatCourseDate(new Date(data.date));
+  if (data.studentIds.length > 0) {
+    await createNotifications(
+      data.studentIds.map((studentId) => ({
+        userId: studentId,
+        kind: NotificationKind.COURSE_UPDATED,
+        title: "Cours mis à jour",
+        body: `${courseLabel} — ${dateLabel}`,
+        link: `/student/courses/${data.id}`,
+      }))
+    );
+  }
+  if (teacherId && teacherId !== session.user.id) {
+    await createNotification({
+      userId: teacherId,
+      kind: NotificationKind.COURSE_UPDATED,
+      title: "Cours mis à jour",
+      body: `${courseLabel} — ${dateLabel}`,
+      link: `/teacher/courses/${data.id}`,
+    });
+  }
+
   revalidatePath("/teacher/courses");
   revalidatePath(`/teacher/courses/${data.id}`);
   redirect(`/teacher/courses/${data.id}`);
@@ -308,7 +340,7 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
 
   const course = await prisma.course.findFirst({
     where: { id: courseId, schoolId: session.user.schoolId },
-    select: { id: true, teacherId: true },
+    select: { id: true, teacherId: true, title: true },
   });
   if (!course) {
     redirect("/access-denied");
@@ -332,6 +364,23 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
       await upsertProgressFromNotes(tx, parsedNotes, session.user.id);
     }
   });
+
+  if (parsedNotes.length > 0) {
+    const byStudent = new Map<string, number>();
+    parsedNotes.forEach((n) => {
+      byStudent.set(n.studentId, (byStudent.get(n.studentId) ?? 0) + 1);
+    });
+    const courseLabel = course.title || "Cours";
+    await createNotifications(
+      Array.from(byStudent.entries()).map(([studentId, count]) => ({
+        userId: studentId,
+        kind: NotificationKind.NOTE_ADDED,
+        title: "Nouvelle note",
+        body: `${courseLabel} — ${count} position${count > 1 ? "s" : ""}`,
+        link: `/student/courses/${courseId}`,
+      }))
+    );
+  }
 
   revalidatePath(`/teacher/courses/${courseId}`);
 }
@@ -421,7 +470,7 @@ export async function deleteCourseAction(formData: FormData) {
 
   const course = await prisma.course.findFirst({
     where: { id: parsed.data.courseId, schoolId: session.user.schoolId },
-    select: { id: true, recurrenceSeriesId: true },
+    select: { id: true, recurrenceSeriesId: true, teacherId: true, title: true, date: true },
   });
   if (!course) {
     redirect("/access-denied");
@@ -443,6 +492,10 @@ export async function deleteCourseAction(formData: FormData) {
           .then((rows) => rows.map((r) => r.id))
       : [];
   const idsToDelete = [course.id, ...extraVirtualCourses];
+  const attendees = await prisma.courseAttendance.findMany({
+    where: { courseId: { in: idsToDelete } },
+    select: { studentId: true },
+  });
 
   await prisma.$transaction(async (tx) => {
     await tx.courseAttendance.deleteMany({ where: { courseId: { in: idsToDelete } } });
@@ -464,6 +517,29 @@ export async function deleteCourseAction(formData: FormData) {
       });
     }
   });
+
+  const dateLabel = course.date ? formatCourseDate(new Date(course.date)) : null;
+  const studentIds = Array.from(new Set(attendees.map((a) => a.studentId).filter(Boolean) as string[]));
+  if (studentIds.length > 0) {
+    await createNotifications(
+      studentIds.map((studentId) => ({
+        userId: studentId,
+        kind: NotificationKind.COURSE_CANCELLED,
+        title: "Cours annulé",
+        body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
+        link: "/student/courses",
+      }))
+    );
+  }
+  if (course.teacherId && course.teacherId !== session.user.id) {
+    await createNotification({
+      userId: course.teacherId,
+      kind: NotificationKind.COURSE_CANCELLED,
+      title: "Cours annulé",
+      body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
+      link: `/teacher/courses/${course.id}`,
+    });
+  }
 
   revalidatePath("/teacher/courses");
   redirect("/teacher/courses/agenda?view=month");
