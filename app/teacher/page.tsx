@@ -38,17 +38,6 @@ export default async function TeacherDashboard() {
       </main>
     );
   }
-  const teacherUser = session?.user?.id
-    ? await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { id: true, avatarPublicId: true, name: true, email: true },
-      })
-    : null;
-  const nameParts =
-    (teacherUser?.name ?? session?.user?.name)
-      ?.trim()
-      .split(/\s+/)
-      .filter(Boolean) ?? [];
   const teacherProfileHref = session?.user?.id ? `/teachers/${session.user.id}` : "/profile";
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);

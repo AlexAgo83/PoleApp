@@ -32,7 +32,6 @@ export function SponsoredLinksField({
   // Always ensure at least one row for UX
   useEffect(() => {
     if (links.length === 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLinks([{ category: "", label: "", url: "" }]);
     }
   }, [links]);

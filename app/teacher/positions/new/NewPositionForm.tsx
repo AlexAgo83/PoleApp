@@ -35,9 +35,6 @@ export function NewPositionForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
-  const [muscleList, setMuscleList] = useState<Muscle[]>(muscles);
-  const [newMuscle, setNewMuscle] = useState("");
-  const [addingMuscle, setAddingMuscle] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [videoPublicId, setVideoPublicId] = useState<string>("");
   const [imagePublicId, setImagePublicId] = useState<string>("");
@@ -131,7 +128,7 @@ export function NewPositionForm({
           <button
             type="button"
             className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-            onClick={() => setSelectedMuscles(muscleList.map((m) => m.id))}
+            onClick={() => setSelectedMuscles(muscles.map((m) => m.id))}
           >
             Tout
           </button>
@@ -145,7 +142,7 @@ export function NewPositionForm({
         </div>
         <div className="max-h-40 w-full overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-2">
           <div className="flex flex-wrap gap-2">
-            {muscleList.map((m) => {
+            {muscles.map((m) => {
               const checked = selectedMuscles.includes(m.id);
               return (
                 <label
