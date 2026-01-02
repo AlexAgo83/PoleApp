@@ -28,7 +28,16 @@ export default async function EditPresetPage({
   const preset = await prisma.preset.findUnique({
     where: { id: awaitedParams.id },
     include: {
-      positions: { select: { positionId: true, position: { select: { id: true, name: true, discipline: true, disciplineId: true } } } },
+      positions: {
+        select: {
+          positionId: true,
+          order: true,
+          timestampSeconds: true,
+          note: true,
+          position: { select: { id: true, name: true, discipline: true, disciplineId: true } },
+        },
+        orderBy: { order: "asc" },
+      },
       createdBy: { select: { id: true, name: true, email: true } },
     },
   });
@@ -109,6 +118,12 @@ export default async function EditPresetPage({
             premiumRequired: preset.premiumRequired ?? false,
             priceCredits: preset.priceCredits ?? undefined,
             positionIds: preset.positions.map((pp) => pp.positionId),
+            positionMeta: preset.positions.map((pp) => ({
+              positionId: pp.positionId,
+              order: pp.order,
+              timestampSeconds: pp.timestampSeconds ?? undefined,
+              note: pp.note ?? undefined,
+            })),
             teacherId: preset.createdByUserId ?? undefined,
           }}
           submitLabel="Enregistrer"

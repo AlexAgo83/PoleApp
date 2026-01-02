@@ -396,8 +396,8 @@ const seedPresetsData = [
     premiumRequired: true,
     description:
       "Choreographie pole inter-avancee qui privilégie les lignes longues et les transitions circulaires. On démarre par une montée contrôlée avec changement de lead, puis un spin de connexion pour installer le souffle. Le coeur du combo combine inside leg hang, variations de scorpio, body waves contre la pole et un passage power léger qui prépare à une rotation en dehors de l’axe. La descente alterne glissés bas et pivot sur demi-pointes pour conserver la musicalité. Chaque bloc contient des cues de respiration, des options de main libre et des variantes pour ménager les poignets. En fin de combo, un break musical invite à jouer avec le regard et la projection scénique. Pensé pour durer plus d’une minute trente, il développe endurance, contrôle scapulaire, et propreté des lignes sans surcharge cardio, tout en laissant la place à l’expression personnelle.",
-    imagePublicId: "ps_pole_01",
-    videoPublicId: "ps_pole_01_v",
+    imagePublicId: "ps_008_ymuw4k",
+    videoPublicId: "ps_001_qo2alr",
     priceCredits: 0,
   },
   {
@@ -407,8 +407,8 @@ const seedPresetsData = [
     priceCredits: 120,
     description:
       "Flow narratif inspiré d’une ascension nocturne. On alterne pivots serrés et ouvertures de hanches pour créer des effets de halo autour de la pole. Le combo inclut un climb lent, un switch jambe interne/externe, un cradle revisité en rotation lente et une séquence au sol avec knee slides pour calmer le rythme. Le passage central enchaîne inside leg hang, variations de jasmine, drop contrôlé et spin relâché, ce qui oblige à gérer l’élan avec précision. Chaque transition est ponctuée d’indices de musicalité pour que le groupe respire ensemble. Les consignes insistent sur l’allongement de la nuque, la connexion des omoplates et la capacité à revenir en base pour réaccrocher du contact. Adapté pour 6 à 10 positions selon la longueur musicale, il s’utilise en répétition de show ou en atelier d’endurance technique.",
-    imagePublicId: "ps_pole_02",
-    videoPublicId: "ps_pole_02_v",
+    imagePublicId: "ps_011_kyrvwq",
+    videoPublicId: "ps_001_qo2alr",
   },
   {
     title: "Satellite Breathwork",
@@ -417,8 +417,8 @@ const seedPresetsData = [
     priceCredits: 90,
     description:
       "Routine de 8 à 12 positions centrée sur la respiration et la stabilité scapulaire. On commence par un floor entry en spirale, un step around décollé et une montée progressive en deux grips pour placer les épaules. Le coeur inclut un inside leg hang tenu trois temps, un passage vers cupid et un slide contrôlé vers un back hook spin ralenti. Chaque segment est associé à un tempo respiratoire (inspiration en ouverture, expiration en traction). La descente se fait en low flow avec tours de bassin lents et appuis genoux pour protéger les poignets fatigués. Un pont de musicalité laisse la possibilité d’insérer un accent power (shoulder mount prep ou climb rapide) sans casser le phrasé. Pensé pour les cours mixtes, ce combo offre des options début inter et avancé sur les sorties, afin que chacun construise son expression sans perdre le fil du souffle.",
-    imagePublicId: "ps_pole_03",
-    videoPublicId: "ps_pole_03_v",
+    imagePublicId: "ps_009_wceu3b",
+    videoPublicId: "ps_001_qo2alr",
   },
   {
     title: "Aurora Spin Story",
@@ -426,8 +426,8 @@ const seedPresetsData = [
     premiumRequired: true,
     description:
       "Chorégraphie lumineuse qui joue sur les contrastes haut/bas. Elle débute par un static spin puis un climb alterné pour installer les appuis, suivi d’une variation de gemini avec changement de regard. Le centre du combo exploite un enchaînement butterfly soft, transition en side sit et drop amorti vers le sol. On enchaîne ensuite un wave en contre-pole, un tour de hanche et un roll up pour remonter sur la musique. Les consignes insistent sur la qualité du déploiement des bras, la projection des lignes et la gestion de l’axe lorsque l’on sort du contact principal. Chaque section est décomposée pour proposer 6 à 10 positions selon le niveau, avec des drill de placement des pieds et des rappels de sécurité. Idéal pour travailler l’endurance artistique tout en restant dans une intensité musculaire modérée.",
-    imagePublicId: "ps_pole_04",
-    videoPublicId: "ps_pole_04_v",
+    imagePublicId: "ps_010_fjaebd",
+    videoPublicId: "ps_001_qo2alr",
     priceCredits: 150,
   },
   {
@@ -437,8 +437,8 @@ const seedPresetsData = [
     priceCredits: 80,
     description:
       "Flow créatif pensé pour casser les patterns habituels. On utilise des entrées obliques, des changements de sens brusques et des suspensions courtes pour surprendre le public. Le combo propose une base de 7 à 9 positions : step around inversé, side climb en contrôle, flatline scorpio doux, transition body wave et sortie low avec knee slides. Au centre, un arrêt musical permet d’ajouter un micro-shape (micro backbend ou cambré thoracique) avant de repartir en spin lent. Les cues mettent l’accent sur la recherche de l’axe personnel, l’utilisation du regard pour guider le rythme et la gestion fine des grips pour éviter la fatigue de l’avant-bras. Le final se termine par un pivot au sol qui garde l’énergie suspendue, idéal pour un run filmé ou une présentation courte.",
-    imagePublicId: "ps_pole_05",
-    videoPublicId: "ps_pole_05_v",
+    imagePublicId: "ps_006_xesgal",
+    videoPublicId: "ps_001_qo2alr",
   },
   {
     title: "Midnight Transit",
@@ -446,8 +446,8 @@ const seedPresetsData = [
     premiumRequired: true,
     description:
       "Combo intermédiaire rapide (10 à 12 positions) qui mélange dynamiques et pauses très marquées. On commence par un swing step, un climb serré, puis un passage en outside leg hang pour créer un effet de suspension. Le coeur inclut un drop contrôlé, un fan kick précis et une transition en spin low pour récupérer le souffle. Les consignes rappellent d’ancrer les omoplates, de relâcher la nuque et de synchroniser l’ouverture de la cage thoracique avec les accents musicaux. Une séquence centrale invite à tester un petit power (ayesha entry en statique ou en spinning pour les avancés) avec option de substitution plus douce. La sortie se fait par une descente en glissé sur les pointes, un roll du buste et un final bras ouverts pour garder la projection scénique. Idéal pour travailler cardio, précision et propreté des lignes.",
-    imagePublicId: "ps_pole_06",
-    videoPublicId: "ps_pole_06_v",
+    imagePublicId: "ps_003_xauurl",
+    videoPublicId: "ps_001_qo2alr",
     priceCredits: 0,
   },
   {
@@ -457,8 +457,8 @@ const seedPresetsData = [
     priceCredits: 60,
     description:
       "Séquence low flow de 6 à 8 positions qui valorise les déplacements proches du sol. On enchaîne rolls contrôlés, transitions en appui avant-bras, half spins et pivots sur genoux pour garder un rythme continu. Un mini-climb est proposé en option pour revenir en hauteur sans casser la musicalité. Les cues insistent sur la protection des poignets (angle doux), l’engagement du centre et l’ouverture du bassin pour éviter la crispation. La fin joue sur des appuis alternés pieds/genoux, un slide vers l’extérieur et un regard très frontal pour conclure. Parfait pour intégrer les débutants intermédiaires dans un atelier choré, tout en offrant aux avancés des options de flex ou de micro power sans perdre l’esthétique fluide.",
-    imagePublicId: "ps_pole_07",
-    videoPublicId: "ps_pole_07_v",
+    imagePublicId: "ps_005_xbzstp",
+    videoPublicId: "ps_001_qo2alr",
   },
   {
     title: "Orion Breath",
@@ -466,7 +466,7 @@ const seedPresetsData = [
     premiumRequired: true,
     description:
       "Choré axée sur la régularité du souffle et la connexion corps-sol. Elle s’appuie sur 8 à 11 positions avec des moments suspendus et des resets très calmes. On démarre par un tour de hanche, un climb alternatif puis un inside leg hang tenu quatre temps. La transition vers le sol se fait en wave continue, suivi d’un back hook spin qui prolonge la rotation. Le bloc central propose une variation de butterfly low, une remontée en roll-up et un accent de bassin sur la musique. Les indications pédagogiques invitent à visualiser un métronome respiratoire, à gérer l’angle des épaules et à répartir le grip pour éviter la fatigue d’un seul bras. Le final laisse le choix entre une sortie au sol ou un petit slide dynamique, sans perdre le tempo posé.",
-    imagePublicId: "ps_pole_08",
+    imagePublicId: "ps_002_fhyron",
     videoPublicId: "ps_pole_08_v",
     priceCredits: 140,
   },
@@ -477,8 +477,8 @@ const seedPresetsData = [
     priceCredits: 110,
     description:
       "Combo d’endurance créative (10 à 12 positions) conçu pour consolider la propreté des inversions basses. On entre par un step around, on enchaîne un climb deux temps et une inversion contrôlée vers flatline scorpio. Un pivot de hanches amène vers inside leg hang, puis un slide vers le sol réinstalle le contact. Le milieu du combo propose un enchaînement de spins courts, un hook dynamique et un reset calme en contre-pole. La structure invite à doser l’énergie : bursts sur les spins, respiration lente sur les phases de suspension. Les options de difficulté permettent de substituer un ayesha ou un shoulder mount par un power spin moins exigeant. Le but est de travailler coordination, endurance bras et netteté des lignes tout en conservant une narration chorégraphique lisible.",
-    imagePublicId: "ps_pole_09",
-    videoPublicId: "ps_pole_09_v",
+    imagePublicId: "ps_007_hel2i4",
+    videoPublicId: "ps_001_qo2alr",
   },
   {
     title: "Lunar Blueprint",
@@ -486,9 +486,19 @@ const seedPresetsData = [
     premiumRequired: true,
     description:
       "Choreographie premium bâtie comme un plan en trois actes. Acte 1 : montée progressive, spin de connexion et ouverture de bras pour installer l’espace. Acte 2 : section technique avec inside leg hang, variations de cupid, passage vers butterfly et drop amorti. Acte 3 : retour au sol avec waves, demi-lunes de bassin et final suspendu sur la pointe pour garder le public en haleine. La description détaille les placements de mains, les consignes de souffle, les options de jambes tendues ou fléchies et les rappels de sécurité sur la sortie. On y trouve aussi des variantes pour réduire la charge sur les poignets, et des idées de musicalité (silences, accents, reprises). Avec 9 à 12 positions, ce combo sert autant de pièce de scène que d’atelier avancé pour travailler la continuité malgré la fatigue.",
-    imagePublicId: "ps_pole_10",
-    videoPublicId: "ps_pole_10_v",
+    imagePublicId: "ps_004_c1vw8c",
+    videoPublicId: "ps_001_qo2alr",
     priceCredits: 180,
+  },
+  {
+    title: "Solar Echo",
+    discipline: "Pole",
+    premiumRequired: false,
+    priceCredits: 70,
+    description:
+      "Routine lumineuse orientée flow continu, pensée pour alterner expansion et recentrage. On démarre par une montée fluide, une transition en leg hang adoucie, puis une série de tours basse intensité pour lisser le cardio. Le coeur joue sur des ouvertures de bras et des micro-breaks pour souffler avant une relance dynamique. Les cues insistent sur la respiration latérale, la stabilité des poignets et le regard engagé. Séquence idéale pour consolider l’endurance artistique sur 6 à 10 positions avec un final relâché au sol.",
+    imagePublicId: "ps_001_wcashm",
+    videoPublicId: "ps_001_qo2alr",
   },
 ];
 
@@ -1696,7 +1706,15 @@ async function seedPresets(options: {
       const picked = pool
         .slice()
         .sort(() => 0.5 - Math.random())
-        .slice(0, targetCount);
+        .slice(0, targetCount)
+        .map((p, idx) => ({
+          ...p,
+          _meta: {
+            order: idx + 1,
+            timestampSeconds: idx * 20 + 10,
+            note: idx === 0 ? "Entrée et mise en rythme" : idx === targetCount - 1 ? "Final / sortie" : `Accent ${idx + 1}`,
+          },
+        }));
       const disciplineName = disciplinePick?.name ?? preset.discipline ?? picked[0]?.discipline ?? PRIMARY_DISCIPLINE;
       const disciplineId =
         disciplinePick?.id ??
@@ -1716,7 +1734,14 @@ async function seedPresets(options: {
           schoolId: school.id,
           createdByUserId: teacher?.id,
           positions: {
-            create: picked.map((p) => ({ positionId: p.id })),
+            create: picked
+              .map((p) => ({
+                positionId: p.id,
+                order: p._meta.order,
+                timestampSeconds: p._meta.timestampSeconds,
+                note: p._meta.note,
+              }))
+              .sort((a, b) => a.order - b.order),
           },
         },
       });

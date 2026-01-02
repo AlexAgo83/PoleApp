@@ -589,10 +589,13 @@ model Preset {
 }
 
 model PresetPosition {
-  presetId   String
-  positionId String
-  preset     Preset   @relation(fields: [presetId], references: [id], onDelete: Cascade)
-  position   Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  presetId         String
+  positionId       String
+  order            Int      @default(0)
+  timestampSeconds Int?
+  note             String?
+  preset           Preset   @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  position         Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
 
   @@id([presetId, positionId])
 }

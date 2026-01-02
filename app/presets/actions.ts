@@ -34,6 +34,23 @@ export async function createPresetAction(formData: FormData) {
   }
 
   const rawPositionIds = formData.getAll("positionIds").map((id) => id.toString());
+  const metaIds = formData.getAll("positionMetaId").map((id) => id.toString());
+  const metaOrders = formData.getAll("positionMetaOrder").map((n) => Number(n));
+  const metaTimestamps = formData.getAll("positionMetaTimestamp").map((n) =>
+    n === null || n === undefined || n.toString().trim() === "" ? null : Number(n)
+  );
+  const metaNotes = formData.getAll("positionMetaNote").map((n) => n.toString());
+  const metaById = new Map<
+    string,
+    { order: number; timestampSeconds: number | null; note: string | null }
+  >();
+  metaIds.forEach((id, idx) => {
+    metaById.set(id, {
+      order: Number.isFinite(metaOrders[idx]) ? Number(metaOrders[idx]) : idx + 1,
+      timestampSeconds: Number.isFinite(metaTimestamps[idx]) ? Number(metaTimestamps[idx]) : null,
+      note: metaNotes[idx]?.toString() || null,
+    });
+  });
   const disciplineInput = formData.get("discipline")?.toString().trim() || "";
   if (!disciplineInput) {
     redirect("/presets/new?flash=invalid");
@@ -87,7 +104,17 @@ export async function createPresetAction(formData: FormData) {
       schoolId: session.user.schoolId,
       createdByUserId: teacherId ?? session.user.id,
       positions: {
-        create: parsed.data.positionIds.map((id) => ({ positionId: id })),
+        create: parsed.data.positionIds
+          .map((id, idx) => {
+            const meta = metaById.get(id);
+            return {
+              positionId: id,
+              order: meta?.order ?? idx + 1,
+              timestampSeconds: meta?.timestampSeconds ?? null,
+              note: meta?.note ?? null,
+            };
+          })
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
       },
     },
   });
@@ -104,6 +131,23 @@ export async function updatePresetAction(formData: FormData) {
 
   const rawId = formData.get("id")?.toString();
   const rawPositionIds = formData.getAll("positionIds").map((id) => id.toString());
+  const metaIds = formData.getAll("positionMetaId").map((id) => id.toString());
+  const metaOrders = formData.getAll("positionMetaOrder").map((n) => Number(n));
+  const metaTimestamps = formData.getAll("positionMetaTimestamp").map((n) =>
+    n === null || n === undefined || n.toString().trim() === "" ? null : Number(n)
+  );
+  const metaNotes = formData.getAll("positionMetaNote").map((n) => n.toString());
+  const metaById = new Map<
+    string,
+    { order: number; timestampSeconds: number | null; note: string | null }
+  >();
+  metaIds.forEach((id, idx) => {
+    metaById.set(id, {
+      order: Number.isFinite(metaOrders[idx]) ? Number(metaOrders[idx]) : idx + 1,
+      timestampSeconds: Number.isFinite(metaTimestamps[idx]) ? Number(metaTimestamps[idx]) : null,
+      note: metaNotes[idx]?.toString() || null,
+    });
+  });
   const disciplineInput = formData.get("discipline")?.toString().trim() || "";
   if (!disciplineInput) {
     redirect(rawId ? `/presets/${rawId}/edit?flash=invalid` : "/presets");
@@ -169,7 +213,17 @@ export async function updatePresetAction(formData: FormData) {
       createdByUserId: teacherId ?? preset.createdByUserId ?? session.user.id,
       positions: {
         deleteMany: {},
-        create: parsed.data.positionIds.map((id) => ({ positionId: id })),
+        create: parsed.data.positionIds
+          .map((id, idx) => {
+            const meta = metaById.get(id);
+            return {
+              positionId: id,
+              order: meta?.order ?? idx + 1,
+              timestampSeconds: meta?.timestampSeconds ?? null,
+              note: meta?.note ?? null,
+            };
+          })
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
       },
     },
   });

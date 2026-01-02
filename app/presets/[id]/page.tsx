@@ -39,7 +39,10 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
   const preset = await prisma.preset.findUnique({
     where: { id: awaitedParams.id },
     include: {
-      positions: { include: { position: { select: { name: true, discipline: true } } } },
+      positions: {
+        include: { position: { select: { name: true, discipline: true } } },
+        orderBy: { order: "asc" },
+      },
       createdBy: { select: { id: true, name: true, email: true } },
     },
   });
@@ -111,6 +114,13 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
   const lockedReason = preset.premiumRequired
     ? "Contenu réservé aux élèves premium."
     : "Achetez ce preset pour débloquer la description et la vidéo.";
+
+  const formatTime = (seconds: number | null | undefined) => {
+    if (seconds === null || seconds === undefined) return "";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
@@ -211,17 +221,36 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 </p>
               </div>
             ) : null}
-            <div>
-              <p className="text-sm font-semibold text-white">Positions</p>
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-white">Timeline</p>
               {preset.positions.length > 0 ? (
-                <ul className="mt-2 flex flex-wrap gap-2 text-xs text-white">
+                <div className="space-y-2">
                   {preset.positions.map((pp) => (
-                    <li key={pp.positionId} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-100">
-                      {pp.position.name}
-                      {pp.position.discipline ? <span className="ml-1 text-slate-300">({pp.position.discipline})</span> : null}
-                    </li>
+                    <div
+                      key={pp.positionId}
+                      className="flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-white"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.12em] text-indigo-100">
+                          #{pp.order ?? 0}
+                        </span>
+                        {pp.timestampSeconds !== null && pp.timestampSeconds !== undefined && (
+                          <span className="rounded-full border border-cyan-300/50 bg-cyan-500/15 px-2 py-0.5 text-cyan-50 text-xs">
+                            {formatTime(pp.timestampSeconds)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-base font-semibold">{pp.position.name}</p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-200">
+                        {pp.note ? (
+                          <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-slate-100">
+                            {pp.note}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
                 <p className="text-sm text-slate-300">Aucune position liée.</p>
               )}
