@@ -255,14 +255,17 @@ export default async function ProfilePage({
               </p>
               {favoritePositionIds.length > 0 ? (
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {user.favoritePositions.map((fav) => (
-                    <span
-                      key={fav.positionId}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
-                    >
-                      {fav.position.name}
-                    </span>
-                  ))}
+                  {user.favoritePositions
+                    .filter((fav) => fav.position)
+                    .map((fav) => (
+                      <Link
+                        key={fav.positionId}
+                        href={`/positions/${fav.positionId}`}
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                      >
+                        {fav.position?.name}
+                      </Link>
+                    ))}
                 </div>
               ) : (
                 <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
@@ -287,14 +290,17 @@ export default async function ProfilePage({
                 </p>
                 {favoritePositionIds.length > 0 ? (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {user.studentFavoritePositions.map((fav) => (
-                      <span
-                        key={fav.positionId}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
-                      >
-                        {fav.position.name}
-                      </span>
-                    ))}
+                    {user.studentFavoritePositions
+                      .filter((fav) => fav.position)
+                      .map((fav) => (
+                        <Link
+                          key={fav.positionId}
+                          href={`/positions/${fav.positionId}`}
+                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                        >
+                          {fav.position?.name}
+                        </Link>
+                      ))}
                   </div>
                 ) : (
                   <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
