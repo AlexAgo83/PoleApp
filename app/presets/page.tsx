@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -12,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { buyPresetAction } from "@/app/student/actions";
 import { FoxPageHeader } from "@/components/FoxPageHeader";
+import { buildPresetFilters } from "./filterUtils";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 9;
@@ -53,18 +55,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
   const isTeacherOrAdmin = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
   const schoolId = session.user.schoolId || undefined;
 
-  const q = params.q?.toString().trim() || "";
-  const disciplineFilters =
-    params.discipline
-      ?.toString()
-      .split(",")
-      .map((d) => d.trim())
-      .filter(Boolean) ?? [];
-  const priceFilter = params.price?.toString() || "";
-  const ownerFilter = params.owner?.toString() || "";
-  const purchaseFilter = params.purchase?.toString() || "";
-  const mediaFilter = params.media?.toString() || "";
-  const rawPage = Number(params.page ?? "1");
   const flash = params.flash?.toString() || "";
 
   const [studentInfo, purchasedPresetRows]: [
@@ -84,47 +74,15 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
     : [null, []];
   const purchasedPresetIds = isStudent ? new Set(purchasedPresetRows.map((p) => p.offerId)) : new Set<string>();
 
-  const where: Prisma.PresetWhereInput = {
-    ...(schoolId ? { schoolId } : {}),
-    ...(q
-      ? {
-          OR: [
-            { title: { contains: q, mode: "insensitive" } },
-            { description: { contains: q, mode: "insensitive" } },
-          ],
-        }
-      : {}),
-    ...(disciplineFilters.length
-      ? {
-          OR: [
-            { disciplineId: { in: disciplineFilters } },
-            { discipline: { in: disciplineFilters, mode: "insensitive" } },
-          ],
-        }
-      : {}),
-  };
-
-  if (priceFilter === "premium") {
-    where.premiumRequired = true;
-  } else if (priceFilter === "credits") {
-    where.priceCredits = { gt: 0 };
-  } else if (priceFilter === "free") {
-    where.premiumRequired = false;
-    where.priceCredits = 0;
-  }
-  if (ownerFilter === "me" && isTeacherOrAdmin) {
-    where.createdByUserId = session.user.id;
-  }
-  if (mediaFilter === "image") {
-    where.imagePublicId = { not: null };
-  } else if (mediaFilter === "video") {
-    where.videoPublicId = { not: null };
-  }
-  if (purchaseFilter === "bought" && isStudent) {
-    where.id = { in: purchasedPresetIds.size ? Array.from(purchasedPresetIds) : ["__none__"] };
-  } else if (purchaseFilter === "notBought" && isStudent && purchasedPresetIds.size > 0) {
-    where.id = { notIn: Array.from(purchasedPresetIds) };
-  }
+  const { where, q, disciplineFilters, priceFilter, ownerFilter, purchaseFilter, mediaFilter, rawPage, activeFilters, queryParams } =
+    buildPresetFilters({
+      params,
+      schoolId,
+      isStudent,
+      isTeacherOrAdmin,
+      userId: session.user.id,
+      purchasedPresetIds,
+    });
 
   const totalCount = await prisma.preset.count({ where });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
@@ -160,23 +118,8 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
       ])
     : [[], []];
 
-  const activeFilters = [
-    q && q.length > 0,
-    disciplineFilters.length > 0,
-    priceFilter,
-    ownerFilter,
-    purchaseFilter,
-    mediaFilter,
-  ].filter(Boolean).length;
   const hasCredits = studentInfo?.credits ?? 0;
   const hasPremium = studentInfo?.isPremium ?? false;
-  const queryParams = new URLSearchParams();
-  if (q) queryParams.set("q", q);
-  if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
-  if (priceFilter) queryParams.set("price", priceFilter);
-  if (ownerFilter) queryParams.set("owner", ownerFilter);
-  if (purchaseFilter) queryParams.set("purchase", purchaseFilter);
-  if (mediaFilter) queryParams.set("media", mediaFilter);
   const disciplineNameById = new Map((disciplineRows ?? []).map((d) => [d.id, d.name]));
   const disciplineOptionList = Array.from(
     new Set(disciplineOptions.map((d) => d.disciplineId).filter(Boolean))
@@ -197,7 +140,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           {
             label: "Mon espace",
             href: homeForRole,
-            icon: <img src="/house.svg" alt="" className="h-4 w-4" />,
+            icon: <Image src="/house.svg" alt="" className="h-4 w-4" width={16} height={16} priority />,
           },
           { label: "Déconnexion", href: "/api/auth/signout" },
         ]}
