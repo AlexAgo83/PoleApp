@@ -238,23 +238,25 @@ export function StudioMonthView({
                           ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80"
                           : "border-white/10 bg-white/10 text-white"
                       }`}
-                      style={
-                        course.photoPublicId && CLOUD_NAME
-                          ? {
-                              backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.7), rgba(15,25,45,0.65)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_640,h_360/${course.photoPublicId})`,
-                              backgroundBlendMode: "soft-light",
-                              backgroundColor: "rgba(8,12,20,0.55)",
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                            }
-                          : undefined
-                      }
-                    >
-                      <div className="space-y-0.5 overflow-hidden pr-6">
-                        <p className="text-[10px] text-cyan-100">
-                          {courseDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
-                          {course.durationMinutes ? formatDuration(course.durationMinutes) : "60 min"}
-                        </p>
+                        style={
+                          course.photoPublicId && CLOUD_NAME
+                            ? {
+                                backgroundImage: `linear-gradient(135deg, rgba(86,123,255,0.24), rgba(196,88,255,0.2)), linear-gradient(135deg, rgba(10,15,30,0.06), rgba(15,25,45,0.05)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:1600,w_640,h_360/${course.photoPublicId})`,
+                                backgroundBlendMode: "normal, soft-light",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                              }
+                            : undefined
+                        }
+                      >
+                        <div
+                          className="space-y-0.5 overflow-hidden pr-6"
+                          style={{ textShadow: "0 2px 14px rgba(0,0,0,0.75)" }}
+                        >
+                          <p className="text-[10px] text-cyan-100">
+                            {courseDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
+                            {course.durationMinutes ? formatDuration(course.durationMinutes) : "60 min"}
+                          </p>
                         <p className="truncate text-[11px] font-semibold text-white">
                           {course.title ?? "Cours"}
                         </p>
