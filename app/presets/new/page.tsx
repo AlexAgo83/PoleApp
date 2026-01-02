@@ -22,7 +22,6 @@ export default async function NewPresetPage({ searchParams }: { searchParams?: P
     prisma.position.findMany({
       select: { id: true, name: true, discipline: true, disciplineId: true },
       orderBy: { name: "asc" },
-      take: 50,
     }),
     prisma.discipline
       .findMany({
@@ -75,7 +74,6 @@ export default async function NewPresetPage({ searchParams }: { searchParams?: P
           teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : undefined}
           action={createPresetAction}
           currentUserLabel={`(Moi) ${session.user.name ?? session.user.email}`}
-          maxPositions={12}
           showTeacherSelect={session.user.role === "SCHOOL_ADMIN"}
         />
       </section>

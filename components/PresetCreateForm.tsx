@@ -14,7 +14,6 @@ type Props = {
   teachers?: Teacher[];
   action: (formData: FormData) => Promise<void>;
   currentUserLabel?: string;
-  maxPositions?: number;
   showTeacherSelect?: boolean;
   initialPreset?: {
     id?: string;
@@ -38,7 +37,6 @@ export function PresetCreateForm({
   teachers = [],
   action,
   currentUserLabel,
-  maxPositions = 16,
   showTeacherSelect = true,
   initialPreset,
   submitLabel,
@@ -50,21 +48,25 @@ export function PresetCreateForm({
   const [videoPublicId, setVideoPublicId] = useState<string>(initialPreset?.videoPublicId ?? "");
   const [selectedPositions, setSelectedPositions] = useState<string[]>(initialPreset?.positionIds ?? []);
   const [formError, setFormError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   const isEdit = Boolean(initialPreset?.id);
+  const PER_PAGE = 20;
 
   const filteredPositions = useMemo(() => {
-    const baseList = !selectedDiscipline
-      ? positions
-      : positions.filter((p) => {
-          if (!selectedDiscipline) return true;
-          if (p.disciplineId && p.disciplineId === selectedDiscipline) return true;
-          return (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase();
-        });
+    const baseList = positions.filter((p) => {
+      if (!selectedDiscipline) return true;
+      if (p.disciplineId && p.disciplineId === selectedDiscipline) return true;
+      return (p.discipline ?? "").toLowerCase() === selectedDiscipline.toLowerCase();
+    });
     const selectedItems = positions.filter((p) => selectedPositions.includes(p.id));
     const merged = [...selectedItems, ...baseList];
     const deduped = Array.from(new Map(merged.map((p) => [p.id, p])).values());
-    return deduped.slice(0, maxPositions);
-  }, [positions, selectedDiscipline, maxPositions, selectedPositions]);
+    return deduped;
+  }, [positions, selectedDiscipline, selectedPositions]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredPositions.length / PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedPositions = filteredPositions.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const labelForTeacher = (t: Teacher) => t.name ?? t.email ?? "Professeur";
   const togglePosition = (id: string) => {
@@ -74,6 +76,11 @@ export function PresetCreateForm({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const picked = formData.getAll("positionIds");
+    if (!selectedDiscipline) {
+      e.preventDefault();
+      setFormError("Sélectionne une discipline.");
+      return;
+    }
     if (picked.length === 0) {
       e.preventDefault();
       setFormError("Sélectionne au moins une position.");
@@ -100,9 +107,10 @@ export function PresetCreateForm({
           name="discipline"
           className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
           value={selectedDiscipline}
+          required
           onChange={(e) => setSelectedDiscipline(e.target.value)}
         >
-          <option value="">(Toutes)</option>
+          <option value="">Sélectionne une discipline</option>
           {disciplines.map((d) => (
             <option key={d.id ?? d.name} value={d.id ?? d.name}>
               {d.name}
@@ -188,9 +196,9 @@ export function PresetCreateForm({
       </div>
       <div className="text-sm text-slate-200">
         <div className="flex items-center justify-between text-xs uppercase tracking-[0.12em] text-indigo-100">
-          <span>Positions incluses (max {maxPositions})</span>
+          <span>Positions filtrées</span>
           <span className="text-[11px] text-slate-300">
-            {filteredPositions.length} affichée{filteredPositions.length > 1 ? "s" : ""}
+            {filteredPositions.length} résultat{filteredPositions.length > 1 ? "s" : ""} · page {currentPage}/{totalPages}
           </span>
         </div>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -199,7 +207,7 @@ export function PresetCreateForm({
               Aucune position pour cette discipline.
             </p>
           ) : (
-            filteredPositions.map((p) => (
+            paginatedPositions.map((p) => (
               <label
                 key={p.id}
                 className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2 py-1"
@@ -222,6 +230,26 @@ export function PresetCreateForm({
             ))
           )}
         </div>
+        {filteredPositions.length > PER_PAGE && (
+          <div className="mt-2 flex items-center justify-between text-xs text-slate-200">
+            <button
+              type="button"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-50"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+            >
+              ← Précédent
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-50"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage >= totalPages}
+            >
+              Suivant →
+            </button>
+          </div>
+        )}
       </div>
       {formError ? <p className="text-sm font-semibold text-amber-200">{formError}</p> : null}
       <div className="flex justify-end">

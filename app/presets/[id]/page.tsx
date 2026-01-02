@@ -118,6 +118,10 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
       />
 
       <section className="panel space-y-4 p-4 md:p-6 lg:p-8">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
+          <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
+        </div>
         <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             {preset.imagePublicId ? (
@@ -149,10 +153,6 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
             ) : null}
           </div>
           <div className="space-y-4">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
-              <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
-            </div>
             <div className="grid gap-2 md:grid-cols-2">
               <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
                 <p className="text-[11px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>

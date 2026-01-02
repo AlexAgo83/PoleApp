@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 const presetSchema = z.object({
   title: z.string().min(2),
   description: z.string().optional(),
-  discipline: z.string().optional(),
+  discipline: z.string().min(1),
   videoPublicId: z.string().optional().or(z.literal("")),
   imagePublicId: z.string().optional().or(z.literal("")),
   premiumRequired: z.boolean().optional(),
@@ -34,23 +34,24 @@ export async function createPresetAction(formData: FormData) {
   }
 
   const rawPositionIds = formData.getAll("positionIds").map((id) => id.toString());
-  const disciplineInput = formData.get("discipline")?.toString().trim() || undefined;
-  const disciplineRecord = disciplineInput
-    ? await prisma.discipline.findFirst({
-        where: {
-          OR: [{ id: disciplineInput }, { name: disciplineInput }],
-        },
-        select: { id: true, name: true },
-      })
-    : null;
-  const fallbackDisciplineId = await prisma.discipline
-    .findFirst({ select: { id: true }, orderBy: { name: "asc" } })
-    .then((d) => d?.id);
+  const disciplineInput = formData.get("discipline")?.toString().trim() || "";
+  if (!disciplineInput) {
+    redirect("/presets/new?flash=invalid");
+  }
+  const disciplineRecord = await prisma.discipline.findFirst({
+    where: {
+      OR: [{ id: disciplineInput }, { name: disciplineInput }],
+    },
+    select: { id: true, name: true },
+  });
+  if (!disciplineRecord) {
+    redirect("/presets/new?flash=invalid");
+  }
   const teacherIdRaw = formData.get("teacherId")?.toString().trim() || undefined;
   const parsed = presetSchema.safeParse({
     title: formData.get("title")?.toString().trim(),
     description: formData.get("description")?.toString().trim() || undefined,
-    discipline: disciplineRecord?.name ?? disciplineInput ?? undefined,
+    discipline: disciplineRecord.name,
     videoPublicId: formData.get("videoPublicId")?.toString().trim() || undefined,
     imagePublicId: formData.get("imagePublicId")?.toString().trim() || undefined,
     premiumRequired: formData.get("premiumRequired") === "on",
@@ -78,7 +79,7 @@ export async function createPresetAction(formData: FormData) {
       title: parsed.data.title,
       description: parsed.data.description,
       discipline: parsed.data.discipline,
-      disciplineId: disciplineRecord?.id ?? fallbackDisciplineId ?? parsed.data.discipline ?? "",
+      disciplineId: disciplineRecord.id,
       videoPublicId: normalizeFolderedPublicId(parsed.data.videoPublicId, "poleapp/presets"),
       imagePublicId: normalizeFolderedPublicId(parsed.data.imagePublicId, "poleapp/presets"),
       premiumRequired: parsed.data.premiumRequired ?? false,
@@ -103,25 +104,26 @@ export async function updatePresetAction(formData: FormData) {
 
   const rawId = formData.get("id")?.toString();
   const rawPositionIds = formData.getAll("positionIds").map((id) => id.toString());
-  const disciplineInput = formData.get("discipline")?.toString().trim() || undefined;
-  const disciplineRecord = disciplineInput
-    ? await prisma.discipline.findFirst({
-        where: {
-          OR: [{ id: disciplineInput }, { name: disciplineInput }],
-        },
-        select: { id: true, name: true },
-      })
-    : null;
-  const fallbackDisciplineId = await prisma.discipline
-    .findFirst({ select: { id: true }, orderBy: { name: "asc" } })
-    .then((d) => d?.id);
+  const disciplineInput = formData.get("discipline")?.toString().trim() || "";
+  if (!disciplineInput) {
+    redirect(rawId ? `/presets/${rawId}/edit?flash=invalid` : "/presets");
+  }
+  const disciplineRecord = await prisma.discipline.findFirst({
+    where: {
+      OR: [{ id: disciplineInput }, { name: disciplineInput }],
+    },
+    select: { id: true, name: true },
+  });
+  if (!disciplineRecord) {
+    redirect(rawId ? `/presets/${rawId}/edit?flash=invalid` : "/presets");
+  }
   const teacherIdRaw = formData.get("teacherId")?.toString().trim() || undefined;
 
   const parsed = updatePresetSchema.safeParse({
     id: rawId,
     title: formData.get("title")?.toString().trim(),
     description: formData.get("description")?.toString().trim() || undefined,
-    discipline: disciplineRecord?.name ?? disciplineInput ?? undefined,
+    discipline: disciplineRecord.name,
     videoPublicId: formData.get("videoPublicId")?.toString().trim() || undefined,
     imagePublicId: formData.get("imagePublicId")?.toString().trim() || undefined,
     premiumRequired: formData.get("premiumRequired") === "on",
@@ -159,7 +161,7 @@ export async function updatePresetAction(formData: FormData) {
       title: parsed.data.title,
       description: parsed.data.description,
       discipline: parsed.data.discipline,
-      disciplineId: disciplineRecord?.id ?? preset.disciplineId ?? fallbackDisciplineId ?? parsed.data.discipline ?? "",
+      disciplineId: disciplineRecord.id ?? preset.disciplineId ?? "",
       videoPublicId: normalizeFolderedPublicId(parsed.data.videoPublicId, "poleapp/presets"),
       imagePublicId: normalizeFolderedPublicId(parsed.data.imagePublicId, "poleapp/presets"),
       premiumRequired: parsed.data.premiumRequired ?? false,

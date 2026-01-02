@@ -41,7 +41,6 @@ export default async function EditPresetPage({
     prisma.position.findMany({
       select: { id: true, name: true, discipline: true, disciplineId: true },
       orderBy: { name: "asc" },
-      take: 80,
     }),
     prisma.discipline
       .findMany({
@@ -98,7 +97,6 @@ export default async function EditPresetPage({
           teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : undefined}
           action={updatePresetAction}
           currentUserLabel={`(Moi) ${session.user.name ?? session.user.email}`}
-          maxPositions={12}
           showTeacherSelect={session.user.role === "SCHOOL_ADMIN"}
           initialPreset={{
             id: preset.id,
