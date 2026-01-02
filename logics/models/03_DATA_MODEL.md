@@ -1,5 +1,5 @@
-# 03 — Modèle de données (v0.7.x)
-> Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations : `Invoice`, `CourseRecommendation`, `PartnerEvent`, `StudentFavoritePosition`, muscles/disciplines.
+# 03 — Modèle de données (v0.12.x)
+> Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations notables : `photoPublicId` pour Course/Studio/School, Cloudinary avatars, Invoice/CourseRecommendation/PartnerEvent, muscles/disciplines.
 
 ## Principes
 - Provider Prisma : **PostgreSQL** (`DATABASE_URL` requis).
@@ -13,11 +13,11 @@
 
 ### User
 - id (cuid), email (unique), passwordHash, role (Role)
-- name, age, avatarUrl, diplomas (prof), credits, isPremium, schoolId?
+- name, age, avatarUrl, avatarPublicId, diplomas (prof), credits, isPremium, schoolId?
 - Relations : injuries, progress, courseNotes, attendances, coursesTaught, favoritePositions (teacher), studentFavoritePositions (élève), gameSessions
 
 ### School
-- id, name, website?, photoUrl?, archivedAt?, createdAt
+- id, name, website?, photoPublicId?, archivedAt?, createdAt
 - Relations : users, courses, studios, partners, disciplines, gameSessions
 
 ### Position
@@ -30,7 +30,7 @@
 - PositionTarget (pivot) : positionId + muscleId (composite PK), createdAt
 
 ### PositionMedia
-- id, positionId (FK Position), kind (MediaKind), url, createdAt
+- id, positionId (FK Position), kind (MediaKind), url?, publicId?, createdAt
 
 ### Injuries
 - InjuryType : id, name (unique)
@@ -40,7 +40,7 @@
 - StudentPositionProgress : studentId, positionId, learningStatus (LearningStatus), masteryLevel (MasteryLevel?), comment?, lastUpdatedByUserId?, createdAt/updatedAt
 
 ### Course et dérivés
-- Course : id, schoolId, teacherId, studioId?, title?, discipline (string, défaut `Danse`), photoUrl?, date, durationMinutes, maxSeats, costCredits, createdAt
+- Course : id, schoolId, teacherId, studioId?, title?, discipline (string, défaut `Danse`), photoPublicId?, date, durationMinutes, maxSeats, costCredits, createdAt
 - CourseAttendance : courseId, studentId, status (AttendanceStatus: CONFIRMED | WAITLIST), waitlistRank?, createdAt
 - CoursePosition : courseId, positionId
 - CourseNote : courseId, studentId, positionId, masteryLevel, comment?, createdAt
@@ -54,7 +54,7 @@
 - Purchase : userId, offerId, offerName, kind (PACK | SUBSCRIPTION), amountCents, vatPercent, currency, creditsGranted, isPremiumGranted, status (default "PAID"), createdAt.
 
 ### Studios / Partenaires
-- Studio : id, name, address?, photoUrl?, schoolId, createdAt/updatedAt
+- Studio : id, name, address?, photoPublicId?, schoolId, createdAt/updatedAt
 - Partner : id, name, kind (default SERVICE), website?, description?, schoolId, createdAt/updatedAt
 - SponsoredLink : id, category, label?, url, partnerId
 - PartnerEvent : partnerId, userId?, courseId?, studioId?, type (PartnerEventType: CLICK | PURCHASE), createdAt
@@ -69,5 +69,5 @@
 
 ## Seed (dev)
 - Comptes fixes : super-admin global + admin/teacher/student1/student2 (`poleapp123`), École 1.
-- Généré : 2 écoles (photo/URL par défaut), profs/élèves supplémentaires, studios avec photos, 30 positions, ~20 cours/école (durées 15 min) répartis entre profs (anti-collisions), progression/blessures, favoris prof/élève, invoices/packs/offres EUR/TVA20, partenaire Amazon (liens produits), élèves à 500 crédits.
-- Disciplines seedées par école (Pole / Pole Exotic / Souplesse / Pilates / Conditioning) appliquées aux positions et cours. Muscles/articulations seedés et associés aux positions selon leur type. Positions attribuées à des professeurs seedés (Elza priorisée) + favoris prof générés.
+- Généré : 2 écoles (photos Cloudinary `sc_*` + URL google), profs/élèves supplémentaires, studios avec photos Cloudinary `st_*`, 30 positions, ~20 cours/école (durées 15 min) avec photos Cloudinary `co_*` répartis entre profs (anti-collisions), progression/blessures, favoris prof/élève, invoices/packs/offres EUR/TVA20, partenaire Amazon (liens produits), élèves à 500 crédits.
+- Disciplines seedées par école (Pole / Pole Exotic / Souplesse / Pilates / Conditioning) appliquées aux positions et cours. Muscles/articulations seedés et associés aux positions selon leur type. Positions attribuées à des professeurs seedés (Elza priorisée) + favoris prof générés + vidéos Cloudinary authenticated (pool fixe).
