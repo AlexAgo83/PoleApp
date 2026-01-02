@@ -125,12 +125,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
         .filter((id): id is string => Boolean(id))
     )
   ).map((id) => ({ id, name: disciplineNameById.get(id) ?? "Discipline" }));
-  const returnHref =
-    userRole === "SCHOOL_ADMIN"
-      ? "/admin/studios"
-      : userRole === "TEACHER"
-        ? "/teacher/school"
-        : "/student/school";
   const activeFilters = [q && q.length > 0, teacherFilter, disciplineFilter].filter(Boolean).length;
   const isStudentRole = userRole === "STUDENT";
   const agendaWeekBase = weekParam ? new Date(`${weekParam}T00:00:00`) : new Date();

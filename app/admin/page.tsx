@@ -60,7 +60,6 @@ export default async function AdminDashboard() {
   const [
     users,
     positionsCount,
-    coursesCount,
     coursesTodayCount,
     coursesWeekCount,
     activeInjuries,
@@ -76,7 +75,6 @@ export default async function AdminDashboard() {
       select: { role: true, isPremium: true, createdAt: true },
     }),
     prisma.position.count(),
-    prisma.course.count({ where: { schoolId: session.user.schoolId } }),
     prisma.course.count({
       where: {
         schoolId: session.user.schoolId,

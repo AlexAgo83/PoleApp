@@ -75,11 +75,6 @@ export function StudioMonthView({
     () => new Date(`${month}-01T00:00:00`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }),
     [month]
   );
-  const totalCourses = useMemo(
-    () => cells.reduce((acc, cell) => acc + (cell.courses?.length ?? 0), 0),
-    [cells]
-  );
-
   const fetchMonth = (target: string) => {
     startTransition(async () => {
       const params = new URLSearchParams();
