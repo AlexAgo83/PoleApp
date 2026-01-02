@@ -120,20 +120,6 @@ export function PresetCreateForm({
         />
       </label>
       <label className="text-sm text-slate-200">
-        Vidéo (Cloudinary)
-        <CloudinaryUpload
-          label="Uploader une vidéo"
-          folder="poleapp/presets"
-          resourceType="video"
-          deliveryType="authenticated"
-          accept="video/*"
-          maxSizeMB={100}
-          currentPublicId={videoPublicId || undefined}
-          onChange={(_, publicId) => setVideoPublicId(publicId ?? "")}
-        />
-        <input type="hidden" name="videoPublicId" value={videoPublicId} />
-      </label>
-      <label className="text-sm text-slate-200">
         Image (Cloudinary)
         <CloudinaryUpload
           label="Uploader une image"
@@ -146,6 +132,20 @@ export function PresetCreateForm({
           onChange={(_, publicId) => setImagePublicId(publicId ?? "")}
         />
         <input type="hidden" name="imagePublicId" value={imagePublicId} />
+      </label>
+      <label className="text-sm text-slate-200">
+        Vidéo (Cloudinary)
+        <CloudinaryUpload
+          label="Uploader une vidéo"
+          folder="poleapp/presets"
+          resourceType="video"
+          deliveryType="authenticated"
+          accept="video/*"
+          maxSizeMB={100}
+          currentPublicId={videoPublicId || undefined}
+          onChange={(_, publicId) => setVideoPublicId(publicId ?? "")}
+        />
+        <input type="hidden" name="videoPublicId" value={videoPublicId} />
       </label>
       {showTeacherSelect ? (
         <label className="text-sm text-slate-200">
