@@ -132,6 +132,7 @@ model User {
   manualSetInvoices Invoice[] @relation("InvoiceManualSetBy")
   refundedInvoices  Invoice[] @relation("InvoiceRefundedBy")
   recurrenceSeries  CourseRecurrenceSeries[]
+  notifications    Notification[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
@@ -305,6 +306,15 @@ enum SuggestionTag {
   SAFE
 }
 
+enum NotificationKind {
+  COURSE_SIGNUP
+  COURSE_UPDATED
+  COURSE_CANCELLED
+  WAITLIST
+  NOTE_ADDED
+  INVOICE_STATUS
+}
+
 enum PartnerEventType {
   CLICK
   PURCHASE
@@ -318,6 +328,21 @@ model CoursePosition {
   position   Position @relation(fields: [positionId], references: [id])
 
   @@unique([courseId, positionId])
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  userId    String
+  kind      NotificationKind
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime          @default(now())
+  user      User              @relation(fields: [userId], references: [id])
+
+  @@index([userId, readAt, createdAt])
+  @@index([userId, createdAt])
 }
 
 model CourseNote {
