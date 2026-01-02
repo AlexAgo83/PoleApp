@@ -954,7 +954,7 @@ async function seedCourses(schoolsData: {
   teachers: { id: string; schoolId: string; email?: string }[];
   students: { id: string; schoolId: string }[];
   admins: { id: string; schoolId: string }[];
-  positions: { id: string; discipline?: string | null; disciplineId?: string | null }[];
+  positions: { id: string; name: string; discipline?: string | null; disciplineId?: string | null }[];
   disciplinesBySchool: Record<string, SeedDiscipline[]>;
   positionsByTeacher: Record<string, string[]>;
 }) {
@@ -962,6 +962,28 @@ async function seedCourses(schoolsData: {
   let courseImageIdx = 0;
   let courseNameIdx = 0;
   const euro = "EUR";
+  const pickLearningStatusForNote = () => {
+    const r = Math.random();
+    if (r < 0.6) return LearningStatus.IN_PROGRESS;
+    if (r < 0.85) return LearningStatus.PASSED;
+    if (r < 0.95) return LearningStatus.MASTERED;
+    return LearningStatus.NOT_STARTED;
+  };
+  const commentForStatus = (status: LearningStatus, positionName: string) => {
+    const base = positionName ? `${positionName} : ` : "";
+    switch (status) {
+      case LearningStatus.NOT_STARTED:
+        return `${base}à retravailler ensemble, placement à préciser.`;
+      case LearningStatus.IN_PROGRESS:
+        return `${base}progrès visibles, encore quelques corrections.`;
+      case LearningStatus.PASSED:
+        return `${base}réussi en autonomie, consolider la fluidité.`;
+      case LearningStatus.MASTERED:
+        return `${base}très solide, on peut complexifier.`;
+      default:
+        return `${base}à suivre.`;
+    }
+  };
 
   for (const school of schools) {
     const schoolTeachers = teachers.filter((t) => t.schoolId === school.id);
@@ -1001,6 +1023,7 @@ async function seedCourses(schoolsData: {
 
     for (let i = 0; i < slots.length; i += 1) {
       const slot = slots[i];
+      const isPast = slot.date.getTime() < NOW_TS;
       const studio = createdStudios[i % createdStudios.length];
       const sortedTeachers = [...schoolTeachers].sort((a, b) => {
         const countA = teacherUsage.get(a.id) ?? 0;
@@ -1067,7 +1090,7 @@ async function seedCourses(schoolsData: {
         data: attendees.map((s) => ({ courseId: course.id, studentId: s.id })),
       });
 
-      if (slot.date.getTime() < NOW_TS && coursePositions.length > 0 && attendees.length > 0) {
+      if (isPast && coursePositions.length > 0 && attendees.length > 0) {
         for (const attendee of attendees) {
           for (const position of coursePositions) {
             if (Math.random() < 0.55) {
@@ -1091,6 +1114,22 @@ async function seedCourses(schoolsData: {
             }
           }
         }
+        const notesData = attendees.flatMap((attendee) =>
+          coursePositions.map((position) => {
+            const status = pickLearningStatusForNote();
+            return {
+              courseId: course.id,
+              studentId: attendee.id,
+              positionId: position.id,
+              learningStatus: status,
+              comment: commentForStatus(status, position.name),
+            };
+          })
+        );
+        await prisma.courseNote.createMany({
+          data: notesData,
+          skipDuplicates: true,
+        });
       }
 
       const confirmedCount = attendees.length;

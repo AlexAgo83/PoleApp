@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
+import type { LearningStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -19,6 +20,21 @@ function formatDuration(minutes: number) {
     return `${hrs}h${mins.toString().padStart(2, "0")}`;
   }
   return `${mins} min`;
+}
+
+function learningStatusLabel(status: LearningStatus | null | undefined) {
+  switch (status) {
+    case "NOT_STARTED":
+      return "Nouveauté";
+    case "IN_PROGRESS":
+      return "Initié";
+    case "PASSED":
+      return "Passé";
+    case "MASTERED":
+      return "Fluide chorégraphié";
+    default:
+      return "(non renseigné)";
+  }
 }
 
 type PageProps =
@@ -40,7 +56,13 @@ export default async function StudentCourseDetailPage({
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { credits: true, schoolId: true },
+    select: {
+      credits: true,
+      schoolId: true,
+      studentFavoritePositions: {
+        select: { positionId: true },
+      },
+    },
   });
   if (!user?.schoolId) {
     return notFound();
@@ -147,6 +169,9 @@ export default async function StudentCourseDetailPage({
   const icsHref = `/api/courses/${course.id}/ics`;
   const sharePath = `/student/courses/${course.id}`;
   const hasPositions = course.positions.length > 0;
+  const favoritePositionIds = new Set(
+    user.studentFavoritePositions?.map((fav) => fav.positionId) ?? []
+  );
   const isVirtual = course.isVirtual;
   const canBuy =
     !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost && hasPositions && !isVirtual;
@@ -321,12 +346,27 @@ export default async function StudentCourseDetailPage({
                 href={`/positions/${cp.position.id}?from=${encodeURIComponent(backHref)}`}
                 className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 transition hover:border-cyan-300/70 hover:bg-white/10"
               >
-                <span className="font-semibold text-white">{cp.position.name}</span>
-                {cp.position.type ? (
-                  <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {cp.position.type}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-semibold text-white">
+                    {cp.position.name}
+                    {favoritePositionIds.has(cp.position.id) && (
+                      <span
+                        className="ml-1 text-base leading-none text-rose-200"
+                        aria-label="Coup de cœur"
+                        title="Coup de cœur"
+                      >
+                        ♥
+                      </span>
+                    )}
                   </span>
-                ) : null}
+                </div>
+                <div className="flex items-center gap-2">
+                  {cp.position.type ? (
+                    <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
+                      {cp.position.type}
+                    </span>
+                  ) : null}
+                </div>
               </Link>
             </li>
           ))}
@@ -352,7 +392,7 @@ export default async function StudentCourseDetailPage({
                     {note.position.name}
                   </span>
                   <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {note.learningStatus ?? "(non renseigné)"}
+                    {learningStatusLabel(note.learningStatus)}
                   </span>
                 </div>
                 {note.comment && (
