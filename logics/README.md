@@ -1,4 +1,4 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.8.1
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.12.5
 > Doit rester à jour avec le projet (backlogs, changelog, modèles, routes).
 
 ## Contenu principal
@@ -11,19 +11,20 @@
 - `CHANGELOG.md`: journal des versions
 - `README.md`: ce fichier
 
-## État produit (v0.8.1)
+## État produit (v0.12.5)
 - Auth/RBAC + profils (élève/prof/admin) avec préférences (cœurs) prof/élève.
 - Positions : progression/blessures/mini-jeux + upload vidéo Cloudinary authentifié (URL signées), muscles/articulations reliés, filtres multi-disciplines.
-- Cours : présence/attente, notes, générateur (règles d’enchaînement, raisons, favoris), badges “appliqué”.
+- Cours : présence/attente, notes, générateur (règles d’enchaînement, raisons, favoris), badges “appliqué”, photos Cloudinary `photoPublicId`.
 - Agendas semaine inline (Admin/Teacher/Student) + bouton “Semaine actuelle”.
 - Facturation : `Invoice` + UI admin (statuts, export CSV) + lecture prof ; achats élèves (packs/abos/presets) listés côté admin/prof.
 - Partenaires : CRUD + liens sponsorisés + tracking PartnerEvent (clic/achat).
-- Presets/combos vidéo : CRUD admin/prof, catalogue élève, achat en crédits/premium, images + vidéos.
+- Presets/combos vidéo : CRUD admin/prof, catalogue élève, achat en crédits/premium, images/vidéos Cloudinary, filtres étendus + reset, pagination unique.
+- Cloudinary : photos écoles/studios/cours/presets en `photoPublicId`, avatars avec `avatarPublicId`, wrapper `CloudinaryField` pour formulaires serveur.
 
 ## Stack / scripts
 - Next.js App Router, Prisma Postgres, NextAuth Credentials, Tailwind.
 - Scripts : `npm run db:migrate:deploy` (via ci-migrate-deploy), `npm run db:push`, `npm run dev`, `npm run start:render`.
-- Seed idempotent : 2 écoles, comptes fixes (admin/teacher/student1/2, mdp `change-me-password`), studios/photos, cours démo, progression/blessures/favoris, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning, muscles/articulations liés, positions attribuées à des profs seedés et cours répartis entre profs sans collisions.
+- Seed idempotent : 2 écoles (photos Cloudinary `sc_*` + URL google), comptes fixes (admin/teacher/student1/2, mdp `change-me-password`), studios (photos `st_*`), cours démo (photos `co_*`), progression/blessures/favoris, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning, muscles/articulations liés, positions attribuées à des profs seedés (vidéos Cloudinary authenticated) et cours répartis entre profs sans collisions. Presets seedés avec images/vidéos Cloudinary.
 
 ## À maintenir
 - Tenir à jour : backlogs, changelog, modèles (`models/03_DATA_MODEL.md`), routes (`models/04_ROUTES_AND_SCREENS.md`), instructions.
