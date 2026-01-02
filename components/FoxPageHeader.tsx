@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 import clsx from "clsx";
 import React from "react";
@@ -174,7 +175,15 @@ export async function FoxPageHeader({
           >
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 shadow-lg shadow-black/30 md:h-14 md:w-14">
               {schoolImage ? (
-                <img src={schoolImage} alt={schoolName} className="h-full w-full object-cover" />
+                <Image
+                  src={schoolImage}
+                  alt={schoolName}
+                  className="h-full w-full object-cover"
+                  width={112}
+                  height={112}
+                  priority
+                  unoptimized
+                />
               ) : (
                 <span className="text-xl font-extrabold text-white md:text-2xl">
                   {(schoolName || "E")[0]?.toUpperCase()}

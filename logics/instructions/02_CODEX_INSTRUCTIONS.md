@@ -1,5 +1,5 @@
 # 02 — Instructions pour CODEX (phase produit)
-> Aligné v0.7.9
+> Aligné v0.12.5
 
 Objectif : faire évoluer une **web app** (responsive) livrée en v0.7.9 (Steps 0→9) vers un produit complet, en gardant la qualité produit sur chaque Step :
 - Base positions
@@ -36,7 +36,7 @@ Objectif : faire évoluer une **web app** (responsive) livrée en v0.7.9 (Steps 
 - Run dev : `npm run dev` (ou `docker compose watch`), `NEXT_USE_TURBOPACK=0` si panics.
 - Si Turbopack panique : supprimer `.next`/`.turbo` puis forcer Webpack.
 - DB : `npm run db:push` puis `npm run db:seed` (schema `prisma/schema.prisma`).
-- Seed v0.7.9 : 2 écoles (photo/URL par défaut), 5 profs + 10 élèves/école (500 crédits, premium 1/2), 30 positions (muscles + disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning), 20 cours/école (durées multiples de 15 min — 30/45/60/75/90 — avec factures), favoris prof/élève, partenaire Amazon (4 liens produits). Comptes fixes admin/teacher/student1/2/super-admin (`poleapp123`).
+- Seed v0.12.5 : 2 écoles (photos Cloudinary `sc_*` + URL par défaut), 5 profs + 10 élèves/école (500 crédits, premium 1/2), 30 positions (muscles + disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning) avec vidéos Cloudinary authentifiées, 20 cours/école (durées multiples de 15 min — 30/45/60/75/90 — avec factures) avec photos Cloudinary `co_*`, favoris prof/élève, partenaire Amazon (4 liens produits), presets seed (images/vidéos Cloudinary). Comptes fixes admin/teacher/student1/2/super-admin (`poleapp123`).
 - Deploy : Render (service web + Postgres), build `npm install && npm run db:migrate:deploy && npm run build` (script `ci-migrate-deploy` fallback db push si pas de migrations), start `npm run start:render` (db push + seed uniquement si DB considérée vide : 0 école et ≤1 user).
 
 Structure proposée :
