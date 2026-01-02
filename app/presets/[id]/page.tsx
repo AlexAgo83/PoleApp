@@ -140,12 +140,36 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
             label: "Retour",
             href: safeFrom,
           },
+          {
+            label: "↑",
+            href: "/presets",
+          },
         ]}
       />
 
       <section className="panel space-y-4 p-4 md:p-6 lg:p-8">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/presets"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                title="Retour à la liste des presets"
+              >
+                ↑
+              </Link>
+              {canEdit && (session.user.role === "SCHOOL_ADMIN" || session.user.id === preset.createdBy?.id) ? (
+                <Link
+                  href={`/presets/${preset.id}/edit`}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                >
+                  <span aria-hidden>⚙️</span>
+                  <span>Éditer</span>
+                </Link>
+              ) : null}
+            </div>
+          </div>
           {canViewContent ? (
             <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
           ) : (
@@ -264,16 +288,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 </div>
               )}
             </div>
-            {canEdit && (session.user.role === "SCHOOL_ADMIN" || session.user.id === preset.createdBy?.id) ? (
-              <div className="flex justify-end">
-                <Link
-                  href={`/presets/${preset.id}/edit`}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                >
-                  Éditer
-                </Link>
-              </div>
-            ) : canEdit ? (
+            {canEdit && (session.user.role !== "SCHOOL_ADMIN" && session.user.id !== preset.createdBy?.id) ? (
               <div className="flex justify-end">
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200">
                   Édition réservée au créateur ({preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}).

@@ -2,6 +2,7 @@ import { MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 
 import { SafeImage } from "@/components/SafeImage";
 import { FoxPageHeader } from "@/components/FoxPageHeader";
@@ -13,6 +14,47 @@ import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
+
+export async function toggleFavoriteAction(formData: FormData) {
+  "use server";
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+  const positionId = formData.get("positionId")?.toString();
+  const redirectTo = formData.get("redirectTo")?.toString() || (positionId ? `/positions/${positionId}` : "/positions");
+  if (!positionId) {
+    redirect(redirectTo);
+  }
+
+  const role = session.user.role;
+  if (role === "STUDENT") {
+    const existing = await prisma.studentFavoritePosition.findFirst({
+      where: { studentId: session.user.id, positionId },
+    });
+    if (existing) {
+      await prisma.studentFavoritePosition.delete({ where: { studentId_positionId: { studentId: session.user.id, positionId } } });
+    } else {
+      await prisma.studentFavoritePosition.create({
+        data: { studentId: session.user.id, positionId },
+      });
+    }
+  } else if (role === "TEACHER") {
+    const existing = await prisma.teacherFavoritePosition.findFirst({
+      where: { teacherId: session.user.id, positionId },
+    });
+    if (existing) {
+      await prisma.teacherFavoritePosition.delete({ where: { teacherId_positionId: { teacherId: session.user.id, positionId } } });
+    } else {
+      await prisma.teacherFavoritePosition.create({
+        data: { teacherId: session.user.id, positionId },
+      });
+    }
+  }
+
+  revalidatePath(redirectTo);
+  redirect(redirectTo);
+}
 
 type Props = {
   params: { id: string };
@@ -205,6 +247,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     POSITION_PLACEHOLDER;
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
+  const isTeacher = session?.user?.role === "TEACHER";
   const hasUnlocked = isStudent
     ? Boolean(
         await prisma.studentPositionProgress.findFirst({
@@ -263,6 +306,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const nextPosition = currentIndex >= 0 && currentIndex < navList.length - 1 ? navList[currentIndex + 1] : null;
   const encodedFrom = safeFrom ? encodeURIComponent(safeFrom) : undefined;
 
+  const currentPath = `/positions/${position.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`;
   const hasNav = (isFromPositionsList && navList.length > 0) || (isFromProgress && navList.length > 0);
   const combos =
     (await prisma.preset.findMany({
@@ -274,6 +318,19 @@ export default async function PositionDetailPage({ params, searchParams }: Props
       orderBy: [{ usageCount: "desc" }, { createdAt: "desc" }],
       take: 10,
     })) ?? [];
+  const isFavorite = session.user.role === "STUDENT"
+    ? Boolean(
+        await prisma.studentFavoritePosition.findFirst({
+          where: { studentId: session.user.id, positionId: position.id },
+        })
+      )
+    : session.user.role === "TEACHER"
+      ? Boolean(
+          await prisma.teacherFavoritePosition.findFirst({
+            where: { teacherId: session.user.id, positionId: position.id },
+          })
+        )
+      : false;
   const purchasedPresetIds =
     isStudent && combos.length > 0
       ? new Set(
@@ -311,54 +368,68 @@ export default async function PositionDetailPage({ params, searchParams }: Props
       />
       <section className="panel p-4 md:p-6 lg:p-8">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 md:mb-6">
-          <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">{position.name}</h1>
-          {hasNav && (
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href={
-                  prevPosition
-                    ? `/positions/${prevPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`
-                    : "#"
-                }
-                aria-disabled={!prevPosition}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                  prevPosition
-                    ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
-                    : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
-                }`}
-              >
-                <span className="md:hidden" aria-hidden="true">
-                  ←
-                </span>
-                <span className="hidden md:inline">
-                  {prevPosition ? `← ${prevPosition.name}` : "←"}
-                </span>
-              </Link>
-              <Link
-                href="/positions"
-                className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
-                title="Retour à la liste"
-              >
-                ↑
-              </Link>
-              <Link
-                href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
-                aria-disabled={!nextPosition}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                  nextPosition
-                    ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
-                    : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
-                }`}
-              >
-                <span className="md:hidden" aria-hidden="true">
-                  →
-                </span>
-                <span className="hidden md:inline">
-                  {nextPosition ? `${nextPosition.name} →` : "→"}
-                </span>
-              </Link>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">{position.name}</h1>
+            {(isStudent || isTeacher) && (
+              <form action={toggleFavoriteAction}>
+                <input type="hidden" name="positionId" value={position.id} />
+                <input type="hidden" name="redirectTo" value={currentPath} />
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-2 py-1 text-lg leading-none text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                  aria-label={isFavorite ? "Retirer des coups de cœur" : "Ajouter aux coups de cœur"}
+                  title={isFavorite ? "Retirer des coups de cœur" : "Ajouter aux coups de cœur"}
+                >
+                  {isFavorite ? "♥" : "♡"}
+                </button>
+              </form>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={
+                prevPosition
+                  ? `/positions/${prevPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}`
+                  : "#"
+              }
+              aria-disabled={!prevPosition}
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                prevPosition
+                  ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                  : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+              }`}
+            >
+              <span className="md:hidden" aria-hidden="true">
+                ←
+              </span>
+              <span className="hidden md:inline">
+                {prevPosition ? `← ${prevPosition.name}` : "←"}
+              </span>
+            </Link>
+            <Link
+              href="/positions"
+              className="inline-flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+              title="Retour à la liste"
+            >
+              ↑
+            </Link>
+            <Link
+              href={nextPosition ? `/positions/${nextPosition.id}${encodedFrom ? `?from=${encodedFrom}` : ""}` : "#"}
+              aria-disabled={!nextPosition}
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                nextPosition
+                  ? "border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
+                  : "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+              }`}
+            >
+              <span className="md:hidden" aria-hidden="true">
+                →
+              </span>
+              <span className="hidden md:inline">
+                {nextPosition ? `${nextPosition.name} →` : "→"}
+              </span>
+            </Link>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-[1.35fr,1fr]">
@@ -435,16 +506,23 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             {position.createdBy ? (
               <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-                <p className="text-sm font-semibold text-white">
-                  {position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}
-                  </p>
-                </div>
-              ) : (
-                <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-                  <p className="text-sm font-semibold text-white">—</p>
-                </div>
-              )}
+                {position.createdBy?.role === "TEACHER" && position.createdBy?.id ? (
+                  <Link
+                    href={`/teachers/${position.createdBy.id}`}
+                    className="text-sm font-semibold text-white underline-offset-2 hover:underline"
+                  >
+                    {position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}
+                  </Link>
+                ) : (
+                  <p className="text-sm font-semibold text-white">{position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}</p>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
+                <p className="text-sm font-semibold text-white">—</p>
+              </div>
+            )}
               <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-2.5 shadow-inner shadow-black/20">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Vu</p>
                 <p className="text-sm font-semibold text-white">{position._count?.progress ?? 0}</p>
@@ -519,10 +597,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                     const cost = combo.priceCredits ?? 0;
                     const premiumLocked = isStudent && combo.premiumRequired && !isPremium;
                     const alreadyBought = purchasedPresetIds.has(combo.id);
-                    const href =
-                      premiumLocked && isStudent
-                        ? `/student/premium?from=${encodeURIComponent(`/positions/${position.id}`)}`
-                        : `/presets?highlight=${combo.id}`;
+                    const href = `/presets/${combo.id}?from=${encodeURIComponent(`/positions/${position.id}`)}`;
                     return (
                       <Link
                         key={combo.id}
@@ -601,11 +676,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 {isOwner ? (
                   <Link
                     href={`/teacher/positions/${position.id}/edit`}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:border-indigo-300/70 hover:bg-indigo-500/15"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/gear.svg" alt="" className="h-4 w-4" />
-                    Éditer
+                    <span aria-hidden>⚙️</span>
+                    <span>Éditer</span>
                   </Link>
                 ) : (
                   <p className="text-xs font-semibold text-slate-300">
