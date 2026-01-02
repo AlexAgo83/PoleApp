@@ -156,7 +156,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
     where: { id: awaitedParams.id },
     include: {
       media: true,
-      createdBy: true,
+      createdBy: { select: { id: true, name: true, email: true, role: true } },
       muscles: { include: { muscle: true } },
       _count: { select: { progress: true } },
     },
@@ -318,6 +318,14 @@ export default async function PositionDetailPage({ params, searchParams }: Props
       orderBy: [{ usageCount: "desc" }, { createdAt: "desc" }],
       take: 10,
     })) ?? [];
+  const seenByCurrentUser = isStudent
+    ? Math.max(
+        0,
+        await prisma.courseAttendance.count({
+          where: { studentId: session.user.id, course: { positions: { some: { positionId: position.id } } } },
+        }),
+      )
+    : 0;
   const isFavorite = session.user.role === "STUDENT"
     ? Boolean(
         await prisma.studentFavoritePosition.findFirst({
@@ -506,15 +514,15 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             {position.createdBy ? (
               <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
-                {position.createdBy?.role === "TEACHER" && position.createdBy?.id ? (
+                {position.createdBy.id ? (
                   <Link
                     href={`/teachers/${position.createdBy.id}`}
                     className="text-sm font-semibold text-white underline-offset-2 hover:underline"
                   >
-                    {position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}
+                    {position.createdBy.name ?? position.createdBy.email ?? "n/a"}
                   </Link>
                 ) : (
-                  <p className="text-sm font-semibold text-white">{position.createdBy?.name ?? position.createdBy?.email ?? "n/a"}</p>
+                  <p className="text-sm font-semibold text-white">{position.createdBy.name ?? position.createdBy.email ?? "n/a"}</p>
                 )}
               </div>
             ) : (
@@ -523,10 +531,12 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 <p className="text-sm font-semibold text-white">—</p>
               </div>
             )}
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-2.5 shadow-inner shadow-black/20">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Vu</p>
-                <p className="text-sm font-semibold text-white">{position._count?.progress ?? 0}</p>
-              </div>
+            <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-2.5 shadow-inner shadow-black/20">
+              <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Vu</p>
+              <p className="text-sm font-semibold text-white">
+                {isStudent ? Math.max(seenByCurrentUser, position._count?.progress ?? 0) : position._count?.progress ?? 0}
+              </p>
+            </div>
             </div>
 
             {canViewContent ? (
@@ -632,9 +642,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                               </span>
                             ) : null}
                           </div>
-                          <span className="text-[11px] font-semibold text-slate-300">
-                            {combo.usageCount} vue{combo.usageCount > 1 ? "s" : ""}
-                          </span>
+                          <span />
                         </div>
                         <div className="space-y-1">
                           <p className="text-lg font-semibold text-white">{combo.title}</p>

@@ -47,16 +47,9 @@ export default async function TeacherPublicProfilePage({
   if (!session?.user?.id) {
     redirect(`/login?callbackUrl=/teachers/${teacherId}`);
   }
-  if (!session.user.schoolId) {
-    redirect("/access-denied");
-  }
 
-  const teacher = await prisma.user.findFirst({
-    where: {
-      id: teacherId,
-      role: "TEACHER",
-      schoolId: session.user.schoolId,
-    },
+  const teacher = await prisma.user.findUnique({
+    where: { id: teacherId },
     select: {
       id: true,
       name: true,
@@ -64,13 +57,14 @@ export default async function TeacherPublicProfilePage({
       age: true,
       avatarPublicId: true,
       diplomas: true,
+      role: true,
+      schoolId: true,
       school: { select: { name: true } },
       favoritePositions: {
         include: { position: true },
         orderBy: { position: { name: "asc" } },
       },
       createdPresets: {
-        where: { schoolId: session.user.schoolId ?? undefined },
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
@@ -89,19 +83,9 @@ export default async function TeacherPublicProfilePage({
     },
   });
 
-  if (!teacher) {
+  if (!teacher || (teacher.role !== "TEACHER" && teacher.role !== "SCHOOL_ADMIN")) {
     notFound();
   }
-
-  if (session.user.role === "STUDENT") {
-    const attended = await prisma.courseAttendance.count({
-      where: { studentId: session.user.id, course: { teacherId: teacher.id } },
-    });
-    if (attended === 0) {
-      redirect("/access-denied");
-    }
-  }
-
   const canEdit =
     session.user.role === "SCHOOL_ADMIN" || session.user.id === teacher.id;
   const positions = canEdit
@@ -229,7 +213,16 @@ export default async function TeacherPublicProfilePage({
                 <Link
                   key={preset.id}
                   href={`/presets/${preset.id}?from=${encodeURIComponent(`/teachers/${teacher.id}`)}`}
-                  className="block rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                  className="relative block overflow-hidden rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                  style={
+                    preset.imagePublicId
+                      ? {
+                          backgroundImage: `linear-gradient(135deg, rgba(12,18,40,0.78), rgba(26,16,60,0.78)), url(https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_480/${preset.imagePublicId})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : undefined
+                  }
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-1">
