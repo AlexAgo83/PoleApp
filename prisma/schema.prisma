@@ -269,6 +269,7 @@ model Course {
   recommendations CourseRecommendation[]
   invoices    Invoice[]
   partnerEvents PartnerEvent[]
+  notifications Notification[]
   recurrenceSeriesId String?
   recurrenceSeries   CourseRecurrenceSeries? @relation(fields: [recurrenceSeriesId], references: [id])
   isVirtual    Boolean  @default(false)
@@ -336,6 +337,7 @@ model CoursePosition {
 model Notification {
   id        String            @id @default(cuid())
   userId    String
+  courseId  String?
   kind      NotificationKind
   title     String
   body      String?
@@ -343,9 +345,11 @@ model Notification {
   readAt    DateTime?
   createdAt DateTime          @default(now())
   user      User              @relation(fields: [userId], references: [id])
+  course    Course?           @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([userId, readAt, createdAt])
   @@index([userId, createdAt])
+  @@index([userId, kind, courseId, createdAt])
 }
 
 model CourseNote {

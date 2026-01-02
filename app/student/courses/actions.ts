@@ -195,6 +195,7 @@ type CourseWithCounts = {
       title: "Nouvelle inscription",
       body: `${studentName} s'est inscrit(e) à ${course.title ?? "un cours"} (${new Date(course.date).toLocaleString("fr-FR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })})`,
       link: `/teacher/courses/${course.id}`,
+      courseId: course.id,
     };
     await createNotification(teacherNotification);
   }
@@ -210,6 +211,7 @@ type CourseWithCounts = {
         title: "Nouvelle inscription",
         body: `${studentName} → ${course.title ?? "Cours"} (${new Date(course.date).toLocaleString("fr-FR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })})`,
         link: course.teacherId ? `/teacher/courses/${course.id}` : undefined,
+        courseId: course.id,
       }))
     );
   }
@@ -220,6 +222,7 @@ type CourseWithCounts = {
       title: "Inscription en liste d'attente",
       body: `${course.title ?? "Cours"} — vous êtes en file d'attente (rang ${finalWaitlistRank ?? "?"})`,
       link: `/student/courses/${course.id}`,
+      courseId: course.id,
     });
   }
 

@@ -1136,38 +1136,43 @@ async function seedCourses(schoolsData: {
 
       const confirmedCount = attendees.length;
       const defaultAmountCents = computeDefaultInvoiceAmountCents(confirmedCount, course.maxSeats);
-      const roll = Math.random();
-      const forced = forcedStatuses.shift();
-      const isRefunded = Boolean(schoolAdmin) && (forced === "REFUNDED" || roll < 0.12);
-      const hasManualStatus = Boolean(schoolAdmin) && !isRefunded && (forced === "MANUAL_PAID" || forced === "MANUAL_LATE" || (roll >= 0.12 && roll < 0.3));
-      const manualStatus =
-        hasManualStatus && (forced === "MANUAL_PAID" || roll < 0.2)
-          ? ManualFinancialStatus.PAID
-          : hasManualStatus
-            ? ManualFinancialStatus.LATE
-            : ManualFinancialStatus.NONE;
+      if (isPast) {
+        const roll = Math.random();
+        const forced = forcedStatuses.shift();
+        const isRefunded = Boolean(schoolAdmin) && (forced === "REFUNDED" || roll < 0.12);
+        const hasManualStatus =
+          Boolean(schoolAdmin) &&
+          !isRefunded &&
+          (forced === "MANUAL_PAID" || forced === "MANUAL_LATE" || (roll >= 0.12 && roll < 0.3));
+        const manualStatus =
+          hasManualStatus && (forced === "MANUAL_PAID" || roll < 0.2)
+            ? ManualFinancialStatus.PAID
+            : hasManualStatus
+              ? ManualFinancialStatus.LATE
+              : ManualFinancialStatus.NONE;
 
-      await prisma.invoice.create({
-        data: {
-          courseId: course.id,
-          amountCents: defaultAmountCents,
-          currency: euro,
-          status: isRefunded ? InvoiceStatus.REFUNDED : InvoiceStatus.GENERATED,
-          issuedAt: new Date(),
-          refundedAt: isRefunded ? new Date() : null,
-          refundedById: isRefunded ? schoolAdmin?.id : null,
-          refundNote: isRefunded ? "Remboursement seed (cours annulé)" : null,
-          manualStatus,
-          manualNote:
-            manualStatus === ManualFinancialStatus.PAID
-              ? "Marqué payé manuellement (seed)"
-              : manualStatus === ManualFinancialStatus.LATE
-              ? "Relance manuelle (seed)"
-              : null,
-          manualSetById: hasManualStatus ? schoolAdmin?.id : null,
-          manualSetAt: hasManualStatus ? new Date() : null,
-        },
-      });
+        await prisma.invoice.create({
+          data: {
+            courseId: course.id,
+            amountCents: defaultAmountCents,
+            currency: euro,
+            status: isRefunded ? InvoiceStatus.REFUNDED : InvoiceStatus.GENERATED,
+            issuedAt: new Date(),
+            refundedAt: isRefunded ? new Date() : null,
+            refundedById: isRefunded ? schoolAdmin?.id : null,
+            refundNote: isRefunded ? "Remboursement seed (cours annulé)" : null,
+            manualStatus,
+            manualNote:
+              manualStatus === ManualFinancialStatus.PAID
+                ? "Marqué payé manuellement (seed)"
+                : manualStatus === ManualFinancialStatus.LATE
+                ? "Relance manuelle (seed)"
+                : null,
+            manualSetById: hasManualStatus ? schoolAdmin?.id : null,
+            manualSetAt: hasManualStatus ? new Date() : null,
+          },
+        });
+      }
     }
 
     // Cours “edge” : tôt/tard, durées variées, coûts/places atypiques, quotas waitlist, quelques virtuels non récurrents
@@ -1384,31 +1389,33 @@ async function seedCourses(schoolsData: {
           // Notes/mastery intentionally not seeded here to keep levels empty for manual input
         }
 
-        const defaultAmountCents = computeDefaultInvoiceAmountCents(0, course.maxSeats);
-        const roll = Math.random();
-        const forced = forcedStatuses.shift();
-        const isRefunded = forced === "REFUNDED" || roll < 0.08;
-        const hasManualStatus =
-          !isRefunded && (forced === "MANUAL_PAID" || forced === "MANUAL_LATE" || roll >= 0.08);
-        const manualStatus =
-          hasManualStatus && (forced === "MANUAL_PAID" || roll < 0.2)
-            ? ManualFinancialStatus.PAID
-            : hasManualStatus
-              ? ManualFinancialStatus.LATE
-              : ManualFinancialStatus.NONE;
+        if (date.getTime() < NOW_TS) {
+          const defaultAmountCents = computeDefaultInvoiceAmountCents(0, course.maxSeats);
+          const roll = Math.random();
+          const forced = forcedStatuses.shift();
+          const isRefunded = forced === "REFUNDED" || roll < 0.08;
+          const hasManualStatus =
+            !isRefunded && (forced === "MANUAL_PAID" || forced === "MANUAL_LATE" || roll >= 0.08);
+          const manualStatus =
+            hasManualStatus && (forced === "MANUAL_PAID" || roll < 0.2)
+              ? ManualFinancialStatus.PAID
+              : hasManualStatus
+                ? ManualFinancialStatus.LATE
+                : ManualFinancialStatus.NONE;
 
-        await prisma.invoice.create({
-          data: {
-            courseId: course.id,
-            amountCents: defaultAmountCents,
-            currency: euro,
-            status: isRefunded ? InvoiceStatus.REFUNDED : InvoiceStatus.GENERATED,
-            issuedAt: new Date(),
-            refundedAt: isRefunded ? new Date() : null,
-            refundNote: isRefunded ? "Remboursement seed (récurrence)" : null,
-            manualStatus,
-          },
-        });
+          await prisma.invoice.create({
+            data: {
+              courseId: course.id,
+              amountCents: defaultAmountCents,
+              currency: euro,
+              status: isRefunded ? InvoiceStatus.REFUNDED : InvoiceStatus.GENERATED,
+              issuedAt: new Date(),
+              refundedAt: isRefunded ? new Date() : null,
+              refundNote: isRefunded ? "Remboursement seed (récurrence)" : null,
+              manualStatus,
+            },
+          });
+        }
       }
     }
 
@@ -1633,6 +1640,21 @@ async function seedGameSessions(students: { id: string; schoolId: string }[]) {
 }
 
 async function seedNotificationsSamples() {
+  const clampNotificationsByUser = <T extends { userId: string }>(
+    items: T[],
+    limit = 30
+  ): T[] => {
+    const counts = new Map<string, number>();
+    const result: T[] = [];
+    for (const item of items) {
+      const current = counts.get(item.userId) ?? 0;
+      if (current >= limit) continue;
+      counts.set(item.userId, current + 1);
+      result.push(item);
+    }
+    return result;
+  };
+
   const admins = await prisma.user.findMany({
     where: { role: Role.SCHOOL_ADMIN },
     select: { id: true, schoolId: true },
@@ -1661,6 +1683,7 @@ async function seedNotificationsSamples() {
     title: string;
     body?: string | null;
     link?: string | null;
+    courseId?: string | null;
   }> = [];
 
   const formatCourseDate = (date: Date | string | null | undefined) => {
@@ -1685,6 +1708,7 @@ async function seedNotificationsSamples() {
         title: "Nouvelle inscription",
         body: `${studentName} s'est inscrit(e) à ${course.title ?? "un cours"}${dateLabel ? ` (${dateLabel})` : ""}`,
         link: `/teacher/courses/${course.id}`,
+        courseId: course.id,
       });
     }
 
@@ -1696,6 +1720,7 @@ async function seedNotificationsSamples() {
         title: "Cours mis à jour",
         body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
         link: `/student/courses/${course.id}`,
+        courseId: course.id,
       });
     });
 
@@ -1707,6 +1732,7 @@ async function seedNotificationsSamples() {
         title: "Nouvelle note",
         body: `${course.title ?? "Cours"} — ${note.position?.name ?? "Position"}`,
         link: `/student/courses/${course.id}`,
+        courseId: course.id,
       });
     });
 
@@ -1718,6 +1744,7 @@ async function seedNotificationsSamples() {
         title: "Facture mise à jour",
         body: `${invoice.status} — ${course.title ?? "Cours"}`,
         link: `/teacher/billing`,
+        courseId: course.id,
       });
     }
     const adminsForSchool = adminsBySchool.get(course.schoolId ?? null) ?? [];
@@ -1732,6 +1759,7 @@ async function seedNotificationsSamples() {
             title: "Nouvelle inscription",
             body: `${studentName} → ${course.title ?? "Cours"}${dateLabel ? ` (${dateLabel})` : ""}`,
             link: `/teacher/courses/${course.id}`,
+            courseId: course.id,
           })
         );
       }
@@ -1742,6 +1770,7 @@ async function seedNotificationsSamples() {
           title: "Cours mis à jour",
           body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
           link: `/teacher/courses/${course.id}`,
+          courseId: course.id,
         })
       );
     }
@@ -1760,6 +1789,7 @@ async function seedNotificationsSamples() {
       title: "Cours mis à jour",
       body: `${course?.title ?? "Cours"}${course?.date ? ` — ${formatCourseDate(course.date)}` : ""}`,
       link: course ? `/teacher/courses/${course.id}` : "/teacher/courses",
+      courseId: course?.id ?? null,
     });
     existingByUser.add(teacherMain.id);
   }
@@ -1779,6 +1809,7 @@ async function seedNotificationsSamples() {
         ? `${attendance.course.title ?? "Cours"}${attendance.course.date ? ` — ${formatCourseDate(attendance.course.date)}` : ""}`
         : "Cours récent",
       link: attendance?.course ? `/student/courses/${attendance.course.id}` : "/student/courses",
+      courseId: attendance?.course?.id ?? null,
     });
     existingByUser.add(studentMain.id);
   }
@@ -1798,18 +1829,35 @@ async function seedNotificationsSamples() {
         ? `${attendance.course.title ?? "Cours"}${attendance.course.date ? ` — ${formatCourseDate(attendance.course.date)}` : ""}`
         : "Cours récent",
       link: attendance?.course ? `/student/courses/${attendance.course.id}` : "/student/courses",
+      courseId: attendance?.course?.id ?? null,
     });
   }
 
   if (notifications.length > 0) {
+    const capped = clampNotificationsByUser(notifications, 30);
     await prisma.notification.createMany({
-      data: notifications,
+      data: capped,
       skipDuplicates: true,
     });
   }
 }
 
 async function seedAdminNotifications() {
+  const clampNotificationsByUser = <T extends { userId: string }>(
+    items: T[],
+    limit = 30
+  ): T[] => {
+    const counts = new Map<string, number>();
+    const result: T[] = [];
+    for (const item of items) {
+      const current = counts.get(item.userId) ?? 0;
+      if (current >= limit) continue;
+      counts.set(item.userId, current + 1);
+      result.push(item);
+    }
+    return result;
+  };
+
   const admins = await prisma.user.findMany({
     where: { role: Role.SCHOOL_ADMIN },
     select: { id: true, schoolId: true },
@@ -1837,6 +1885,7 @@ async function seedAdminNotifications() {
     title: string;
     body?: string | null;
     link?: string | null;
+    courseId?: string | null;
   }> = [];
 
   const formatCourseDate = (date: Date | string | null | undefined) => {
@@ -1861,6 +1910,7 @@ async function seedAdminNotifications() {
         title: "Cours mis à jour",
         body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
         link: `/teacher/courses/${course.id}`,
+        courseId: course.id,
       });
     });
     const firstSignup = course.attendances[0];
@@ -1872,14 +1922,16 @@ async function seedAdminNotifications() {
           title: "Nouvelle inscription",
           body: `${course.title ?? "Cours"}${dateLabel ? ` (${dateLabel})` : ""}`,
           link: `/teacher/courses/${course.id}`,
+          courseId: course.id,
         });
       });
     }
   }
 
   if (notifications.length > 0) {
+    const capped = clampNotificationsByUser(notifications, 30);
     await prisma.notification.createMany({
-      data: notifications,
+      data: capped,
       skipDuplicates: true,
     });
   }
