@@ -149,16 +149,9 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
 
       <section className="panel space-y-4 p-4 md:p-6 lg:p-8">
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href="/presets"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-                title="Retour à la liste des presets"
-              >
-                ↑
-              </Link>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
               {canEdit && (session.user.role === "SCHOOL_ADMIN" || session.user.id === preset.createdBy?.id) ? (
                 <Link
                   href={`/presets/${preset.id}/edit`}
@@ -169,6 +162,13 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 </Link>
               ) : null}
             </div>
+            <Link
+              href="/presets"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+              title="Retour à la liste des presets"
+            >
+              ↑
+            </Link>
           </div>
           {canViewContent ? (
             <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
