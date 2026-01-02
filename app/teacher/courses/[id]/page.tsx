@@ -24,6 +24,21 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
+function learningStatusLabel(status: LearningStatus | null | undefined) {
+  switch (status) {
+    case "NOT_STARTED":
+      return "Nouveauté";
+    case "IN_PROGRESS":
+      return "Initié";
+    case "PASSED":
+      return "Passé";
+    case "MASTERED":
+      return "Fluide chorégraphié";
+    default:
+      return "(non renseigné)";
+  }
+}
+
 type PageProps = {
   params: { id: string } | Promise<{ id?: string }>;
   searchParams?: Promise<{ from?: string; applied?: string; forceDiscovery?: string }>;
@@ -124,6 +139,17 @@ export default async function TeacherCourseDetailPage({
   if (!course) {
     return notFound();
   }
+  const favoritePositionIds =
+    session.user.role === "TEACHER"
+      ? new Set(
+          (
+            await prisma.teacherFavoritePosition.findMany({
+              where: { teacherId: session.user.id },
+              select: { positionId: true },
+            })
+          ).map((fp) => fp.positionId)
+        )
+      : new Set<string>();
   const disciplineName =
     course.disciplineId
       ? (
@@ -310,7 +336,7 @@ export default async function TeacherCourseDetailPage({
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
-        <h2 className="text-lg font-semibold text-white">Positions</h2>
+        <h2 className="text-lg font-semibold text-white">Positions couvertes</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.positions.map((cp) => (
             <li
@@ -320,9 +346,18 @@ export default async function TeacherCourseDetailPage({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Link
                   href={`/positions/${cp.position.id}`}
-                  className="font-semibold text-white underline-offset-4 transition hover:text-cyan-200 hover:underline"
+                  className="inline-flex items-center gap-2 font-semibold text-white underline-offset-4 transition hover:text-cyan-200 hover:underline"
                 >
-                  {cp.position.name}
+                  <span>{cp.position.name}</span>
+                  {favoritePositionIds.has(cp.position.id) && (
+                    <span
+                      className="text-base leading-none text-rose-200"
+                      aria-label="Coup de cœur"
+                      title="Coup de cœur"
+                    >
+                      ♥
+                    </span>
+                  )}
                 </Link>
                 <div className="flex flex-wrap items-center gap-2">
                   {cp.position.type ? (
@@ -689,7 +724,7 @@ export default async function TeacherCourseDetailPage({
                     </p>
                   </div>
                   <span className="text-xs uppercase tracking-[0.12em] text-cyan-200">
-                    {note.learningStatus ?? "(non renseigné)"}
+                    {learningStatusLabel(note.learningStatus)}
                   </span>
                 </div>
                 {note.comment && (
