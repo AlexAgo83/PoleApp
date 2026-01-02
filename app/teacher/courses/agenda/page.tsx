@@ -17,6 +17,12 @@ const FALLBACK_DISCIPLINES = [
   { name: "Pilates", color: "#10b981" },
   { name: "Danse", color: "#7c3aed" },
 ];
+const LEGEND_ITEMS = [
+  { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
+  { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
+  { label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+  { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
+];
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -331,13 +337,33 @@ export default async function CoursesAgendaPage({
               Liste
             </Link>
             <Link
-              href="/teacher/courses/new"
-              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
-            >
-              Nouveau cours
-            </Link>
+          href="/teacher/courses/new"
+          className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+        >
+          Nouveau cours
+        </Link>
+      </div>
+    </div>
+
+        <details className="group text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+              Légende
+              <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+              <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
+            </span>
+          </summary>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {LEGEND_ITEMS.map((item) => (
+              <span
+                key={item.label}
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
+              >
+                ● {item.label}
+              </span>
+            ))}
           </div>
-        </div>
+        </details>
 
         <FilterPanel
           storageKey="filters:teacher-agenda"

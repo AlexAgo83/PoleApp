@@ -146,7 +146,7 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                 isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
               } ${hideOnMobile}`}
             >
-              <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white">
+              <div className="mb-2 flex items-center justify-between text-xs font-semibold text-white pt-0.5 pl-0.5">
                 <span className="flex items-center gap-1">
                   <span
                     className={`text-[10px] uppercase tracking-wide md:text-xs ${

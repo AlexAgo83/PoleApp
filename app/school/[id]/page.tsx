@@ -14,6 +14,12 @@ import { StudioMonthView } from "../StudioMonthView";
 
 export const dynamic = "force-dynamic";
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+const LEGEND_ITEMS = [
+  { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
+  { label: "Inscrit (à venir)", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
+  { label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
+  { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
+];
 
 function formatWeekKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -550,6 +556,25 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               </div>
             </form>
           </FilterPanel>
+          <details className="group text-sm text-slate-200">
+            <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+              <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+                Légende
+                <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+                <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
+              </span>
+            </summary>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {LEGEND_ITEMS.map((item) => (
+                <span
+                  key={item.label}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[12px] font-semibold ${item.className}`}
+                >
+                  ● {item.label}
+                </span>
+              ))}
+            </div>
+          </details>
           {agendaRange === "week" ? (
             <>
               {isStudentRole && studentWeekDays ? (
