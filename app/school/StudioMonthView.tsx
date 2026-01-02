@@ -197,77 +197,92 @@ export function StudioMonthView({
                   </span>
                 )}
               </div>
-              {cell.courses && cell.courses.length > 0 ? (
-                <>
-                  {cell.courses.slice(0, 3).map((course) => {
-                    const past =
-                      typeof course.past === "boolean"
-                        ? course.past
-                        : new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 < Date.now();
-                    const courseDate = new Date(course.date);
-                    const courseId = course.courseId ?? course.id;
-                    const isVirtual = Boolean(course.isVirtual);
+              {cell.courses &&
+                cell.courses.slice(0, 3).map((course) => {
+                  const past =
+                    typeof course.past === "boolean"
+                      ? course.past
+                      : new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 < Date.now();
+                  const courseDate = new Date(course.date);
+                  const courseId = course.courseId ?? course.id;
+                  const isVirtual = Boolean(course.isVirtual);
+                  const isWaitlist = course.myStatus === "WAITLIST";
+                  const isMine = course.myStatus === "CONFIRMED";
+                  const badgeClass = isWaitlist
+                    ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
+                    : isMine
+                    ? past
+                      ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
+                      : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                    : past
+                    ? "border border-white/15 bg-slate-800/60 text-slate-300 opacity-80 line-through"
+                    : "border border-white/20 bg-white/10 text-slate-300";
+                  const statusLabel = past
+                    ? "Passé"
+                    : isWaitlist
+                    ? "Attente"
+                    : isMine
+                    ? "Inscrit"
+                    : "Ouvert";
 
-                    return (
-                      <Link
-                        key={`${course.id}-${courseId}`}
-                        href={`${courseBasePath}/${courseId}?from=${encodeURIComponent(baseFrom)}`}
-                        className={`relative mt-1 flex items-start gap-2 rounded-lg border px-2 py-2 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/10 ${
-                          isVirtual
-                            ? "border-amber-300/70 bg-amber-500/20 text-white"
-                            : past
-                            ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80"
-                            : "border-white/10 bg-white/10 text-white"
-                        }`}
-                        style={
-                          course.photoPublicId && CLOUD_NAME
-                            ? {
-                                backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.25), rgba(15,25,45,0.22)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_640,h_360/${course.photoPublicId})`,
-                                backgroundBlendMode: "soft-light",
-                                backgroundColor: "rgba(8,12,20,0.35)",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                              }
-                            : undefined
-                        }
-                      >
-                        <div className="flex-1 space-y-0.5 overflow-hidden pr-4">
-                          <p className="text-[10px] text-cyan-100">
-                            {courseDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
-                            {course.durationMinutes ? formatDuration(course.durationMinutes) : "60 min"}
+                  return (
+                    <Link
+                      key={`${course.id}-${courseId}`}
+                      href={`${courseBasePath}/${courseId}?from=${encodeURIComponent(baseFrom)}`}
+                      className={`relative mt-1 block w-full overflow-hidden rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/60 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
+                        isVirtual
+                          ? past
+                            ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
+                            : "border-amber-300/70 bg-amber-500/20 text-white"
+                          : past
+                          ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80"
+                          : "border-white/10 bg-white/10 text-white"
+                      }`}
+                      style={
+                        course.photoPublicId && CLOUD_NAME
+                          ? {
+                              backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.7), rgba(15,25,45,0.65)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_640,h_360/${course.photoPublicId})`,
+                              backgroundBlendMode: "soft-light",
+                              backgroundColor: "rgba(8,12,20,0.55)",
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }
+                          : undefined
+                      }
+                    >
+                      <div className="space-y-0.5 overflow-hidden pr-6">
+                        <p className="text-[10px] text-cyan-100">
+                          {courseDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })} ·{" "}
+                          {course.durationMinutes ? formatDuration(course.durationMinutes) : "60 min"}
+                        </p>
+                        <p className="truncate text-[11px] font-semibold text-white">
+                          {course.title ?? "Cours"}
+                        </p>
+                        <p className="truncate text-[10px] text-cyan-100">
+                          {course.teacherName ?? "Professeur"}
+                        </p>
+                        <p className="truncate text-[10px] text-slate-200">
+                          {course.studioName ?? "Studio"}
+                        </p>
+                        {isVirtual && (
+                          <p className="text-[12px] text-amber-100" title="Occurrence programmée · positions à définir">
+                            🗓️
                           </p>
-                          <p className="truncate text-[11px] font-semibold text-white">
-                            {course.title ?? "Cours"}
-                          </p>
-                          <p className="truncate text-[10px] text-cyan-100">
-                            {course.teacherName ?? "Professeur"}
-                          </p>
-                          <p className="truncate text-[10px] text-slate-200">
-                            {course.studioName ?? "Studio"}
-                          </p>
-                          {isVirtual && (
-                            <p className="text-[12px] text-amber-100" title="Occurrence programmée · positions à définir">
-                              🗓️
-                            </p>
-                          )}
-                        </div>
-                        {course.myStatus ? (
-                          <span
-                            className="absolute bottom-1 right-1 inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white"
-                            title={course.myStatus === "WAITLIST" ? "Liste d'attente" : "Inscrit"}
-                          >
-                            {course.waitlistRank ? `#${course.waitlistRank}` : course.myStatus === "WAITLIST" ? "Attente" : "Inscrit"}
-                          </span>
-                        ) : null}
-                      </Link>
-                    );
-                  })}
-                  {cell.courses.length > 3 && (
-                    <p className="mt-1 text-[10px] text-slate-300">+{cell.courses.length - 3} autres</p>
-                  )}
-                </>
-              ) : (
-                <p className="text-[11px] text-slate-400">Aucun cours</p>
+                        )}
+                      </div>
+                      <div className="absolute bottom-1 right-1">
+                        <span
+                          className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
+                          title={statusLabel}
+                        >
+                          {isWaitlist && course.waitlistRank ? `#${course.waitlistRank}` : statusLabel}
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              {cell.courses && cell.courses.length > 3 && (
+                <p className="mt-1 text-[10px] text-slate-300">+{cell.courses.length - 3} autres</p>
               )}
             </div>
           );

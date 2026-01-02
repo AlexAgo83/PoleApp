@@ -95,10 +95,12 @@ export default async function StudentProgressPage({
       ? (resolvedParams.level as PositionLevel)
       : undefined;
   const disciplineFilter = resolvedParams.discipline?.toString().trim() || "";
+  const progressRaw = resolvedParams.progress;
   const onlyInProgress =
-    resolvedParams.progress === "1" ||
-    resolvedParams.progress === "true" ||
-    resolvedParams.progress === "on";
+    progressRaw === undefined ||
+    progressRaw === "1" ||
+    progressRaw === "true" ||
+    progressRaw === "on";
   const q = resolvedParams.q?.toString().trim() || "";
   const activeFilters = [typeFilter, levelFilter, disciplineFilter, onlyInProgress ? "progress" : null, q && q.length > 0 ? "q" : null].filter(
     Boolean
