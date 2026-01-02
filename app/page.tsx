@@ -133,7 +133,7 @@ export default async function Home() {
   return (
     <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col gap-3 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
       <div className="flex flex-1 items-center justify-center">
-        <div className="relative flex flex-col items-center gap-4">
+        <div className="relative flex flex-col items-center gap-16 md:gap-4">
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.32),rgba(99,102,241,0.08)_55%,transparent_72%)] blur-3xl opacity-90 md:h-[22rem] md:w-[22rem]" />
           </div>

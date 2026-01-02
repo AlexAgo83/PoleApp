@@ -12,8 +12,14 @@ import { ShareLinkButton } from "@/components/ShareLinkButton";
 const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
 
+const priceLabel = (priceCredits: number | null | undefined, premiumRequired: boolean) => {
+  if (premiumRequired) return "Premium";
+  if (priceCredits && priceCredits > 0) return `${priceCredits} crédits`;
+  return "Gratuit";
+};
+
 type Params = { id?: string } | Promise<{ id?: string }>;
-type SearchParams = { from?: string } | Promise<{ from?: string }>;
+type SearchParams = { from?: string; combosPage?: string } | Promise<{ from?: string; combosPage?: string }>;
 
 export default async function TeacherPublicProfilePage({
   params,
@@ -26,10 +32,12 @@ export default async function TeacherPublicProfilePage({
   const teacherId = resolvedParams?.id;
   const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
   const rawFrom = resolvedSearch.from;
+  const rawCombosPage = resolvedSearch.combosPage;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom
       : undefined;
+  const combosPage = Math.max(1, Number(rawCombosPage ?? "1"));
 
   if (!teacherId) {
     notFound();
@@ -60,6 +68,23 @@ export default async function TeacherPublicProfilePage({
       favoritePositions: {
         include: { position: true },
         orderBy: { position: { name: "asc" } },
+      },
+      createdPresets: {
+        where: { schoolId: session.user.schoolId ?? undefined },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          discipline: true,
+          priceCredits: true,
+          premiumRequired: true,
+          imagePublicId: true,
+          positions: {
+            take: 3,
+            select: { position: { select: { name: true } } },
+          },
+        },
+        take: 50,
       },
     },
   });
@@ -108,6 +133,14 @@ export default async function TeacherPublicProfilePage({
   }
   const favoritePositionIds = teacher.favoritePositions.map((fp) => fp.positionId);
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
+  const combosPerPage = 4;
+  const totalCombos = teacher.createdPresets.length;
+  const comboPages = Math.max(1, Math.ceil(totalCombos / combosPerPage));
+  const currentComboPage = Math.min(comboPages, Math.max(1, combosPage));
+  const pagedCombos = teacher.createdPresets.slice(
+    (currentComboPage - 1) * combosPerPage,
+    currentComboPage * combosPerPage,
+  );
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -163,6 +196,63 @@ export default async function TeacherPublicProfilePage({
               <p className="text-sm text-slate-300">Aucune position préférée renseignée.</p>
             )}
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-lg font-semibold text-white">Combos</h2>
+            {comboPages > 1 ? (
+              <div className="flex items-center gap-2 text-xs font-semibold text-white">
+                <Link
+                  href={`/teachers/${teacher.id}?combosPage=${Math.max(1, currentComboPage - 1)}${safeFrom ? `&from=${encodeURIComponent(safeFrom)}` : ""}`}
+                  className={`rounded-full border px-2 py-1 transition ${currentComboPage > 1 ? "border-white/15 bg-white/5 hover:border-cyan-300/60 hover:bg-white/10" : "border-white/5 bg-white/5 text-slate-500"}`}
+                  aria-disabled={currentComboPage <= 1}
+                >
+                  ←
+                </Link>
+                <span>
+                  {currentComboPage} / {comboPages}
+                </span>
+                <Link
+                  href={`/teachers/${teacher.id}?combosPage=${Math.min(comboPages, currentComboPage + 1)}${safeFrom ? `&from=${encodeURIComponent(safeFrom)}` : ""}`}
+                  className={`rounded-full border px-2 py-1 transition ${currentComboPage < comboPages ? "border-white/15 bg-white/5 hover:border-cyan-300/60 hover:bg-white/10" : "border-white/5 bg-white/5 text-slate-500"}`}
+                  aria-disabled={currentComboPage >= comboPages}
+                >
+                  →
+                </Link>
+              </div>
+            ) : null}
+          </div>
+          {teacher.createdPresets.length > 0 ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              {pagedCombos.map((preset) => (
+                <Link
+                  key={preset.id}
+                  href={`/presets/${preset.id}?from=${encodeURIComponent(`/teachers/${teacher.id}`)}`}
+                  className="block rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <p className="text-xs uppercase tracking-[0.12em] text-indigo-100">{preset.discipline ?? "—"}</p>
+                      <p className="text-base font-semibold">{preset.title}</p>
+                    </div>
+                    <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[11px] text-slate-100">
+                      {priceLabel(preset.priceCredits ?? null, preset.premiumRequired ?? false)}
+                    </span>
+                  </div>
+                  {preset.positions.length > 0 ? (
+                    <p className="mt-1 text-xs text-slate-200">
+                      Positions : {preset.positions.map((pp) => pp.position.name).join(", ")}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-slate-400">Aucune position liée.</p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-300">Aucun combo créé pour le moment.</p>
+          )}
         </div>
       </section>
 
