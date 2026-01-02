@@ -40,7 +40,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
     where: { id: awaitedParams.id },
     include: {
       positions: { include: { position: { select: { name: true, discipline: true } } } },
-      createdBy: { select: { name: true, email: true } },
+      createdBy: { select: { id: true, name: true, email: true } },
     },
   });
   if (!preset) notFound();
@@ -121,15 +121,27 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
         <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             {preset.imagePublicId ? (
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-                <SafeImage publicId={preset.imagePublicId} alt={preset.title} className="h-full w-full object-cover" />
+              <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                <SafeImage
+                  publicId={preset.imagePublicId}
+                  alt={preset.title}
+                  width={960}
+                  height={400}
+                  className="aspect-[16/9] w-full object-cover"
+                />
               </div>
             ) : null}
             {videoSources.length > 0 ? (
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/40">
-                <video controls className="w-full" poster={videoPoster ?? undefined}>
-                  {videoSources.map((src) => (
-                    <source key={src.src} src={src.src} type={src.type ?? "video/mp4"} />
+              <div style={{ aspectRatio: "16 / 9" }}>
+                <video
+                  controls
+                  poster={videoPoster ?? undefined}
+                  className="h-full w-full rounded-lg border border-white/10 bg-black object-contain"
+                  preload="metadata"
+                  playsInline
+                >
+                  {videoSources.map((src, idx) => (
+                    <source key={`${src.src}-${idx}`} src={src.src} type={src.type ?? "video/mp4"} />
                   ))}
                   Votre navigateur ne supporte pas la vidéo.
                 </video>
@@ -174,7 +186,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 <p className="text-sm text-slate-300">Aucune position liée.</p>
               )}
             </div>
-            {canEdit ? (
+            {canEdit && (session.user.role === "SCHOOL_ADMIN" || session.user.id === preset.createdBy?.id) ? (
               <div className="flex justify-end">
                 <Link
                   href={`/presets/${preset.id}/edit`}
@@ -182,6 +194,12 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 >
                   Éditer
                 </Link>
+              </div>
+            ) : canEdit ? (
+              <div className="flex justify-end">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200">
+                  Édition réservée au créateur ({preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}).
+                </span>
               </div>
             ) : null}
           </div>
