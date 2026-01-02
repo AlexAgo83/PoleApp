@@ -521,9 +521,14 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         </span>
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
-                          Vu : {p._count?.progress ?? 0}
-                        </span>
+                        {(() => {
+                          const views = progress ? Math.max(1, p._count?.progress ?? 0) : p._count?.progress ?? 0;
+                          return (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
+                              Vu : {views}
+                            </span>
+                          );
+                        })()}
                         {showPremiumBadge ? (
                           <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
                             🔒 Premium

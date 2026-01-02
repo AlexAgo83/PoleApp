@@ -326,14 +326,13 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         createdBy: { select: { name: true, email: true } },
       },
     })) ?? [];
-  const seenByCurrentUser = isStudent
-    ? Math.max(
-        0,
-        await prisma.courseAttendance.count({
-          where: { studentId: session.user.id, course: { positions: { some: { positionId: position.id } } } },
-        }),
-      )
-    : 0;
+  const studentProgress = isStudent
+    ? await prisma.studentPositionProgress.findUnique({
+        where: { studentId_positionId: { studentId: session.user.id, positionId: position.id } },
+        select: { learningStatus: true },
+      })
+    : null;
+  const seenByCurrentUser = isStudent && studentProgress ? 1 : 0;
   const isFavorite = session.user.role === "STUDENT"
     ? Boolean(
         await prisma.studentFavoritePosition.findFirst({
@@ -542,7 +541,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-500/10 via-white/5 to-slate-500/10 p-2.5 shadow-inner shadow-black/20">
               <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Vu</p>
               <p className="text-sm font-semibold text-white">
-                {isStudent ? Math.max(seenByCurrentUser, position._count?.progress ?? 0) : position._count?.progress ?? 0}
+                {(() => {
+                  const globalViews = position._count?.progress ?? 0;
+                  return isStudent ? Math.max(seenByCurrentUser, globalViews) : globalViews;
+                })()}
               </p>
             </div>
             </div>
