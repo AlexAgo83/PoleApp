@@ -294,6 +294,7 @@ model CourseAttendance {
 
   @@unique([courseId, studentId])
   @@index([studentId, courseId])
+  @@index([courseId, status])
 }
 
 enum AttendanceStatus {
@@ -365,6 +366,7 @@ model CourseNote {
   position     Position     @relation(fields: [positionId], references: [id])
 
   @@unique([courseId, studentId, positionId])
+  @@index([courseId])
 }
 
 model Studio {
