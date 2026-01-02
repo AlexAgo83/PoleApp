@@ -26,9 +26,8 @@
 - Ajouter une fonction utilitaire pour construire l’URL sécurisée (avec transformations par défaut).
 
 ## Modèles & stockage DB
-- Champs existants : `User.avatarUrl`, `Course.photoUrl`, `Position.media` (URL déjà utilisées).
-- Décider si l’on stocke `public_id` en plus de l’URL (ajouter colonnes si besoin, ex: `avatarPublicId`, `coursePhotoPublicId`).
-- Si ajout de colonnes : créer migration Prisma + seed fallback (rendre optionnel pour rétro-compatibilité).
+- Champs existants : `User.avatarUrl` (+ `avatarPublicId`), `Course.photoPublicId`, `Studio.photoPublicId`, `School.photoPublicId`, `Position.media.url/publicId`.
+- Colonnes public_id ajoutées et optionnelles, seed aligné (pools Cloudinary pour écoles/studios/cours/presets).
 
 ## Composant Upload (réutilisable)
 - Créer `components/CloudinaryUpload.tsx` (client):
@@ -42,9 +41,11 @@
 
 ## Intégrations UI (à planifier)
 - Profil utilisateur : remplacer l’input URL par le composant upload (avatar). *(TODO)*
-- Fiche cours (création/édition) : remplacer l’URL photo par le composant upload. *(TODO)*
+- Fiche cours (création/édition) : composant upload branché Cloudinary (DONE).
 - Fiche position : uploader media principal + vidéo (fait).
-- Prévoir placeholders si aucune image.
+- École/Studios : formulaires admin basculés sur CloudinaryUpload (DONE).
+- Presets : image/vidéo Cloudinary (DONE).
+- Prévoir placeholders si aucune image (DONE).
 
 ## Sécurité & limites
 - Valider la taille et le type côté client et côté serveur (MIME/extension, max MB).
@@ -64,5 +65,5 @@
 
 ## État
 - Upload vidéo positions en mode authenticated + URL signées : livré (`CloudinaryUpload`, routes signature/delete, helper generateSignedUrl).
-- Seed : chaque position reçoit une vidéo Cloudinary authenticated (publicId round-robin).
-- Reste à faire : avatars utilisateurs, photos cours/studios via composant upload, presets si nécessaire.
+- Seed : chaque position reçoit une vidéo Cloudinary authenticated (pool fixe). Écoles/Studios/Cours/Presets seedés avec publicId Cloudinary.
+- Reste à faire : avatars utilisateurs (UI profile), nettoyage automatisé lors des suppressions d’entités.

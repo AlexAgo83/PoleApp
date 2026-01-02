@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-02-15 — Unreleased (Cloudinary media migration)
+- Média : Course/Studio/School passent en `photoPublicId` Cloudinary (forms admin/prof/students alignés, URLs construites avec `CLOUD_NAME`).
+- Upload : composant `CloudinaryField` pour intégrer l’upload client dans les formulaires serveur (admin school/studios), CloudinaryUpload toujours utilisé côté client.
+- Presets : filtres étendus + reset, CTA éditer créateur/admin, ordre vidéo/image dans le form, pagination unique.
+- Seed : pools Cloudinary pour écoles (`sc_*`), studios (`st_*`), cours (`co_*`), presets (`ps_*`), vidéos positions authenticated; DB reset + seed mis à jour.
+- Tests : lint (avec warnings existants), vitest, build Next OK.
+
 ## 2026-12-28 - Release v0.9.0
 
 ## 2025-12-28 — Release v0.8.2 (thème renforcé + panels super-admin)
