@@ -389,10 +389,8 @@ export default async function StudentSchoolPage({
     cells.push({ day, attendances: daily });
   }
 
-  const monthLabel = monthStart.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const monthValue = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}`;
   const currentMonthValue = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const hasMonthFilter = Boolean(monthParam);
 
   const paramsForLinks = new URLSearchParams();
   if (studioFilters.length) paramsForLinks.set("studio", studioFilters.join(","));

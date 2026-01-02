@@ -4,7 +4,7 @@ import { PositionLevel, PositionType, type PositionMedia } from "@prisma/client"
 import { useState } from "react";
 
 import { CloudinaryUpload } from "@/components/CloudinaryUpload";
-import { updatePositionAction, deletePositionAction } from "./action";
+import { updatePositionAction } from "./action";
 
 type Muscle = { id: string; name: string; kind: string | null };
 type Discipline = { name: string; color?: string };

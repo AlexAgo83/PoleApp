@@ -3,8 +3,6 @@ import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
-import { resolveAvatarUrl } from "@/lib/avatar";
 import { BuyCreditsButton } from "./BuyCreditsButton";
 import { appSignature } from "@/lib/appMeta";
 
@@ -18,22 +16,8 @@ export default async function StudentDashboard() {
     select: { id: true, name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarPublicId: true },
   });
   const isPremium = Boolean(user?.isPremium);
-  const nameParts =
-    user?.name
-      ?.trim()
-      .split(/\s+/)
-      .filter(Boolean) ?? [];
-  const firstName = nameParts[0];
-  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
-  const displayName = firstName ?? lastName ?? user?.email ?? "élève";
   const credits = user?.credits ?? 0;
-  const avatarUrl = resolveAvatarUrl({
-    avatarPublicId: user?.avatarPublicId,
-    avatarUrl: session.user.image ?? null,
-    placeholder: AVATAR_PLACEHOLDER,
-  });
-  const avatarInitial = (displayName?.[0] ?? "É").toUpperCase();
-  const [packs, subs, purchases] = await Promise.all([
+  const [packs, subs] = await Promise.all([
     prisma.creditPackOffer.findMany({
       where: { isActive: true, isOpen: true },
       orderBy: { sortOrder: "asc" },
@@ -42,19 +26,6 @@ export default async function StudentDashboard() {
       where: { isActive: true, isOpen: true },
       orderBy: { sortOrder: "asc" },
     }),
-    (async () => {
-      try {
-        const client: any = prisma as any;
-        if (!client.purchase?.findMany) return [];
-        return await client.purchase.findMany({
-          where: { userId: session.user.id },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        });
-      } catch {
-        return [];
-      }
-    })(),
   ]);
 
   return (

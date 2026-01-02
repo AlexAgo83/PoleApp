@@ -91,7 +91,6 @@ export default async function StudentCoursesPage({
   }
   const userKey = session.user.id ?? "anon";
 
-  const onlyMine = true;
   const teacherFilter =
     typeof paramValue(resolvedParams.teacher) === "string" &&
     paramValue(resolvedParams.teacher)?.length

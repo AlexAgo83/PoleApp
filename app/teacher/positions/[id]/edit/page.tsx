@@ -39,8 +39,6 @@ export default async function EditPositionPage({ params }: Props) {
   ) {
     redirect("/access-denied");
   }
-  const isAdmin = role === "SCHOOL_ADMIN";
-  const homeHref = isAdmin ? "/admin" : "/teacher";
 
   const [muscles, disciplinesRaw] = await Promise.all([
     prisma.muscle.findMany({
