@@ -434,27 +434,6 @@ export default async function StudentCoursesPage({
               />
               Avec notes
             </label>
-            <fieldset className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
-              <legend className="px-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Statuts affichés</legend>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-200">
-                {[
-                  { key: "past", label: "Passé" },
-                  { key: "attending", label: "Inscrit (à venir)" },
-                  { key: "waitlist", label: "Attente" },
-                ].map((s) => (
-                  <label key={s.key} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1">
-                    <input
-                      type="checkbox"
-                      name="statuses"
-                      value={s.key}
-                      defaultChecked={selectedStatuses.includes(s.key)}
-                      className="h-4 w-4 rounded border-white/20 bg-white/5"
-                    />
-                    {s.label}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
             <div className="md:col-span-4 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
