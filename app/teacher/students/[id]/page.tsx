@@ -83,7 +83,6 @@ export default async function TeacherStudentDetailPage({
       id: true,
       email: true,
       name: true,
-      avatarUrl: true,
       avatarPublicId: true,
       age: true,
       isPremium: true,
@@ -141,7 +140,7 @@ export default async function TeacherStudentDetailPage({
     : [];
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: student.avatarPublicId,
-    avatarUrl: student.avatarUrl,
+    avatarUrl: null,
     placeholder: STUDENT_AVATAR_PLACEHOLDER,
   });
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
@@ -275,7 +274,6 @@ export default async function TeacherStudentDetailPage({
               <StudentAvatarManager
                 studentId={student.id}
                 folder={avatarFolder}
-                initialUrl={student.avatarUrl ?? null}
                 initialPublicId={student.avatarPublicId ?? null}
               />
               <p className="pt-3 text-sm text-slate-300">

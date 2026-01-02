@@ -225,7 +225,7 @@ export default async function ProfilePage({
         >
           <AvatarManager
             folder={avatarFolder}
-            initialUrl={user.avatarUrl ?? null}
+            initialUrl={avatarUrl}
             initialPublicId={user.avatarPublicId ?? null}
           />
           <p className="text-xs text-slate-400">
