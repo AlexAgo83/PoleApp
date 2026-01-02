@@ -180,7 +180,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
             </Link>
             {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
               <Link
-                href={session.user.role === "SCHOOL_ADMIN" ? "/admin/presets" : "/teacher/presets"}
+                href={session.user.role === "SCHOOL_ADMIN" ? "/teacher/presets" : "/teacher/presets"}
                 className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
                 <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">

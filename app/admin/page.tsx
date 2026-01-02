@@ -279,7 +279,7 @@ export default async function AdminDashboard() {
           <ActionCard
             title="Presets / combos"
             description="Crée et gère les presets vidéo premium ou en crédits."
-            href="/admin/presets"
+            href="/teacher/presets"
             cta="Gérer les presets"
             icon={
               <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+import { CloudinaryUpload } from "./CloudinaryUpload";
+
 type Position = { id: string; name: string; discipline: string | null; disciplineId?: string | null };
 type Discipline = { id?: string; name: string };
 type Teacher = { id: string; name: string | null; email: string | null };
@@ -26,6 +28,8 @@ export function PresetCreateForm({
   showTeacherSelect = true,
 }: Props) {
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+  const [imagePublicId, setImagePublicId] = useState<string>("");
+  const [videoPublicId, setVideoPublicId] = useState<string>("");
 
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions.slice(0, maxPositions);
@@ -75,25 +79,33 @@ export function PresetCreateForm({
         />
       </label>
       <label className="text-sm text-slate-200">
-        Vidéo (publicId)
-        <input
-          name="videoPublicId"
-          type="text"
-          placeholder="cloudinary_public_id_video"
-          className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+        Vidéo (Cloudinary)
+        <CloudinaryUpload
+          label="Uploader une vidéo"
+          folder="poleapp/presets"
+          resourceType="video"
+          deliveryType="authenticated"
+          accept="video/*"
+          maxSizeMB={100}
+          currentPublicId={videoPublicId || undefined}
+          onChange={(_, publicId) => setVideoPublicId(publicId ?? "")}
         />
+        <input type="hidden" name="videoPublicId" value={videoPublicId} />
       </label>
       <label className="text-sm text-slate-200">
-        Image (publicId)
-        <input
-          name="imagePublicId"
-          type="text"
-          placeholder="cloudinary_public_id_image"
-          className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+        Image (Cloudinary)
+        <CloudinaryUpload
+          label="Uploader une image"
+          folder="poleapp/presets"
+          resourceType="image"
+          deliveryType="upload"
+          accept="image/*"
+          maxSizeMB={10}
+          currentPublicId={imagePublicId || undefined}
+          onChange={(_, publicId) => setImagePublicId(publicId ?? "")}
         />
-        <span className="text-xs text-slate-400">
-          Facultatif. Une image rendra la carte plus lisible dans le catalogue.
-        </span>
+        <input type="hidden" name="imagePublicId" value={imagePublicId} />
+        <span className="text-xs text-slate-400">Facultatif, améliore l’aperçu du preset.</span>
       </label>
       {showTeacherSelect ? (
         <label className="text-sm text-slate-200">

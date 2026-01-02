@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
+import { normalizeFolderedPublicId } from "@/lib/media";
 import { prisma } from "@/lib/prisma";
 
 const presetSchema = z.object({
@@ -15,6 +16,7 @@ const presetSchema = z.object({
   videoPublicId: z.string().optional().or(z.literal("")),
   imagePublicId: z.string().optional().or(z.literal("")),
   premiumRequired: z.boolean().optional(),
+  teacherId: z.string().cuid().optional(),
   priceCredits: z.coerce.number().min(0).optional(),
   positionIds: z.array(z.string().cuid()).min(1),
 });
@@ -45,6 +47,7 @@ export async function createPresetAction(formData: FormData) {
     videoPublicId: formData.get("videoPublicId")?.toString().trim() || undefined,
     imagePublicId: formData.get("imagePublicId")?.toString().trim() || undefined,
     premiumRequired: formData.get("premiumRequired") === "on",
+    teacherId: formData.get("teacherId")?.toString().trim(),
     priceCredits: formData.get("priceCredits") ? Number(formData.get("priceCredits")) : undefined,
     positionIds: rawPositionIds,
   });
@@ -53,18 +56,28 @@ export async function createPresetAction(formData: FormData) {
     redirect("/access-denied");
   }
 
+  const teacherId =
+    session.user.role === "SCHOOL_ADMIN" && parsed.data.teacherId
+      ? await prisma.user
+          .findFirst({
+            where: { id: parsed.data.teacherId, schoolId: session.user.schoolId, role: "TEACHER" },
+            select: { id: true },
+          })
+          .then((t) => t?.id)
+      : null;
+
   await prisma.preset.create({
     data: {
       title: parsed.data.title,
       description: parsed.data.description,
       discipline: parsed.data.discipline,
       disciplineId: disciplineRecord?.id ?? fallbackDisciplineId ?? parsed.data.discipline ?? "",
-      videoPublicId: parsed.data.videoPublicId || null,
-      imagePublicId: parsed.data.imagePublicId || null,
+      videoPublicId: normalizeFolderedPublicId(parsed.data.videoPublicId, "poleapp/presets"),
+      imagePublicId: normalizeFolderedPublicId(parsed.data.imagePublicId, "poleapp/presets"),
       premiumRequired: parsed.data.premiumRequired ?? false,
       priceCredits: parsed.data.premiumRequired ? null : parsed.data.priceCredits ?? null,
       schoolId: session.user.schoolId,
-      createdByUserId: session.user.id,
+      createdByUserId: teacherId ?? session.user.id,
       positions: {
         create: parsed.data.positionIds.map((id) => ({ positionId: id })),
       },
@@ -112,7 +125,7 @@ export async function updatePresetImageAction(formData: FormData) {
 
   await prisma.preset.update({
     where: { id: parsed.data.id },
-    data: { imagePublicId: parsed.data.imagePublicId || null },
+    data: { imagePublicId: normalizeFolderedPublicId(parsed.data.imagePublicId, "poleapp/presets") },
   });
 
   revalidatePath("/teacher/presets");

@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { authOptions } from "@/lib/auth";
+import { normalizeFolderedPublicId } from "@/lib/media";
 import { prisma } from "@/lib/prisma";
 
 const presetSchema = z.object({
@@ -64,8 +65,8 @@ export async function createPresetAdminAction(formData: FormData) {
       description: parsed.data.description,
       discipline: parsed.data.discipline,
       disciplineId: disciplineRecord?.id ?? fallbackDisciplineId ?? parsed.data.discipline ?? "",
-      videoPublicId: parsed.data.videoPublicId || null,
-      imagePublicId: parsed.data.imagePublicId || null,
+      videoPublicId: normalizeFolderedPublicId(parsed.data.videoPublicId, "poleapp/presets"),
+      imagePublicId: normalizeFolderedPublicId(parsed.data.imagePublicId, "poleapp/presets"),
       premiumRequired: parsed.data.premiumRequired ?? false,
       priceCredits: parsed.data.premiumRequired ? null : parsed.data.priceCredits ?? null,
       schoolId: session.user.schoolId,
@@ -74,8 +75,8 @@ export async function createPresetAdminAction(formData: FormData) {
     },
   });
 
-  revalidatePath("/admin/presets");
-  redirect("/admin/presets?flash=created");
+  revalidatePath("/teacher/presets");
+  redirect("/teacher/presets?flash=created");
 }
 
 export async function deletePresetAdminAction(formData: FormData) {
@@ -89,8 +90,8 @@ export async function deletePresetAdminAction(formData: FormData) {
   if (!preset || preset.schoolId !== session.user.schoolId) redirect("/access-denied");
 
   await prisma.preset.delete({ where: { id } });
-  revalidatePath("/admin/presets");
-  redirect("/admin/presets?flash=deleted");
+  revalidatePath("/teacher/presets");
+  redirect("/teacher/presets?flash=deleted");
 }
 
 const presetImageSchema = z.object({
@@ -114,8 +115,8 @@ export async function updatePresetImageAdminAction(formData: FormData) {
 
   await prisma.preset.update({
     where: { id: parsed.data.id },
-    data: { imagePublicId: parsed.data.imagePublicId || null },
+    data: { imagePublicId: normalizeFolderedPublicId(parsed.data.imagePublicId, "poleapp/presets") },
   });
 
-  revalidatePath("/admin/presets");
+  revalidatePath("/teacher/presets");
 }
