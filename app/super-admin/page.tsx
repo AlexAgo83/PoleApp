@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { backfillDisciplinesAction, forceDisciplinePoleAction, updateSettingsAction } from "./actions";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -26,7 +25,7 @@ export default async function SuperAdminPage({
   const flashForceOk = flash === "force-ok";
   const flashForceInvalid = flash === "force-invalid";
 
-  const [settings, schools, audits] = await Promise.all([
+  const [_settings, _schools, audits] = await Promise.all([
     prisma.globalSetting.upsert({
       where: { id: "global" },
       update: {},
@@ -53,8 +52,6 @@ export default async function SuperAdminPage({
       include: { actor: { select: { email: true } } },
     }),
   ]);
-
-  const activeSchools = schools.filter((s) => !s.archivedAt).length;
 
   const modules = [
     {

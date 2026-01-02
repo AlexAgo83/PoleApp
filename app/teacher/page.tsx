@@ -4,8 +4,6 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { resolveAvatarUrl } from "@/lib/avatar";
-import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { appSignature } from "@/lib/appMeta";
 
 function Stat({ label, value }: { label: string; value: number | string }) {
@@ -51,15 +49,6 @@ export default async function TeacherDashboard() {
       ?.trim()
       .split(/\s+/)
       .filter(Boolean) ?? [];
-  const firstName = nameParts[0];
-  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined;
-  const displayName = firstName ?? lastName ?? teacherUser?.email ?? session?.user?.email ?? "professeur";
-  const avatarUrl = resolveAvatarUrl({
-    avatarPublicId: teacherUser?.avatarPublicId,
-    avatarUrl: session?.user?.image ?? null,
-    placeholder: AVATAR_PLACEHOLDER,
-  }) || null;
-  const avatarInitial = (displayName?.[0] ?? "P").toUpperCase();
   const teacherProfileHref = session?.user?.id ? `/teachers/${session.user.id}` : "/profile";
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);

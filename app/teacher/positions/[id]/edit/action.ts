@@ -78,7 +78,6 @@ export async function updatePositionAction(formData: FormData) {
 
   if (isCloudinaryEnabled() && existingVideo && nextVideoPublicId !== existingVideo.publicId) {
     if (existingVideo.publicId && !isSeedPublicId(existingVideo.publicId)) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       destroyAsset(existingVideo.publicId, "video", "authenticated").catch(() => {});
     }
   }
@@ -166,7 +165,6 @@ export async function deletePositionAction(formData: FormData) {
     existing.media
       .filter((m) => m.publicId && !isSeedPublicId(m.publicId))
       .forEach((m) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         destroyAsset(
           m.publicId!,
           m.kind === MediaKind.VIDEO ? "video" : "image",

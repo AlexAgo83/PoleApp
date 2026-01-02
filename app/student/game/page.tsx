@@ -399,7 +399,6 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     );
   }
 
-  const userStats = statsByMode.get(selectedMode);
   const leaderboard = leaderboardByMode.get(selectedMode) ?? [];
 
   return (

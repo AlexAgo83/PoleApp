@@ -129,11 +129,6 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     ? "rounded-2xl border border-white/0 bg-transparent p-0"
     : "p-0 border-0 bg-transparent shadow-none";
 
-  const totalCourses = useMemo(
-    () => days.reduce((acc, day) => acc + day.courses.length, 0),
-    [days]
-  );
-
   const weekLabel = useMemo(() => {
     const base = week || currentWeekKey;
     const start = new Date(`${base}T00:00:00`);

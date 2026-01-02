@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { deleteCreditPackOfferAction, upsertCreditPackOfferAction } from "../actions";
-import { PersistedPanel } from "@/components/PersistedPanel";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";

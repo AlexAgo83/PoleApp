@@ -64,7 +64,7 @@ export function NewCoursePageClient({ formId, safeFrom, initialError }: Props) {
         if (!cancelled) {
           setData(json);
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setError("Impossible de charger les données du formulaire.");
         }

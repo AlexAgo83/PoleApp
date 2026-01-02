@@ -6,15 +6,6 @@ import { authOptions } from "@/lib/auth";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { appSignature } from "@/lib/appMeta";
 
-const billingStatus = "Livré";
-
-const roleLabels: Record<string, string> = {
-  STUDENT: "Élève",
-  TEACHER: "Professeur",
-  SCHOOL_ADMIN: "Admin école",
-  SUPER_ADMIN: "Super Admin",
-};
-
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const homeForRole = defaultHomeForRole(session?.user?.role);

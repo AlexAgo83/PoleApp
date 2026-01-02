@@ -16,7 +16,6 @@ type ProgressRecord = {
 
 type Props = {
   formId: string;
-  safeFrom: string;
   initialError?: string;
   students: Student[];
   positions: Position[];
@@ -33,7 +32,6 @@ type Props = {
 
 export function CourseFormLayout({
   formId,
-  safeFrom,
   students,
   positions,
   teachers,

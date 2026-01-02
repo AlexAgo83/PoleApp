@@ -296,7 +296,11 @@ export function BuyCreditsButton({
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              mode === "upgrade" ? openUpgrade() : openCredits();
+              if (mode === "upgrade") {
+                openUpgrade();
+              } else {
+                openCredits();
+              }
             }
           }}
           className="w-full rounded-xl border border-white/10 bg-white/5 p-4 text-left transition hover:border-cyan-400/70 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300/70"
