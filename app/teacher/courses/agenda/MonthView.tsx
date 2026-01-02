@@ -142,7 +142,7 @@ export function MonthView({
           />
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-1.5 text-sm text-slate-200 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
+      <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm text-slate-200 md:grid-cols-5 md:gap-2 lg:grid-cols-7 lg:gap-3">
         {cells.map((cell, idx) => {
           const weekDayIndex = (idx % 7) + 1;
           const label = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][(weekDayIndex - 1) % 7];
