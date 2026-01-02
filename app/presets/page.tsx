@@ -156,7 +156,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               ? "Espace prof"
               : "Espace élève"
         }
-        title="Combos / presets"
+        title="Presets & combos"
         buttons={[
           {
             label: "Mon espace",
@@ -170,7 +170,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
 
       <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold text-white">Combos</h2>
+          <h2 className="text-2xl font-semibold text-white">Presets & combos</h2>
           <div className="flex flex-wrap justify-end gap-2 md:w-auto">
             <Link
               href="/positions"
@@ -180,11 +180,11 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
             </Link>
             {(session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN") && (
               <Link
-                href={session.user.role === "SCHOOL_ADMIN" ? "/teacher/presets" : "/teacher/presets"}
+                href="/presets/new"
                 className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
                 <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
-                  Gestion
+                  Créer un combo
                 </span>
               </Link>
             )}
@@ -284,17 +284,20 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               const premiumLocked = preset.premiumRequired && isStudent && !hasPremium;
               const insufficientCredits = isStudent && cost > 0 && hasCredits < cost;
               const disablePurchase = !isStudent || alreadyBought || premiumLocked || insufficientCredits;
+              const detailHref = `/presets/${preset.id}?from=${encodeURIComponent(`/presets?page=${currentPage}`)}`;
 
               let cta = "Voir le détail";
               if (alreadyBought) cta = "Déjà acheté";
-              else if (!isStudent) cta = "Visible (élèves)";
               else if (premiumLocked) cta = "Réservé premium";
               else if (cost > 0) cta = `Acheter (${cost} crédits)`;
-              else cta = "Ajouter (gratuit)";
+              else if (isStudent) cta = "Ajouter (gratuit)";
 
               return (
-                <div key={preset.id} className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30">
-                  <div className="space-y-3">
+                <div
+                  key={preset.id}
+                  className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30 transition hover:border-cyan-400/70 hover:shadow-cyan-900/30"
+                >
+                  <Link href={detailHref ?? "#"} className="space-y-3 block">
                     {preset.imagePublicId ? (
                       <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
                         <SafeImage
@@ -336,7 +339,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                       Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
                       {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
                     </p>
-                  </div>
+                  </Link>
                   <div className="mt-4 flex items-center justify-between">
                     <div className="text-xs text-slate-300">
                       {premiumLocked

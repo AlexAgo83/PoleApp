@@ -21,9 +21,9 @@ const presetSchema = z.object({
   positionIds: z.array(z.string().cuid()).min(1),
 });
 
-export async function createPresetAdminAction(formData: FormData) {
+export async function createPresetAction(formData: FormData) {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
+  if (!session?.user || !session.user.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
 
@@ -31,13 +31,16 @@ export async function createPresetAdminAction(formData: FormData) {
   const disciplineInput = formData.get("discipline")?.toString().trim() || undefined;
   const disciplineRecord = disciplineInput
     ? await prisma.discipline.findFirst({
-        where: { OR: [{ id: disciplineInput }, { name: disciplineInput }] },
+        where: {
+          OR: [{ id: disciplineInput }, { name: disciplineInput }],
+        },
         select: { id: true, name: true },
       })
     : null;
   const fallbackDisciplineId = await prisma.discipline
     .findFirst({ select: { id: true }, orderBy: { name: "asc" } })
     .then((d) => d?.id);
+  const teacherIdRaw = formData.get("teacherId")?.toString().trim() || undefined;
   const parsed = presetSchema.safeParse({
     title: formData.get("title")?.toString().trim(),
     description: formData.get("description")?.toString().trim() || undefined,
@@ -45,19 +48,24 @@ export async function createPresetAdminAction(formData: FormData) {
     videoPublicId: formData.get("videoPublicId")?.toString().trim() || undefined,
     imagePublicId: formData.get("imagePublicId")?.toString().trim() || undefined,
     premiumRequired: formData.get("premiumRequired") === "on",
+    teacherId: teacherIdRaw,
     priceCredits: formData.get("priceCredits") ? Number(formData.get("priceCredits")) : undefined,
     positionIds: rawPositionIds,
   });
-  if (!parsed.success) redirect("/access-denied");
 
-  const teacherId = parsed.data.teacherId
-    ? await prisma.user
-        .findFirst({
-          where: { id: parsed.data.teacherId, schoolId: session.user.schoolId, role: "TEACHER" },
-          select: { id: true },
-        })
-        .then((t) => t?.id)
-    : null;
+  if (!parsed.success) {
+    redirect("/presets/new?flash=invalid");
+  }
+
+  const teacherId =
+    session.user.role === "SCHOOL_ADMIN" && parsed.data.teacherId
+      ? await prisma.user
+          .findFirst({
+            where: { id: parsed.data.teacherId, schoolId: session.user.schoolId, role: "TEACHER" },
+            select: { id: true },
+          })
+          .then((t) => t?.id)
+      : null;
 
   await prisma.preset.create({
     data: {
@@ -71,7 +79,9 @@ export async function createPresetAdminAction(formData: FormData) {
       priceCredits: parsed.data.premiumRequired ? null : parsed.data.priceCredits ?? null,
       schoolId: session.user.schoolId,
       createdByUserId: teacherId ?? session.user.id,
-      positions: { create: parsed.data.positionIds.map((id) => ({ positionId: id })) },
+      positions: {
+        create: parsed.data.positionIds.map((id) => ({ positionId: id })),
+      },
     },
   });
 
@@ -79,29 +89,14 @@ export async function createPresetAdminAction(formData: FormData) {
   redirect("/presets?flash=created");
 }
 
-export async function deletePresetAdminAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
-    redirect("/access-denied");
-  }
-  const id = formData.get("id")?.toString();
-  if (!id) redirect("/access-denied");
-  const preset = await prisma.preset.findUnique({ where: { id } });
-  if (!preset || preset.schoolId !== session.user.schoolId) redirect("/access-denied");
-
-  await prisma.preset.delete({ where: { id } });
-  revalidatePath("/presets");
-  redirect("/presets?flash=deleted");
-}
-
 const presetImageSchema = z.object({
   id: z.string().cuid(),
   imagePublicId: z.string().optional().or(z.literal("")),
 });
 
-export async function updatePresetImageAdminAction(formData: FormData) {
+export async function updatePresetImageAction(formData: FormData) {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
+  if (!session?.user || !session.user.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
   const parsed = presetImageSchema.safeParse({
