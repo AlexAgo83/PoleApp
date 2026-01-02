@@ -112,6 +112,12 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
           >
             Positions
           </Link>
+          <Link
+            href="/teacher/presets/new"
+            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/80"
+          >
+            Créer
+          </Link>
         </div>
         <FilterPanel
           storageKey="filters:presets"
@@ -271,29 +277,6 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
         </div>
       </section>
 
-      <section className="panel space-y-4 p-5">
-        <details className="group space-y-3">
-          <summary className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-            <span>Créer un preset</span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-100 transition group-open:border-cyan-300/60 group-open:bg-cyan-500/15 group-open:text-cyan-50">
-              <span className="group-open:hidden">Agrandir</span>
-              <span className="hidden group-open:inline">Réduire</span>
-              <span className="text-base transition-transform duration-150 group-open:rotate-90">▸</span>
-            </span>
-          </summary>
-          <div className="pt-1">
-            <PresetCreateForm
-              positions={positions}
-              disciplines={disciplines}
-              teachers={session.user.role === "SCHOOL_ADMIN" ? teachers : undefined}
-              action={createPresetAction}
-              currentUserLabel={`(Moi) ${session.user.name ?? session.user.email}`}
-              maxPositions={12}
-              showTeacherSelect={session.user.role === "SCHOOL_ADMIN"}
-            />
-          </div>
-        </details>
-      </section>
     </main>
   );
 }
