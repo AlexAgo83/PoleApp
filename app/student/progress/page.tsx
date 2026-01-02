@@ -351,7 +351,8 @@ export default async function StudentProgressPage({
             const status = progress?.learningStatus ?? "NOT_STARTED";
             const cover = position.media[0];
             const detailHref = `/positions/${position.id}?from=/student/progress?page=${page}${qs ? `&${qs}` : ""}`;
-            const seen = seenCounts.get(position.id) ?? 0;
+            const seenBase = seenCounts.get(position.id) ?? 0;
+            const seen = Math.max(seenBase, progress ? 1 : 0);
             const showProgress = seen > 0 || status !== "NOT_STARTED";
             const statusColor = statusBarColor[status as LearningStatus] ?? "#2563eb";
             const fillRatio =
