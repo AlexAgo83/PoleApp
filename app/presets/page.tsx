@@ -419,21 +419,14 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                     ) : (
                       <p className="text-xs text-slate-400">Aucune position liée.</p>
                     )}
-                    <p className="text-xs text-slate-400">
-                      Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
-                      {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
-                    </p>
+                    <p className="text-xs text-slate-400">Usage : unique</p>
                   </Link>
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                     <div className="text-xs text-slate-300">
                       {isStudent
-                        ? premiumLocked
-                          ? "Nécessite Premium"
-                          : insufficientCredits
-                            ? `Crédits manquants (${hasCredits}/${cost})`
-                            : alreadyBought
-                              ? "Déjà acheté"
-                              : ""
+                        ? alreadyBought
+                          ? "Déjà acheté"
+                          : ""
                         : ""}
                     </div>
                     {isStudent ? (

@@ -97,6 +97,20 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
       : null);
 
   const priceLabel = PRICE_LABEL(preset.priceCredits, preset.premiumRequired ?? false);
+  const isStudent = session?.user?.role === "STUDENT";
+  const isPremium = Boolean(session?.user?.isPremium);
+  const hasPurchase = isStudent
+    ? Boolean(
+        await prisma.purchase.findFirst({
+          where: { userId: session.user.id, offerId: preset.id, kind: "PRESET", status: "PAID" },
+        })
+      )
+    : false;
+  const isFree = (preset.priceCredits ?? 0) <= 0;
+  const canViewContent = !isStudent || isPremium || hasPurchase || (!preset.premiumRequired && isFree);
+  const lockedReason = preset.premiumRequired
+    ? "Contenu réservé aux élèves premium."
+    : "Achetez ce preset pour débloquer la description et la vidéo.";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
@@ -120,7 +134,13 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
       <section className="panel space-y-4 p-4 md:p-6 lg:p-8">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold text-white md:text-3xl">{preset.title}</h1>
-          <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
+          {canViewContent ? (
+            <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
+          ) : (
+            <p className="text-sm text-amber-100">
+              {lockedReason}
+            </p>
+          )}
         </div>
         <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
@@ -135,22 +155,34 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 />
               </div>
             ) : null}
-            {videoSources.length > 0 ? (
-              <div style={{ aspectRatio: "16 / 9" }}>
-                <video
-                  controls
-                  poster={videoPoster ?? undefined}
-                  className="h-full w-full rounded-lg border border-white/10 bg-black object-contain"
-                  preload="metadata"
-                  playsInline
-                >
-                  {videoSources.map((src, idx) => (
-                    <source key={`${src.src}-${idx}`} src={src.src} type={src.type ?? "video/mp4"} />
-                  ))}
-                  Votre navigateur ne supporte pas la vidéo.
-                </video>
+            {canViewContent ? (
+              videoSources.length > 0 ? (
+                <div style={{ aspectRatio: "16 / 9" }}>
+                  <video
+                    controls
+                    poster={videoPoster ?? undefined}
+                    className="h-full w-full rounded-lg border border-white/10 bg-black object-contain"
+                    preload="metadata"
+                    playsInline
+                  >
+                    {videoSources.map((src, idx) => (
+                      <source key={`${src.src}-${idx}`} src={src.src} type={src.type ?? "video/mp4"} />
+                    ))}
+                    Votre navigateur ne supporte pas la vidéo.
+                  </video>
+                </div>
+              ) : null
+            ) : (
+              <div
+                className="relative overflow-hidden rounded-lg border border-amber-400/40 bg-amber-500/10 text-xs text-amber-100"
+                style={{ aspectRatio: "16 / 9" }}
+              >
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-50">Contenu verrouillé</span>
+                  <p className="text-center">{lockedReason}</p>
+                </div>
               </div>
-            ) : null}
+            )}
           </div>
           <div className="space-y-4">
             <div className="grid gap-2 md:grid-cols-2">
@@ -171,6 +203,14 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                 <p className="font-semibold text-white">{preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}</p>
               </div>
             </div>
+            {isStudent && !canViewContent ? (
+              <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+                <p className="font-semibold text-white">Contenu Premium</p>
+                <p className="mt-1">
+                  {lockedReason}
+                </p>
+              </div>
+            ) : null}
             <div>
               <p className="text-sm font-semibold text-white">Positions</p>
               {preset.positions.length > 0 ? (
