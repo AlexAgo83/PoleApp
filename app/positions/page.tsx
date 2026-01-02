@@ -1,4 +1,4 @@
-import { PositionLevel, PositionType, Prisma } from "@prisma/client";
+import { MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -183,8 +183,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         grips: true,
         media: {
           select: { id: true, kind: true, publicId: true },
-          orderBy: { kind: "asc" },
-          take: 2,
+          where: { kind: MediaKind.PHOTO },
+          orderBy: { createdAt: "desc" },
+          take: 1,
         },
         createdBy: { select: { id: true, name: true, email: true } },
         _count: { select: { progress: true } },
@@ -434,13 +435,13 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         </FilterPanel>
         <div className="grid gap-4 md:grid-cols-3">
           {positions.map((p) => {
-            const cover = p.media?.find((m) => m.kind === "PHOTO") ?? p.media?.[0];
+            const cover = p.media?.[0];
             const disciplineName = disciplineNameById.get(p.disciplineId ?? "") ?? p.discipline ?? null;
             const premiumContent =
               Boolean(p.description) ||
               Boolean(p.tips) ||
-              p.media?.some((m) => m.kind === "VIDEO");
-            const hasVideo = p.media?.some((m) => m.kind === "VIDEO");
+              false;
+            const hasVideo = false;
             const showPremiumBadge = premiumContent && isStudent && !isPremium;
             const canViewPremium = !isStudent || isPremium;
             const progress = progressMap.get(p.id);
