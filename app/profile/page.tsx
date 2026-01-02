@@ -95,12 +95,14 @@ export default async function ProfilePage() {
           </div>
         </div>
         <div className="mt-4 flex items-center gap-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={avatarUrl}
-            alt={`Avatar de ${displayName}`}
-            className="h-16 w-16 rounded-full border border-white/10 object-cover shadow-lg shadow-black/30"
-          />
+          <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-black/30">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={avatarUrl}
+              alt={`Avatar de ${displayName}`}
+              className="h-full w-full object-cover"
+            />
+          </div>
           <div className="text-sm text-slate-300">
             <p className="text-base font-semibold text-white">{currentDisplay}</p>
             <p className="text-xs text-slate-400">Ton portrait actuel.</p>
