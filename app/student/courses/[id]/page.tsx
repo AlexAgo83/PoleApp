@@ -189,6 +189,17 @@ export default async function StudentCourseDetailPage({
                 ) : (
                   <span>{teacherName}</span>
                 )}
+                {isAttending ? (
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                      isWaitlist
+                        ? "border border-amber-300/70 bg-amber-500/15 text-amber-50"
+                        : "border border-emerald-300/70 bg-emerald-500/15 text-emerald-50"
+                    }`}
+                  >
+                    {isWaitlist ? "Liste d'attente" : "Inscrit"}
+                  </span>
+                ) : null}
                 {course.discipline && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-100">
                     {course.discipline}
