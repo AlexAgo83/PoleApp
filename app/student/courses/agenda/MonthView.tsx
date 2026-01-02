@@ -136,11 +136,12 @@ export function MonthView({
   return (
     <section className={containerClass}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-white">Vue mensuelle</h3>
         <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
             {monthLabel}
           </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200 ml-auto">
           <MonthNav
             prev={prev}
             current={currentMonth}

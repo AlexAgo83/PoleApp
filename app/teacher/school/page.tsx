@@ -290,6 +290,7 @@ export default async function TeacherSchoolPage({
         durationMinutes: true,
         maxSeats: true,
         photoPublicId: true,
+        isVirtual: true,
         waitlistQuota: true,
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { id: true, name: true } },
@@ -338,6 +339,7 @@ export default async function TeacherSchoolPage({
       courses: dayAttendances.map((a) => ({
         id: a.course.id,
         title: a.course.title,
+        photoPublicId: a.course.photoPublicId ?? null,
         discipline: a.course.discipline ?? undefined,
         disciplineId: a.course.disciplineId ?? undefined,
         date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
@@ -346,6 +348,7 @@ export default async function TeacherSchoolPage({
         studioName: a.course.studio?.name ?? "Studio non renseigné",
         past: isPastCourse(a.course.date, a.course.durationMinutes),
         positionsCount: a.course.positions?.length ?? 0,
+        isVirtual: (a.course as any).isVirtual ?? false,
       })),
     };
   });
@@ -389,15 +392,18 @@ export default async function TeacherSchoolPage({
       id: a.course.id,
       courseId: a.courseId,
       title: a.course.title,
+      photoPublicId: a.course.photoPublicId ?? null,
       discipline: a.course.discipline ?? undefined,
       disciplineId: a.course.disciplineId ?? undefined,
       date: a.course.date instanceof Date ? a.course.date.toISOString() : (a.course.date as unknown as string),
       durationMinutes: a.course.durationMinutes,
       teacherName: a.course.teacher?.name ?? a.course.teacher?.email ?? "Professeur",
       studioName: a.course.studio?.name ?? "Studio non renseigné",
+      positionsCount: a.course.positions?.length ?? 0,
       myStatus: a.myAttendance?.status ?? null,
       waitlistRank: a.myAttendance?.waitlistRank ?? null,
       past: isPastCourse(a.course.date, a.course.durationMinutes),
+      isVirtual: (a.course as any).isVirtual ?? false,
     })),
   }));
   const legendItems = [

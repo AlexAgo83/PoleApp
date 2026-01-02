@@ -157,12 +157,14 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
           select: {
             id: true,
             title: true,
+            photoPublicId: true,
             disciplineId: true,
             date: true,
             durationMinutes: true,
             isVirtual: true,
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
+            _count: { select: { positions: true } },
             ...(isStudentRole
               ? {
                   attendances: {
@@ -193,6 +195,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               return {
                 id: course.id,
                 title: course.title,
+                photoPublicId: (course as any).photoPublicId ?? null,
                 disciplineId: (course as any).disciplineId ?? null,
                 discipline: (course as any).disciplineId ? disciplineNameById.get((course as any).disciplineId) ?? null : null,
                 date: course.date instanceof Date ? course.date.toISOString() : course.date,
@@ -200,6 +203,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
                 studioName: course.studio?.name ?? "Studio",
                 past: isPastCourse(course.date as Date, course.durationMinutes),
+                positionsCount: (course as any)?._count?.positions ?? 0,
                 myStatus: attendance?.status ?? null,
                 waitlistRank: attendance?.waitlistRank ?? null,
               };
@@ -219,6 +223,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
             courses: dayCourses.map((course) => ({
               id: course.id,
               title: course.title,
+              photoPublicId: (course as any).photoPublicId ?? null,
               disciplineId: (course as any).disciplineId ?? null,
               discipline: (course as any).disciplineId ? disciplineNameById.get((course as any).disciplineId) ?? null : null,
               date: course.date instanceof Date ? course.date.toISOString() : course.date,
@@ -226,6 +231,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
               studioName: course.studio?.name ?? "Studio",
               past: isPastCourse(course.date as Date, course.durationMinutes),
+              positionsCount: (course as any)?._count?.positions ?? 0,
             })),
           };
         })
@@ -258,12 +264,14 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
           select: {
             id: true,
             title: true,
+            photoPublicId: true,
             disciplineId: true,
             date: true,
             durationMinutes: true,
             isVirtual: true,
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
+            _count: { select: { positions: true } },
             ...(isStudentRole
               ? {
                   attendances: {
@@ -353,6 +361,8 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                 teacherName: course.teacher?.name ?? course.teacher?.email ?? "Professeur",
                 studioName: course.studio?.name ?? "Studio",
                 isVirtual: (course as { isVirtual?: boolean }).isVirtual ?? false,
+                photoPublicId: (course as any).photoPublicId ?? null,
+                positionsCount: (course as any)?._count?.positions ?? 0,
                 myStatus: attendance(course)?.status ?? null,
                 waitlistRank: attendance(course)?.waitlistRank ?? null,
                 past: isPastCourse(course.date as Date, course.durationMinutes),
@@ -540,11 +550,6 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
               </div>
             </form>
           </FilterPanel>
-          {agendaRange === "month" ? (
-            <div className="text-sm text-slate-200">
-              {agendaMonthCourses.length} cours sur le mois affiché
-            </div>
-          ) : null}
           {agendaRange === "week" ? (
             <>
               {isStudentRole && studentWeekDays ? (

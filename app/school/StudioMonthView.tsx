@@ -9,9 +9,11 @@ type Course = {
   title: string | null;
   date: string | Date;
   durationMinutes: number | null;
+  photoPublicId?: string | null;
   teacherName?: string | null;
   studioName?: string | null;
   isVirtual?: boolean;
+  positionsCount?: number | null;
   myStatus?: "CONFIRMED" | "WAITLIST" | null;
   waitlistRank?: number | null;
   past?: boolean;
@@ -41,6 +43,8 @@ type Props = {
   role: "STUDENT" | "TEACHER" | "SCHOOL_ADMIN";
   filters: Filters;
 };
+
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
@@ -129,7 +133,7 @@ export function StudioMonthView({
             disabled={isPending}
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
-            ← Précédent
+            ←
           </button>
           <button
             type="button"
@@ -145,7 +149,7 @@ export function StudioMonthView({
             disabled={isPending}
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
-            Suivant →
+            →
           </button>
         </div>
       </div>
@@ -184,9 +188,11 @@ export function StudioMonthView({
                     {dayLabel}
                   </span>
                 </span>
-                <span className="text-[11px] text-cyan-100">
-                  {(cell.courses?.length ?? 0)} cours
-                </span>
+                {cell.courses && cell.courses.length > 0 && (
+                  <span className="text-[11px] text-cyan-100">
+                    {cell.courses.length} cours
+                  </span>
+                )}
               </div>
               {cell.courses && cell.courses.length > 0 ? (
                 <>
@@ -210,6 +216,17 @@ export function StudioMonthView({
                             ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-80"
                             : "border-white/10 bg-white/10 text-white"
                         }`}
+                        style={
+                          course.photoPublicId && CLOUD_NAME
+                            ? {
+                                backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.25), rgba(15,25,45,0.22)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_640,h_360/${course.photoPublicId})`,
+                                backgroundBlendMode: "soft-light",
+                                backgroundColor: "rgba(8,12,20,0.35)",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                              }
+                            : undefined
+                        }
                       >
                         <div className="flex-1 space-y-0.5 overflow-hidden pr-4">
                           <p className="text-[10px] text-cyan-100">
