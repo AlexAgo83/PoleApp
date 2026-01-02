@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 
 import { CloudinaryUpload } from "./CloudinaryUpload";
 
@@ -30,6 +30,8 @@ export function PresetCreateForm({
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
   const [imagePublicId, setImagePublicId] = useState<string>("");
   const [videoPublicId, setVideoPublicId] = useState<string>("");
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions.slice(0, maxPositions);
@@ -43,9 +45,23 @@ export function PresetCreateForm({
   }, [positions, selectedDiscipline, maxPositions]);
 
   const labelForTeacher = (t: Teacher) => t.name ?? t.email ?? "Professeur";
+  const togglePosition = (id: string) => {
+    setSelectedPositions((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(e.currentTarget);
+    const picked = formData.getAll("positionIds");
+    if (picked.length === 0) {
+      e.preventDefault();
+      setFormError("Sélectionne au moins une position.");
+      return;
+    }
+    setFormError(null);
+  };
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} onSubmit={handleSubmit} className="space-y-4">
       <label className="text-sm text-slate-200">
         Titre
         <input
@@ -158,7 +174,14 @@ export function PresetCreateForm({
                 key={p.id}
                 className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2 py-1"
               >
-                <input type="checkbox" name="positionIds" value={p.id} className="h-4 w-4" />
+                <input
+                  type="checkbox"
+                  name="positionIds"
+                  value={p.id}
+                  checked={selectedPositions.includes(p.id)}
+                  onChange={() => togglePosition(p.id)}
+                  className="h-4 w-4"
+                />
                 <span className="text-sm text-white">
                   {p.name}
                   {p.discipline ? (
@@ -170,6 +193,7 @@ export function PresetCreateForm({
           )}
         </div>
       </div>
+      {formError ? <p className="text-sm font-semibold text-amber-200">{formError}</p> : null}
       <div className="flex justify-end">
         <button
           type="submit"

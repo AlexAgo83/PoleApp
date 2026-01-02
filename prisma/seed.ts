@@ -392,19 +392,62 @@ const courseNames = [
 
 const seedPresetsData = [
   {
-    title: "Combo Fluide Débutant",
+    title: "Sunrise Flow",
     discipline: "Pole",
     premiumRequired: true,
-    description: "Combo court pour débutants, axé fluidité et musicalité.",
-    imagePublicId: "ps_001_fe48zf",
+    description:
+      "Un flow lumineux mêlant spins doux, poses allongées et travail de lignes pour ouvrir la journée en douceur. On enchaîne des transitions fluides pour réveiller la mobilité des épaules et du dos, tout en gardant un engagement léger dans le centre. Idéal pour échauffer la colonne et préparer les inversions. Le combo se termine par une séquence basse qui repose sur la musicalité, encourage la respiration profonde et invite à relâcher les tensions. Parfait pour lancer un cours intermédiaire ou conclure un warmup, même en mode low pole.",
+    imagePublicId: "ps_001_wcashm",
+    videoPublicId: "ps_001_qo2alr",
   },
   {
-    title: "Preset Crédit 150",
+    title: "Exotic Amber",
     discipline: "Exotic",
     premiumRequired: false,
-    priceCredits: 150,
-    description: "Preset achetable en crédits, avec focus exotic.",
-    imagePublicId: "ps_002_r2gphs",
+    priceCredits: 120,
+    description:
+      "Exotic sensuel avec ondulations de hanches, accents de musicalité et transitions basées sur les appuis au sol. On exploite les waves pour donner du relief à chaque phrase musicale, tout en conservant des points de contact stables. Le combo favorise l’expressivité et la confiance scénique : regard, fluidité des poignets et intention dans chaque posture. Idéal pour un cours premium ou une répétition de show, il offre un travail cardio léger et un focus contrôle-équilibre. Les options proposées permettent d’adapter l’amplitude selon le niveau.",
+    imagePublicId: "ps_002_fhyron",
+    videoPublicId: "ps_001_qo2alr",
+  },
+  {
+    title: "Spin & Strength Duo",
+    discipline: "Pole",
+    premiumRequired: false,
+    priceCredits: 90,
+    description:
+      "Combo alternant puissance et fluidité, idéal pour consolider les bases intermédiaires. On démarre par un spin contrôlé avant de placer un passage de force (climb + maintien) puis une transition relâchée pour redescendre en musique. Le focus est mis sur la gestion de l’élan, l’activation scapulaire et la respiration pour stabiliser le centre. Parfait en atelier technique : on travaille à la fois l’endurance des avant-bras et la propreté des lignes pour préparer les figures avancées. Les options permettent d’ajuster la difficulté selon l’élève.",
+    imagePublicId: "ps_003_xauurl",
+    videoPublicId: "ps_001_qo2alr",
+  },
+  {
+    title: "Velvet Floorwork",
+    discipline: "Floorwork",
+    premiumRequired: false,
+    priceCredits: 80,
+    description:
+      "Routine au sol toute en douceur, pensée pour développer la musicalité, la fluidité des mains et des hanches. Les transitions privilégient des appuis contrôlés, des glissés et des rotations de bassin lentes afin d’allonger chaque phrase. On y ajoute des accents de bras pour structurer le regard et l’intention. Idéal pour un échauffement chorégraphique ou un fin de cours relax, cette séquence aide à gagner en confiance dans les placements bas, tout en ménageant les poignets et les épaules. Adaptable pour tous les niveaux.",
+    imagePublicId: "ps_004_c1vw8c",
+    videoPublicId: "ps_001_qo2alr",
+  },
+  {
+    title: "Pilates Mobility Pulse",
+    discipline: "Pilates",
+    premiumRequired: false,
+    priceCredits: 0,
+    description:
+      "Séquence mobilité et gainage inspirée Pilates pour préparer les inversions en sécurité. On alterne exercices de respiration, engagement du transverse, contrôle du bassin et mobilisation de la colonne. L’objectif est de chauffer en profondeur sans créer de fatigue excessive : rotations douces, planches dynamiques modérées, et focus sur la stabilité scapulaire. Cette routine sert d’amorce avant un cours d’inversions ou de tricks, en renforçant la connexion centre/haut du corps et en améliorant la conscience corporelle. Compatible avec des options de niveau.",
+    imagePublicId: "ps_005_xbzstp",
+    videoPublicId: "ps_001_qo2alr",
+  },
+  {
+    title: "Choré Galaxy",
+    discipline: "Pole",
+    premiumRequired: true,
+    description:
+      "Choré inter rapide mêlant transitions signature et accents aériens. On joue sur des variations de vitesse : phases lentes pour installer les lignes, suivies de bursts dynamiques pour surprendre. Le combo inclut des points de force courts, des pivots contrôlés et un final plus acrobatique (optionnel) afin d’offrir un challenge aux élèves confirmés. L’objectif : travailler la musicalité avancée, le contrôle du cardio et la coordination bras/jambes dans un cadre chorégraphique. Idéal pour un run premium ou une démo courte.",
+    imagePublicId: "ps_006_xesgal",
+    videoPublicId: "ps_001_qo2alr",
   },
 ];
 
@@ -1623,6 +1666,7 @@ async function seedPresets(options: {
           premiumRequired: preset.premiumRequired ?? false,
           priceCredits: preset.priceCredits ?? null,
           imagePublicId: preset.imagePublicId ?? null,
+          videoPublicId: preset.videoPublicId ?? null,
           usageCount: 0,
           schoolId: school.id,
           createdByUserId: teacher?.id,
