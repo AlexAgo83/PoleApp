@@ -103,21 +103,23 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
       <section className="panel space-y-4 p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold text-white md:text-2xl">Presets / combos</h1>
+            <h1 className="text-2xl font-semibold text-white md:text-2xl">Presets & combos</h1>
             <p className="text-sm text-slate-300 leading-6">Crée des combos vidéo premium ou achetables en crédits.</p>
           </div>
-          <Link
-            href="/positions"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            Positions
-          </Link>
-          <Link
-            href="/teacher/presets/new"
-            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/80"
-          >
-            Créer
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/positions"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+            >
+              Positions
+            </Link>
+            <Link
+              href="/teacher/presets/new"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+            >
+              Créer un combo
+            </Link>
+          </div>
         </div>
         <FilterPanel
           storageKey="filters:presets"
@@ -191,18 +193,18 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
           <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {presets.map((preset) => {
               const cost = preset.priceCredits ?? 0;
+              const fromParam = encodeURIComponent(`/teacher/presets?${pageParamPrefix}page=${page}`);
               return (
-                <li key={preset.id} className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30">
-                  <div className="space-y-3">
-                {preset.imagePublicId ? (
-                  <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
-                    <SafeImage
-                      publicId={preset.imagePublicId}
-                      alt={preset.title}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                ) : null}
+                <li
+                  key={preset.id}
+                  className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30 transition hover:border-cyan-400/70 hover:shadow-cyan-900/30"
+                >
+                  <Link href={`/teacher/presets/${preset.id}?from=${fromParam}`} className="space-y-3 block">
+                    {preset.imagePublicId ? (
+                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30 aspect-[4/3]">
+                        <SafeImage publicId={preset.imagePublicId} alt={preset.title} className="h-full w-full object-cover" />
+                      </div>
+                    ) : null}
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
                       {preset.discipline ? (
                         <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">{preset.discipline}</span>
@@ -222,7 +224,7 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xl font-semibold text-white">{preset.title}</h3>
-                      <p className="text-sm text-slate-200">{preset.description || "Pas de description"}</p>
+                      <p className="text-sm text-slate-200 line-clamp-3">{preset.description || "Pas de description"}</p>
                     </div>
                     {preset.positions.length > 0 ? (
                       <p className="text-xs text-slate-300">
@@ -235,7 +237,7 @@ export default async function TeacherPresetsPage({ searchParams }: { searchParam
                       Usage : {preset.usageCount} {preset.usageCount > 1 ? "fois" : "fois"}{" "}
                       {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
                     </p>
-                  </div>
+                  </Link>
                   <div className="mt-4 flex justify-end">
                     <form action={deletePresetAction}>
                       <input type="hidden" name="id" value={preset.id} />
