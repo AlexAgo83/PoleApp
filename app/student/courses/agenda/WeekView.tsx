@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+
 type DayCourse = {
   id: string;
   title: string | null;
@@ -168,7 +170,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                   isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
                 }`}
               >
-                <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
+                <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white pt-0.5 pl-0.5">
                   <span className="flex items-center gap-1 pl-1">
                     <span
                       className={`text-[10px] uppercase tracking-wide md:text-xs ${
@@ -181,7 +183,9 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       {day.day}
                     </span>
                   </span>
-                  <span className="text-[11px] text-cyan-100 pr-1">{day.courses.length} cours</span>
+                  {day.courses.length > 0 && (
+                    <span className="text-[11px] text-cyan-100 pr-1">{day.courses.length} cours</span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 md:gap-1.5">
                   {day.courses.map((course) => {
@@ -206,7 +210,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       <Link
                         key={course.id}
                         href={`/student/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
-                        className={`relative block w-full rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
+                        className={`relative block w-full overflow-hidden rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
                           isVirtual
                             ? course.past
                               ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
@@ -216,6 +220,17 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                             : "border-white/10 bg-white/10 text-white"
                         }`}
                         title={`Durée : ${formatDuration(course.durationMinutes ?? 60)}`}
+                        style={
+                          course.photoPublicId && CLOUD_NAME
+                            ? {
+                                backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.25), rgba(15,25,45,0.22)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:600,w_640,h_360/${course.photoPublicId})`,
+                                backgroundBlendMode: "soft-light",
+                                backgroundColor: "rgba(8,12,20,0.35)",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                              }
+                            : undefined
+                        }
                       >
                         <div className="space-y-0.5">
                           <p className="text-[9px] text-cyan-100 whitespace-nowrap">

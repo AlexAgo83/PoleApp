@@ -52,7 +52,7 @@ export async function FoxPageHeader({
 }: Props) {
   const session = await getServerSession(authOptions).catch(() => null);
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
-  let userRecord: { avatarUrl: string | null; avatarPublicId: string | null; name: string | null; email: string | null } | null = null;
+  let userRecord: { avatarPublicId: string | null; name: string | null; email: string | null } | null = null;
   let school: { name: string | null; photoPublicId: string | null } | null = null;
   let userLookupAttempted = false;
   let userLookupFailed = false;
@@ -71,7 +71,7 @@ export async function FoxPageHeader({
     try {
       userRecord = await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { avatarUrl: true, avatarPublicId: true, name: true, email: true },
+        select: { avatarPublicId: true, name: true, email: true },
       });
     } catch {
       userLookupFailed = true;
@@ -108,7 +108,7 @@ export async function FoxPageHeader({
     avatarUrl:
       profileImageUrl ??
       (session?.user as any)?.avatarUrl ??
-      userRecord?.avatarUrl ??
+      (session?.user as any)?.image ??
       null,
     placeholder: isSuperAdmin ? superAdminImage : AVATAR_PLACEHOLDER,
   });
