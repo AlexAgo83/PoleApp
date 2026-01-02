@@ -24,7 +24,6 @@ export function AvatarManager({ folder, initialUrl, initialPublicId }: Props) {
     startTransition(async () => {
       try {
         await updateAvatarAction({
-          avatarUrl: newUrl,
           avatarPublicId: newPublicId,
         });
         setMessage(newUrl ? "Photo mise à jour" : "Photo supprimée");

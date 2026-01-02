@@ -74,7 +74,7 @@ export default async function ProfilePage({
   const avatarPlaceholder = isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER;
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: user.avatarPublicId,
-    avatarUrl: user.avatarUrl,
+    avatarUrl: null,
     placeholder: avatarPlaceholder,
   });
 

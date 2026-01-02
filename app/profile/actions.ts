@@ -47,11 +47,6 @@ export async function updateProfileAction(formData: FormData) {
     firstName: formData.get("firstName")?.toString() || undefined,
     lastName: formData.get("lastName")?.toString() || undefined,
     age: formData.get("age")?.toString().trim() || undefined,
-    avatarUrl: (() => {
-      const raw = formData.get("avatarUrl")?.toString().trim();
-      return raw ? raw : undefined;
-    })(),
-    avatarPublicId: formData.get("avatarPublicId")?.toString().trim() || undefined,
     diplomas: isTeacher
       ? formData.get("diplomas")?.toString().trim() || undefined
       : undefined,
@@ -109,34 +104,23 @@ export async function updateProfileAction(formData: FormData) {
 }
 
 const avatarSchema = z.object({
-  avatarUrl: z
-    .string()
-    .trim()
-    .url("URL invalide")
-    .max(2048, "URL trop longue")
-    .optional(),
-  avatarPublicId: z
-    .string()
-    .trim()
-    .max(512, "public_id trop long")
-    .optional(),
+  avatarPublicId: z.string().trim().max(512, "public_id trop long").optional(),
 });
 
-export async function updateAvatarAction(payload: { avatarUrl?: string | null; avatarPublicId?: string | null }) {
+export async function updateAvatarAction(payload: { avatarPublicId?: string | null }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     redirect("/login?callbackUrl=/profile");
   }
 
   const parsed = avatarSchema.safeParse({
-    avatarUrl: payload.avatarUrl ?? undefined,
     avatarPublicId: payload.avatarPublicId ?? undefined,
   });
   if (!parsed.success) {
     throw new Error("Avatar invalide");
   }
 
-  const { avatarUrl, avatarPublicId } = parsed.data;
+  const { avatarPublicId } = parsed.data;
 
   const previous = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -146,7 +130,6 @@ export async function updateAvatarAction(payload: { avatarUrl?: string | null; a
   await prisma.user.update({
     where: { id: session.user.id },
     data: {
-      avatarUrl: avatarUrl ?? null,
       avatarPublicId: avatarPublicId ?? null,
     },
   });

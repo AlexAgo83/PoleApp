@@ -33,7 +33,6 @@ export function TeacherAvatarManager({
       try {
         await updateTeacherAvatarAction({
           teacherId,
-          avatarUrl: newUrl,
           avatarPublicId: newPublicId,
           returnTo,
         });
