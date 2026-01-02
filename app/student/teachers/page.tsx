@@ -65,7 +65,6 @@ export default async function StudentTeachersPage({
       id: true,
       name: true,
       email: true,
-      avatarUrl: true,
       avatarPublicId: true,
       diplomas: true,
     },
@@ -146,7 +145,7 @@ export default async function StudentTeachersPage({
               const avatar =
                 resolveAvatarUrl({
                   avatarPublicId: teacher.avatarPublicId,
-                  avatarUrl: teacher.avatarUrl,
+                  avatarUrl: null,
                   placeholder: TEACHER_AVATAR_PLACEHOLDER,
                 }) || TEACHER_AVATAR_PLACEHOLDER;
               return (

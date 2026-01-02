@@ -43,7 +43,7 @@ export default async function TeacherDashboard() {
   const teacherUser = session?.user?.id
     ? await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { id: true, avatarUrl: true, avatarPublicId: true, name: true, email: true },
+        select: { id: true, avatarPublicId: true, name: true, email: true },
       })
     : null;
   const nameParts =
@@ -56,7 +56,7 @@ export default async function TeacherDashboard() {
   const displayName = firstName ?? lastName ?? teacherUser?.email ?? session?.user?.email ?? "professeur";
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: teacherUser?.avatarPublicId,
-    avatarUrl: teacherUser?.avatarUrl ?? session?.user?.image ?? null,
+    avatarUrl: session?.user?.image ?? null,
     placeholder: AVATAR_PLACEHOLDER,
   }) || null;
   const avatarInitial = (displayName?.[0] ?? "P").toUpperCase();

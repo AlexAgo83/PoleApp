@@ -16,7 +16,7 @@ export default async function StudentDashboard() {
   }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarUrl: true, avatarPublicId: true },
+    select: { id: true, name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarPublicId: true },
   });
   const isPremium = Boolean(user?.isPremium);
   const nameParts =
@@ -30,7 +30,7 @@ export default async function StudentDashboard() {
   const credits = user?.credits ?? 0;
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: user?.avatarPublicId,
-    avatarUrl: user?.avatarUrl ?? session.user.image ?? null,
+    avatarUrl: session.user.image ?? null,
     placeholder: AVATAR_PLACEHOLDER,
   });
   const avatarInitial = (displayName?.[0] ?? "É").toUpperCase();

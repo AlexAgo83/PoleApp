@@ -134,14 +134,12 @@ export async function updateStudentProfileAction(formData: FormData) {
 
 const updateAvatarSchema = z.object({
   studentId: z.string().cuid(),
-  avatarUrl: z.string().trim().url("URL invalide").max(2048).nullable(),
   avatarPublicId: z.string().trim().max(512).nullable(),
   returnTo: z.string().optional(),
 });
 
 export async function updateStudentAvatarAction(input: {
   studentId: string;
-  avatarUrl: string | null;
   avatarPublicId: string | null;
   returnTo?: string | null;
 }) {
@@ -155,7 +153,6 @@ export async function updateStudentAvatarAction(input: {
 
   const parsed = updateAvatarSchema.safeParse({
     studentId: input.studentId,
-    avatarUrl: input.avatarUrl,
     avatarPublicId: input.avatarPublicId,
     returnTo: input.returnTo ?? undefined,
   });
@@ -174,7 +171,6 @@ export async function updateStudentAvatarAction(input: {
   await prisma.user.update({
     where: { id: parsed.data.studentId },
     data: {
-      avatarUrl: parsed.data.avatarUrl,
       avatarPublicId: parsed.data.avatarPublicId,
     },
   });

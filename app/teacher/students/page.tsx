@@ -136,7 +136,6 @@ export default async function TeacherStudentsPage({
       email: true,
       name: true,
       age: true,
-      avatarUrl: true,
       avatarPublicId: true,
       isPremium: true,
       injuries: {
@@ -254,13 +253,13 @@ export default async function TeacherStudentsPage({
             >
               <div className="flex flex-1 items-center gap-4">
                 <SafeImage
-                  src={
-                    resolveAvatarUrl({
-                      avatarPublicId: student.avatarPublicId,
-                      avatarUrl: student.avatarUrl,
-                      placeholder: STUDENT_AVATAR_PLACEHOLDER,
-                    }) || STUDENT_AVATAR_PLACEHOLDER
-                  }
+                      src={
+                        resolveAvatarUrl({
+                          avatarPublicId: student.avatarPublicId,
+                          avatarUrl: null,
+                          placeholder: STUDENT_AVATAR_PLACEHOLDER,
+                        }) || STUDENT_AVATAR_PLACEHOLDER
+                      }
                   alt={`Avatar de ${student.name ?? student.email}`}
                   width={48}
                   height={48}

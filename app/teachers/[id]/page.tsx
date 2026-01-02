@@ -198,7 +198,7 @@ export default async function TeacherPublicProfilePage({
                   teacherId={teacher.id}
                   folder={avatarFolder}
                   returnTo={backHref}
-                  initialUrl={teacher.avatarUrl ?? null}
+                  initialUrl={avatarUrl}
                   initialPublicId={teacher.avatarPublicId ?? null}
                 />
                 <p className="text-sm text-slate-300">Upload signé Cloudinary (auth), formats jpg/png/webp, 4 Mo max.</p>

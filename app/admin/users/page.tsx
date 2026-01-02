@@ -89,7 +89,6 @@ export default async function AdminUsersPage({
       id: true,
       email: true,
       name: true,
-      avatarUrl: true,
       avatarPublicId: true,
       role: true,
       isPremium: true,
@@ -259,7 +258,7 @@ export default async function AdminUsersPage({
                   src={
                     resolveAvatarUrl({
                       avatarPublicId: user.avatarPublicId,
-                      avatarUrl: user.avatarUrl,
+                      avatarUrl: null,
                       placeholder: USER_AVATAR_PLACEHOLDER,
                     }) || USER_AVATAR_PLACEHOLDER
                   }
