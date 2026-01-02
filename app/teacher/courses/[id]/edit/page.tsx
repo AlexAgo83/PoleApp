@@ -41,7 +41,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       waitlistQuota: true,
       discipline: true,
       disciplineId: true,
-      photoUrl: true,
+      photoPublicId: true,
       teacherId: true,
       studioId: true,
       isVirtual: true,
@@ -282,7 +282,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           defaultMaxSeats={course.maxSeats ?? 30}
       defaultWaitlistQuota={course.waitlistQuota ?? 0}
       defaultCostCredits={course.costCredits ?? 100}
-      defaultPhotoUrl={course.photoUrl ?? ""}
+      defaultPhotoPublicId={course.photoPublicId ?? ""}
       defaultDiscipline={course.disciplineId ?? ""}
       disciplines={mergedDisciplines}
           teacherFavorites={teacherFavoritesRows.reduce<Record<string, string[]>>((acc, row) => {

@@ -9,6 +9,7 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { SafeImage } from "@/components/SafeImage";
 
 const NOW_MS = Date.now();
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 const FALLBACK_DISCIPLINES = [
   { name: "Pole", color: "#0ea5e9" },
   { name: "Exotic", color: "#ec4899" },
@@ -31,7 +32,7 @@ type CourseRow = {
   durationMinutes: number | null;
   maxSeats: number;
   costCredits: number;
-  photoUrl?: string | null;
+  photoPublicId?: string | null;
   discipline?: string | null;
   disciplineId?: string | null;
   isVirtual?: boolean;
@@ -524,7 +525,12 @@ export default async function StudentCoursesPage({
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
                     <SafeImage
-                      src={course.photoUrl?.trim() || COURSE_PHOTO_PLACEHOLDER}
+                      publicId={course.photoPublicId || undefined}
+                      src={
+                        course.photoPublicId && CLOUD_NAME
+                          ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+                          : COURSE_PHOTO_PLACEHOLDER
+                      }
                       alt={course.title ?? "Cours"}
                       width={96}
                       height={64}

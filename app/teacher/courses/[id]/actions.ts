@@ -18,7 +18,7 @@ const updateSchema = z.object({
   positionIds: z.array(z.string().cuid()).min(1),
   teacherId: z.string().cuid().optional(),
   studioId: z.string().cuid(),
-  photoUrl: z.string().trim().url("URL invalide").max(2048).optional(),
+  photoPublicId: z.string().trim().max(512).optional(),
   disciplineId: z.string().trim().min(1),
   durationMinutes: z
     .coerce.number()
@@ -70,7 +70,7 @@ export async function updateCourseAction(formData: FormData) {
     positionIds: JSON.parse((formData.get("positionIds") as string) ?? "[]"),
     teacherId: formData.get("teacherId") || undefined,
     studioId: formData.get("studioId"),
-    photoUrl: formData.get("photoUrl")?.toString().trim() || undefined,
+    photoPublicId: formData.get("photoPublicId")?.toString().trim() || undefined,
     disciplineId: formData.get("disciplineId")?.toString().trim() || formData.get("discipline")?.toString().trim(),
     durationMinutes: formData.get("durationMinutes") ?? 60,
     maxSeats: formData.get("maxSeats") ?? 30,
@@ -179,7 +179,7 @@ export async function updateCourseAction(formData: FormData) {
           maxSeats: data.maxSeats ?? 30,
           waitlistQuota: data.waitlistQuota ?? 0,
           costCredits: data.costCredits ?? 100,
-          photoUrl: data.photoUrl ?? null,
+          photoPublicId: data.photoPublicId ?? null,
           isVirtual: false,
         },
       });
@@ -203,7 +203,7 @@ export async function updateCourseAction(formData: FormData) {
           disciplineId,
           durationMinutes: data.durationMinutes,
           waitlistQuota: data.waitlistQuota ?? 0,
-          photoUrl: data.photoUrl ?? null,
+          photoPublicId: data.photoPublicId ?? null,
           isVirtual: false,
         },
       });

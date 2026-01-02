@@ -12,6 +12,7 @@ import { MonthView } from "../courses/agenda/MonthView";
 import { WeekView as TeacherWeekView } from "../courses/agenda/WeekView";
 
 export const dynamic = "force-dynamic";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 const NOW_MS = Date.now();
 
 function startOfMonth(date: Date) {
@@ -44,7 +45,7 @@ type SchoolCourse = {
   date: Date;
   durationMinutes: number | null;
   maxSeats: number | null;
-  photoUrl: string | null;
+  photoPublicId: string | null;
   teacher: { id: string; name: string | null; email: string | null } | null;
   studio: { id: string; name: string } | null;
   waitlistQuota?: number | null;
@@ -160,9 +161,9 @@ export default async function TeacherSchoolPage({
   type SchoolView = {
     id: string;
     name: string;
-    photoUrl: string | null;
+    photoPublicId: string | null;
     website: string | null;
-    studios: { id: string; name: string; address: string | null; photoUrl: string | null }[];
+    studios: { id: string; name: string; address: string | null; photoPublicId: string | null }[];
     partners: {
       id: string;
       name: string;
@@ -180,9 +181,9 @@ export default async function TeacherSchoolPage({
       select: {
         id: true,
         name: true,
-        photoUrl: true,
+        photoPublicId: true,
         website: true,
-        studios: { select: { id: true, name: true, address: true, photoUrl: true } },
+        studios: { select: { id: true, name: true, address: true, photoPublicId: true } },
         partners: {
           select: {
             id: true,
@@ -199,13 +200,13 @@ export default async function TeacherSchoolPage({
       school = {
         id: fetched.id,
         name: fetched.name,
-        photoUrl: fetched.photoUrl ?? null,
+        photoPublicId: fetched.photoPublicId ?? null,
         website: fetched.website ?? null,
         studios: fetched.studios.map((s) => ({
           id: s.id,
           name: s.name,
           address: s.address,
-          photoUrl: s.photoUrl ?? null,
+          photoPublicId: s.photoPublicId ?? null,
         })),
         partners: fetched.partners,
       };
@@ -221,7 +222,7 @@ export default async function TeacherSchoolPage({
       select: {
         id: true,
         name: true,
-        studios: { select: { id: true, name: true, address: true, photoUrl: true } },
+        studios: { select: { id: true, name: true, address: true, photoPublicId: true } },
         partners: {
           select: {
             id: true,
@@ -238,13 +239,13 @@ export default async function TeacherSchoolPage({
       school = {
         id: fetched.id,
         name: fetched.name,
-        photoUrl: null,
+        photoPublicId: null,
         website: null,
         studios: fetched.studios.map((s) => ({
           id: s.id,
           name: s.name,
           address: s.address,
-          photoUrl: s.photoUrl ?? null,
+          photoPublicId: s.photoPublicId ?? null,
         })),
         partners: fetched.partners,
       };
@@ -288,7 +289,7 @@ export default async function TeacherSchoolPage({
         date: true,
         durationMinutes: true,
         maxSeats: true,
-        photoUrl: true,
+        photoPublicId: true,
         waitlistQuota: true,
         teacher: { select: { id: true, name: true, email: true } },
         studio: { select: { id: true, name: true } },
@@ -429,7 +430,10 @@ export default async function TeacherSchoolPage({
     .filter((item) => !isPastCourse(item.course.date, item.course.durationMinutes))
     .sort((a, b) => new Date(a.course.date).getTime() - new Date(b.course.date).getTime())
     .slice(0, 8);
-  const schoolPhoto = school.photoUrl?.trim() || COURSE_PLACEHOLDER;
+  const schoolPhoto =
+    school.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${school.photoPublicId}`
+      : COURSE_PLACEHOLDER;
   const headerBgStyle = {
     backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
     backgroundSize: "cover",
@@ -479,7 +483,11 @@ export default async function TeacherSchoolPage({
                 key={studio.id}
                 className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
                 style={{
-                  backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.7)), url(${studio.photoUrl ?? COURSE_PLACEHOLDER})`,
+                  backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.7)), url(${
+                    studio.photoPublicId && CLOUD_NAME
+                      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${studio.photoPublicId}`
+                      : COURSE_PLACEHOLDER
+                  })`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -775,7 +783,12 @@ export default async function TeacherSchoolPage({
             return (
               <article key={course.id} className={`flex flex-wrap items-start gap-3 py-3 ${isPast ? "opacity-75" : ""}`}>
                 <SafeImage
-                  src={course.photoUrl?.trim() || COURSE_PLACEHOLDER}
+                  publicId={course.photoPublicId || undefined}
+                  src={
+                    course.photoPublicId && CLOUD_NAME
+                      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+                      : COURSE_PLACEHOLDER
+                  }
                   alt={course.title ?? "Cours"}
                   width={96}
                   height={64}

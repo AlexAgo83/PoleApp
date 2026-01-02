@@ -13,6 +13,7 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { StudioMonthView } from "../StudioMonthView";
 
 export const dynamic = "force-dynamic";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 function formatWeekKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -285,7 +286,10 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
         })
       : [];
   const courseBasePath = userRole === "STUDENT" ? "/student/courses" : "/teacher/courses";
-  const studioPhoto = studio.photoUrl?.trim() || COURSE_PLACEHOLDER;
+  const studioPhoto =
+    CLOUD_NAME && studio.photoPublicId
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_1400,h_520/${studio.photoPublicId}`
+      : COURSE_PLACEHOLDER;
   const headerBgStyle = {
     backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${studioPhoto})`,
     backgroundSize: "cover",
@@ -674,6 +678,10 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                   hour: "2-digit",
                   minute: "2-digit",
                 });
+                const courseImage =
+                  CLOUD_NAME && course.photoPublicId
+                    ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_320,h_220/${course.photoPublicId}`
+                    : COURSE_PLACEHOLDER;
                 return (
                   <li key={course.id} className="block py-4 first:pt-0 last:pb-0">
                     <article className="flex flex-col gap-3 px-1">
@@ -687,7 +695,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
                       </div>
                       <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
                         <SafeImage
-                          src={course.photoUrl?.trim() || COURSE_PLACEHOLDER}
+                          src={courseImage}
                           alt={course.title ?? "Cours"}
                           width={96}
                           height={64}

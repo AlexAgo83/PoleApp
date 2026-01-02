@@ -50,6 +50,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
 
   const homeForRole = defaultHomeForRole(session.user.role);
   const isStudent = session.user.role === "STUDENT";
+  const isTeacherOrAdmin = session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN";
   const schoolId = session.user.schoolId || undefined;
 
   const q = params.q?.toString().trim() || "";
@@ -340,9 +341,53 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               >
                 Filtrer
               </button>
+              <Link
+                href="/presets"
+                className="ml-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10"
+              >
+                Réinitialiser
+              </Link>
             </div>
           </form>
         </FilterPanel>
+
+        {activeFilters > 0 && (
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
+            <span className="rounded-full border border-cyan-400/60 bg-cyan-500/20 px-2 py-0.5">
+              {activeFilters} filtre{activeFilters > 1 ? "s" : ""} actif{activeFilters > 1 ? "s" : ""}
+            </span>
+            {q && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Recherche : “{q}”
+              </span>
+            )}
+            {disciplineFilters.map((d) => (
+              <span key={d} className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Discipline : “{disciplineNameById.get(d) ?? d}”
+              </span>
+            ))}
+            {priceFilter && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">
+                Tarification : {priceFilter === "premium" ? "Premium" : priceFilter === "credits" ? "Crédits" : "Gratuit"}
+              </span>
+            )}
+            {ownerFilter === "me" && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Mes combos</span>
+            )}
+            {purchaseFilter === "bought" && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Achetés</span>
+            )}
+            {purchaseFilter === "notBought" && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Non achetés</span>
+            )}
+            {mediaFilter === "image" && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Avec image</span>
+            )}
+            {mediaFilter === "video" && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Avec vidéo</span>
+            )}
+          </div>
+        )}
 
         {presets.length === 0 ? (
           <p className="text-slate-300">Aucun preset ne correspond aux filtres.</p>
@@ -353,8 +398,11 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               const alreadyBought = purchasedPresetIds.has(preset.id);
               const premiumLocked = preset.premiumRequired && isStudent && !hasPremium;
               const insufficientCredits = isStudent && cost > 0 && hasCredits < cost;
-              const disablePurchase = !isStudent || alreadyBought || premiumLocked || insufficientCredits;
+              const disablePurchase = alreadyBought || premiumLocked || insufficientCredits;
               const detailHref = `/presets/${preset.id}?from=${encodeURIComponent(`/presets?page=${currentPage}`)}`;
+              const canEditPreset =
+                isTeacherOrAdmin &&
+                (session.user.role === "SCHOOL_ADMIN" || preset.createdByUserId === session.user.id);
 
               let cta = "Voir le détail";
               if (alreadyBought) cta = "Déjà acheté";
@@ -415,33 +463,56 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                       {preset.lastUsedAt ? `(dernier : ${new Date(preset.lastUsedAt).toLocaleDateString("fr-FR")})` : "(jamais)"}
                     </p>
                   </Link>
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                     <div className="text-xs text-slate-300">
-                      {premiumLocked
-                        ? "Nécessite Premium"
-                        : insufficientCredits
-                          ? `Crédits manquants (${hasCredits}/${cost})`
-                          : ""}
+                      {isStudent
+                        ? premiumLocked
+                          ? "Nécessite Premium"
+                          : insufficientCredits
+                            ? `Crédits manquants (${hasCredits}/${cost})`
+                            : alreadyBought
+                              ? "Déjà acheté"
+                              : ""
+                        : ""}
                     </div>
-                    <form action={buyPresetAction} className="flex items-center gap-2">
-                      <input type="hidden" name="presetId" value={preset.id} />
-                      <button
-                        type="submit"
-                        disabled={disablePurchase || (premiumLocked && isStudent)}
-                        className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
-                          disablePurchase || (premiumLocked && isStudent)
-                            ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
-                            : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
-                        }`}
-                      >
-                        {cta}
-                      </button>
-                      {premiumLocked && isStudent ? (
-                        <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
-                          Passer premium
-                        </PremiumUpsellButton>
-                      ) : null}
-                    </form>
+                    {isStudent ? (
+                      <form action={buyPresetAction} className="flex flex-wrap items-center gap-2">
+                        <input type="hidden" name="presetId" value={preset.id} />
+                        <button
+                          type="submit"
+                          disabled={disablePurchase || (premiumLocked && isStudent)}
+                          className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
+                            disablePurchase || (premiumLocked && isStudent)
+                              ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
+                              : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
+                          }`}
+                        >
+                          {cta}
+                        </button>
+                        {premiumLocked && isStudent ? (
+                          <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
+                            Passer premium
+                          </PremiumUpsellButton>
+                        ) : null}
+                      </form>
+                    ) : (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={detailHref}
+                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10"
+                        >
+                          Voir
+                        </Link>
+                        {canEditPreset ? (
+                          <Link
+                            href={`/presets/${preset.id}/edit`}
+                            className="rounded-full border border-cyan-400/60 bg-cyan-500/15 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-200 hover:bg-cyan-500/25"
+                          >
+                            Éditer
+                          </Link>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
                 </div>
               );

@@ -8,6 +8,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
 import { prisma } from "@/lib/prisma";
 import { StudioCard } from "./StudioCard";
+import { CloudinaryUpload } from "@/components/CloudinaryUpload";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +53,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   let totalCount = 0;
   let totalPages = 1;
   let currentPage = 1;
-  let studios: Awaited<ReturnType<typeof prisma.studio.findMany>> = [];
+  let studios: { id: string; name: string; address: string | null; photoPublicId: string | null }[] = [];
   try {
     const whereClause = {
       schoolId: session.user.schoolId,
@@ -75,6 +76,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       orderBy: { name: "asc" },
       skip,
       take: 10,
+      select: { id: true, name: true, address: true, photoPublicId: true },
     });
   } catch {
     return (
@@ -144,13 +146,20 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
               </datalist>
             </label>
             <label className="text-sm text-slate-200">
-              Photo (URL)
-              <input
-                name="photoUrl"
-                type="url"
-                placeholder="https://..."
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+              Photo (Cloudinary)
+              <CloudinaryUpload
+                label="Uploader une image"
+                folder="poleapp/studios"
+                resourceType="image"
+                deliveryType="upload"
+                accept="image/*"
+                maxSizeMB={8}
+                onChange={(_, publicId) => {
+                  const input = document.querySelector<HTMLInputElement>("#studio-photo-public-id");
+                  if (input) input.value = publicId ?? "";
+                }}
               />
+              <input type="hidden" id="studio-photo-public-id" name="photoPublicId" />
             </label>
             <div className="md:col-span-2 flex justify-end">
               <button

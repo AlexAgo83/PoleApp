@@ -48,20 +48,30 @@ const POSITION_VIDEOS = [
   },
 ];
 
-const COURSE_IMAGES = [
-  "https://i.postimg.cc/nL81tmX2/Gemini-Generated-Image-gwcxudgwcxudgwcx.png",
-  "https://i.postimg.cc/43C1TcYz/Gemini-Generated-Image-jqc1bsjqc1bsjqc1.png",
-  "https://i.postimg.cc/FKtxQSY3/Gemini-Generated-Image-qzcezwqzcezwqzce.png",
-  "https://i.postimg.cc/9f3Bj9Dd/Gemini-Generated-Image-w7xzpow7xzpow7xz.png",
-  "https://i.postimg.cc/KzbjFG77/Gemini-Generated-Image-15whr115whr115wh.png",
-  "https://i.postimg.cc/XJWq3jK5/Gemini-Generated-Image-1zx8nf1zx8nf1zx8.png",
-  "https://i.postimg.cc/26YymkdF/Gemini-Generated-Image-eor5freor5freor5.png",
-  "https://i.postimg.cc/4dGyZfvt/Gemini-Generated-Image-hime9ohime9ohime.png",
-  "https://i.postimg.cc/50Jy145L/Gemini-Generated-Image-nvh7mrnvh7mrnvh7.png",
-  "https://i.postimg.cc/fLsyZz70/Gemini-Generated-Image-o5cowyo5cowyo5co.png",
-  "https://i.postimg.cc/bJPr8y0x/Gemini-Generated-Image-o77i1wo77i1wo77i.png",
+const CLOUDINARY_CLOUD_NAME =
+  process.env.CLOUDINARY_CLOUD_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
+const COURSE_PUBLIC_IDS = [
+  "co_20_fuk1vy",
+  "co_01_lzy3th",
+  "co_06_etu7av",
+  "co_09_wsasz3",
+  "co_11_v4xldz",
+  "co_05_d3ydvl",
+  "co_03_qd4h2w",
+  "co_02_i3tc6p",
+  "co_12_ywslqp",
+  "co_13_hagigy",
+  "co_08_pbc6av",
+  "co_16_ssjjra",
+  "co_04_fujy4g",
+  "co_07_u5usuw",
+  "co_17_s1kvva",
+  "co_10_jlkxrd",
+  "co_15_dnmanu",
+  "co_18_boe3wh",
+  "co_14_oiur1r",
+  "co_19_g7eim2",
 ];
-
 const injuryTypes = [
   "Épaule",
   "Poignet",
@@ -294,12 +304,7 @@ const schoolsList = [
   "Équilibre",
 ];
 
-const SCHOOL_IMAGES = [
-  "https://i.postimg.cc/XYM9HSkn/Gemini_Generated_Image_3dwugg3dwugg3dwu.png",
-  "https://i.postimg.cc/mgx7XfyR/Gemini_Generated_Image_qs6pi3qs6pi3qs6p.png",
-  "https://i.postimg.cc/8z8LKQmG/Gemini_Generated_Image_xrgzgtxrgzgtxrgz.png",
-  "https://i.postimg.cc/W4R7PZdn/Gemini-Generated-Image-75yklg75yklg75yk.png",
-];
+const SCHOOL_PUBLIC_IDS = ["sc_02_iidqs5", "sc_01_hgtgz4", "sc_03_kouzh8"];
 const SCHOOL_WEBSITE = "http://www.google.com";
 const PARTNER_AMAZON = {
   name: "Amazon",
@@ -325,13 +330,7 @@ const studiosList = [
   "Tempo",
 ];
 
-const STUDIO_IMAGES = [
-  "https://i.postimg.cc/43ttzvzM/Gemini-Generated-Image-ed0cxzed0cxzed0c.png",
-  "https://i.postimg.cc/cLPwgknd/Gemini-Generated-Image-l8ods0l8ods0l8od.png",
-  "https://i.postimg.cc/Zq33rPr2/Gemini-Generated-Image-pkf3n7pkf3n7pkf3.png",
-  "https://i.postimg.cc/jjNNz6zB/Gemini-Generated-Image-vbzhjgvbzhjgvbzh.png",
-];
-
+const STUDIO_PUBLIC_IDS = ["st_02_csmng8", "st_05_iryeuf", "st_01_os2kvs", "st_04_xfg65z", "st_03_ywhrxt", "st_06_o2bp6z"];
 const defaultSubscriptionOffers = [
   {
     name: "Abonnement mensuel 1000",
@@ -706,7 +705,7 @@ async function seedSchoolsAndUsers() {
       prisma.school.create({
         data: {
           name,
-          photoUrl: SCHOOL_IMAGES[idx % SCHOOL_IMAGES.length],
+          photoPublicId: SCHOOL_PUBLIC_IDS[idx % SCHOOL_PUBLIC_IDS.length],
           website: SCHOOL_WEBSITE,
         },
       })
@@ -929,7 +928,7 @@ async function seedCourses(schoolsData: {
     const studiosForSchool = studiosList.slice(0, 3).map((name, idx) => ({
       name,
       address: `Paris ${idx + 1}`,
-      photoUrl: STUDIO_IMAGES[idx % STUDIO_IMAGES.length],
+      photoPublicId: STUDIO_PUBLIC_IDS[idx % STUDIO_PUBLIC_IDS.length],
     }));
     const createdStudios = await Promise.all(
       studiosForSchool.map((s) =>
@@ -938,7 +937,7 @@ async function seedCourses(schoolsData: {
             name: s.name,
             address: s.address,
             schoolId: school.id,
-            photoUrl: s.photoUrl,
+            photoPublicId: s.photoPublicId,
           },
         })
       )
@@ -984,7 +983,7 @@ async function seedCourses(schoolsData: {
         .slice(0, Math.min(3, Math.max(2, effectivePool.length > 0 ? 2 : 0)));
       const courseName = courseNames[courseNameIdx % courseNames.length];
       courseNameIdx += 1;
-      const photoUrl = COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length];
+      const photoPublicId = COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length];
       courseImageIdx += 1;
 
       const course = await prisma.course.create({
@@ -995,7 +994,7 @@ async function seedCourses(schoolsData: {
           teacherId: teacher.id,
           schoolId: school.id,
           studioId: studio.id,
-          photoUrl,
+          photoPublicId,
           discipline: courseDiscipline,
           disciplineId: courseDisciplineId,
           maxSeats: 30,
@@ -1121,7 +1120,7 @@ async function seedCourses(schoolsData: {
           costCredits: edge.cost,
           waitlistQuota: edge.waitlist,
           isVirtual: edge.virtual,
-          photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
+          photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
           positions:
             edge.virtual || chosenPositions.length === 0
               ? undefined
@@ -1248,7 +1247,7 @@ async function seedCourses(schoolsData: {
             costCredits: 100,
             recurrenceSeriesId: series.id,
             isVirtual,
-            photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
+            photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
             positions: isVirtual
               ? undefined
               : {
@@ -1353,7 +1352,7 @@ async function seedCourses(schoolsData: {
           disciplineId,
           maxSeats: 20,
           costCredits: 100,
-          photoUrl: COURSE_IMAGES[courseImageIdx % COURSE_IMAGES.length],
+          photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
           positions: {
             create: positionsFallback.map((p) => ({ positionId: p.id })),
           },

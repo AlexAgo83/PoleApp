@@ -34,6 +34,7 @@ type Props = {
 
 const baseOverlay =
   "linear-gradient(135deg, rgba(10,15,30,0.85), rgba(15,25,45,0.7))";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 export async function FoxPageHeader({
   title,
@@ -51,14 +52,14 @@ export async function FoxPageHeader({
   const session = await getServerSession(authOptions).catch(() => null);
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
   let userRecord: { avatarUrl: string | null; avatarPublicId: string | null; name: string | null; email: string | null } | null = null;
-  let school: { name: string | null; photoUrl: string | null } | null = null;
+  let school: { name: string | null; photoPublicId: string | null } | null = null;
   let userLookupAttempted = false;
   let userLookupFailed = false;
   if (session?.user?.schoolId) {
     try {
       school = await prisma.school.findUnique({
         where: { id: session.user.schoolId },
-        select: { name: true, photoUrl: true },
+        select: { name: true, photoPublicId: true },
       });
     } catch {
       // ignore db errors for header rendering
@@ -126,7 +127,12 @@ export async function FoxPageHeader({
       ? `/teachers/${session.user.id}`
       : "/profile";
   const schoolName = isSuperAdmin ? "Dashboard" : school?.name || title || "Mon école";
-  const schoolImage = isSuperAdmin ? superAdminImage : school?.photoUrl ?? null;
+  const schoolImage =
+    isSuperAdmin
+      ? superAdminImage
+      : CLOUD_NAME && school?.photoPublicId
+        ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_200,h_200/${school.photoPublicId}`
+        : null;
   const eyebrowText = isSuperAdmin ? "Espace super-admin" : eyebrow ?? `Espace ${roleLabel.toLowerCase()}`;
   const navLinks =
     session?.user?.role === "STUDENT"

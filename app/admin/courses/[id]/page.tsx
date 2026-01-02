@@ -36,7 +36,7 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
       costCredits: true,
       waitlistQuota: true,
       discipline: true,
-      photoUrl: true,
+      photoPublicId: true,
       isVirtual: true,
       teacher: { select: { id: true, name: true, email: true } },
       studio: { select: { name: true, address: true } },
@@ -99,9 +99,25 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
   });
   const teacherName = course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const cost = course.costCredits ?? 100;
+  const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+  const coursePhoto =
+    course.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+      : undefined;
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header className="panel space-y-3 p-6">
+      <header
+        className="panel space-y-3 p-6"
+        style={
+          coursePhoto
+            ? {
+                backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.85), rgba(15,25,45,0.7)), url(${coursePhoto})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : undefined
+        }
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Admin école</p>

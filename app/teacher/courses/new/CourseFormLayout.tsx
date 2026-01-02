@@ -66,7 +66,7 @@ export function CourseFormLayout({
           defaultTeacherId={defaultTeacherId}
           studios={studios}
           defaultStudioId={defaultStudioId}
-          defaultPhotoUrl=""
+          defaultPhotoPublicId=""
           disciplines={disciplines}
           teacherFavorites={teacherFavorites}
           studentsWithActiveInjury={studentsWithActiveInjury}

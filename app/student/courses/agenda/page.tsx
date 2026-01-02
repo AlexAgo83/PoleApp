@@ -204,7 +204,7 @@ export default async function StudentCoursesAgendaPage({
               date: true,
               durationMinutes: true,
               maxSeats: true,
-              photoUrl: true,
+              photoPublicId: true,
               schoolId: true,
               isVirtual: true,
               _count: { select: { positions: true } },
@@ -238,10 +238,20 @@ export default async function StudentCoursesAgendaPage({
                 }
               : {}),
           },
-          include: {
+          select: {
+            id: true,
+            title: true,
+            discipline: true,
+            disciplineId: true,
+            date: true,
+            durationMinutes: true,
+            maxSeats: true,
+            photoPublicId: true,
+            schoolId: true,
+            isVirtual: true,
+            _count: { select: { positions: true } },
             teacher: { select: { name: true, email: true } },
             studio: { select: { name: true } },
-            _count: { select: { positions: true } },
             attendances: {
               where: { studentId: session.user.id },
               select: { id: true, status: true, waitlistRank: true },

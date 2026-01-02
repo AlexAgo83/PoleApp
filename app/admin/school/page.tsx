@@ -6,6 +6,7 @@ import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { CloudinaryUpload } from "@/components/CloudinaryUpload";
 import { createStudioAction } from "../studios/actions";
 import { StudioCard as AdminStudioCard } from "../studios/StudioCard";
 import { CollapsibleSection } from "./CollapsibleSection";
@@ -17,6 +18,7 @@ import {
 } from "../actions";
 
 export const dynamic = "force-dynamic";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 export default async function AdminSchoolPage({
   searchParams,
@@ -40,6 +42,8 @@ export default async function AdminSchoolPage({
     select: {
       id: true,
       name: true,
+      website: true,
+      photoPublicId: true,
       studios: { select: { id: true, name: true, address: true } },
       partners: {
         select: {
@@ -52,25 +56,8 @@ export default async function AdminSchoolPage({
       },
     },
   });
-  let schoolWebsite: string | null = null;
-  let schoolPhoto: string | null = null;
-  try {
-    const withExtras = await prisma.school.findUnique({
-      where: { id: session.user.schoolId },
-      select: { website: true },
-    });
-    schoolWebsite = withExtras?.website ?? null;
-  } catch {
-    // Column may not exist; ignore.
-  }
-  try {
-    const rows = await prisma.$queryRawUnsafe<{ photoUrl: string | null }[]>(
-      `SELECT "photoUrl" FROM "School" WHERE "id" = '${session.user.schoolId}' LIMIT 1`
-    );
-    schoolPhoto = rows?.[0]?.photoUrl ?? null;
-  } catch {
-    // Column may not exist; ignore.
-  }
+  const schoolWebsite = baseSchool?.website ?? null;
+  const schoolPhotoPublicId = baseSchool?.photoPublicId ?? null;
 
   const [totalUsers, teacherCount, studentCount, studioCount, partnerCount] = await Promise.all([
     prisma.user.count({ where: { schoolId: session.user.schoolId } }),
@@ -85,7 +72,7 @@ export default async function AdminSchoolPage({
   const currentStudioPage = Math.min(studioPage, studioTotalPages);
   const studios = await prisma.studio.findMany({
     where: { schoolId: session.user.schoolId },
-    select: { id: true, name: true, address: true, photoUrl: true },
+    select: { id: true, name: true, address: true, photoPublicId: true },
     orderBy: { name: "asc" },
     skip: (currentStudioPage - 1) * 6,
     take: 6,
@@ -105,7 +92,10 @@ export default async function AdminSchoolPage({
     take: 6,
   });
 
-  const headerBg = schoolPhoto ?? COURSE_PLACEHOLDER;
+  const headerBg =
+    schoolPhotoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${schoolPhotoPublicId}`
+      : COURSE_PLACEHOLDER;
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
@@ -170,7 +160,7 @@ export default async function AdminSchoolPage({
                   </Link>
                 </>
               ) : null}
-              {schoolPhoto && (
+              {schoolPhotoPublicId && (
                 <>
                   {" · "}
                   <span className="text-slate-400">Photo définie</span>
@@ -190,14 +180,21 @@ export default async function AdminSchoolPage({
                 />
               </label>
               <label className="block text-sm text-slate-200">
-                Photo (URL)
-                <input
-                  name="photoUrl"
-                  type="url"
-                  placeholder="https://..."
-                  defaultValue={schoolPhoto ?? ""}
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
+                Photo (Cloudinary)
+                <CloudinaryUpload
+                  label="Uploader une image"
+                  folder="poleapp/schools"
+                  resourceType="image"
+                  deliveryType="upload"
+                  accept="image/*"
+                  maxSizeMB={8}
+                  currentPublicId={schoolPhotoPublicId || undefined}
+                  onChange={(_, publicId) => {
+                    const input = document.querySelector<HTMLInputElement>("#school-photo-public-id");
+                    if (input) input.value = publicId ?? "";
+                  }}
                 />
+                <input type="hidden" id="school-photo-public-id" name="photoPublicId" defaultValue={schoolPhotoPublicId ?? ""} />
               </label>
               <label className="block text-sm text-slate-200">
                 Site web (optionnel)
@@ -441,13 +438,20 @@ export default async function AdminSchoolPage({
                   />
                 </label>
                 <label className="text-sm text-slate-200 md:col-span-2">
-                  Photo (URL)
-                  <input
-                    name="photoUrl"
-                    type="url"
-                    placeholder="https://..."
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  Photo (Cloudinary)
+                  <CloudinaryUpload
+                    label="Uploader une image"
+                    folder="poleapp/studios"
+                    resourceType="image"
+                    deliveryType="upload"
+                    accept="image/*"
+                    maxSizeMB={8}
+                    onChange={(_, publicId) => {
+                      const input = document.querySelector<HTMLInputElement>("#admin-studio-photo-public-id");
+                      if (input) input.value = publicId ?? "";
+                    }}
                   />
+                  <input type="hidden" id="admin-studio-photo-public-id" name="photoPublicId" />
                 </label>
                 <div className="md:col-span-2 flex justify-end">
                   <button

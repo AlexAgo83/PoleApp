@@ -6,12 +6,14 @@ import { useState, useTransition } from "react";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { updateStudioAction, deleteStudioAction } from "./actions";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
+import { CloudinaryUpload } from "@/components/CloudinaryUpload";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 type Studio = {
   id: string;
   name: string;
   address: string | null;
-  photoUrl: string | null;
+  photoPublicId: string | null;
 };
 
 type Props = {
@@ -41,11 +43,15 @@ export function StudioCard({ studio }: Props) {
     });
   };
 
+  const bgImage =
+    studio.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${studio.photoPublicId}`
+      : COURSE_PLACEHOLDER;
   return (
     <article
       className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/10"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.68)), url(${studio.photoUrl ?? COURSE_PLACEHOLDER})`,
+        backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.68)), url(${bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -98,7 +104,7 @@ export function StudioCard({ studio }: Props) {
                 </a>
               </p>
             )}
-            {studio.photoUrl ? <p className="text-xs text-slate-300">Photo disponible</p> : null}
+            {studio.photoPublicId ? <p className="text-xs text-slate-300">Photo disponible</p> : null}
           </div>
         </div>
       ) : (
@@ -147,14 +153,21 @@ export function StudioCard({ studio }: Props) {
               />
             </label>
             <label className="grid gap-1 md:col-span-2">
-              Photo (URL)
-              <input
-                name="photoUrl"
-                defaultValue={studio.photoUrl ?? ""}
-                placeholder="https://..."
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-cyan-400"
-                type="url"
+              Photo (Cloudinary)
+              <CloudinaryUpload
+                label="Uploader une image"
+                folder="poleapp/studios"
+                resourceType="image"
+                deliveryType="upload"
+                accept="image/*"
+                maxSizeMB={8}
+                currentPublicId={studio.photoPublicId || undefined}
+                onChange={(_, publicId) => {
+                  const input = document.querySelector<HTMLInputElement>(`#studio-photo-${studio.id}`);
+                  if (input) input.value = publicId ?? "";
+                }}
               />
+              <input type="hidden" name="photoPublicId" id={`studio-photo-${studio.id}`} defaultValue={studio.photoPublicId ?? ""} />
             </label>
             <div className="md:col-span-2 flex flex-wrap justify-end gap-2">
               <button
