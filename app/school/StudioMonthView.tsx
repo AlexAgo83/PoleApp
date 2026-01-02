@@ -119,19 +119,18 @@ export function StudioMonthView({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-semibold text-white">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
             {monthLabel}
           </span>
-          <span className="text-slate-200">{totalCourses} cours sur le mois affiché</span>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-white">
           <button
             type="button"
             onClick={handlePrev}
             disabled={isPending}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
             ←
           </button>
@@ -139,7 +138,7 @@ export function StudioMonthView({
             type="button"
             onClick={handleReset}
             disabled={isPending}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
             Actuel
           </button>
@@ -147,13 +146,13 @@ export function StudioMonthView({
             type="button"
             onClick={handleNext}
             disabled={isPending}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold text-white transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-semibold transition hover:border-cyan-300/60 hover:bg-white/10 disabled:opacity-60"
           >
             →
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
         {cells.map((cell, idx) => {
           const dayLabel = cell.day ? String(cell.day) : "";
           const dateObj = cell.isoDate
@@ -171,8 +170,12 @@ export function StudioMonthView({
           return (
             <div
               key={key}
-              className={`rounded-xl p-2 text-left ${
-                isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
+              className={`rounded-xl px-1 pb-1 text-left ${
+                isToday
+                  ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30"
+                  : "border border-white/10 bg-white/5"
+              } ${
+                !cell.courses || cell.courses.length === 0 ? "min-h-[56px] md:min-h-[80px]" : "min-h-[80px]"
               }`}
             >
               <div className="mb-1 flex items-center justify-between text-xs font-semibold text-white">
