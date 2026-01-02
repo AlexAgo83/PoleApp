@@ -172,6 +172,8 @@ model Position {
 
   @@unique([name])
   @@index([disciplineId])
+  @@index([createdByUserId])
+  @@index([updatedAt])
 }
 
 model Muscle {
@@ -238,6 +240,7 @@ model StudentPositionProgress {
   lastUpdatedBy       User?          @relation("ProgressUpdatedBy", fields: [lastUpdatedByUserId], references: [id])
 
   @@unique([studentId, positionId])
+  @@index([positionId])
 }
 
 model Course {
@@ -288,6 +291,7 @@ model CourseAttendance {
   student      User              @relation(fields: [studentId], references: [id])
 
   @@unique([courseId, studentId])
+  @@index([studentId, courseId])
 }
 
 enum AttendanceStatus {
@@ -561,6 +565,7 @@ model Purchase {
 
   @@index([userId])
   @@index([kind, status])
+  @@index([userId, kind, status])
 }
 
 model Preset {
@@ -586,6 +591,8 @@ model Preset {
 
   @@index([schoolId])
   @@index([disciplineId])
+  @@index([createdAt])
+  @@index([schoolId, disciplineId])
 }
 
 model PresetPosition {
