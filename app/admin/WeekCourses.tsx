@@ -89,20 +89,20 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
   const label = useMemo(() => {
     if (!week) return "Semaine en cours";
     const d = new Date(`${week}T00:00:00`);
-    const end = new Date(d);
-    end.setDate(end.getDate() + 6);
-    return `Semaine du ${d.toLocaleDateString("fr-FR")} au ${end.toLocaleDateString("fr-FR")}`;
+    return `Semaine du ${d.toLocaleDateString("fr-FR")}`;
   }, [week]);
 
   const containerClass = compact ? "rounded-2xl border border-white/0 bg-transparent p-0" : "panel p-6";
 
   return (
     <section className={containerClass}>
-      <div className="flex flex-wrap items-center justify-between gap-2 text-lg font-semibold text-white">
-        <span>Vue semaine</span>
-        <span className="text-sm font-normal text-slate-200">{label}</span>
-      </div>
-      <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-sm text-white">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+            {label}
+          </span>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm text-white">
         <form onSubmit={handlePrev} className="inline-flex">
           <input type="hidden" name="week" value={prev} />
           <button
@@ -132,7 +132,7 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
             →
           </button>
         </form>
-        <span className="text-xs font-normal text-cyan-100">{totalCourses} cours sur la semaine affichée</span>
+      </div>
       </div>
       <div className="mt-3 grid gap-1.5 sm:gap-2 md:grid-cols-7 md:gap-3">
         {days.map((day) => {

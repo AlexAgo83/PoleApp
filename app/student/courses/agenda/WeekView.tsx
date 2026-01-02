@@ -118,15 +118,26 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     fetchWeek(currentWeekKey);
   };
 
+  const weekLabel = useMemo(() => {
+    const base = week || currentWeekKey;
+    const start = new Date(`${base}T00:00:00`);
+    if (Number.isNaN(start.getTime())) return "";
+    return `Semaine du ${start.toLocaleDateString("fr-FR")}`;
+  }, [week, currentWeekKey]);
+
   const containerClass = compact
     ? "rounded-2xl border border-white/0 bg-transparent p-0"
     : "p-0 border-0 bg-transparent shadow-none";
 
   return (
     <section className={containerClass}>
-      <div className="flex flex-wrap items-center justify-between gap-3 text-lg font-semibold text-white">
-        <span>Vue semaine</span>
-        <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+            {weekLabel || "Semaine en cours"}
+          </span>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm text-white">
           <form onSubmit={handlePrev} className="inline-flex">
             <input type="hidden" name="week" value={prev} />
             <button
