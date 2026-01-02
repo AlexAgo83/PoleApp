@@ -241,7 +241,7 @@ export function StudioMonthView({
                         style={
                           course.photoPublicId && CLOUD_NAME
                             ? {
-                                backgroundImage: `linear-gradient(135deg, rgba(60,85,180,0.5), rgba(140,70,200,0.44)), linear-gradient(135deg, rgba(10,15,30,0.2), rgba(15,25,45,0.17)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:3200,w_640,h_360/${course.photoPublicId})`,
+                                backgroundImage: `linear-gradient(135deg, rgba(12,18,40,0.82), rgba(26,16,60,0.82)), linear-gradient(135deg, rgba(10,15,30,0.45), rgba(15,25,45,0.38)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_640,h_360/${course.photoPublicId})`,
                                 backgroundBlendMode: "normal, soft-light",
                                 backgroundSize: "cover",
                                 backgroundPosition: "center",

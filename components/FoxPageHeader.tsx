@@ -146,6 +146,7 @@ export async function FoxPageHeader({
         ? [
             { label: "Planning", href: "/teacher/courses/agenda?view=month" },
             { label: "Positions", href: "/teacher/positions" },
+            { label: "Combos", href: "/presets" },
           ]
         : session?.user?.role === "SCHOOL_ADMIN"
           ? [

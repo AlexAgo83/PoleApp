@@ -222,15 +222,15 @@ export function MonthView({
                             ? "border-white/10 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                             : "border-white/10 bg-white/10 text-white"
                         }`}
-                        style={
-                          course.photoPublicId && CLOUD_NAME
-                            ? {
-                                backgroundImage: `linear-gradient(135deg, rgba(60,85,180,0.5), rgba(140,70,200,0.44)), linear-gradient(135deg, rgba(10,15,30,0.2), rgba(15,25,45,0.17)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:3200,w_600,h_360/${course.photoPublicId})`,
-                                backgroundBlendMode: "normal, soft-light",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                              }
-                            : undefined
+                      style={
+                        course.photoPublicId && CLOUD_NAME
+                          ? {
+                              backgroundImage: `linear-gradient(135deg, rgba(12,18,40,0.82), rgba(26,16,60,0.82)), linear-gradient(135deg, rgba(10,15,30,0.45), rgba(15,25,45,0.38)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_600,h_360/${course.photoPublicId})`,
+                              backgroundBlendMode: "normal, soft-light",
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }
+                          : undefined
                         }
                       >
                         <div

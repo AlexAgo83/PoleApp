@@ -359,9 +359,9 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                   className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#1d1b3a]/80 via-[#1b2747]/70 to-[#152437]/80 p-4 shadow-lg shadow-indigo-900/30 transition hover:border-cyan-400/70 hover:shadow-cyan-900/30"
                 >
                   <Link href={detailHref ?? "#"} className="space-y-3 block">
-                    {preset.imagePublicId ? (
-                      <div className="-mx-4 -mt-4 overflow-hidden rounded-t-2xl border-b border-white/10">
-                        <div className="relative">
+                    <div className="-mx-4 -mt-4 overflow-hidden rounded-t-2xl border-b border-white/10">
+                      <div className="relative">
+                        {preset.imagePublicId ? (
                           <SafeImage
                             publicId={preset.imagePublicId}
                             alt={preset.title}
@@ -369,26 +369,44 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                             height={360}
                             className="aspect-[4/3] w-full object-cover"
                           />
-                          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-black/25" />
+                        ) : (
+                          <div className="aspect-[4/3] w-full bg-gradient-to-br from-indigo-900/60 via-slate-800/60 to-cyan-900/50" />
+                        )}
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-black/25" />
+                        <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex flex-wrap gap-1.5">
+                              {preset.discipline ? (
+                                <span className="rounded-full border border-indigo-300/70 bg-indigo-600/40 px-2 py-0.5 text-[11px] font-semibold text-white shadow-lg shadow-black/30">
+                                  {preset.discipline}
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="flex flex-wrap justify-end gap-1.5">
+                              {preset.premiumRequired ? (
+                                <span className="rounded-full border border-amber-300/70 bg-amber-600/40 px-2 py-0.5 text-[11px] font-semibold text-amber-50 shadow-lg shadow-black/30">
+                                  Premium
+                                </span>
+                              ) : cost > 0 ? (
+                                <span className="rounded-full border border-cyan-300/70 bg-cyan-600/40 px-2 py-0.5 text-[11px] font-semibold text-cyan-50 shadow-lg shadow-black/30">
+                                  {cost} crédits
+                                </span>
+                              ) : (
+                                <span className="rounded-full border border-emerald-300/70 bg-emerald-600/40 px-2 py-0.5 text-[11px] font-semibold text-emerald-50 shadow-lg shadow-black/30">
+                                  Gratuit
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            {preset.createdBy ? (
+                              <span className="rounded-full border border-white/30 bg-black/45 px-2 py-0.5 text-[11px] font-semibold text-slate-100 shadow-lg shadow-black/30">
+                                Créé par {preset.createdBy.name ?? preset.createdBy.email}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                       </div>
-                    ) : null}
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-white">
-                      {preset.discipline ? (
-                        <span className="rounded-full border border-indigo-300/60 bg-indigo-500/15 px-2 py-0.5">{preset.discipline}</span>
-                      ) : null}
-                      {preset.premiumRequired ? (
-                        <span className="rounded-full border border-amber-300/60 bg-amber-500/15 px-2 py-0.5">Premium</span>
-                      ) : cost > 0 ? (
-                        <span className="rounded-full border border-cyan-300/60 bg-cyan-500/15 px-2 py-0.5">{cost} crédits</span>
-                      ) : (
-                        <span className="rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5">Gratuit</span>
-                      )}
-                      {preset.createdBy ? (
-                        <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-slate-200">
-                          Créé par {preset.createdBy.name ?? preset.createdBy.email}
-                        </span>
-                      ) : null}
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-xl font-semibold text-white">{preset.title}</h3>
