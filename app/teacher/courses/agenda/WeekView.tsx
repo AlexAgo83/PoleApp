@@ -235,7 +235,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       style={
                         course.photoPublicId && CLOUD_NAME
                           ? {
-                              backgroundImage: `linear-gradient(135deg, rgba(86,123,255,0.24), rgba(196,88,255,0.2)), linear-gradient(135deg, rgba(10,15,30,0.06), rgba(15,25,45,0.05)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:1600,w_640,h_360/${course.photoPublicId})`,
+                              backgroundImage: `linear-gradient(135deg, rgba(60,85,180,0.5), rgba(140,70,200,0.44)), linear-gradient(135deg, rgba(10,15,30,0.2), rgba(15,25,45,0.17)), url(https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,e_blur:3200,w_640,h_360/${course.photoPublicId})`,
                               backgroundBlendMode: "normal, soft-light",
                               backgroundSize: "cover",
                               backgroundPosition: "center",
