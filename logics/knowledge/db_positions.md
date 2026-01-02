@@ -95,20 +95,6 @@
 > 24. Étirements doigts – Vers le bas
 > 25. Rotation poignets – Final
 > → 8x dans chaque sens.
->
-> 📌 MÉMO RAPIDE
-> 📍1. Footing demi-pointes
-> 📍2. Chevilles au sol & en l’air – Pointe/Flex
-> 📍3. Genoux cercles intérieur/extérieur
-> 📍4. Hanches petits/grands cercles & “8”
-> 📍5. Taille & cage thoracique isolées
-> 📍6. Sternum avant/arrière
-> 📍7. Épaules ronds & dissociation
-> 📍8. Avant-bras & poignets cercles
-> 📍9. Doigts étirements & frottements
-> 📍10. Tête cercles
-> 📍11. Flexion avant & déroulé
-> 📍12. Étirements bras/poignets final
 - Muscles / articulations sollicitées: Mobilisation articulaire globale (chevilles, genoux, hanches, colonne, épaules, poignets) + activation légère abdos/fessiers.
 - Niveau: Débutant
 - Type: WARMUP
@@ -327,7 +313,7 @@
 ## Marche désaxée
 **Description**
 > 🎵 Express, Christina Aguilera
-> Cette façon particulière de marcher autour de la Barre est la meilleure façon d’appréhender,, dès le premier contact avec cette dernière, le déséquilibre qui permet de créer la rotation entre parenthèses mise en action de la force centrifuge qui va nous aider ensuite porter notre propre poids à bout de bras lors des spins).
+> Cette façon particulière de marcher autour de la Barre est la meilleure façon d’appréhender,, dès le premier contact avec cette dernière, le déséquilibre qui permet de créer la rotation entre parenthèses mise en action de la force centrifuge qui va nous aider ensuite porter notre propre poids à bout de bras lors des spins.
 > C’est aussi le moment idéal pour montrer aux élèves que dès que l’on tourne autour de la barre en mode statique la main qui est sur celle-ci descends et que c’est pour cela qu’on commence toujours (sauf qu’à très particulier) un spin avec la main bien haute, car dès qu’elle arrive environ au niveau de l’épaule, on ne se porte plus et on est obligé de remonter pour pouvoir faire la figure suivante.
 > Cet exercice simple, mais indispensable est également prendre confiance à la fois en la Barre et sa propre force.
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
@@ -345,7 +331,7 @@
 - Type: SPIN
 - Grip: Split grip
 
-## 🔒 Close front hook
+## Close front hook
 **Description**
 > Cette fois-ci, nous ne ferons plus face à la pole, mais nous serons placés de côté pendant tout le spin
 > Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
@@ -417,7 +403,7 @@
 - Type: TRANSITION
 - Grip: Split grip
 
-## ⏪ Back hook
+## Back hook
 **Description**
 > C’est le même mais en marche arrière. En fait on tombe dans le même sens, mais on fait un demi-tour sur soi-même avant de décoller du sol, ce qui fait que l’on se retrouve en marche arrière au moment du spin.
 > Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
@@ -707,7 +693,6 @@
 
 ## Knee Attitude
 **Description**
-> 🚨 dans le livre, le bas extérieur est mis en baseball grippe, alors que dans mes notes le bras extérieur se place en full bracket grip
 > Entrée : main haute au-dessus de l'épaule et main basse qui guide, lancer la jambe extérieure pour créer le déséquilibre puis pousser sur la jambe d'appui.
 > Trajectoire : épaules basses, bassin éloigné de la barre pour garder l'élan, jambes actives (pointes) pour contrôler la vitesse.
 > Sortie : freiner en rapprochant le corps de la barre, reprendre contact sol en douceur avant d'enchaîner.
@@ -966,7 +951,7 @@
 
 ## Forwards
 **Description**
-> Le Forward est une attitude de côté par rapport à la barre, les jambes totalement en dehors de celle-ci, c’est aussi une variante du chair , car la prise des mains et la position du haut du corps sont rigoureusement les mêmes, ainsi que les démarrage du speed. Seuls les jambes en position attitude ou stag  ou encore sun wheel) vers l’extérieur, changent.
+> Le Forward est une attitude de côté par rapport à la barre, les jambes totalement en dehors de celle-ci, c’est aussi une variante du chair , car la prise des mains et la position du haut du corps sont rigoureusement les mêmes, ainsi que les démarrage du speed. Seuls les jambes en position attitude ou stag  ou encore sun wheel vers l’extérieur, changent.
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.
 - Niveau: Débutant
 - Type: SPIN
@@ -1274,20 +1259,6 @@
 > Objectif : relâcher tensions bras/épaules + transition vers la pole.
 > 1️⃣ Bras dans le dos → Main entre les omoplates, tirer le coude.
 > 2️⃣ Poignets & doigts → Mobiliser poignets, secouer les mains.
->
-> 📌 MÉMO-RAPIDE – YOGA FLOW
-> 📍1. Ouverture poitrine  → Inspire/expire bras haut – dos rond
-> 📍2. Ischios dynamiques → Pliés en 2, plié jambe alternés
-> 📍3. Gainage & torsions → Planche - torsion buste bras plafond (mm bras mm jambe) pour
-> 📍4. Chien haut/bas → Enchaînement
-> 📍5. Fente → Psoas + ouverture hanche
-> 📍6. Ischio jambe tendue → Flex/Point + Dos plat
-> 📍7. Chat/Vache → Creux/Rond
-> 📍8. Puppy → Poitrine sol
-> 📍9. Enfant → Bras derrière
-> 📍10. Quadriceps → assis levé bassin
-> 📍11. Abdos → Jambes tendues assis
-> 📍12. Étirements finaux → Bras – poignets – respiration
 - Muscles / articulations sollicitées: Renforcement/assouplissement ciblé : ceinture scapulaire, abdos/obliques, fessiers, adducteurs, ischios/quadriceps ; mobilité hanches, épaules, rachis, poignets.
 - Niveau: Avancé
 - Type: WARMUP
