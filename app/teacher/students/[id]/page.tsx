@@ -1,4 +1,3 @@
-import { GameMode, LearningStatus } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -7,46 +6,10 @@ import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
-import { updateProgressAction, updateStudentProfileAction } from "./actions";
+import { updateStudentProfileAction } from "./actions";
 import { StudentAvatarManager } from "./StudentAvatarManager";
 import { PersistedSection } from "./PersistedSection";
-import { ProgressSlider } from "./ProgressSlider";
 import { ProgressCard } from "./ProgressCard";
-
-const statusLabel: Record<LearningStatus, string> = {
-  NOT_STARTED: "Nouveau",
-  IN_PROGRESS: "Initié",
-  PASSED: "Passé",
-  MASTERED: "Fluide chorégraphié",
-};
-
-const statusStyles: Record<LearningStatus, { solid: string; outline: string }> = {
-  NOT_STARTED: {
-    solid: "border-[#2563eb] bg-[#2563eb] text-white",
-    outline: "border-[#2563eb] text-[#2563eb]",
-  },
-  IN_PROGRESS: {
-    solid: "border-[#f59e0b] bg-[#f59e0b] text-white",
-    outline: "border-[#f59e0b] text-[#f59e0b]",
-  },
-  PASSED: {
-    solid: "border-[#10b981] bg-[#10b981] text-white",
-    outline: "border-[#10b981] text-[#10b981]",
-  },
-  MASTERED: {
-    solid: "border-[#7c3aed] bg-[#7c3aed] text-white",
-    outline: "border-[#7c3aed] text-[#7c3aed]",
-  },
-};
-
-const gameModeLabel: Record<GameMode, string> = {
-  PHOTO_NAME: "Photo → Nom",
-  NAME_TYPE: "Nom → Type",
-  NAME_LEVEL: "Nom → Niveau",
-  NAME_GRIPS: "Nom → Grips",
-  DESCRIPTION_NAME: "Description → Nom",
-  BLITZ_MIX: "Blitz mix",
-};
 
 type Props = {
   params: { id: string } | Promise<{ id?: string }>;

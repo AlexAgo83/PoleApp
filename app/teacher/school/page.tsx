@@ -328,7 +328,7 @@ export default async function TeacherSchoolPage({
     };
   });
 
-  const weekDaysData = weekDays.map((d, idx) => {
+  const weekDaysData = weekDays.map((d) => {
     const dayStr = d.toDateString();
     const dayAttendances = agendaItems.filter((a) => new Date(a.course.date).toDateString() === dayStr);
     return {
@@ -369,7 +369,6 @@ export default async function TeacherSchoolPage({
 
   const monthValue = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}`;
   const currentMonthValue = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const hasMonthFilter = Boolean(monthParam);
 
   const paramsForLinks = new URLSearchParams();
   if (studioFilters.length) paramsForLinks.set("studio", studioFilters.join(","));
@@ -429,7 +428,6 @@ export default async function TeacherSchoolPage({
   if (view === "week" && weekValue) baseFromParams.set("week", weekValue);
   if (view === "month" && monthValue) baseFromParams.set("month", monthValue);
   const baseFrom = `/teacher/school${baseFromParams.toString() ? `?${baseFromParams.toString()}` : ""}`;
-  const agendaHref = `/teacher/courses/agenda${paramsForLinks.toString() ? `?${paramsForLinks}` : ""}`;
   const listHref = `/teacher/courses${paramsForLinks.toString() ? `?${paramsForLinks}` : ""}`;
 
   const sortedUpcoming = agendaItems

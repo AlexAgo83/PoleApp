@@ -48,8 +48,6 @@ const POSITION_VIDEOS = [
   },
 ];
 
-const CLOUDINARY_CLOUD_NAME =
-  process.env.CLOUDINARY_CLOUD_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 const COURSE_PUBLIC_IDS = [
   "co_20_fuk1vy",
   "co_01_lzy3th",

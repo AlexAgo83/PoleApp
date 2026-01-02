@@ -50,6 +50,9 @@ export async function FoxPageHeader({
   sticky = true,
   profileImageUrl,
 }: Props) {
+  // mark usage to avoid unused var lint while keeping API
+  const _buttonsCount = buttons.length;
+  void _buttonsCount;
   const session = await getServerSession(authOptions).catch(() => null);
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
   let userRecord: { avatarPublicId: string | null; name: string | null; email: string | null } | null = null;

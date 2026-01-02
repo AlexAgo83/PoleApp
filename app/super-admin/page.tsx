@@ -25,33 +25,11 @@ export default async function SuperAdminPage({
   const flashForceOk = flash === "force-ok";
   const flashForceInvalid = flash === "force-invalid";
 
-  const [_settings, _schools, audits] = await Promise.all([
-    prisma.globalSetting.upsert({
-      where: { id: "global" },
-      update: {},
-      create: {
-        id: "global",
-        defaultVatPercent: 20,
-        currency: "EUR",
-        timezone: process.env.GLOBAL_TIMEZONE || "Europe/Paris",
-        icsDefaultAlarmMinutes: 30,
-      },
-    }),
-    prisma.school.findMany({
-      orderBy: { name: "asc" },
-      include: {
-        users: {
-          where: { role: "SCHOOL_ADMIN" },
-          select: { id: true, name: true, email: true },
-        },
-      },
-    }),
-    prisma.auditLog.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      include: { actor: { select: { email: true } } },
-    }),
-  ]);
+  const audits = await prisma.auditLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 10,
+    include: { actor: { select: { email: true } } },
+  });
 
   const modules = [
     {
