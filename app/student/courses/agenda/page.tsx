@@ -637,30 +637,6 @@ export default async function StudentCoursesAgendaPage({
               />
               Cours des écoles fréquentées
             </label>
-            <fieldset className="md:col-span-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
-              <legend className="px-1 text-xs uppercase tracking-[0.12em] text-cyan-100">Statuts affichés</legend>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-200 sm:grid-cols-4">
-                {legendItems.map((item) => (
-                  <label
-                    key={item.key}
-                    className={`inline-flex items-center gap-2 rounded-full border px-2 py-1 ${
-                      statusesSet.has(item.key)
-                        ? `${item.className} border-white/15`
-                        : "border-white/15 bg-white/5 text-slate-400"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      name="statuses"
-                      value={item.key}
-                      defaultChecked={statusesSet.has(item.key)}
-                      className="h-4 w-4 rounded border-white/20 bg-white/5"
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
             <div className="flex flex-wrap items-center justify-end gap-2 md:col-span-3">
               <button
                 type="submit"
