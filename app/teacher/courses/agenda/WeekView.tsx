@@ -176,7 +176,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
           </form>
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-4 md:gap-3 lg:grid-cols-7">
+      <div className="mt-3 grid grid-cols-1 gap-1.5 md:grid-cols-5 md:gap-3 lg:grid-cols-7">
         {days.map((day) => {
           const isToday =
             new Date(day.isoDate).toDateString() === new Date(new Date().setHours(0, 0, 0, 0)).toDateString();
