@@ -27,6 +27,12 @@ type Props = {
     priceCredits?: number | null;
     positionIds?: string[];
     teacherId?: string | null;
+    positionMeta?: {
+      positionId: string;
+      order?: number | null;
+      timestampSeconds?: number | null;
+      note?: string | null;
+    }[];
   };
   submitLabel?: string;
 };
@@ -47,6 +53,26 @@ export function PresetCreateForm({
   const [imagePublicId, setImagePublicId] = useState<string>(initialPreset?.imagePublicId ?? "");
   const [videoPublicId, setVideoPublicId] = useState<string>(initialPreset?.videoPublicId ?? "");
   const [selectedPositions, setSelectedPositions] = useState<string[]>(initialPreset?.positionIds ?? []);
+  const [positionMeta, setPositionMeta] = useState<Record<
+    string,
+    { order: number; timestampSeconds: number | null; note: string }
+  >>(() => {
+    const meta: Record<string, { order: number; timestampSeconds: number | null; note: string }> = {};
+    (initialPreset?.positionMeta ?? []).forEach((m, idx) => {
+      meta[m.positionId] = {
+        order: m.order ?? idx + 1,
+        timestampSeconds: m.timestampSeconds ?? null,
+        note: m.note ?? "",
+      };
+    });
+    // ensure ordering for positions with no meta
+    (initialPreset?.positionIds ?? []).forEach((id, idx) => {
+      if (!meta[id]) {
+        meta[id] = { order: idx + 1, timestampSeconds: null, note: "" };
+      }
+    });
+    return meta;
+  });
   const [formError, setFormError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const isEdit = Boolean(initialPreset?.id);
@@ -68,9 +94,46 @@ export function PresetCreateForm({
   const currentPage = Math.min(page, totalPages);
   const paginatedPositions = filteredPositions.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
+  const orderedSelectedPositions = useMemo(() => {
+    const fallbackIndex = (id: string) => selectedPositions.indexOf(id);
+    return [...selectedPositions].sort((a, b) => {
+      const orderA = positionMeta[a]?.order ?? fallbackIndex(a);
+      const orderB = positionMeta[b]?.order ?? fallbackIndex(b);
+      return orderA - orderB;
+    });
+  }, [positionMeta, selectedPositions]);
+
   const labelForTeacher = (t: Teacher) => t.name ?? t.email ?? "Professeur";
   const togglePosition = (id: string) => {
-    setSelectedPositions((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
+    setSelectedPositions((prev) => {
+      if (prev.includes(id)) {
+        const next = prev.filter((p) => p !== id);
+        setPositionMeta((meta) => {
+          const clone = { ...meta };
+          delete clone[id];
+          // reassign orders
+          next.forEach((pid, idx) => {
+            clone[pid] = {
+              order: idx + 1,
+              timestampSeconds: clone[pid]?.timestampSeconds ?? null,
+              note: clone[pid]?.note ?? "",
+            };
+          });
+          return clone;
+        });
+        return next;
+      }
+      const next = [...prev, id];
+      setPositionMeta((meta) => ({
+        ...meta,
+        [id]: {
+          order: next.length,
+          timestampSeconds: meta[id]?.timestampSeconds ?? null,
+          note: meta[id]?.note ?? "",
+        },
+      }));
+      return next;
+    });
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -86,7 +149,60 @@ export function PresetCreateForm({
       setFormError("Sélectionne au moins une position.");
       return;
     }
+    // normalize orders before submit
+    setPositionMeta((meta) => {
+      const ordered = [...selectedPositions];
+      const next: typeof meta = {};
+      ordered.forEach((pid, idx) => {
+        const current = meta[pid];
+        next[pid] = {
+          order: idx + 1,
+          timestampSeconds: current?.timestampSeconds ?? null,
+          note: current?.note ?? "",
+        };
+      });
+      return next;
+    });
     setFormError(null);
+  };
+
+  const movePosition = (id: string, direction: "up" | "down") => {
+    setSelectedPositions((prev) => {
+      const idx = prev.indexOf(id);
+      if (idx === -1) return prev;
+      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= prev.length) return prev;
+      const next = [...prev];
+      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+      setPositionMeta((meta) => {
+        const clone = { ...meta };
+        next.forEach((pid, i) => {
+          const current = clone[pid] ?? { order: i + 1, timestampSeconds: null, note: "" };
+          clone[pid] = { ...current, order: i + 1 };
+        });
+        return clone;
+      });
+      return next;
+    });
+  };
+
+  const formatTimestamp = (seconds: number | null | undefined) => {
+    if (seconds === null || seconds === undefined || Number.isNaN(seconds)) return "";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
+
+  const parseTimestamp = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    if (/^\d+$/.test(trimmed)) return Math.max(0, Number(trimmed));
+    const parts = trimmed.split(":").map((v) => Number(v));
+    if (parts.some((n) => Number.isNaN(n))) return null;
+    if (parts.length === 2) {
+      return Math.max(0, parts[0] * 60 + parts[1]);
+    }
+    return null;
   };
 
   return (
@@ -250,6 +366,119 @@ export function PresetCreateForm({
             </button>
           </div>
         )}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center justify-between text-xs uppercase tracking-[0.12em] text-indigo-100">
+            <span>Ordre & timing</span>
+            <span className="text-[11px] text-slate-300">
+              {orderedSelectedPositions.length} sélectionnée{orderedSelectedPositions.length > 1 ? "s" : ""}
+            </span>
+          </div>
+          {orderedSelectedPositions.length === 0 ? (
+            <p className="text-xs text-slate-400">Sélectionne au moins une position pour définir l’ordre.</p>
+          ) : (
+            <div className="space-y-2">
+              {orderedSelectedPositions.map((pid, idx) => {
+                const pos = positions.find((p) => p.id === pid);
+                const meta = positionMeta[pid] ?? { order: idx + 1, timestampSeconds: null, note: "" };
+                return (
+                  <div
+                    key={pid}
+                    className="flex flex-col gap-2 rounded-lg border border-white/10 p-2 text-xs text-white"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          className="rounded-full border border-white/15 bg-white/10 px-2 py-1 hover:border-cyan-300/60 hover:bg-white/15 disabled:opacity-50"
+                          onClick={() => movePosition(pid, "up")}
+                          disabled={idx === 0}
+                          aria-label="Monter"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="rounded-full border border-white/15 bg-white/10 px-2 py-1 hover:border-cyan-300/60 hover:bg-white/15 disabled:opacity-50"
+                          onClick={() => movePosition(pid, "down")}
+                          disabled={idx === orderedSelectedPositions.length - 1}
+                          aria-label="Descendre"
+                        >
+                          ↓
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-[11px] uppercase tracking-[0.12em] text-indigo-100">
+                            #{meta.order ?? idx + 1}
+                          </p>
+                          <label className="flex items-center gap-1 text-[11px] text-slate-200">
+                            <span>Timing</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              placeholder="mm:ss"
+                              value={formatTimestamp(positionMeta[pid]?.timestampSeconds ?? meta.timestampSeconds)}
+                              onChange={(e) => {
+                                const seconds = parseTimestamp(e.target.value);
+                                setPositionMeta((prev) => ({
+                                  ...prev,
+                                  [pid]: {
+                                    order: meta.order ?? idx + 1,
+                                    timestampSeconds: seconds,
+                                    note: prev[pid]?.note ?? "",
+                                  },
+                                }));
+                              }}
+                              className="w-20 rounded-lg border border-white/10 bg-white/10 px-2 py-1 text-white outline-none focus:border-cyan-400"
+                            />
+                          </label>
+                        </div>
+                        <p className="text-sm font-semibold">{pos?.name ?? "Position"}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[11px] text-slate-200">Commentaire</label>
+                      <textarea
+                        value={positionMeta[pid]?.note ?? meta.note}
+                        maxLength={280}
+                        onChange={(e) => {
+                          const note = e.target.value;
+                          setPositionMeta((prev) => ({
+                            ...prev,
+                            [pid]: {
+                              order: meta.order ?? idx + 1,
+                              timestampSeconds: prev[pid]?.timestampSeconds ?? null,
+                              note,
+                            },
+                          }));
+                        }}
+                        className="w-full rounded-lg border border-white/10 bg-white/10 px-2 py-2 text-white outline-none focus:border-cyan-400"
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div className="hidden">
+            {orderedSelectedPositions.map((pid) => {
+              const meta = positionMeta[pid] ?? { order: 0, timestampSeconds: null, note: "" };
+              return (
+                <div key={pid}>
+                  <input type="hidden" name="positionMetaId" value={pid} />
+                  <input type="hidden" name="positionMetaOrder" value={meta.order ?? 0} />
+                  <input
+                    type="hidden"
+                    name="positionMetaTimestamp"
+                    value={meta.timestampSeconds !== null && meta.timestampSeconds !== undefined ? meta.timestampSeconds : ""}
+                  />
+                  <input type="hidden" name="positionMetaNote" value={meta.note ?? ""} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
       {formError ? <p className="text-sm font-semibold text-amber-200">{formError}</p> : null}
       <div className="flex justify-end">
