@@ -46,8 +46,6 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
   const [prev, setPrev] = useState(initialPrev);
   const [next, setNext] = useState(initialNext);
   const [isPending, startTransition] = useTransition();
-  const totalCourses = useMemo(() => days.reduce((acc, d) => acc + d.courses.length, 0), [days]);
-
   const currentWeekKey = useMemo(() => {
     const d = new Date();
     const start = new Date(d);
