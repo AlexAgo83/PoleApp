@@ -2055,7 +2055,7 @@ async function seedUnlockDemo({
 }: {
   students: { id: string; schoolId: string }[];
   teachers: { id: string; schoolId: string }[];
-  positions: { id: string; discipline: string | null }[];
+  positions: { id: string; discipline: string | null; disciplineId?: string | null }[];
 }) {
   const student = students[0];
   if (!student) return;
@@ -2064,6 +2064,18 @@ async function seedUnlockDemo({
 
   const studio = await prisma.studio.findFirst({ where: { schoolId: student.schoolId } });
   if (!studio) return;
+
+  const disciplineFromPositions =
+    positions.find((p) => (p.discipline ?? "").toLowerCase() === "pole")?.disciplineId ??
+    positions.find((p) => p.disciplineId)?.disciplineId ??
+    null;
+  const disciplineRow =
+    disciplineFromPositions ??
+    (await prisma.discipline.findFirst({ select: { id: true } }))?.id ??
+    null;
+  if (!disciplineRow) {
+    throw new Error("seedUnlockDemo: aucun discipline.id trouvé");
+  }
 
   const coursePositions = positions
     .filter((p) => (p.discipline ?? "").toLowerCase() === "pole")
@@ -2079,6 +2091,7 @@ async function seedUnlockDemo({
       schoolId: student.schoolId,
       studioId: studio.id,
       discipline: "Pole",
+      disciplineId: disciplineRow,
       maxSeats: 10,
       costCredits: 20,
       waitlistQuota: 2,
