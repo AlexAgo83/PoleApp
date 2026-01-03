@@ -17,30 +17,28 @@ import { buildPresetFilters } from "./filterUtils";
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 9;
 
-type SearchParams =
-  | {
-      page?: string;
-      q?: string;
-      discipline?: string;
-      price?: string;
-      flash?: string;
-      owner?: string;
-      purchase?: string;
-      media?: string;
-    }
-  | Promise<{
-      page?: string;
-      q?: string;
-      discipline?: string;
-      price?: string;
-      flash?: string;
-      owner?: string;
-      purchase?: string;
-      media?: string;
-    }>;
+type SearchParams = Promise<{
+  page?: string;
+  q?: string;
+  discipline?: string;
+  price?: string;
+  flash?: string;
+  owner?: string;
+  purchase?: string;
+  media?: string;
+}>;
 
 export default async function PresetsCatalogPage({ searchParams }: { searchParams?: SearchParams }) {
-  const params = (await Promise.resolve(searchParams)) ?? {};
+  const params = (await Promise.resolve(searchParams ?? {})) as {
+    page?: string;
+    q?: string;
+    discipline?: string;
+    price?: string;
+    flash?: string;
+    owner?: string;
+    purchase?: string;
+    media?: string;
+  };
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     redirect("/login");

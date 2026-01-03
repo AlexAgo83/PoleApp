@@ -10,7 +10,7 @@ import { updateCourseAction } from "../actions";
 import { DeleteCourseDialog } from "../DeleteCourseDialog";
 
 type Props = {
-  params: { id: string } | Promise<{ id?: string }>;
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ from?: string; error?: string }>;
 };
 

@@ -40,7 +40,7 @@ function learningStatusLabel(status: LearningStatus | null | undefined) {
 }
 
 type PageProps = {
-  params: { id: string } | Promise<{ id?: string }>;
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ from?: string; applied?: string; forceDiscovery?: string }>;
 };
 

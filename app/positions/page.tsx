@@ -60,19 +60,24 @@ function hexToRgba(color: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-type SearchParams =
-  | { page?: string; type?: string; level?: string; q?: string; teacher?: string; discipline?: string }
-  | Promise<{
-      page?: string;
-      type?: string;
-      level?: string;
-      q?: string;
-      teacher?: string;
-      discipline?: string;
-    }>;
+type SearchParams = Promise<{
+  page?: string;
+  type?: string;
+  level?: string;
+  q?: string;
+  teacher?: string;
+  discipline?: string;
+}>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
-  const resolvedParams = (await Promise.resolve(searchParams)) ?? {};
+  const resolvedParams = (await Promise.resolve(searchParams ?? {})) as {
+    page?: string;
+    type?: string;
+    level?: string;
+    q?: string;
+    teacher?: string;
+    discipline?: string;
+  };
   const rawPage = Number(resolvedParams.page ?? "1");
   const typeFilter =
     resolvedParams.type && Object.values(PositionType).includes(resolvedParams.type as PositionType)
@@ -116,9 +121,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       ? {
           OR: [
             { disciplineId: { in: disciplineFilters } },
-            ...(disciplineFilterNames.length
-              ? [{ discipline: { in: disciplineFilterNames, mode: Prisma.QueryMode.insensitive } }]
-              : []),
           ],
         }
       : {}),
@@ -199,9 +201,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       : Promise.resolve([] as { positionId: string; learningStatus: string }[]),
   ]);
   const disciplineNameById = new Map(disciplineRows.map((d) => [d.id, d.name]));
-  const disciplineFilterNames = disciplineFilters
-    .map((id) => disciplineNameById.get(id))
-    .filter((n): n is string => Boolean(n));
   const disciplineColors = new Map(
     disciplineRows
       .filter((d) => d.name)

@@ -18,8 +18,8 @@ const priceLabel = (priceCredits: number | null | undefined, premiumRequired: bo
   return "Gratuit";
 };
 
-type Params = { id?: string } | Promise<{ id?: string }>;
-type SearchParams = { from?: string; combosPage?: string } | Promise<{ from?: string; combosPage?: string }>;
+type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ from?: string; combosPage?: string }>;
 
 export default async function TeacherPublicProfilePage({
   params,
@@ -30,7 +30,7 @@ export default async function TeacherPublicProfilePage({
 }) {
   const resolvedParams = await Promise.resolve(params);
   const teacherId = resolvedParams?.id;
-  const resolvedSearch = (await Promise.resolve(searchParams)) ?? {};
+  const resolvedSearch = (await Promise.resolve(searchParams ?? {})) ?? {};
   const rawFrom = resolvedSearch.from;
   const rawCombosPage = resolvedSearch.combosPage;
   const safeFrom =

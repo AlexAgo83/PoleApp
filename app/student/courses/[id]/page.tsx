@@ -37,9 +37,10 @@ function learningStatusLabel(status: LearningStatus | null | undefined) {
   }
 }
 
-type PageProps =
-  | { params: { id: string }; searchParams?: Promise<{ from?: string }> }
-  | { params: Promise<{ id?: string }>; searchParams?: Promise<{ from?: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ from?: string }>;
+};
 
 export const dynamic = "force-dynamic";
 

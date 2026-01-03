@@ -15,7 +15,7 @@ export default async function EditPresetPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ flash?: string }>;
 }) {
   const session = await getServerSession(authOptions);

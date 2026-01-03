@@ -16,6 +16,7 @@ type ProgressRecord = {
 
 type Props = {
   formId: string;
+  safeFrom?: string;
   initialError?: string;
   students: Student[];
   positions: Position[];
@@ -44,6 +45,7 @@ export function CourseFormLayout({
   progressByStudent,
   action,
   initialError,
+  safeFrom,
 }: Props) {
   return (
     <div className="flex min-h-screen w-full flex-col gap-4">
@@ -68,7 +70,7 @@ export function CourseFormLayout({
           disciplines={disciplines}
           teacherFavorites={teacherFavorites}
           studentsWithActiveInjury={studentsWithActiveInjury}
-          cancelHref={undefined}
+          cancelHref={safeFrom || "/teacher/courses/agenda?view=month"}
           progressByStudent={progressByStudent}
           hideFooterActions={false}
         />

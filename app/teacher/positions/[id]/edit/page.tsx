@@ -11,7 +11,7 @@ import { deletePositionAction } from "./action";
 
 export const dynamic = "force-dynamic";
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export default async function EditPositionPage({ params }: Props) {
   const awaitedParams = await params;

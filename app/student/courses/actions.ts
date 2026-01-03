@@ -112,10 +112,10 @@ type CourseWithCounts = {
   }
 
   const cost = course.costCredits ?? 100;
-  let finalStatus: "CONFIRMED" | "WAITLIST" = "CONFIRMED";
-  let finalWaitlistRank: number | null = null;
+  const { finalStatus, finalWaitlistRank } = await prisma.$transaction(async (tx) => {
+    let status: "CONFIRMED" | "WAITLIST" = "CONFIRMED";
+    let waitlistRank: number | null = null;
 
-  await prisma.$transaction(async (tx) => {
     const creditResult = await tx.user.updateMany({
       where: { id: session.user.id, credits: { gte: cost } },
       data: { credits: { decrement: cost } },
@@ -179,12 +179,14 @@ type CourseWithCounts = {
     if (isFull && !waitlistAvailable) {
       throw new Error("Liste d'attente complète pour ce cours");
     }
-    finalStatus = isFull ? "WAITLIST" : "CONFIRMED";
-    finalWaitlistRank = finalStatus === "WAITLIST" ? waitlistCount + 1 : null;
+    status = isFull ? "WAITLIST" : "CONFIRMED";
+    waitlistRank = status === "WAITLIST" ? waitlistCount + 1 : null;
 
     await tx.courseAttendance.create({
-      data: { courseId: course.id, studentId: session.user.id, status: finalStatus, waitlistRank: finalWaitlistRank },
+      data: { courseId: course.id, studentId: session.user.id, status, waitlistRank },
     });
+
+    return { finalStatus: status, finalWaitlistRank: waitlistRank };
   });
 
   const studentName = session.user.name ?? session.user.email ?? "Élève";
