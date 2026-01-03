@@ -124,7 +124,7 @@ export default async function TeacherStudentDetailPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-5 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-center gap-4">
             <SafeImage
@@ -162,7 +162,7 @@ export default async function TeacherStudentDetailPage({
       </section>
 
       {canEdit && (
-        <section className="panel space-y-5 border-indigo-400/15 p-6">
+        <section className="panel panel-body lg-gap border-indigo-400/15">
           <PersistedSection
             id={`student-profile:${student.id}`}
             summary={
@@ -178,11 +178,8 @@ export default async function TeacherStudentDetailPage({
               </>
             }
           >
-            <div className="pt-1">
-              <form
-                action={updateStudentProfileAction}
-                className="grid gap-3 md:grid-cols-4"
-              >
+            <div className="panel-body lg-gap pt-1">
+              <form action={updateStudentProfileAction} className="panel-grid lg-gap md:grid-cols-4">
                 <input type="hidden" name="studentId" value={student.id} />
                 <label className="text-sm text-slate-200">
                   Prénom
@@ -230,7 +227,7 @@ export default async function TeacherStudentDetailPage({
       )}
 
       {canEdit && (
-        <section className="panel space-y-5 border-indigo-400/15 p-6">
+        <section className="panel panel-body lg-gap border-indigo-400/15">
           <details className="group">
             <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
               <div>
@@ -242,13 +239,13 @@ export default async function TeacherStudentDetailPage({
                 <span className="hidden group-open:inline">Fermer</span>
               </span>
             </summary>
-            <div className="pt-1">
+            <div className="panel-body lg-gap pt-1">
               <StudentAvatarManager
                 studentId={student.id}
                 folder={avatarFolder}
                 initialPublicId={student.avatarPublicId ?? null}
               />
-              <p className="pt-3 text-sm text-slate-300">
+              <p className="text-sm text-slate-300">
                 Upload/suppression dédiée (Cloudinary), 2 Mo max.
               </p>
             </div>
@@ -256,7 +253,7 @@ export default async function TeacherStudentDetailPage({
         </section>
       )}
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <details className="group" open={false}>
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
             <h2 className="text-lg font-semibold text-white">
@@ -267,7 +264,7 @@ export default async function TeacherStudentDetailPage({
               <span className="hidden group-open:inline">Fermer</span>
             </span>
           </summary>
-          <div className="mt-2 flex flex-col divide-y divide-white/5">
+          <div className="flex flex-col divide-y divide-white/5">
             {student.injuries.map((injury) => (
               <article key={injury.id} className="py-3">
                 <p className="text-base font-semibold text-white">
@@ -288,7 +285,7 @@ export default async function TeacherStudentDetailPage({
         </details>
       </section>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <details className="group" open={false}>
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
             <h2 className="text-lg font-semibold text-white">
@@ -336,7 +333,7 @@ export default async function TeacherStudentDetailPage({
         </details>
       </section>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <PersistedSection
           id={`student-progress:${student.id}`}
           summary={
@@ -352,7 +349,7 @@ export default async function TeacherStudentDetailPage({
             </>
           }
         >
-          <div className="mt-2 grid gap-4 md:grid-cols-2">
+          <div className="panel-grid lg-gap md:grid-cols-2">
             {filteredPositions.map((position) => {
               const progress = progressMap.get(position.id);
               return <ProgressCard key={position.id} position={position} progress={progress} studentId={student.id} />;

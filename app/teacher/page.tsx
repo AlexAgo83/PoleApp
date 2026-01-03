@@ -101,11 +101,11 @@ export default async function TeacherDashboard() {
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="grid gap-3 md:gap-4 md:grid-cols-2">
-        <div className="panel space-y-2 p-3 md:p-4 md:col-span-2 lg:col-span-1">
+        <div className="panel panel-body md:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white leading-tight">Stats</h2>
           </div>
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
+          <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Positions" value={positionsCount} />
             <Stat label="Combos" value={combosCount} />
             <Stat label="Studios" value={studiosCount} />
@@ -114,11 +114,11 @@ export default async function TeacherDashboard() {
             <Stat label="Disciplines" value={disciplinesCount} />
           </div>
         </div>
-        <div className="panel space-y-2 p-3 md:p-4 md:col-span-2 lg:col-span-1">
+        <div className="panel panel-body md:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
           </div>
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
+          <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
             <Stat label="Cours (7 jours)" value={coursesWeekCount} />
             <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
@@ -128,8 +128,8 @@ export default async function TeacherDashboard() {
         </div>
       </section>
 
-      <section className="panel p-6">
-        <div className="grid gap-3 md:grid-cols-2">
+      <section className="panel">
+        <div className="panel-body panel-grid lg-gap md:grid-cols-2">
           <Link
             href="/teacher/students"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"

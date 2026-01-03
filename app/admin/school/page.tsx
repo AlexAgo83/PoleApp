@@ -99,7 +99,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section
-        className="panel space-y-3 p-6"
+        className="panel panel-body lg-gap"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.85), rgba(15,25,45,0.7)), url(${headerBg})`,
           backgroundSize: "cover",
@@ -129,7 +129,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
         </div>
       )}
 
-      <section className="panel space-y-4 p-6">
+      <section className="panel panel-body lg-gap">
         <CollapsibleSection
           id="identity"
           defaultOpen={resolvedParams.identityOpen === "true"}
@@ -143,7 +143,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
             </>
           }
         >
-          <div className="space-y-4 pt-1">
+          <div className="panel-body lg-gap pt-1">
             <p className="text-sm text-slate-300">
               ID : <span className="font-mono text-slate-200">{baseSchool?.id ?? "—"}</span>
               {schoolWebsite ? (
@@ -214,7 +214,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
         </CollapsibleSection>
       </section>
 
-      <section className="panel space-y-4 p-6">
+      <section className="panel panel-body lg-gap">
         <CollapsibleSection
           id="disciplines"
           defaultOpen={resolvedParams.disciplinesOpen === "true"}
@@ -229,7 +229,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
           }
         >
 
-          <div className="space-y-4 pt-1">
+          <div className="panel-body lg-gap pt-1">
             <div className="grid gap-3 md:grid-cols-2">
               {disciplines.map((d) => (
                 <div
@@ -351,7 +351,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
         </CollapsibleSection>
       </section>
 
-      <section className="panel space-y-4 p-6">
+      <section className="panel panel-body lg-gap">
         <CollapsibleSection
           id="studios"
           defaultOpen={resolvedParams.studiosOpen === "true"}
@@ -366,7 +366,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
           }
         >
 
-          <div className="space-y-4 pt-1">
+          <div className="panel-body lg-gap pt-1">
             {studios.length === 0 ? (
               <p className="text-sm text-slate-200">Aucun studio pour le moment.</p>
             ) : (

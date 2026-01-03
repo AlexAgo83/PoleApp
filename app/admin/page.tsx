@@ -129,7 +129,7 @@ export default async function AdminDashboard() {
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="grid gap-3 md:gap-4 md:grid-cols-2">
-        <div className="panel space-y-2 p-3 md:p-4">
+        <div className="panel panel-body">
           <div className="flex items-start justify-between gap-2">
             <h2 className="text-lg font-semibold text-white leading-tight">Stats</h2>
             {schoolWebsite && (
@@ -143,7 +143,7 @@ export default async function AdminDashboard() {
               </a>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
+          <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Utilisateurs" value={counts.total} />
             <Stat label="Étudiants" value={counts.STUDENT} />
             <Stat label="Professeurs" value={counts.TEACHER} />
@@ -157,11 +157,11 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        <div className="panel space-y-2 p-3 md:p-4">
+        <div className="panel panel-body">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
           </div>
-          <div className="grid grid-cols-2 gap-1.5 md:gap-2 text-[11px] md:text-xs text-slate-200">
+          <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
             <Stat label="Cours (7 jours)" value={coursesWeekCount} />
             <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
@@ -171,8 +171,8 @@ export default async function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel p-6">
-        <div className="grid gap-3 md:grid-cols-2">
+      <section className="panel">
+        <div className="panel-body panel-grid lg-gap md:grid-cols-2">
           <ActionCard
             title="Fiche école"
             description="Photo, adresse, site web et infos générales de l’école."

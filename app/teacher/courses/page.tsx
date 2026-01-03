@@ -199,7 +199,7 @@ export default async function TeacherCoursesPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-3xl font-semibold text-white">Cours</h1>
@@ -230,7 +230,7 @@ export default async function TeacherCoursesPage({
         >
           <form
             key={`filters-${resolvedParams.from ?? ""}-${resolvedParams.to ?? ""}-${effectiveTeacherFilter ?? ""}-${studioFilter ?? ""}-${disciplineFilters.join("|") || "all"}-${withNotes ? "notes" : "all"}-${q || "all"}`}
-            className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
+            className="mt-4 panel-grid lg-gap rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
             <label className="text-sm text-slate-200">
