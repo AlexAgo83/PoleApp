@@ -252,10 +252,10 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         foxHref="/"
       />
 
-      <section className="panel relative space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
+      <section className="panel panel-body lg-gap relative border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-white">Positions</h2>
-          <div className="flex flex-wrap items-center justify-end gap-2 md:gap-3">
+          <h2 className="text-2xl font-semibold text-white">Positions</h2>
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Link
               href="/presets"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-normal text-white transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -267,17 +267,17 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 href="/teacher/positions/new"
                 className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
-                Nouvelle position
+                Créer
               </Link>
             ) : null}
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1 text-sm">
               <Link
                 href={`/positions?page=${Math.max(1, currentPage - 1)}${qs ? `&${qs}` : ""}`}
                 aria-disabled={currentPage === 1}
-                className={`rounded-full border border-white/10 px-3 py-2 ${
+                className={`rounded-full border px-2 py-1 text-xs font-semibold transition ${
                   currentPage === 1
-                    ? "cursor-not-allowed text-slate-500"
-                    : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    ? "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+                    : "border-white/10 bg-white/5 text-white hover:border-cyan-400/70 hover:bg-white/10"
                 }`}
               >
                 ←
@@ -285,10 +285,10 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               <Link
                 href={`/positions?page=${Math.min(totalPages, currentPage + 1)}${qs ? `&${qs}` : ""}`}
                 aria-disabled={currentPage === totalPages}
-                className={`rounded-full border border-white/10 px-3 py-2 ${
+                className={`rounded-full border px-2 py-1 text-xs font-semibold transition ${
                   currentPage === totalPages
-                    ? "cursor-not-allowed text-slate-500"
-                    : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    ? "cursor-not-allowed border-white/5 bg-white/5 text-slate-500"
+                    : "border-white/10 bg-white/5 text-white hover:border-cyan-400/70 hover:bg-white/10"
                 }`}
               >
                 →
@@ -582,7 +582,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
             <p className="py-4 text-slate-200">Aucune position pour le moment.</p>
           )}
         </div>
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
           <span>
             Page {currentPage} / {totalPages} · {totalCount} positions
           </span>

@@ -152,7 +152,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
         foxHref="/"
       />
 
-      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
+      <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-2xl font-semibold text-white">Presets & combos</h2>
           <div className="flex flex-wrap items-center justify-end gap-2 md:w-auto">
@@ -168,7 +168,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 className="rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 px-3 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
               >
                 <span className="whitespace-normal text-left leading-tight md:whitespace-nowrap">
-                  Créer un combo
+                  Créer
                 </span>
               </Link>
             )}
@@ -228,6 +228,33 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
             <BuyCreditsButton currentCredits={hasCredits} showUpgrade packs={packOffers} subscriptions={subscriptionOffers} />
           </div>
         )}
+
+        <details className="group text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-cyan-100">
+              Légende
+              <span className="text-[10px] text-cyan-50 group-open:hidden">▼</span>
+              <span className="hidden text-[10px] text-cyan-50 group-open:inline">▲</span>
+            </span>
+          </summary>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-indigo-300/70 bg-indigo-600/40 px-3 py-1 text-[12px] font-semibold text-white">
+              ● Discipline du preset
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/70 bg-amber-600/40 px-3 py-1 text-[12px] font-semibold text-amber-50">
+              ● Premium requis
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/70 bg-cyan-600/40 px-3 py-1 text-[12px] font-semibold text-cyan-50">
+              ● Payant en crédits
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/70 bg-emerald-600/40 px-3 py-1 text-[12px] font-semibold text-emerald-50">
+              ● Gratuit
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-black/45 px-3 py-1 text-[12px] font-semibold text-slate-100">
+              ● Auteur du preset
+            </span>
+          </div>
+        </details>
 
         <FilterPanel
           storageKey="filters:presets-catalog"
