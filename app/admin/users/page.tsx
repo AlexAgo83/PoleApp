@@ -14,6 +14,7 @@ import { resolveAvatarUrl } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
 const USER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
+const DEFAULT_SEED_PASSWORD = process.env.DATABASE_SEED_PWD ?? "";
 
 type SearchParams = Promise<{
   success?: string;
@@ -152,7 +153,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams?: 
                 name="password"
                 type="text"
                 required
-                defaultValue="poleapp123"
+                defaultValue={DEFAULT_SEED_PASSWORD}
                 className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white"
               />
             </label>

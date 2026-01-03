@@ -6,11 +6,12 @@ async function main() {
   const prisma = new PrismaClient();
   const isProd = process.env.NODE_ENV === "production";
   const email = process.env.SUPER_ADMIN_EMAIL || (isProd ? undefined : "superadmin@poleapp.test");
-  const password = process.env.SUPER_ADMIN_PASSWORD || (isProd ? undefined : "poleapp123");
+  const seedPassword = process.env.DATABASE_SEED_PWD;
+  const password = process.env.SUPER_ADMIN_PASSWORD || seedPassword || (isProd ? undefined : undefined);
   const name = process.env.SUPER_ADMIN_NAME || "Super Admin";
 
   if (!email || !password) {
-    console.warn("ensure-super-admin skipped: SUPER_ADMIN_EMAIL/PASSWORD required in production.");
+    console.warn("ensure-super-admin skipped: SUPER_ADMIN_EMAIL/PASSWORD (or DATABASE_SEED_PWD) required.");
     await prisma.$disconnect();
     return;
   }
