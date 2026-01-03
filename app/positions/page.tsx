@@ -148,6 +148,35 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
       ])
     : [[], []];
+  const unlockedPositionSet =
+    isStudent && session.user.id
+      ? (() => {
+          return Promise.all([
+            prisma.purchase.findMany({
+              where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+              select: { offerId: true },
+            }),
+            prisma.courseAttendance.findMany({
+              where: { studentId: session.user.id, status: "CONFIRMED" },
+              select: { course: { select: { positions: { select: { positionId: true } } } } },
+            }),
+          ]).then(async ([presetPurchases, attendances]) => {
+            const presetIds = presetPurchases.map((p) => p.offerId).filter(Boolean);
+            const presetPositions =
+              presetIds.length > 0
+                ? await prisma.presetPosition.findMany({
+                    where: { presetId: { in: presetIds } },
+                    select: { positionId: true },
+                  })
+                : [];
+            const coursePositionIds = attendances.flatMap((att) => att.course?.positions ?? []);
+            return new Set<string>([
+              ...presetPositions.map((pp) => pp.positionId),
+              ...coursePositionIds.map((cp) => cp.positionId),
+            ]);
+          });
+        })()
+      : Promise.resolve(new Set<string>());
   const queryParams = new URLSearchParams();
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
@@ -219,6 +248,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
 
   const disciplineOptions = disciplineRows.map((d) => ({ id: d.id, name: d.name }));
   const progressMap = new Map(studentProgress.map((p) => [p.positionId, p]));
+  const unlockedPositions = await unlockedPositionSet;
   const progressBadgeClass: Record<string, string> = {
     NOT_STARTED: "border-[#2563eb] bg-[#2563eb] text-white",
     IN_PROGRESS: "border-[#f59e0b] bg-[#f59e0b] text-white",
@@ -441,8 +471,9 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               Boolean(p.tips) ||
               false;
             const hasVideo = false;
-            const showPremiumBadge = premiumContent && isStudent && !isPremium;
-            const canViewPremium = !isStudent || isPremium;
+            const isUnlockedByPurchase = unlockedPositions.has(p.id);
+            const showPremiumBadge = premiumContent && isStudent && !isPremium && !isUnlockedByPurchase;
+            const canViewPremium = !isStudent || isPremium || isUnlockedByPurchase;
             const progress = progressMap.get(p.id);
             const progressText =
               progress?.learningStatus
@@ -523,6 +554,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         </span>
                       </div>
                       <div className="flex flex-col items-end gap-2">
+                        {isUnlockedByPurchase && isStudent && !isPremium ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-semibold text-emerald-50 shadow-inner shadow-emerald-900/20">
+                            Débloqué par achat
+                          </span>
+                        ) : null}
                         {(() => {
                           const views = progress ? Math.max(1, p._count?.progress ?? 0) : p._count?.progress ?? 0;
                           return (

@@ -106,22 +106,28 @@ export default async function StudentProgressPage({
     Boolean
   ).length;
 
-  const progressEntries = await prisma.studentPositionProgress.findMany({
-    where: { studentId: session.user.id },
-    include: { position: true },
-  });
+  const [progressEntries, attendanceWithPositions, presetPurchases] = await Promise.all([
+    prisma.studentPositionProgress.findMany({
+      where: { studentId: session.user.id },
+      include: { position: true },
+    }),
+    prisma.courseAttendance.findMany({
+      where: { studentId: session.user.id, status: "CONFIRMED" },
+      select: {
+        course: { select: { positions: { select: { positionId: true } } } },
+      },
+    }),
+    prisma.purchase.findMany({
+      where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+      select: { offerId: true },
+    }),
+  ]);
 
   const progressMap = new Map(
     progressEntries.map((p) => [p.positionId, p])
   );
 
   // Positions vues en cours (pour afficher le compteur et débloquer l'accès même sans progression explicite)
-  const attendanceWithPositions = await prisma.courseAttendance.findMany({
-    where: { studentId: session.user.id },
-    select: {
-      course: { select: { positions: { select: { positionId: true } } } },
-    },
-  });
   const seenCounts = new Map<string, number>();
   const seenIds = new Set<string>();
   attendanceWithPositions.forEach((att) => {
@@ -131,9 +137,28 @@ export default async function StudentProgressPage({
     });
   });
 
+  const presetIds = presetPurchases.map((p) => p.offerId).filter(Boolean);
+  const presetPositions =
+    presetIds.length > 0
+      ? await prisma.presetPosition.findMany({
+          where: { presetId: { in: presetIds } },
+          select: { positionId: true },
+        })
+      : [];
+  const unlockedPositions = new Set<string>([
+    ...presetPositions.map((pp) => pp.positionId),
+    ...Array.from(seenIds),
+  ]);
+
   const visibleIds = session.user.isPremium
     ? undefined
-    : Array.from(new Set([...progressEntries.map((p) => p.positionId), ...Array.from(seenIds)]));
+    : Array.from(
+        new Set([
+          ...progressEntries.map((p) => p.positionId),
+          ...Array.from(seenIds),
+          ...Array.from(unlockedPositions),
+        ]),
+      );
 
   const where: Prisma.PositionWhereInput = {
     ...(visibleIds ? { id: { in: visibleIds } } : {}),
@@ -367,6 +392,7 @@ export default async function StudentProgressPage({
               ? disciplineNameById.get(position.disciplineId) ?? null
               : position.discipline ?? null;
             const badgeStyle = disciplineStyle(position.disciplineId, position.discipline);
+            const isUnlockedByPurchase = !session.user.isPremium && unlockedPositions.has(position.id);
 
             return (
               <Link
@@ -425,6 +451,11 @@ export default async function StudentProgressPage({
                       <span />
                     )}
                     <div className="flex flex-col items-end gap-2 text-right">
+                      {isUnlockedByPurchase ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-semibold text-emerald-50 shadow-inner shadow-emerald-900/20">
+                          Débloqué par achat
+                        </span>
+                      ) : null}
                       {showProgress ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
                           Vu : {seen}

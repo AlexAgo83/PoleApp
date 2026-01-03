@@ -203,11 +203,42 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           (cloudName ? `https://res.cloudinary.com/${cloudName}/video/upload/${normalizedVideoId}.jpg` : null))) ??
     (cover?.publicId && cloudName
       ? `https://res.cloudinary.com/${cloudName}/image/upload/${cover.publicId}`
-      : null) ??
+            : null) ??
     POSITION_PLACEHOLDER;
   const isPremium = Boolean(session?.user?.isPremium);
   const isStudent = session?.user?.role === "STUDENT";
   const isTeacher = session?.user?.role === "TEACHER";
+  const unlockedViaPurchase =
+    isStudent && session.user.id
+      ? (() => {
+          return Promise.all([
+            prisma.purchase.findMany({
+              where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+              select: { offerId: true },
+            }),
+            prisma.courseAttendance.findMany({
+              where: { studentId: session.user.id, status: "CONFIRMED" },
+              select: { course: { select: { positions: { select: { positionId: true } } } } },
+            }),
+          ]).then(async ([presetPurchases, attendances]) => {
+            const presetIds = presetPurchases.map((p) => p.offerId).filter(Boolean);
+            const presetPositions =
+              presetIds.length > 0
+                ? await prisma.presetPosition.findMany({
+                    where: { presetId: { in: presetIds } },
+                    select: { positionId: true },
+                  })
+                : [];
+            const coursePositionIds = attendances.flatMap((att) => att.course?.positions ?? []);
+            return new Set<string>([
+              ...presetPositions.map((pp) => pp.positionId),
+              ...coursePositionIds.map((cp) => cp.positionId),
+            ]);
+          });
+        })()
+      : Promise.resolve(new Set<string>());
+  const unlockedSet = await unlockedViaPurchase;
+  const isUnlockedByPurchase = isStudent ? unlockedSet.has(position.id) : false;
   const hasUnlocked = isStudent
     ? Boolean(
         await prisma.studentPositionProgress.findFirst({
@@ -219,9 +250,9 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         }),
       )
     : false;
-  const canViewContent = !isStudent || isPremium || hasUnlocked;
+  const canViewContent = !isStudent || isPremium || isUnlockedByPurchase || hasUnlocked;
   const hasVideo = Boolean(video);
-  const showVideoPlaceholder = isStudent && isPremium && !hasVideo;
+  const showVideoPlaceholder = canViewContent && !hasVideo;
   const isStaff =
     session?.user?.role === "TEACHER" || session?.user?.role === "SCHOOL_ADMIN";
   const isOwner =
@@ -345,6 +376,11 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 md:mb-6">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">{position.name}</h1>
+            {isUnlockedByPurchase && isStudent && !isPremium ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/70 bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-50 shadow-inner shadow-emerald-900/30">
+                Débloqué par achat
+              </span>
+            ) : null}
             {(isStudent || isTeacher) && (
               <form action={toggleFavoriteAction}>
                 <input type="hidden" name="positionId" value={position.id} />
