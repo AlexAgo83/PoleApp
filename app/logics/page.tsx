@@ -73,7 +73,10 @@ export default async function LogicsPage({ searchParams }: PageProps) {
     docs: listDocs(cat),
   })).filter((c) => c.docs.length > 0);
 
-  const resolvedParams = await (searchParams ?? Promise.resolve({}));
+  const resolvedParams = (await (searchParams ?? Promise.resolve({}))) as Record<
+    string,
+    string | string[] | undefined
+  >;
   const getValue = (value?: string | string[]) => (Array.isArray(value) ? value[0] : value);
   const sectionParam = (getValue(resolvedParams.section) ?? "").toLowerCase();
   const fileParam = getValue(resolvedParams.file) ?? "";
