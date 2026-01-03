@@ -46,7 +46,7 @@ const formSchema = z.object({
     .string()
     .trim()
     .default(DEFAULT_MEDIA_PREFIX)
-    .transform((v) => (v === "" ? DEFAULT_MEDIA_PREFIX : v)),
+    .transform((v) => (typeof v === "string" ? v : DEFAULT_MEDIA_PREFIX)),
   maxResults: z.coerce
     .number()
     .int()
