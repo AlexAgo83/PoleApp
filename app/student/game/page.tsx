@@ -194,11 +194,33 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
   let eligible = positions;
 
   if (isStudent) {
-    const progress = await prisma.studentPositionProgress.findMany({
-      where: { studentId: session.user.id },
-      select: { positionId: true },
-    });
-    const unlockedIds = new Set(progress.map((p) => p.positionId));
+    const [progress, presetPurchases, attendances] = await Promise.all([
+      prisma.studentPositionProgress.findMany({
+        where: { studentId: session.user.id },
+        select: { positionId: true },
+      }),
+      prisma.purchase.findMany({
+        where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+        select: { offerId: true },
+      }),
+      prisma.courseAttendance.findMany({
+        where: { studentId: session.user.id, status: "CONFIRMED" },
+        select: { course: { select: { positions: { select: { positionId: true } } } } },
+      }),
+    ]);
+    const presetIds = presetPurchases.map((p) => p.offerId).filter(Boolean);
+    const presetPositions =
+      presetIds.length > 0
+        ? await prisma.presetPosition.findMany({
+            where: { presetId: { in: presetIds } },
+            select: { positionId: true },
+          })
+        : [];
+    const unlockedIds = new Set<string>([
+      ...progress.map((p) => p.positionId),
+      ...presetPositions.map((pp) => pp.positionId),
+      ...attendances.flatMap((att) => att.course?.positions ?? []).map((cp) => cp.positionId),
+    ]);
     eligible = isPremium ? positions : positions.filter((p) => unlockedIds.has(p.id));
   } else if (isTeacherOrAdmin) {
     eligible = positions; // prof/admin : accès illimité
