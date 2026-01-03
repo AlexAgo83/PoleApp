@@ -554,11 +554,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                         </span>
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                        {isUnlockedByPurchase && isStudent && !isPremium ? (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-semibold text-emerald-50 shadow-inner shadow-emerald-900/20">
-                            Débloqué par achat
-                          </span>
-                        ) : null}
                       {(() => {
                         const views = progress ? Math.max(1, p._count?.progress ?? 0) : p._count?.progress ?? 0;
                         return (
