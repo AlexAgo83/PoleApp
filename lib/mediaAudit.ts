@@ -5,8 +5,7 @@ import { getDefaultAvatarPublicIds, isCloudinaryEnabled } from "./cloudinary";
 import { SEED_MEDIA_IDS, normalizeFolderedPublicId } from "./media";
 import { prisma } from "./prisma";
 
-export const DEFAULT_MEDIA_PREFIX = "";
-const DEFAULT_REQUIRED_ROOT = "poleapp";
+export const DEFAULT_MEDIA_PREFIX = "poleapp/";
 
 export type MediaResourceType = "image" | "video";
 export type MediaDeliveryType = "upload" | "authenticated";
@@ -41,11 +40,7 @@ export type MediaDiffResult = {
   missing: DbMediaRef[];
 };
 
-export function normalizePublicId(
-  raw: string | null | undefined,
-  folderPrefix: string = DEFAULT_MEDIA_PREFIX,
-  requiredRoot: string | null = DEFAULT_REQUIRED_ROOT,
-) {
+export function normalizePublicId(raw: string | null | undefined, folderPrefix: string = DEFAULT_MEDIA_PREFIX) {
   if (!raw) return null;
   let value = raw.trim();
   if (!value) return null;
@@ -56,16 +51,9 @@ export function normalizePublicId(
   value = value.replace(/^\/+|\/+$/g, "");
   value = value.replace(/\.(jpe?g|png|gif|webp|svg|mp4|mov|mkv|avi)$/i, "");
 
-  let normalized = normalizeFolderedPublicId(value, folderPrefix) ?? value;
-  let trimmed = normalized.trim();
+  const normalized = normalizeFolderedPublicId(value, folderPrefix) ?? value;
+  const trimmed = normalized.trim();
   if (!trimmed) return null;
-
-  if (requiredRoot) {
-    const idx = trimmed.indexOf(requiredRoot);
-    if (idx === -1) return null;
-    trimmed = trimmed.slice(idx).replace(/^\/+/, "");
-    normalized = trimmed;
-  }
 
   const parts = trimmed.split("/").filter(Boolean);
   const base = parts[parts.length - 1];
@@ -98,17 +86,15 @@ function isSeedLike(full?: string | null, base?: string | null, seedSet?: Set<st
 export async function collectDbMediaRefs({
   includeSeeds = false,
   folderPrefix = DEFAULT_MEDIA_PREFIX,
-  requiredRoot = DEFAULT_REQUIRED_ROOT,
 }: {
   includeSeeds?: boolean;
   folderPrefix?: string;
-  requiredRoot?: string | null;
 }) {
   const seedSet = buildSeedSet(folderPrefix);
   const refs: DbMediaRef[] = [];
 
   const pushRef = (rawId: string | null | undefined, meta: Omit<DbMediaRef, "publicId" | "normalizedFull" | "normalizedBase" | "isSeed">) => {
-    const norm = normalizePublicId(rawId, folderPrefix, includeSeeds ? null : requiredRoot);
+    const norm = normalizePublicId(rawId, folderPrefix);
     if (!norm?.full) return;
     const isSeed = isSeedLike(norm.full, norm.base, seedSet);
     if (!includeSeeds && isSeed) return;
@@ -160,7 +146,6 @@ export async function collectCloudinaryAssets({
   includeSeeds = false,
   folderPrefix = DEFAULT_MEDIA_PREFIX,
   excludePrefixes = DEFAULT_EXCLUDED_PREFIXES,
-  requiredRoot = DEFAULT_REQUIRED_ROOT,
 }: {
   resourceType: MediaResourceType;
   deliveryType: MediaDeliveryType;
@@ -169,7 +154,6 @@ export async function collectCloudinaryAssets({
   includeSeeds?: boolean;
   folderPrefix?: string;
   excludePrefixes?: string[];
-  requiredRoot?: string | null;
 }) {
   if (!isCloudinaryEnabled()) {
     throw new Error("Cloudinary not configured");
@@ -214,7 +198,7 @@ export async function collectCloudinaryAssets({
     const mapped = res.resources
       .map((r) => {
         if (shouldExclude(r.public_id, r.folder)) return null;
-        const norm = normalizePublicId(r.public_id, folderPrefix, includeSeeds ? null : requiredRoot);
+        const norm = normalizePublicId(r.public_id, folderPrefix);
         if (!norm?.full) return null;
         const isSeed = isSeedLike(norm.full, norm.base, seedSet);
         if (!includeSeeds && isSeed) return null;
