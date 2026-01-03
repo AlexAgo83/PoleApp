@@ -81,7 +81,7 @@ export default async function StudentTeachersPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-4 border-indigo-400/15 p-6 shadow-indigo-900/30">
+      <section className="panel panel-body lg-gap border-indigo-400/15 shadow-indigo-900/30">
         <div className="flex flex-wrap items-center gap-3">
           <div>
             <h1 className="text-3xl font-semibold text-white">Tes professeurs</h1>
@@ -106,7 +106,7 @@ export default async function StudentTeachersPage({
           userKey={userKey}
         >
           <form
-            className="grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
+            className="panel-grid lg-gap rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-3 md:items-end"
             method="get"
           >
             <label className="text-sm text-slate-200 md:col-span-2">
