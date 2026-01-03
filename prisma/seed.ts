@@ -25,6 +25,7 @@ const PASSWORD = process.env.DATABASE_SEED_PWD;
 if (!PASSWORD) {
   throw new Error("DATABASE_SEED_PWD is required to run the seed");
 }
+const SEED_PASSWORD: string = PASSWORD;
 const POSITION_VIDEOS = [
   {
     url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/01_xphtvq.mp4",
@@ -767,7 +768,7 @@ async function seedSchoolsAndUsers() {
     )
   );
 
-  const passwordHash = await bcrypt.hash(PASSWORD, 10);
+  const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
   const femaleAvatarPool = shuffle(femaleAvatarDefaults);
   const maleAvatarPool = shuffle(maleAvatarDefaults);
 
@@ -2101,7 +2102,7 @@ async function seedSuperAdmin() {
   if (existing) return existing;
 
   const email = process.env.SUPER_ADMIN_EMAIL || "superadmin@poleapp.test";
-  const password = process.env.SUPER_ADMIN_PASSWORD || PASSWORD;
+  const password: string = process.env.SUPER_ADMIN_PASSWORD ?? SEED_PASSWORD;
   const name = "Super Admin";
   const passwordHash = await bcrypt.hash(password, 10);
 
