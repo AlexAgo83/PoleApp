@@ -1993,6 +1993,11 @@ async function seedPurchases(students: { id: string; schoolId: string }[]) {
   });
 
   const purchases: Prisma.PurchaseCreateManyInput[] = [];
+  const paidPresets = await prisma.preset.findMany({
+    where: { priceCredits: { gt: 0 } },
+    select: { id: true, title: true, schoolId: true },
+    take: 3,
+  });
   for (const [, list] of bySchool) {
     const first = list[0];
     const second = list[1];
@@ -2022,11 +2027,73 @@ async function seedPurchases(students: { id: string; schoolId: string }[]) {
         status: "PAID",
       });
     }
+    const presetMatch = paidPresets.find((p) => first && p.schoolId === first.schoolId);
+    if (first && presetMatch) {
+      purchases.push({
+        userId: first.id,
+        offerId: presetMatch.id,
+        offerName: presetMatch.title,
+        kind: "PRESET",
+        amountCents: 0,
+        vatPercent: 20,
+        creditsGranted: 0,
+        isPremiumGranted: false,
+        status: "PAID",
+      });
+    }
   }
 
   if (purchases.length > 0) {
     await prisma.purchase.createMany({ data: purchases, skipDuplicates: true });
   }
+}
+
+async function seedUnlockDemo({
+  students,
+  teachers,
+  positions,
+}: {
+  students: { id: string; schoolId: string }[];
+  teachers: { id: string; schoolId: string }[];
+  positions: { id: string; discipline: string | null }[];
+}) {
+  const student = students[0];
+  if (!student) return;
+  const teacher = teachers.find((t) => t.schoolId === student.schoolId);
+  if (!teacher) return;
+
+  const studio = await prisma.studio.findFirst({ where: { schoolId: student.schoolId } });
+  if (!studio) return;
+
+  const coursePositions = positions
+    .filter((p) => (p.discipline ?? "").toLowerCase() === "pole")
+    .slice(0, 3)
+    .map((p) => ({ positionId: p.id }));
+
+  const course = await prisma.course.create({
+    data: {
+      title: "Cours Spin Débutant (démo)",
+      date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      durationMinutes: 60,
+      teacherId: teacher.id,
+      schoolId: student.schoolId,
+      studioId: studio.id,
+      discipline: "Pole",
+      maxSeats: 10,
+      costCredits: 20,
+      waitlistQuota: 2,
+      positions: coursePositions.length > 0 ? { create: coursePositions } : undefined,
+    },
+    select: { id: true },
+  });
+
+  await prisma.courseAttendance.create({
+    data: {
+      courseId: course.id,
+      studentId: student.id,
+      status: "CONFIRMED",
+    },
+  });
 }
 
 async function seedPresets(options: {
@@ -2145,6 +2212,7 @@ async function main() {
   await seedPresets({ schools, positions, teachers, disciplinesBySchool });
   await seedPurchases(students);
   await seedCourses({ schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher });
+  await seedUnlockDemo({ students, teachers, positions });
   await seedNotificationsSamples();
   await seedAdminNotifications();
   await seedGameSessions(students);
