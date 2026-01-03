@@ -30,7 +30,10 @@ export default async function TeacherPublicProfilePage({
 }) {
   const resolvedParams = await Promise.resolve(params);
   const teacherId = resolvedParams?.id;
-  const resolvedSearch = (await Promise.resolve(searchParams ?? {})) ?? {};
+  const resolvedSearch = (await Promise.resolve(searchParams ?? {})) as {
+    from?: string;
+    combosPage?: string;
+  };
   const rawFrom = resolvedSearch.from;
   const rawCombosPage = resolvedSearch.combosPage;
   const safeFrom =

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { GameMode } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
@@ -17,6 +18,14 @@ type Props = {
 };
 
 const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
+const gameModeLabel: Record<GameMode, string> = {
+  PHOTO_NAME: "Photo → nom",
+  NAME_TYPE: "Nom → type",
+  NAME_LEVEL: "Nom → niveau",
+  NAME_GRIPS: "Nom → grips",
+  DESCRIPTION_NAME: "Description → nom",
+  BLITZ_MIX: "Blitz mix",
+};
 
 export default async function TeacherStudentDetailPage({
   params,

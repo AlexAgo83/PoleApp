@@ -77,7 +77,10 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
     redirect("/access-denied");
   }
 
-  const params = (await (searchParams ?? Promise.resolve({}))) ?? {};
+  const params = (await (searchParams ?? Promise.resolve({}))) as Record<
+    string,
+    string | string[] | undefined
+  >;
   const view = params.view === "week" ? "week" : "month";
   const monthParam = typeof params.month === "string" ? params.month : undefined;
   const weekParam = typeof params.week === "string" ? params.week : undefined;
