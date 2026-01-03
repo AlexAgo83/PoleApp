@@ -76,12 +76,12 @@ function buildSeedSet(folderPrefix: string) {
   const avatarIds = getDefaultAvatarPublicIds();
   const candidates = new Set<string>();
   for (const id of avatarIds) {
-    const norm = normalizePublicId(id, folderPrefix);
+    const norm = normalizePublicId(id, folderPrefix, null);
     if (norm?.full) candidates.add(norm.full);
     if (norm?.base) candidates.add(norm.base);
   }
   for (const seed of SEED_MEDIA_IDS) {
-    const norm = normalizePublicId(seed, folderPrefix);
+    const norm = normalizePublicId(seed, folderPrefix, null);
     if (norm?.full) candidates.add(norm.full);
     if (norm?.base) candidates.add(norm.base);
   }
@@ -108,7 +108,7 @@ export async function collectDbMediaRefs({
   const refs: DbMediaRef[] = [];
 
   const pushRef = (rawId: string | null | undefined, meta: Omit<DbMediaRef, "publicId" | "normalizedFull" | "normalizedBase" | "isSeed">) => {
-    const norm = normalizePublicId(rawId, folderPrefix, requiredRoot);
+    const norm = normalizePublicId(rawId, folderPrefix, includeSeeds ? null : requiredRoot);
     if (!norm?.full) return;
     const isSeed = isSeedLike(norm.full, norm.base, seedSet);
     if (!includeSeeds && isSeed) return;
@@ -214,7 +214,7 @@ export async function collectCloudinaryAssets({
     const mapped = res.resources
       .map((r) => {
         if (shouldExclude(r.public_id, r.folder)) return null;
-        const norm = normalizePublicId(r.public_id, folderPrefix, requiredRoot);
+        const norm = normalizePublicId(r.public_id, folderPrefix, includeSeeds ? null : requiredRoot);
         if (!norm?.full) return null;
         const isSeed = isSeedLike(norm.full, norm.base, seedSet);
         if (!includeSeeds && isSeed) return null;
