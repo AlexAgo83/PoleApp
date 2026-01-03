@@ -1,11 +1,11 @@
 # Changelog
 
-## 2026-02-15 — Unreleased (Cloudinary media migration)
-- Média : Course/Studio/School passent en `photoPublicId` Cloudinary (forms admin/prof/students alignés, URLs construites avec `CLOUD_NAME`).
-- Upload : composant `CloudinaryField` pour intégrer l’upload client dans les formulaires serveur (admin school/studios), CloudinaryUpload toujours utilisé côté client.
-- Presets : filtres étendus + reset, CTA éditer créateur/admin, ordre vidéo/image dans le form, pagination unique.
-- Seed : pools Cloudinary pour écoles (`sc_*`), studios (`st_*`), cours (`co_*`), presets (`ps_*`), vidéos positions authenticated; DB reset + seed mis à jour.
-- Tests : lint (avec warnings existants), vitest, build Next OK.
+## 2026-03-03 — Release v0.12.11 (Notifications, remboursements, perfs)
+- Notifications : modèle `Notification` + API (read/delete), déduplication par user/kind/course, badge + menu (supprimer, tout supprimer), limite fetch 50. Seed limité à 30 notifs/user. Coeur plein pour favoris et position coup de coeur élève/enseignant.
+- Cours : annulation rembourse automatiquement les élèves (crédits restitués) et nettoie factures liées. Admin notifié des inscriptions/mises à jour/annulations. Notes ajoutées notifient les élèves.
+- Images : qualité par défaut 65 via `SafeImage`, vignettes cours 120x80, headers Cloudinary avec transform `c_fill,f_auto,q_60,w_1200,h_600`. Bundle analyzer ajouté (`npm run analyze -- --webpack`).
+- Tech : nombreux correctifs TypeScript sur pages App Router (params/searchParams en Promise), build webpack OK. Indices Prisma sur courseAttendance/courseNote.
+- Tests : `npm test` OK, build Next OK.
 
 ## 2026-12-28 - Release v0.9.0
 
