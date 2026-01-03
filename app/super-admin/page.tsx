@@ -93,6 +93,19 @@ export default async function SuperAdminPage({ searchParams }: PageProps) {
       ),
     },
     {
+      title: "Audit médias",
+      href: "/super-admin/media-audit",
+      cta: "Cloudinary vs base",
+      icon: (
+        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <path d="M4 7h16M4 12h16M4 17h10" />
+          <circle cx="7" cy="7" r="1.2" />
+          <circle cx="7" cy="12" r="1.2" />
+          <circle cx="13" cy="17" r="1.2" />
+        </svg>
+      ),
+    },
+    {
       title: "Logics",
       href: "/logics",
       cta: "Docs internes",
