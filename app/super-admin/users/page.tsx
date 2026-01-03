@@ -15,7 +15,10 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
     redirect("/access-denied");
   }
 
-  const resolvedParams = (await (searchParams ?? Promise.resolve({}))) ?? {};
+  const resolvedParams = (await (searchParams ?? Promise.resolve({}))) as Record<
+    string,
+    string | string[] | undefined
+  >;
   const getValue = (value?: string | string[]) => (Array.isArray(value) ? value[0] : value);
   const flash = getValue(resolvedParams.flash);
   const flashTemp = getValue(resolvedParams.temp);
