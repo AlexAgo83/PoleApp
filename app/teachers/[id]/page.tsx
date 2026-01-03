@@ -131,7 +131,7 @@ export default async function TeacherPublicProfilePage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-5 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-center gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -158,14 +158,14 @@ export default async function TeacherPublicProfilePage({
             />
           </div>
         </div>
-        <div className="grid gap-5 md:grid-cols-2">
-          <div className="space-y-2">
+        <div className="panel-grid lg-gap md:grid-cols-2">
+          <div className="panel-body">
             <h2 className="text-lg font-semibold text-white">Diplômes</h2>
             <p className="whitespace-pre-line rounded-xl px-0 py-0 text-sm text-slate-100">
               {teacher.diplomas?.trim() || "Non renseigné"}
             </p>
           </div>
-          <div className="space-y-2">
+          <div className="panel-body">
             <h2 className="text-lg font-semibold text-white">Positions coups de cœur</h2>
             {favoritePositions.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -185,7 +185,7 @@ export default async function TeacherPublicProfilePage({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="panel-body lg-gap">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold text-white">Combos</h2>
             {comboPages > 1 ? (
@@ -267,7 +267,7 @@ export default async function TeacherPublicProfilePage({
             returnTo={backHref}
           />
 
-          <section className="panel space-y-5 border-indigo-400/15 p-6">
+          <section className="panel panel-body lg-gap border-indigo-400/15">
             <details className="group">
               <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
                 <div>
@@ -279,7 +279,7 @@ export default async function TeacherPublicProfilePage({
                   <span className="hidden group-open:inline">Fermer</span>
                 </span>
               </summary>
-              <div className="mt-3 pt-1">
+              <div className="panel-body lg-gap pt-1">
                 <TeacherAvatarManager
                   teacherId={teacher.id}
                   folder={avatarFolder}
@@ -287,7 +287,9 @@ export default async function TeacherPublicProfilePage({
                   initialUrl={avatarUrl}
                   initialPublicId={teacher.avatarPublicId ?? null}
                 />
-                <p className="text-sm text-slate-300">Upload signé Cloudinary (auth), formats jpg/png/webp, 4 Mo max.</p>
+                <p className="text-sm text-slate-300">
+                  Upload signé Cloudinary (auth), formats jpg/png/webp, 4 Mo max.
+                </p>
               </div>
             </details>
           </section>

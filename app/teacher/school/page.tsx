@@ -474,7 +474,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
         </div>
       </header>
 
-      <section className="panel p-6">
+      <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Studios</p>
@@ -524,7 +524,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
         )}
       </section>
 
-      <section className="panel space-y-4 p-6">
+      <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-start gap-2">
           <div className="flex-1">
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Planning</p>
@@ -745,7 +745,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
         )}
       </section>
 
-      <section className="panel space-y-4 p-6">
+      <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Liste</p>

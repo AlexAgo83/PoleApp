@@ -299,7 +299,7 @@ export default async function CoursesAgendaPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-4 border-indigo-400/25 p-6 shadow-indigo-900/30">
+      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex w-full flex-col gap-3 md:flex-row md:items-start">
           <div className="flex-1">
             <h1 className="text-3xl font-semibold text-white">Agenda des cours</h1>
@@ -374,7 +374,7 @@ export default async function CoursesAgendaPage({
           <form
             key={`agenda-${monthParam ?? "current"}`}
             method="get"
-            className="mt-3 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
+            className="mt-3 panel-grid lg-gap rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-4 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Mois

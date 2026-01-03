@@ -1,22 +1,24 @@
-import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { appSignature } from "@/lib/appMeta";
 import { prisma } from "@/lib/prisma";
 import { BuyCreditsButton } from "./BuyCreditsButton";
-import { appSignature } from "@/lib/appMeta";
 
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return null;
   }
+
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { id: true, name: true, email: true, isPremium: true, credits: true, schoolId: true, avatarPublicId: true },
   });
   const isPremium = Boolean(user?.isPremium);
   const credits = user?.credits ?? 0;
+
   const [packs, subs] = await Promise.all([
     prisma.creditPackOffer.findMany({
       where: { isActive: true, isOpen: true },
@@ -30,7 +32,7 @@ export default async function StudentDashboard() {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel p-6">
+      <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-center justify-end gap-3">
           <BuyCreditsButton
             currentCredits={credits}
@@ -40,7 +42,8 @@ export default async function StudentDashboard() {
             buttonClassName="border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20"
           />
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+
+        <div className="panel-grid lg-gap md:grid-cols-2">
           <Link
             href="/student/progress"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -54,15 +57,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Progression
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Voir ta progression par position
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Progression</p>
+                <p className="text-base font-semibold text-white">Voir ta progression par position</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/student/injuries"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -76,24 +76,19 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Blessures
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Déclarer et gérer tes blessures
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Blessures</p>
+                <p className="text-base font-semibold text-white">Déclarer et gérer tes blessures</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/profile"
             className="relative rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <span
               className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${
-                isPremium
-                  ? "border border-emerald-400/70 bg-emerald-400/15 text-emerald-50"
-                  : "border border-white/15 bg-white/10 text-white/80"
+                isPremium ? "border border-emerald-400/70 bg-emerald-400/15 text-emerald-50" : "border border-white/15 bg-white/10 text-white/80"
               }`}
             >
               {isPremium ? "Premium" : "Freemium"}
@@ -106,15 +101,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Fiche élève
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Photo, infos, positions préférées
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Fiche élève</p>
+                <p className="text-base font-semibold text-white">Photo, infos, positions préférées</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/student/teachers"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -128,15 +120,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Professeurs
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Voir tes professeurs
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Professeurs</p>
+                <p className="text-base font-semibold text-white">Voir tes professeurs</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/student/courses/agenda?view=month"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -151,15 +140,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Historique cours
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Historique des cours réservés
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Historique cours</p>
+                <p className="text-base font-semibold text-white">Historique des cours réservés</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/student/school"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -173,15 +159,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Réservation & studios
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Réserver et voir les studios
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Réservation & studios</p>
+                <p className="text-base font-semibold text-white">Réserver et voir les studios</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/positions"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -201,15 +184,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Positions
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Consulter les figures
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Positions</p>
+                <p className="text-base font-semibold text-white">Consulter les figures</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/presets"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -224,15 +204,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Combos
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Parcourir et acheter les combos
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Combos</p>
+                <p className="text-base font-semibold text-white">Parcourir et acheter les combos</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/student/game"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -249,15 +226,12 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Mini-jeu
-                </p>
-                <p className="text-base font-semibold text-white">
-                  6 mini-jeux de révision
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Mini-jeu</p>
+                <p className="text-base font-semibold text-white">6 mini-jeux de révision</p>
               </div>
             </div>
           </Link>
+
           <Link
             href="/student/purchases"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -273,23 +247,14 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Historique achats
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Packs / abonnements
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Historique achats</p>
+                <p className="text-base font-semibold text-white">Packs / abonnements</p>
               </div>
             </div>
           </Link>
-          <BuyCreditsButton
-            asCard
-            currentCredits={credits}
-            showUpgrade={!isPremium}
-            packs={packs}
-            subscriptions={subs}
-          />
-          {!isPremium && (
+
+          <BuyCreditsButton asCard currentCredits={credits} showUpgrade={!isPremium} packs={packs} subscriptions={subs} />
+          {!isPremium ? (
             <BuyCreditsButton
               asCard
               mode="upgrade"
@@ -300,7 +265,8 @@ export default async function StudentDashboard() {
               title="Passer premium"
               subtitle="Abonnement"
             />
-          )}
+          ) : null}
+
           <Link
             href="/student/partners"
             className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
@@ -317,12 +283,8 @@ export default async function StudentDashboard() {
                 </svg>
               </span>
               <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Partenaires
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Offres et liens sponsorisés
-                </p>
+                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Partenaires</p>
+                <p className="text-base font-semibold text-white">Offres et liens sponsorisés</p>
               </div>
             </div>
           </Link>

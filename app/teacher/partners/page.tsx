@@ -13,7 +13,7 @@ export default async function TeacherPartnersPage() {
   if (!session?.user?.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     return (
       <main className="flex min-h-screen w-full flex-col gap-4 p-6">
-        <section className="panel p-6">
+        <section className="panel panel-body lg-gap">
           <h1 className="text-2xl font-semibold text-white">Partenaires</h1>
           <p className="text-slate-300">Accès réservé aux professeurs/admins rattachés à une école.</p>
           <Link
@@ -56,7 +56,7 @@ export default async function TeacherPartnersPage() {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel p-6">
+      <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-2xl font-semibold text-white">Partenaires de l’école</h1>
           <div className="flex flex-wrap gap-2">
@@ -69,7 +69,7 @@ export default async function TeacherPartnersPage() {
           </div>
         </div>
 
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="panel-grid lg-gap md:grid-cols-2 xl:grid-cols-3">
           {partners.map((partner) => (
             <div
               key={partner.id}
@@ -93,7 +93,7 @@ export default async function TeacherPartnersPage() {
         </div>
 
         {partnerProducts.length > 0 && (
-          <div className="mt-6">
+          <div className="panel-body lg-gap">
             <h2 className="text-lg font-semibold text-white">Offres sponsorisées</h2>
             <PartnerProductsCarousel items={partnerProducts} />
           </div>

@@ -29,7 +29,7 @@ export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: P
   };
 
   return (
-    <section className="panel border-indigo-400/15 p-6">
+    <section className="panel panel-body lg-gap border-indigo-400/15">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
@@ -48,7 +48,7 @@ export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: P
         <form
           key={formKey}
           action={updateTeacherProfileAction}
-          className="mt-4 grid gap-4 md:grid-cols-2"
+          className="panel-grid lg-gap md:grid-cols-2"
         >
           <input type="hidden" name="teacherId" value={teacherId} />
           {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}

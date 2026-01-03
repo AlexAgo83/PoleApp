@@ -335,7 +335,7 @@ export default async function TeacherCourseDetailPage({
         </div>
       </header>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <h2 className="text-lg font-semibold text-white">Positions couvertes</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.positions.map((cp) => (
@@ -390,9 +390,9 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <h2 className="text-lg font-semibold text-white">Participants</h2>
-        <ul className="mt-3 grid gap-2 md:grid-cols-2">
+        <ul className="panel-grid md:grid-cols-2">
           {course.attendances.map((attendance) => {
             const hasActiveInjury = (attendance.student?.injuries?.length ?? 0) > 0;
             return (
@@ -435,7 +435,7 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
-      <section className="panel space-y-4 border-indigo-300/20 p-6">
+      <section className="panel panel-body lg-gap border-indigo-300/20">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Niveaux par élève</p>
@@ -450,9 +450,9 @@ export default async function TeacherCourseDetailPage({
             Ajoute des élèves et des positions au cours pour renseigner les niveaux.
           </p>
         ) : (
-          <form action={updateCourseNotesOnlyAction} className="space-y-4">
+          <form action={updateCourseNotesOnlyAction} className="panel-body lg-gap">
             <input type="hidden" name="courseId" value={course.id} />
-            <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/5">
+        <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/5">
               <table className="min-w-full text-sm text-slate-200">
                 <thead>
                   <tr className="border-b border-white/10 text-left text-xs uppercase tracking-[0.12em] text-indigo-100">
@@ -503,7 +503,7 @@ export default async function TeacherCourseDetailPage({
       </section>
 
       {!isPastCourse && (
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-lg font-semibold text-white">Suggestions (générateur)</h2>
@@ -683,7 +683,7 @@ export default async function TeacherCourseDetailPage({
         </div>
       )}
 
-      <section className="panel border-indigo-400/15 p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/15">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-lg font-semibold text-white">Notes</h2>
