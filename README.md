@@ -91,7 +91,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - En cas de panics Turbopack : supprimer `.next/.turbo` et/ou `NEXT_USE_TURBOPACK=0`.
 
 ## Seeds (dev)
-- Comptes : `admin@poleapp.test`, `teacher@poleapp.test`, `student1@poleapp.test`, `student2@poleapp.test` (`change-me-password`).
+- Comptes : `admin@poleapp.test`, `teacher@poleapp.test`, `student1@poleapp.test`, `student2@poleapp.test` (mot de passe `DATABASE_SEED_PWD`).
 - Généré : 2 écoles (photos Cloudinary `sc_*` + URL http://www.google.com), 5 professeurs + 10 élèves/école, 500 crédits par élève, 30 positions + vidéos Cloudinary authenticated, 40 cours (durées par pas de 15 min) avec photos Cloudinary `co_*` et invoices backfill, blessures types, partenaires Amazon (4 liens produits).
 - Disciplines : catalogue Pole/Pole Exotic/Souplesse/Pilates/Conditioning seeded par école; positions et cours tagués dynamiquement.
 - Muscles/articulations seeded et liés par type de position; positions attribuées à des professeurs seedés (Elza priorisée), favoris prof auto, cours répartis sur les profs avec anti-collisions horaires.

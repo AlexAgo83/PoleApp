@@ -1,6 +1,6 @@
 # 05 — Seed content (v0.12.x)
 
-> Seed dev actuelle : 2 écoles (photos Cloudinary `sc_*` + URL http://www.google.com), comptes fixes (super admin global + admin/teacher/student1/2, mdp `change-me-password`), studios avec photos Cloudinary `st_*`, 20 cours démo/école avec photos Cloudinary `co_*`, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits), crédits 500 par élève.
+> Seed dev actuelle : 2 écoles (photos Cloudinary `sc_*` + URL http://www.google.com), comptes fixes (super admin global + admin/teacher/student1/2, mdp `DATABASE_SEED_PWD`), studios avec photos Cloudinary `st_*`, 20 cours démo/école avec photos Cloudinary `co_*`, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits), crédits 500 par élève.
 > Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions (30) créées par des professeurs seedés (Elza priorisée) + favoris prof auto + vidéo Cloudinary authentifiée par position (pool fixe). Cours répartis entre profs de l’école sans collision horaire, durées par pas de 15 min.
 
 ## Taxonomies
@@ -65,11 +65,11 @@ Exemple (format libre, tronqué) :
 29. Side Climb — STRENGTH — INTERMEDIATE — grips: TRUE  
 30. Phoenix Spin — SPIN — ADVANCED — grips: TRUE
 
-## Écoles et utilisateurs générés (mot de passe `change-me-password`)
+## Écoles et utilisateurs générés (mot de passe `DATABASE_SEED_PWD`)
 - 2 écoles créées : (voir noms plus bas) la première école sera utilisée en priorité (photo Cloudinary `sc_*` + URL http://www.google.com). **Donuts** a été renommée **APEX** dans le seed.
 - Pour chaque école créer : **3 studios** (voir nom plus bas, adresse fictive Paris) avec photos Cloudinary `st_*`.
 - Photos cours : pool Cloudinary `co_*` appliqué en rotation sur les cours seedés.
-- Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `change-me-password`, premium pour 1 élève sur 2, **500 crédits** par élève.
+- Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `DATABASE_SEED_PWD`, premium pour 1 élève sur 2, **500 crédits** par élève.
 - Pour chaque utilisateurs : Les nom prenom et photos de profile sont sélectionnés dans la liste plus bas (Choisir aléatoirement selon le genre).
 - 20 cours de démo créés par école (répartis aléatoirement entre professeurs sans collisions studio/prof sur le créneau, élèves 2–6 par cours, positions 2–4) + il doit y avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, durées par pas de 15 min, ne peut pas se chevaucher si même studio et/ou même professeur. Positions privilégiées du prof assigné quand dispo.
 
@@ -79,7 +79,7 @@ Exemple (format libre, tronqué) :
 - Cours : `co_20_fuk1vy`, `co_01_lzy3th`, `co_06_etu7av`, `co_09_wsasz3`, `co_11_v4xldz`, `co_05_d3ydvl`, `co_03_qd4h2w`, `co_02_i3tc6p`, `co_12_ywslqp`, `co_13_hagigy`, `co_08_pbc6av`, `co_16_ssjjra`, `co_04_fujy4g`, `co_07_u5usuw`, `co_17_s1kvva`, `co_10_jlkxrd`, `co_15_dnmanu`, `co_18_boe3wh`, `co_14_oiur1r`, `co_19_g7eim2`
 - Presets seed : images `ps_001_wcashm`, `ps_002_fhyron`, `ps_003_xauurl`; vidéos `ps_001_qo2alr`
 
-## Comptes seed (mot de passe `change-me-password`) (à affecter à la première école)
+## Comptes seed (mot de passe `DATABASE_SEED_PWD`) (à affecter à la première école)
 - superadmin@poleapp.test — SUPER_ADMIN (global, sans école)
 - admin@poleapp.test — SCHOOL_ADMIN (premium) - admin admin 40ans Homme
 - teacher@poleapp.test — TEACHER (Professeur) - Elza Martinez 32ans Femme

@@ -29,7 +29,7 @@
 - Partenaires : CRUD + tracking clic/achat (PartnerEvent) + redirections partenaires.
 - Notifications : menu cloche (supprimer/clear all, compteur), déduplication par user/kind/course, limite 50 en fetch.
 - Média/Cloudinary : avatars (contrôles poids/résolution, fallback seed), headers/photos cours/studios/écoles/presets, placeholders, signatures et destruction via API.
-- Seeds dev : comptes fixes (admin/teacher/student1/2, mdp `change-me-password`), 2 écoles (photos `sc_*`), studios, partenaires, 30 positions (vidéos Cloudinary), 40 cours avec factures, crédits 500/élève, disciplines Pole/Exotic/Souplesse/Pilates/Conditioning, muscles/articulations, presets avec médias.
+- Seeds dev : comptes fixes (admin/teacher/student1/2, mdp `DATABASE_SEED_PWD`), 2 écoles (photos `sc_*`), studios, partenaires, 30 positions (vidéos Cloudinary), 40 cours avec factures, crédits 500/élève, disciplines Pole/Exotic/Souplesse/Pilates/Conditioning, muscles/articulations, presets avec médias.
 
 ## Stack / scripts
 - Next.js 16 App Router, React 19, TypeScript, Tailwind v4.

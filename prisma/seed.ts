@@ -21,7 +21,10 @@ import { computeDefaultInvoiceAmountCents } from "@/lib/billing";
 
 const prisma = new PrismaClient();
 
-const PASSWORD = "change-me-password";
+const PASSWORD = process.env.DATABASE_SEED_PWD;
+if (!PASSWORD) {
+  throw new Error("DATABASE_SEED_PWD is required to run the seed");
+}
 const POSITION_VIDEOS = [
   {
     url: "https://res.cloudinary.com/dk8vz7gfe/video/upload/01_xphtvq.mp4",

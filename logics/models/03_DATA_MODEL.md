@@ -68,6 +68,6 @@
 - Role, PositionLevel, PositionType, MediaKind, LearningStatus, MasteryLevel, AttendanceStatus, SuggestionTag, InvoiceStatus, PartnerEventType, GameMode.
 
 ## Seed (dev)
-- Comptes fixes : super-admin global + admin/teacher/student1/student2 (`change-me-password`), École 1.
+- Comptes fixes : super-admin global + admin/teacher/student1/student2 (`DATABASE_SEED_PWD`), École 1.
 - Généré : 2 écoles (photos Cloudinary `sc_*` + URL google), profs/élèves supplémentaires, studios avec photos Cloudinary `st_*`, 30 positions, ~20 cours/école (durées 15 min) avec photos Cloudinary `co_*` répartis entre profs (anti-collisions), progression/blessures, favoris prof/élève, invoices/packs/offres EUR/TVA20, partenaire Amazon (liens produits), élèves à 500 crédits.
 - Disciplines seedées par école (Pole / Pole Exotic / Souplesse / Pilates / Conditioning) appliquées aux positions et cours. Muscles/articulations seedés et associés aux positions selon leur type. Positions attribuées à des professeurs seedés (Elza priorisée) + favoris prof générés + vidéos Cloudinary authenticated (pool fixe).
