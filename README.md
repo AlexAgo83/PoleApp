@@ -1,6 +1,6 @@
 # Pole App — Produit v0.12.11
 
-Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse). Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et billing/credits obligatoires. Uploads médias Cloudinary généralisés (avatars, cours, studios, écoles, presets, positions vidéo).
+Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. 
 
 ## Phase produit — exigences transverses
 - Tests renforcés (units + intégration/contract quand pertinent), migrations rétro-compatibles avec backfill et garde-fous données. Seed idempotent.
@@ -10,7 +10,7 @@ Web app Next.js (App Router) pour gérer positions, élèves, cours, progression
 - Média : intégrer Cloudinary quand on ouvrira les uploads (avatars, photos cours/positions), avec signatures côté serveur et stockage des URLs/public_id.
 
 ## Stack
-- Next.js 16 (App Router) + TypeScript + Tailwind
+- Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4
 - Prisma + PostgreSQL
 - NextAuth (Credentials) + middleware RBAC
 - Docker (multi-stage) + docker-compose
@@ -69,6 +69,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new` (récurrence quotidienne/bi-hebdo/mensuelle en bêta avec occurrences virtuelles), détail, édition, photos Cloudinary optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés + chips actives (discipline/prof/studio/dates/notes/recherche).
 - Facturation admin : `/app/admin/billing` (Invoice par cours, filtres date/prof/studio/statut, export CSV, actions statut/montant/note, backfill factures manquantes, panel filtres stylisé avec compteur en pied).
 - Facturation prof : `/app/teacher/billing` (lecture seule des factures de ses cours, filtres date/studio/statut/recherche, export CSV, lien d’impression HTML par facture).
+- Achats élèves : packs/abos/presets visibles côté admin/prof, crédits restitués en cas d’annulation.
 - Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA ; agenda semaine/mois dédié (`/app/student/courses/agenda`) aligné mobile/desktop. Inscription bloquée si positions absentes (occurrences virtuelles).
 - Détail cours (prof/élève) : header Cloudinary transformé en fond, badge “Occurrence programmée” pour les virtuels, boutons alignés (retour/partager/agenda), ICS dynamique (timezone globale + alarme 30 min). Annulation rembourse automatiquement les élèves (crédits restitués) et nettoie factures liées.
 - Notifications : menu cloche (supprimer, tout supprimer, compteur, scroll), déduplication par user/kind/course, limite 50 en fetch; seed plafonné à 30/user. Notifs élèves/profs/admin pour inscriptions/mises à jour/annulations/notes/factures.

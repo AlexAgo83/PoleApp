@@ -1,5 +1,5 @@
 # Backlog — Retours QA S012 (06_QA_S012.md)
-[Compréhension: 100% / Avancement: 5/6]
+[Compréhension: 100% / Confiance: 90% / Avancement: 85%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
