@@ -143,10 +143,10 @@ export function AuditClient() {
             </select>
           </label>
           <label className="grid gap-1 text-sm text-slate-200">
-            Prefix/dossier (défaut poleapp/)
+            Prefix/dossier (optionnel)
             <input
               name="prefix"
-              defaultValue="poleapp/"
+              defaultValue=""
               className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-slate-500 transition focus:border-cyan-400 focus:outline-none"
               placeholder="ex: poleapp/positions/"
             />
