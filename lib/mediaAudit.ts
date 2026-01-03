@@ -9,6 +9,7 @@ export const DEFAULT_MEDIA_PREFIX = "";
 
 export type MediaResourceType = "image" | "video";
 export type MediaDeliveryType = "upload" | "authenticated";
+const DEFAULT_EXCLUDED_PREFIXES = ["samples/"];
 
 export type DbMediaRef = {
   publicId: string;
@@ -144,6 +145,7 @@ export async function collectCloudinaryAssets({
   maxResults,
   includeSeeds = false,
   folderPrefix = DEFAULT_MEDIA_PREFIX,
+  excludePrefixes = DEFAULT_EXCLUDED_PREFIXES,
 }: {
   resourceType: MediaResourceType;
   deliveryType: MediaDeliveryType;
@@ -151,11 +153,22 @@ export async function collectCloudinaryAssets({
   maxResults: number;
   includeSeeds?: boolean;
   folderPrefix?: string;
+  excludePrefixes?: string[];
 }) {
   if (!isCloudinaryEnabled()) {
     throw new Error("Cloudinary not configured");
   }
   const seedSet = buildSeedSet(folderPrefix);
+  const normalizedExcludes = (excludePrefixes ?? []).map((p) => p.replace(/^\/+|\/+$/g, "")).filter(Boolean);
+  const shouldExclude = (publicId: string, folder?: string) => {
+    const cleanPublicId = publicId.replace(/^\/+/, "");
+    const cleanFolder = folder?.replace(/^\/+|\/+$/g, "");
+    return normalizedExcludes.some((ex) => {
+      if (cleanPublicId === ex || cleanPublicId.startsWith(`${ex}/`)) return true;
+      if (cleanFolder && (cleanFolder === ex || cleanFolder.startsWith(`${ex}/`))) return true;
+      return false;
+    });
+  };
 
   const assets: CloudAsset[] = [];
   let nextCursor: string | undefined;
@@ -184,6 +197,7 @@ export async function collectCloudinaryAssets({
 
     const mapped = res.resources
       .map((r) => {
+        if (shouldExclude(r.public_id, r.folder)) return null;
         const norm = normalizePublicId(r.public_id, folderPrefix);
         if (!norm?.full) return null;
         const isSeed = isSeedLike(norm.full, norm.base, seedSet);
