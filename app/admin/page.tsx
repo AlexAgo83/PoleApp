@@ -163,8 +163,8 @@ export default async function AdminDashboard() {
           </div>
           <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
             <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
-            <Stat label="Cours (7 jours)" value={coursesWeekCount} />
-            <Stat label="Inscriptions (7 jours)" value={newStudentsWeek} />
+            <Stat label="Cours (7j)" value={coursesWeekCount} />
+            <Stat label="Inscriptions (7j)" value={newStudentsWeek} />
             <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
             <Stat label="Blessures actives" value={activeInjuries} />
           </div>
