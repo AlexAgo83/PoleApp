@@ -140,7 +140,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               ? "Espace prof"
               : "Espace élève"
         }
-        title="Presets & combos"
+        title="Combos"
         buttons={[
           {
             label: "Mon espace",
@@ -154,7 +154,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
 
       <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-2xl font-semibold text-white">Presets & combos</h2>
+          <h2 className="text-2xl font-semibold text-white">Combos</h2>
           <div className="flex flex-wrap items-center justify-end gap-2 md:w-auto">
             <Link
               href="/positions"
