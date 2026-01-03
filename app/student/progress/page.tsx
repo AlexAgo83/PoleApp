@@ -393,6 +393,7 @@ export default async function StudentProgressPage({
               : position.discipline ?? null;
             const badgeStyle = disciplineStyle(position.disciplineId, position.discipline);
             const isUnlockedByPurchase = !session.user.isPremium && unlockedPositions.has(position.id);
+            const canViewDetails = session.user.isPremium || isUnlockedByPurchase;
 
             return (
               <Link
@@ -476,9 +477,13 @@ export default async function StudentProgressPage({
                     </span>
                   </div>
                   <p className="text-sm text-cyan-200">{typeLabels[position.type]}</p>
-                  <p className="text-sm text-slate-300 line-clamp-2">
-                    {position.tips ?? position.description ?? "Aucun détail"}
-                  </p>
+                  {canViewDetails ? (
+                    <p className="text-sm text-slate-300 line-clamp-2">
+                      {position.tips ?? position.description ?? "Aucun détail"}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-amber-100/80">Contenu premium ou combo/cours requis.</p>
+                  )}
                 </div>
               </Link>
             );
