@@ -49,7 +49,7 @@ export function PersistedSection({
     <details
       open={hydrated ? open : defaultOpen}
       onToggle={(e) => setOpen(e.currentTarget.open)}
-      className={clsx("group space-y-3", className)}
+      className={clsx("group", className)}
     >
       <summary
         className={clsx(
@@ -59,7 +59,7 @@ export function PersistedSection({
       >
         {summary}
       </summary>
-      {children}
+      <div>{children}</div>
     </details>
   );
 }

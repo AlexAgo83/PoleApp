@@ -231,7 +231,7 @@ export default async function TeacherStudentDetailPage({
 
       {canEdit && (
         <section className="panel space-y-5 border-indigo-400/15 p-6">
-          <details className="group space-y-3">
+          <details className="group">
             <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
               <div>
                 <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
@@ -257,7 +257,7 @@ export default async function TeacherStudentDetailPage({
       )}
 
       <section className="panel border-indigo-400/15 p-6">
-        <details className="group space-y-3" open={false}>
+        <details className="group" open={false}>
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
             <h2 className="text-lg font-semibold text-white">
               Blessures ({student.injuries.length})
@@ -289,7 +289,7 @@ export default async function TeacherStudentDetailPage({
       </section>
 
       <section className="panel border-indigo-400/15 p-6">
-        <details className="group space-y-3" open={false}>
+        <details className="group" open={false}>
           <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
             <h2 className="text-lg font-semibold text-white">
               Mini-jeux ({gameSessions.length})

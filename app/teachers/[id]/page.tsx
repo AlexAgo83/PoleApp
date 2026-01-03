@@ -268,7 +268,7 @@ export default async function TeacherPublicProfilePage({
           />
 
           <section className="panel space-y-5 border-indigo-400/15 p-6">
-            <details className="group space-y-3">
+            <details className="group">
               <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
                 <div>
                   <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
@@ -279,7 +279,7 @@ export default async function TeacherPublicProfilePage({
                   <span className="hidden group-open:inline">Fermer</span>
                 </span>
               </summary>
-              <div className="pt-1">
+              <div className="mt-3 pt-1">
                 <TeacherAvatarManager
                   teacherId={teacher.id}
                   folder={avatarFolder}
