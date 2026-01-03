@@ -152,7 +152,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
         foxHref="/"
       />
 
-      <section className="panel space-y-4 border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
+      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-2xl font-semibold text-white">Presets & combos</h2>
           <div className="flex flex-wrap items-center justify-end gap-2 md:w-auto">
@@ -240,7 +240,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
           <form
             key={`filters-${q || "all"}-${disciplineFilters.join("|") || "all"}-${priceFilter || "all"}-${ownerFilter || "all"}-${purchaseFilter || "all"}-${mediaFilter || "all"}`}
             method="get"
-            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
+            className="panel-grid lg-gap rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
           >
             <label className="text-sm text-slate-200">
               Recherche

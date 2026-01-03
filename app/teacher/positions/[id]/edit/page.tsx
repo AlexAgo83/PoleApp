@@ -91,7 +91,7 @@ export default async function EditPositionPage({ params }: Props) {
         : undefined;
   return (
     <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
-      <section className="panel mt-2 space-y-3 p-4 md:p-6">
+      <section className="panel panel-body lg-gap mt-2">
         <p className="text-sm text-slate-200">
           Mets à jour les informations principales de la position. Les médias supplémentaires viendront plus tard.
         </p>
@@ -117,7 +117,7 @@ export default async function EditPositionPage({ params }: Props) {
         />
       </section>
 
-      <section className="panel mt-4 border-red-500/30 bg-red-500/5 p-6">
+      <section className="panel panel-body lg-gap mt-4 border-red-500/30 bg-red-500/5">
         <h2 className="text-lg font-semibold text-white">Supprimer cette position</h2>
         <p className="text-sm text-slate-200">
           Action irréversible. Les liens cours/progression seront supprimés.

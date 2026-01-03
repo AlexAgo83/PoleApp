@@ -132,7 +132,7 @@ export default async function SuperAdminPage({ searchParams }: PageProps) {
         title="Audit"
         subtitle="10 dernières actions"
         defaultOpen={false}
-        className="panel space-y-3 p-5"
+        className="panel panel-body lg-gap"
         contentClassName="space-y-2"
       >
         <div id="audit-log" className="space-y-2">
@@ -160,11 +160,11 @@ export default async function SuperAdminPage({ searchParams }: PageProps) {
         </div>
       </PersistedPanel>
 
-      <section className="panel space-y-3 p-5">
+      <section className="panel panel-body lg-gap">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-white">Actions</h2>
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="panel-grid lg-gap md:grid-cols-2">
           {modules.map((mod) => (
             <ActionCard key={mod.href} title={mod.title} href={mod.href} cta={mod.cta} icon={mod.icon} />
           ))}

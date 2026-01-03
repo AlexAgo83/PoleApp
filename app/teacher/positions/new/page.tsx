@@ -35,7 +35,7 @@ export default async function NewPositionPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-2 pb-6 md:px-8">
-      <section className="panel mt-2 space-y-3 p-4 md:p-6">
+      <section className="panel panel-body lg-gap mt-2">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">Créer une nouvelle position</h1>
         </div>
