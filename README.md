@@ -1,4 +1,4 @@
-# Pole App — Produit v0.12.5
+# Pole App — Produit v0.12.11
 
 Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. Steps 0→9 livrées (Discovery QA incluse). Phase produit enclenchée : fiabilité/ops, sécurité, observabilité, perf et billing/credits obligatoires. Uploads médias Cloudinary généralisés (avatars, cours, studios, écoles, presets, positions vidéo).
 
@@ -56,9 +56,9 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Médias : image placeholder si absent, vignettes 2 colonnes sur la liste.
 
 ## Médias / Avatars
-- Cloudinary activé (images + vidéos authentifiées) avec signatures serveur.
+- Cloudinary activé (images + vidéos authentifiées) avec signatures serveur. Images servies en `f_auto`/`q_60-65` + tailles fixes sur les cartes et headers.
 - Avatars : upload contrôlé (4 Mo max, 2160x2160, jpg/png/webp), suppression nettoie Cloudinary sauf images seed; fallback par `avatarPublicId` seed (15H/15F) sans doublons.
-- Photos cours/studios/écoles/presets : stockage `photoPublicId` (ou `imagePublicId`/`videoPublicId` pour presets), affichage via Cloudinary avec placeholders si absent.
+- Photos cours/studios/écoles/presets : stockage `photoPublicId` (ou `imagePublicId`/`videoPublicId` pour presets), affichage via Cloudinary transformé (headers en `c_fill,w=1200,h=600,q=60`), placeholders si absent.
 - Positions : vidéos Cloudinary authentifiées, lecture via URL signées.
 
 ## Blessures & progression
@@ -70,7 +70,8 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Facturation admin : `/app/admin/billing` (Invoice par cours, filtres date/prof/studio/statut, export CSV, actions statut/montant/note, backfill factures manquantes, panel filtres stylisé avec compteur en pied).
 - Facturation prof : `/app/teacher/billing` (lecture seule des factures de ses cours, filtres date/studio/statut/recherche, export CSV, lien d’impression HTML par facture).
 - Élève : `/app/student/courses` historique (pagination 10) + détail, mêmes layouts/photos et CTA ; agenda semaine/mois dédié (`/app/student/courses/agenda`) aligné mobile/desktop. Inscription bloquée si positions absentes (occurrences virtuelles).
-- Détail cours (prof/élève) : header avec photo en fond, badge “Occurrence programmée” pour les virtuels, boutons alignés (retour/partager/agenda), ICS dynamique (timezone globale + alarme 30 min).
+- Détail cours (prof/élève) : header Cloudinary transformé en fond, badge “Occurrence programmée” pour les virtuels, boutons alignés (retour/partager/agenda), ICS dynamique (timezone globale + alarme 30 min). Annulation rembourse automatiquement les élèves (crédits restitués) et nettoie factures liées.
+- Notifications : menu cloche (supprimer, tout supprimer, compteur, scroll), déduplication par user/kind/course, limite 50 en fetch; seed plafonné à 30/user. Notifs élèves/profs/admin pour inscriptions/mises à jour/annulations/notes/factures.
 
 ## Mini-jeu
 - `/app/student/game` : quiz photo → nom sur positions débloquées (ou toutes si premium).
