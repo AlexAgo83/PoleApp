@@ -5,7 +5,7 @@ import { getDefaultAvatarPublicIds, isCloudinaryEnabled } from "./cloudinary";
 import { SEED_MEDIA_IDS, normalizeFolderedPublicId } from "./media";
 import { prisma } from "./prisma";
 
-export const DEFAULT_MEDIA_PREFIX = "poleapp/";
+export const DEFAULT_MEDIA_PREFIX = "";
 
 export type MediaResourceType = "image" | "video";
 export type MediaDeliveryType = "upload" | "authenticated";

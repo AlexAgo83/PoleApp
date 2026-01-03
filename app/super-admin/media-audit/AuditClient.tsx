@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useMemo, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import { CloudAsset, DbMediaRef } from "@/lib/mediaAudit";
 import { scanMediaAuditAction, type AuditState } from "./actions";
@@ -80,7 +80,7 @@ function toCsv(rows: Row[]) {
 }
 
 export function AuditClient() {
-  const [state, formAction] = useFormState(scanMediaAuditAction, initialState);
+  const [state, formAction] = useActionState(scanMediaAuditAction, initialState);
   const [filter, setFilter] = useState<CategoryFilter>("all");
 
   const rows: Row[] = useMemo(() => {
@@ -143,11 +143,12 @@ export function AuditClient() {
             </select>
           </label>
           <label className="grid gap-1 text-sm text-slate-200">
-            Prefix/dossier
+            Prefix/dossier (optionnel)
             <input
               name="prefix"
-              defaultValue="poleapp/"
+              defaultValue=""
               className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-slate-500 transition focus:border-cyan-400 focus:outline-none"
+              placeholder="ex: poleapp/"
             />
           </label>
           <label className="grid gap-1 text-sm text-slate-200">
