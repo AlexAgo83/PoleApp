@@ -217,7 +217,7 @@ export default async function TeacherCourseDetailPage({
   const cost = course.costCredits ?? 100;
   const coursePhoto =
     course.photoPublicId && CLOUD_NAME
-      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_60,w_1200,h_600/${course.photoPublicId}`
       : COURSE_PHOTO_PLACEHOLDER;
   const NOW_MS = Date.now();
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {

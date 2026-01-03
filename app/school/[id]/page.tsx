@@ -297,7 +297,7 @@ export default async function StudioPage({ params, searchParams }: PageProps) {
   const courseBasePath = userRole === "STUDENT" ? "/student/courses" : "/teacher/courses";
   const studioPhoto =
     CLOUD_NAME && studio.photoPublicId
-      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_1400,h_520/${studio.photoPublicId}`
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_60,w_1200,h_600/${studio.photoPublicId}`
       : COURSE_PLACEHOLDER;
   const headerBgStyle = {
     backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${studioPhoto})`,
