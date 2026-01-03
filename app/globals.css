@@ -50,6 +50,10 @@ a {
   text-decoration: none;
 }
 
+details > summary + * {
+  margin-top: 0.75rem;
+}
+
 .panel {
   background:
     linear-gradient(135deg, rgba(15, 23, 42, 0.45), rgba(12, 20, 35, 0.38)),

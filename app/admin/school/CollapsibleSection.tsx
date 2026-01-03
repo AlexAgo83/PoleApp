@@ -49,7 +49,7 @@ export function CollapsibleSection({
     <details
       open={hydrated ? open : undefined}
       onToggle={(e) => setOpen(e.currentTarget.open)}
-      className={clsx("group space-y-4", className)}
+      className={clsx("group", className)}
     >
       <summary
         className={clsx(
@@ -59,7 +59,7 @@ export function CollapsibleSection({
       >
         {summary}
       </summary>
-      {children}
+      <div>{children}</div>
     </details>
   );
 }
