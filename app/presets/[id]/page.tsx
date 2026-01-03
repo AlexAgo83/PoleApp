@@ -14,7 +14,7 @@ import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { buyPresetAction } from "@/app/student/actions";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ from?: string }>;
 };
 

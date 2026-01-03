@@ -17,7 +17,7 @@ function formatDate(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
 }
 
-type SearchParams = { kind?: string; status?: string; q?: string; page?: string } | Promise<{ kind?: string; status?: string; q?: string; page?: string }>;
+type SearchParams = Promise<{ kind?: string; status?: string; q?: string; page?: string }>;
 
 function getParam(value?: string) {
   return typeof value === "string" ? value : undefined;

@@ -12,15 +12,13 @@ import { CloudinaryField } from "@/components/CloudinaryField";
 
 export const dynamic = "force-dynamic";
 
-type PageProps =
-  | { searchParams?: { page?: string | string[]; q?: string | string[]; flash?: string | string[] } }
-  | {
-      searchParams?: Promise<{
-        page?: string | string[];
-        q?: string | string[];
-        flash?: string | string[];
-      }>;
-    };
+type PageProps = {
+  searchParams?: Promise<{
+    page?: string | string[];
+    q?: string | string[];
+    flash?: string | string[];
+  }>;
+};
 
 function paramValue(value?: string | string[]) {
   if (Array.isArray(value)) return value[value.length - 1];
@@ -28,7 +26,11 @@ function paramValue(value?: string | string[]) {
 }
 
 export default async function AdminStudiosPage({ searchParams }: PageProps) {
-  const resolvedParams = await Promise.resolve(searchParams);
+  const resolvedParams = (await Promise.resolve(searchParams ?? {})) as {
+    page?: string | string[];
+    q?: string | string[];
+    flash?: string | string[];
+  };
   const pageParam = paramValue(resolvedParams?.page);
   const q = (paramValue(resolvedParams?.q) ?? "").toString().trim();
   const flash = paramValue(resolvedParams?.flash);

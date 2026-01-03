@@ -7,17 +7,15 @@ import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export default async function SuperAdminUsersPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-} = {}) {
+type PageProps = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     redirect("/access-denied");
   }
 
-  const resolvedParams = (await searchParams) ?? {};
+  const resolvedParams = (await (searchParams ?? Promise.resolve({}))) ?? {};
   const getValue = (value?: string | string[]) => (Array.isArray(value) ? value[0] : value);
   const flash = getValue(resolvedParams.flash);
   const flashTemp = getValue(resolvedParams.temp);

@@ -15,28 +15,24 @@ import { resolveAvatarUrl } from "@/lib/avatar";
 export const dynamic = "force-dynamic";
 const USER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
-export default async function AdminUsersPage({
-  searchParams,
-}: {
-  searchParams?:
-    | {
-        success?: string;
-        error?: string;
-        page?: string;
-        role?: string;
-        premium?: string;
-        q?: string;
-      }
-    | Promise<{
-        success?: string;
-        error?: string;
-        page?: string;
-        role?: string;
-        premium?: string;
-        q?: string;
-      }>;
-}) {
-  const params = (await Promise.resolve(searchParams)) ?? {};
+type SearchParams = Promise<{
+  success?: string;
+  error?: string;
+  page?: string;
+  role?: string;
+  premium?: string;
+  q?: string;
+}>;
+
+export default async function AdminUsersPage({ searchParams }: { searchParams?: SearchParams }) {
+  const params = (await Promise.resolve(searchParams ?? {})) as {
+    success?: string;
+    error?: string;
+    page?: string;
+    role?: string;
+    premium?: string;
+    q?: string;
+  };
   const rawPage = Number(params.page ?? "1");
   const roleFilter =
     params.role && ["STUDENT", "TEACHER", "SCHOOL_ADMIN"].includes(params.role)

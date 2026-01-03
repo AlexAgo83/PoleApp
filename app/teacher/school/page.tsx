@@ -53,9 +53,7 @@ type SchoolCourse = {
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null; studentId?: string | null }[];
 };
 
-export default async function TeacherSchoolPage({
-  searchParams,
-}: {
+type PageProps = {
   searchParams?: Promise<{
     view?: string;
     month?: string;
@@ -68,7 +66,9 @@ export default async function TeacherSchoolPage({
     q?: string | string[];
     mine?: string | string[];
   }>;
-} = {}) {
+};
+
+export default async function TeacherSchoolPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user || !session.user.schoolId) {
     redirect("/access-denied");
@@ -77,7 +77,7 @@ export default async function TeacherSchoolPage({
     redirect("/access-denied");
   }
 
-  const params = (await searchParams) ?? {};
+  const params = (await (searchParams ?? Promise.resolve({}))) ?? {};
   const view = params.view === "week" ? "week" : "month";
   const monthParam = typeof params.month === "string" ? params.month : undefined;
   const weekParam = typeof params.week === "string" ? params.week : undefined;

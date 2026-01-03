@@ -10,7 +10,7 @@ import { LocalDateTime } from "@/components/LocalDateTime";
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  params: { id: string } | Promise<{ id?: string }>;
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ from?: string }>;
 };
 

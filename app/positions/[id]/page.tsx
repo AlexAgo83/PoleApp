@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
 
 import { SafeImage } from "@/components/SafeImage";
 import { FoxPageHeader } from "@/components/FoxPageHeader";
@@ -13,52 +12,12 @@ import { generateSignedUrl } from "@/lib/cloudinary";
 import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
+import { toggleFavoriteAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-export async function toggleFavoriteAction(formData: FormData) {
-  "use server";
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/login");
-  }
-  const positionId = formData.get("positionId")?.toString();
-  const redirectTo = formData.get("redirectTo")?.toString() || (positionId ? `/positions/${positionId}` : "/positions");
-  if (!positionId) {
-    redirect(redirectTo);
-  }
-
-  const role = session.user.role;
-  if (role === "STUDENT") {
-    const existing = await prisma.studentFavoritePosition.findFirst({
-      where: { studentId: session.user.id, positionId },
-    });
-    if (existing) {
-      await prisma.studentFavoritePosition.delete({ where: { studentId_positionId: { studentId: session.user.id, positionId } } });
-    } else {
-      await prisma.studentFavoritePosition.create({
-        data: { studentId: session.user.id, positionId },
-      });
-    }
-  } else if (role === "TEACHER") {
-    const existing = await prisma.teacherFavoritePosition.findFirst({
-      where: { teacherId: session.user.id, positionId },
-    });
-    if (existing) {
-      await prisma.teacherFavoritePosition.delete({ where: { teacherId_positionId: { teacherId: session.user.id, positionId } } });
-    } else {
-      await prisma.teacherFavoritePosition.create({
-        data: { teacherId: session.user.id, positionId },
-      });
-    }
-  }
-
-  revalidatePath(redirectTo);
-  redirect(redirectTo);
-}
-
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{
     from?: string;
   }>;
@@ -319,6 +278,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
       select: {
         id: true,
         title: true,
+        description: true,
         discipline: true,
         imagePublicId: true,
         priceCredits: true,

@@ -13,17 +13,11 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 10;
 const TEACHER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
-type SearchParams =
-  | {
-      page?: string;
-      q?: string;
-      premium?: string;
-    }
-  | Promise<{
-      page?: string;
-      q?: string;
-      premium?: string;
-    }>;
+type SearchParams = Promise<{
+  page?: string;
+  q?: string;
+  premium?: string;
+}>;
 
 export default async function AdminTeachersPage({ searchParams }: { searchParams?: SearchParams }) {
   const session = await getServerSession(authOptions);
@@ -42,7 +36,11 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
     );
   }
 
-  const params = (await Promise.resolve(searchParams)) ?? {};
+  const params = (await Promise.resolve(searchParams ?? {})) as {
+    page?: string;
+    q?: string;
+    premium?: string;
+  };
   const rawPage = Number(params.page ?? "1");
   const currentPage = Math.max(1, Number.isFinite(rawPage) ? rawPage : 1);
   const q = params.q?.toString().trim() || "";

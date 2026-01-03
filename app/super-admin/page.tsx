@@ -8,16 +8,17 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function SuperAdminPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-} = {}) {
+type PageProps = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function SuperAdminPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     redirect("/access-denied");
   }
-  const resolvedParams = (await searchParams) ?? {};
+  const resolvedParams = (await (searchParams ?? Promise.resolve({}))) as Record<
+    string,
+    string | string[] | undefined
+  >;
   const getValue = (value?: string | string[]) =>
     Array.isArray(value) ? value[0] : value;
   const flash = getValue(resolvedParams.flash);

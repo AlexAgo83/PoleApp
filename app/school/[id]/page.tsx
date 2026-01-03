@@ -29,9 +29,10 @@ function formatMonthKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
-type PageProps =
-  | { params: { id: string }; searchParams?: Promise<Record<string, string | string[] | undefined>> }
-  | { params: Promise<{ id?: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
 export default async function StudioPage({ params, searchParams }: PageProps) {
   const resolvedParams = await Promise.resolve(params);

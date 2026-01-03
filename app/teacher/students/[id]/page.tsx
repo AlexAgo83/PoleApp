@@ -12,7 +12,7 @@ import { PersistedSection } from "./PersistedSection";
 import { ProgressCard } from "./ProgressCard";
 
 type Props = {
-  params: { id: string } | Promise<{ id?: string }>;
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ from?: string }>;
 };
 

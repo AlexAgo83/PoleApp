@@ -17,17 +17,18 @@ function formatAmount(cents: number, currency: string) {
   }).format((cents ?? 0) / 100);
 }
 
-export default async function SuperAdminSubscriptionsPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-} = {}) {
+type PageProps = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function SuperAdminSubscriptionsPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SUPER_ADMIN") {
     redirect("/access-denied");
   }
 
-  const resolvedParams = (await searchParams) ?? {};
+  const resolvedParams = (await (searchParams ?? Promise.resolve({}))) as Record<
+    string,
+    string | string[] | undefined
+  >;
   const getValue = (value?: string | string[]) =>
     Array.isArray(value) ? value[0] : value;
   const flash = getValue(resolvedParams.flash);

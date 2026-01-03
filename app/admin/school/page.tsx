@@ -20,17 +20,16 @@ import {
 export const dynamic = "force-dynamic";
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
-export default async function AdminSchoolPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-} = {}) {
+type PageProps = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function AdminSchoolPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     redirect("/access-denied");
   }
 
-  const resolvedParams = (await searchParams) ?? {};
+  const resolvedParams =
+    (await (searchParams ?? Promise.resolve({}))) as Record<string, string | string[] | undefined>;
   const getValue = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v);
   const flash = getValue(resolvedParams.flash);
   const flashMessage = getValue(resolvedParams.flashMessage);
