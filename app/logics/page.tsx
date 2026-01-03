@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import React from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -90,6 +91,89 @@ export default async function LogicsPage({ searchParams }: PageProps) {
 
   const content = selectedDoc ? fs.readFileSync(selectedDoc.path, "utf-8") : null;
 
+  const renderMarkdown = (raw: string) => {
+    const elements: React.ReactNode[] = [];
+    let listItems: string[] = [];
+
+    const flushList = () => {
+      if (listItems.length > 0) {
+        elements.push(
+          <ul key={`ul-${elements.length}`} className="list-disc space-y-1 pl-5 text-sm text-slate-200">
+            {listItems.map((item, idx) => (
+              <li key={`li-${elements.length}-${idx}`} className="leading-relaxed">
+                {item}
+              </li>
+            ))}
+          </ul>,
+        );
+        listItems = [];
+      }
+    };
+
+    const renderText = (line: string, idx: number) => {
+      const isQuote = line.startsWith(">");
+      const normalized = isQuote ? line.replace(/^>\s?/, "") : line;
+      const parts = normalized.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+      const Wrapper = isQuote ? "em" : React.Fragment;
+      const textClass = isQuote ? "text-cyan-200" : "text-slate-200";
+      return (
+        <p key={`p-${idx}`} className={`whitespace-pre-wrap text-sm leading-relaxed ${textClass}`}>
+          <Wrapper>
+            {parts.map((part, i) =>
+              part.startsWith("**") && part.endsWith("**") ? (
+                <strong key={i} className="text-white">
+                  {part.replace(/\*\*/g, "")}
+                </strong>
+              ) : (
+                <span key={i}>{part}</span>
+              ),
+            )}
+          </Wrapper>
+        </p>
+      );
+    };
+
+    raw.split(/\r?\n/).forEach((line, idx) => {
+      const trimmed = line.trimStart();
+      const heading = trimmed.match(/^(#{1,3})\s+(.*)$/);
+      if (heading) {
+        flushList();
+        const level = heading[1].length;
+        const text = heading[2].trim();
+        const HeadingTag = (`h${Math.min(level, 3)}` as unknown) as keyof JSX.IntrinsicElements;
+        elements.push(
+          <HeadingTag
+            key={`h-${idx}`}
+            className={`font-semibold text-white ${
+              level === 1 ? "text-2xl" : level === 2 ? "text-xl" : "text-lg"
+            } mt-2`}
+          >
+            {text}
+          </HeadingTag>,
+        );
+        return;
+      }
+
+      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+        const itemText = trimmed.replace(/^[-*]\s+/, "");
+        listItems.push(itemText);
+        return;
+      }
+
+      if (trimmed.length === 0) {
+        flushList();
+        elements.push(<div key={`spacer-${idx}`} className="h-2" />);
+        return;
+      }
+
+      flushList();
+      elements.push(renderText(trimmed, idx));
+    });
+
+    flushList();
+    return elements;
+  };
+
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 pt-0 pb-2 md:px-8 md:pt-0 md:pb-4">
       <FoxPageHeader
@@ -153,7 +237,7 @@ export default async function LogicsPage({ searchParams }: PageProps) {
           {selectedDoc ? selectedDoc.title : "Aucun fichier sélectionné"}
         </h2>
         {content ? (
-          <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200">{content}</pre>
+          <div className="space-y-2">{renderMarkdown(content)}</div>
         ) : (
           <p className="text-sm text-slate-300">Choisis un fichier pour afficher son contenu.</p>
         )}
