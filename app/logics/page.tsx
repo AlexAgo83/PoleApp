@@ -159,7 +159,7 @@ export default async function LogicsPage({ searchParams }: PageProps) {
         flushList();
         const level = heading[1].length;
         const text = heading[2].trim();
-        const HeadingTag = (`h${Math.min(level, 3)}` as unknown) as keyof JSX.IntrinsicElements;
+        const HeadingTag = `h${Math.min(level, 3)}` as keyof React.JSX.IntrinsicElements;
         elements.push(
           <HeadingTag
             key={`h-${idx}`}
