@@ -160,7 +160,7 @@ export default async function StudentCourseDetailPage({
   const waitlistFull = waitlistQuota > 0 && waitlistCount >= waitlistQuota;
   const coursePhoto =
     course.photoPublicId && CLOUD_NAME
-      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${course.photoPublicId}`
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_60,w_1200,h_600/${course.photoPublicId}`
       : COURSE_PLACEHOLDER;
   const myAttendance = course.attendances[0];
   const isWaitlist = myAttendance?.status === "WAITLIST";

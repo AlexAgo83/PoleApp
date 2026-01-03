@@ -436,7 +436,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
     .slice(0, 8);
   const schoolPhoto =
     school.photoPublicId && CLOUD_NAME
-      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${school.photoPublicId}`
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_60,w_1200,h_600/${school.photoPublicId}`
       : COURSE_PLACEHOLDER;
   const headerBgStyle = {
     backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.88), rgba(15,25,45,0.72)), url(${schoolPhoto})`,
