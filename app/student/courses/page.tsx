@@ -510,8 +510,8 @@ export default async function StudentCoursesPage({
                           : COURSE_PHOTO_PLACEHOLDER
                       }
                       alt={course.title ?? "Cours"}
-                      width={96}
-                      height={64}
+                      width={120}
+                      height={80}
                       className="h-16 w-24 rounded-lg border border-white/10 object-cover shadow"
                       fallbackSrc={COURSE_PHOTO_PLACEHOLDER}
                     />
