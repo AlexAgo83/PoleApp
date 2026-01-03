@@ -682,9 +682,9 @@ export default async function PositionDetailPage({ params, searchParams }: Props
             )}
 
             {isUnlockedByPurchase && isStudent && !isPremium ? (
-              <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 p-3 shadow-inner shadow-emerald-900/25">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-emerald-200">Accès</p>
-                <p className="text-sm font-semibold text-emerald-50">Débloqué par achat</p>
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-300/40 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-50">
+                <span className="text-[10px] uppercase tracking-[0.12em] text-emerald-200">Accès</span>
+                <span>Débloqué par achat</span>
               </div>
             ) : null}
 
