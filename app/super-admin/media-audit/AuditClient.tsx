@@ -181,11 +181,27 @@ export function AuditClient() {
         <div className="panel panel-body lg-gap">
           <div className="flex flex-wrap items-center gap-3 justify-between">
             <div className="flex flex-wrap gap-3 text-sm text-slate-300">
-              <span className="rounded-lg bg-white/5 px-3 py-1">Cloudinary : {state.data.stats.cloudCount}</span>
-              <span className="rounded-lg bg-white/5 px-3 py-1">DB : {state.data.stats.dbCount}</span>
-              <span className="rounded-lg bg-amber-500/20 px-3 py-1 text-amber-100">Orphelins : {state.data.stats.orphans}</span>
-              <span className="rounded-lg bg-rose-500/20 px-3 py-1 text-rose-100">Cassés : {state.data.stats.missing}</span>
-              <span className="rounded-lg bg-white/5 px-3 py-1">{(state.data.stats.durationMs / 1000).toFixed(1)}s</span>
+              <span title="Assets Cloudinary scannés (après filtres prefix/type)" className="rounded-lg bg-white/5 px-3 py-1">
+                Cloudinary : {state.data.stats.cloudCount}
+              </span>
+              <span title="Références médias trouvées en base" className="rounded-lg bg-white/5 px-3 py-1">
+                DB : {state.data.stats.dbCount}
+              </span>
+              <span
+                title="Assets présents sur Cloudinary mais absents en base"
+                className="rounded-lg bg-amber-500/20 px-3 py-1 text-amber-100"
+              >
+                Orphelins : {state.data.stats.orphans}
+              </span>
+              <span
+                title="Références présentes en base mais absentes de Cloudinary"
+                className="rounded-lg bg-rose-500/20 px-3 py-1 text-rose-100"
+              >
+                Cassés : {state.data.stats.missing}
+              </span>
+              <span title="Durée du scan" className="rounded-lg bg-white/5 px-3 py-1">
+                {(state.data.stats.durationMs / 1000).toFixed(1)}s
+              </span>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-300">
               <label className="flex items-center gap-2">
