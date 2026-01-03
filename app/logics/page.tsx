@@ -111,6 +111,25 @@ export default async function LogicsPage({ searchParams }: PageProps) {
     };
 
     const renderText = (line: string, idx: number) => {
+      const isMetaLine = /\[.*(Compréhension|Confiance)/i.test(line);
+      if (isMetaLine) {
+        const cleaned = line.replace(/^[\[\(]\s*/, "").replace(/[\]\)]\s*$/, "");
+        const parts = cleaned.split(/\s*[|/]\s*/).filter(Boolean);
+        if (parts.length > 0) {
+          return (
+            <div key={`badge-${idx}`} className="flex flex-wrap gap-2">
+              {parts.map((part, i) => (
+                <span
+                  key={`badge-${idx}-${i}`}
+                  className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs font-semibold text-cyan-100"
+                >
+                  {part}
+                </span>
+              ))}
+            </div>
+          );
+        }
+      }
       const isQuote = line.startsWith(">");
       const normalized = isQuote ? line.replace(/^>\s?/, "") : line;
       const parts = normalized.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
