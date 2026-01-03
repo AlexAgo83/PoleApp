@@ -82,12 +82,12 @@ function LoginContent() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-start px-4 py-4 md:items-center md:justify-center md:px-6 md:py-6">
-      <section className="panel w-full max-w-xl border-indigo-400/25 p-6 shadow-indigo-900/30 md:p-9">
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col items-center justify-center gap-4 px-2 pt-0 pb-4 md:px-6 md:pt-0 md:pb-6">
+      <section className="panel panel-body lg-gap w-full max-w-xl border-indigo-400/25 shadow-indigo-900/30">
         <h1 className="text-3xl font-semibold text-white">
           Connexion
         </h1>
-        <details className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
+        <details className="rounded-xl border border-dashed border-amber-300/70 bg-amber-500/10 p-3 text-sm text-slate-200 shadow-inner shadow-amber-900/20">
           <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             Accès démo (comptes seed)
             <span className="text-xs text-slate-300">▼</span>
@@ -122,7 +122,7 @@ function LoginContent() {
             </div>
           </div>
         </details>
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="text-sm text-slate-200" htmlFor="email">
               Email
@@ -206,12 +206,12 @@ function LoginContent() {
           </Link>
         </form>
 
-        <details className="mt-6 space-y-3 rounded-xl border border-indigo-400/25 bg-white/5 p-4 text-sm text-slate-200">
-          <summary className="flex cursor-pointer items-center justify-between text-base font-semibold text-white">
+        <details className="mt-4 rounded-xl border border-indigo-400/25 bg-white/5 p-3 text-sm text-slate-200">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
             Pas encore de compte ?
-            <span className="text-sm text-slate-300">▼</span>
+            <span className="text-xs text-slate-300">▼</span>
           </summary>
-          <div className="flex flex-wrap gap-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             <Link
               href="/signup"
               className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
