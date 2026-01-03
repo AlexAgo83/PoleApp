@@ -119,7 +119,7 @@ export function AuditClient() {
             <p className="text-sm text-slate-400">Compare les assets Cloudinary (image/vidéo, upload/authenticated) avec les références DB.</p>
           </div>
         </div>
-        <form action={formAction} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+        <form action={formAction} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:items-end">
           <label className="grid gap-1 text-sm text-slate-200">
             Type de ressource
             <select
@@ -143,15 +143,6 @@ export function AuditClient() {
             </select>
           </label>
           <label className="grid gap-1 text-sm text-slate-200">
-            Prefix/dossier (optionnel)
-            <input
-              name="prefix"
-              defaultValue=""
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-slate-500 transition focus:border-cyan-400 focus:outline-none"
-              placeholder="ex: poleapp/positions/"
-            />
-          </label>
-          <label className="grid gap-1 text-sm text-slate-200">
             Max résultats (total)
             <input
               name="maxResults"
@@ -162,15 +153,7 @@ export function AuditClient() {
               className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white transition focus:border-cyan-400 focus:outline-none"
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-slate-200">
-            <input
-              name="includeSeeds"
-              type="checkbox"
-              className="h-4 w-4 rounded border border-white/20 bg-white/5 text-cyan-400"
-            />{" "}
-            Inclure seeds/placeholders
-          </label>
-          <div className="sm:col-span-2 lg:col-span-4 flex items-center gap-2">
+          <div className="sm:col-span-2 lg:col-span-3 flex items-center gap-2">
             <SubmitButton />
             {state.status === "error" ? <span className="text-sm text-amber-300">{state.message}</span> : null}
           </div>
@@ -181,7 +164,7 @@ export function AuditClient() {
         <div className="panel panel-body lg-gap">
           <div className="flex flex-wrap items-center gap-3 justify-between">
             <div className="flex flex-wrap gap-3 text-sm text-slate-300">
-              <span title="Assets Cloudinary scannés (après filtres prefix/type)" className="rounded-lg bg-white/5 px-3 py-1">
+              <span title="Assets Cloudinary scannés (après filtres type)" className="rounded-lg bg-white/5 px-3 py-1">
                 Cloudinary : {state.data.stats.cloudCount}
               </span>
               <span title="Références médias trouvées en base" className="rounded-lg bg-white/5 px-3 py-1">
