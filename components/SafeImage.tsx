@@ -16,6 +16,8 @@ type SafeImageProps = {
   height?: number;
   loading?: "lazy" | "eager";
   fallbackSrc?: string;
+  quality?: number;
+  optimize?: boolean;
 };
 
 /**
@@ -34,6 +36,8 @@ export function SafeImage({
   height,
   loading = "lazy",
   fallbackSrc,
+  quality = 65,
+  optimize = true,
 }: SafeImageProps) {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
   const resolvedSrc =
@@ -76,7 +80,8 @@ export function SafeImage({
       width={resolvedWidth}
       height={resolvedHeight}
       loading={loading}
-      unoptimized
+      quality={quality}
+      unoptimized={!optimize}
       onError={() => setForceFallback(true)}
     />
   );

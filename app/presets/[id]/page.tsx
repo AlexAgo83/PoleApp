@@ -196,6 +196,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                   alt={preset.title}
                   width={960}
                   height={400}
+                  quality={65}
                   className="aspect-[16/9] w-full object-cover"
                 />
               </div>

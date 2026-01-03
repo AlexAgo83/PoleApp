@@ -465,6 +465,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       alt={p.name}
                       width={480}
                       height={360}
+                      quality={65}
                       className="aspect-[4/3] w-full object-cover"
                       fallbackSrc={POSITION_PLACEHOLDER}
                     />
@@ -474,6 +475,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                       alt={p.name}
                       width={480}
                       height={360}
+                      quality={65}
                       className="aspect-[4/3] w-full object-cover"
                       fallbackSrc={POSITION_PLACEHOLDER}
                     />

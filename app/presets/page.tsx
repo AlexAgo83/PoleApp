@@ -407,6 +407,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                             alt={preset.title}
                             width={480}
                             height={360}
+                            quality={65}
                             className="aspect-[4/3] w-full object-cover"
                           />
                         ) : (
