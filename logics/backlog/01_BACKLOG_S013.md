@@ -1,6 +1,6 @@
 # 01_BACKLOG_S013 — Suivi élève, droits profs, transferts crédits, détail pack (QA S014)
 [Aligné v0.10.8 | Source: QA S014 & QA S015 | Priorité: à définir]
-[Compréhension: ??% | Avancement (±QA): ??% ??%]
+[Compréhension: 90% | Confiance: 75% | Avancement (±QA): 0% build / 0% QA]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

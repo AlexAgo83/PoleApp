@@ -92,6 +92,17 @@ export default async function SuperAdminPage({ searchParams }: PageProps) {
         </svg>
       ),
     },
+    {
+      title: "Logics",
+      href: "/logics",
+      cta: "Docs internes",
+      icon: (
+        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <path d="M5 4h9a2 2 0 012 2v13l-4-2-4 2V6a2 2 0 00-2-2z" />
+          <path d="M16 6h3a1 1 0 011 1v12l-3-2" />
+        </svg>
+      ),
+    },
   ];
 
   return (

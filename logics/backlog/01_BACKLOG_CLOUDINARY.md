@@ -1,5 +1,5 @@
 # Backlog Cloudinary (uploads médias)
-[Compréhension: 80% / Avancement: 40%]
+[Compréhension: 90% / Confiance: 85% / Avancement: 80%]
 > FAIBLE PRIORITE
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
@@ -40,7 +40,7 @@
 - Ajouter une variante pour les tailles : avatar carré (crop/resize), photo cours (16:9), etc. via props `transformPreset`.
 
 ## Intégrations UI (à planifier)
-- Profil utilisateur : remplacer l’input URL par le composant upload (avatar). *(TODO)*
+- Profil utilisateur : remplacer l’input URL par le composant upload (avatar). **(DONE)**
 - Fiche cours (création/édition) : composant upload branché Cloudinary (DONE).
 - Fiche position : uploader media principal + vidéo (fait).
 - École/Studios : formulaires admin basculés sur CloudinaryUpload (DONE).
@@ -66,4 +66,5 @@
 ## État
 - Upload vidéo positions en mode authenticated + URL signées : livré (`CloudinaryUpload`, routes signature/delete, helper generateSignedUrl).
 - Seed : chaque position reçoit une vidéo Cloudinary authenticated (pool fixe). Écoles/Studios/Cours/Presets seedés avec publicId Cloudinary.
-- Reste à faire : avatars utilisateurs (UI profile), nettoyage automatisé lors des suppressions d’entités.
+- Avatars utilisateurs : upload/suppression + fallback seed en place, validations taille/format activées.
+- Reste à faire : nettoyage automatisé lors des suppressions d’entités (prisma hooks/queues) et monitoring/quota Cloudinary.

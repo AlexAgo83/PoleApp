@@ -1,5 +1,5 @@
 # Backlog — Retours QA S009 (session 2025-12-23 02:13)
-[Compréhension: 95% / Avancement: 70%]
+[Compréhension: 100% / Confiance: 85% / Avancement: 85%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

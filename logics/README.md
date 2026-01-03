@@ -1,31 +1,42 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.12.5
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.12.11
 > Doit rester à jour avec le projet (backlogs, changelog, modèles, routes).
 
 ## Contenu principal
-- `backlog/`: backlogs par Step/feature (S000–S007, Cloudinary, Mapbox…)
+- `backlog/`: backlogs par Step/feature (SXXX, Cloudinary, Mapbox…)
+- `discovery/`: QA & QE (à compléter)
 - `models/03_DATA_MODEL.md`: modèle de données à jour (Prisma/Postgres)
 - `models/04_ROUTES_AND_SCREENS.md`: écrans & routes actuelles
 - `models/05_SEED_CONTENT.md`: rappel seed (comptes fixes, écoles, cours)
 - `instructions/`: consignes Codex/Render (02_CODEX_INSTRUCTIONS.md, 02_RENDER_INSTRUCTIONS.md)
+- `knowledge/`: (à compléter)
 - `foundry/`: DRY plans (ex. facturation) et autres docs support
 - `CHANGELOG.md`: journal des versions
 - `README.md`: ce fichier
 
-## État produit (v0.12.5)
-- Auth/RBAC + profils (élève/prof/admin) avec préférences (cœurs) prof/élève.
-- Positions : progression/blessures/mini-jeux + upload vidéo Cloudinary authentifié (URL signées), muscles/articulations reliés, filtres multi-disciplines.
-- Cours : présence/attente, notes, générateur (règles d’enchaînement, raisons, favoris), badges “appliqué”, photos Cloudinary `photoPublicId`.
-- Agendas semaine inline (Admin/Teacher/Student) + bouton “Semaine actuelle”.
-- Facturation : `Invoice` + UI admin (statuts, export CSV) + lecture prof ; achats élèves (packs/abos/presets) listés côté admin/prof.
-- Partenaires : CRUD + liens sponsorisés + tracking PartnerEvent (clic/achat).
-- Presets/combos vidéo : CRUD admin/prof, catalogue élève, achat en crédits/premium, images/vidéos Cloudinary, filtres étendus + reset, pagination unique.
-- Cloudinary : photos écoles/studios/cours/presets en `photoPublicId`, avatars avec `avatarPublicId`, wrapper `CloudinaryField` pour formulaires serveur.
+## Phase produit (v0.12.x)
+- Fiabilité/ops : migrations Prisma déployées (fallback db push désactivé en prod), seed idempotent, pagination 10 items par défaut.
+- Observabilité : `/health`, logs Prisma ; audit trail à poursuivre sur actions sensibles.
+- Sécurité/PII : RBAC middleware, validations zod serveur, secrets hors code, Cloudinary via signatures serveur.
+- Perf/UX : budgets web (TTFB/CLS/LCP), images Cloudinary transformées, filtres persistés par utilisateur.
+
+## État produit (v0.12.11)
+- Auth/RBAC : NextAuth Credentials, middleware par rôle, redirections home par rôle, signup élève ouvert (premium optionnel).
+- Profil : salutation/bandeau session, page `/app/profile` (email/rôle/école, prénom/nom/âge/photo), préférences prof/élève (cœurs) visibles sur fiche publique prof.
+- Positions : progression/blessures (CRUD, pagination 10), mini-jeu, muscles/articulations liés, filtres multi-disciplines, vidéos Cloudinary authentifiées (signées).
+- Cours & agendas : listes + détail alignés élève/prof/admin, agendas semaine/mois (élève/teacher/admin) avec filtres persistés, ICS dynamique avec timezone + alarme, annulation rembourse crédits et nettoie factures liées.
+- Facturation/achats : `Invoice` par cours (admin : statuts, export CSV, backfill), lecture prof, achats élèves (packs/abos/presets) visibles côté admin/prof.
+- Presets/combos : CRUD admin/prof, catalogue élève, achat crédits/premium, images/vidéos Cloudinary, filtres étendus + reset, pagination unique.
+- Partenaires : CRUD + tracking clic/achat (PartnerEvent) + redirections partenaires.
+- Notifications : menu cloche (supprimer/clear all, compteur), déduplication par user/kind/course, limite 50 en fetch.
+- Média/Cloudinary : avatars (contrôles poids/résolution, fallback seed), headers/photos cours/studios/écoles/presets, placeholders, signatures et destruction via API.
+- Seeds dev : comptes fixes (admin/teacher/student1/2, mdp `change-me-password`), 2 écoles (photos `sc_*`), studios, partenaires, 30 positions (vidéos Cloudinary), 40 cours avec factures, crédits 500/élève, disciplines Pole/Exotic/Souplesse/Pilates/Conditioning, muscles/articulations, presets avec médias.
 
 ## Stack / scripts
-- Next.js App Router, Prisma Postgres, NextAuth Credentials, Tailwind.
-- Scripts : `npm run db:migrate:deploy` (via ci-migrate-deploy), `npm run db:push`, `npm run dev`, `npm run start:render`.
-- Seed idempotent : 2 écoles (photos Cloudinary `sc_*` + URL google), comptes fixes (admin/teacher/student1/2, mdp `change-me-password`), studios (photos `st_*`), cours démo (photos `co_*`), progression/blessures/favoris, disciplines Pole/Pole Exotic/Souplesse/Pilates/Conditioning, muscles/articulations liés, positions attribuées à des profs seedés (vidéos Cloudinary authenticated) et cours répartis entre profs sans collisions. Presets seedés avec images/vidéos Cloudinary.
+- Next.js 16 App Router, React 19, TypeScript, Tailwind v4.
+- Prisma + PostgreSQL, NextAuth Credentials.
+- Docker (multi-stage) + docker-compose ; déploiement Render via `render.yaml`.
+- Scripts clés : `npm run db:migrate:deploy`, `npm run db:push`, `npm run db:seed`, `npm run dev`, `npm run start:render`.
 
 ## À maintenir
-- Tenir à jour : backlogs, changelog, modèles (`models/03_DATA_MODEL.md`), routes (`models/04_ROUTES_AND_SCREENS.md`), instructions.
-- Références internes : privilégier les fichiers sous `logics/models/` et `logics/instructions/` (anciens chemins `logics/0x_*.md` supprimés).
+- Tenir à jour : backlogs (`backlog/*.md`), changelog, modèles (`models/03_DATA_MODEL.md`), routes (`models/04_ROUTES_AND_SCREENS.md`), instructions.
+- Références internes : privilégier les fichiers sous `models/`, `backlog/` et `instructions/`
