@@ -1,5 +1,14 @@
 # Changelog
 
+# Changelog
+
+## 2026-02-03 — Unreleased v0.13.0 (Déblocage positions via achats)
+- Positions : badge “Débloqué par achat” sur liste/détail, accès premium étendu aux positions contenues dans un preset acheté (Purchase PRESET PAID) ou un cours avec inscription CONFIRMED, placeholders conservés sinon.
+- Progression élève : badge achat et description masquée si non débloqué/premium.
+- Mini-jeu : nécessite au moins 4 positions débloquées (premium ou achat preset/cours) pour lancer un mode.
+- Seed : ajout d’un achat de preset payant et d’un cours démo “Cours Spin Débutant (démo)” avec attendance CONFIRMED pour tester le déblocage.
+- Tech : lint clean, build Next OK (warning middleware déprécié restant).
+
 ## 2026-01-03 — Release v0.12.11 (Notifications, remboursements, perfs)
 - Notifications : modèle `Notification` + API (read/delete), déduplication par user/kind/course, badge + menu (supprimer, tout supprimer), limite fetch 50. Seed limité à 30 notifs/user. Coeur plein pour favoris et position coup de coeur élève/enseignant.
 - Cours : annulation rembourse automatiquement les élèves (crédits restitués) et nettoie factures liées. Admin notifié des inscriptions/mises à jour/annulations. Notes ajoutées notifient les élèves.
