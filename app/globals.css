@@ -8,6 +8,10 @@
   --accent: #d946ef;
   --accent-strong: #fb7ba2;
   --accent-warm: #fda4af;
+  --panel-px: 1.25rem;
+  --panel-py: 1.25rem;
+  --panel-gap: 0.75rem;
+  --panel-gap-lg: 1.25rem;
 }
 
 @theme inline {
@@ -52,6 +56,26 @@ a {
 
 details > summary + * {
   margin-top: 0.75rem;
+}
+
+.panel-body {
+  padding: var(--panel-py) var(--panel-px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--panel-gap);
+}
+
+.panel-body.lg-gap {
+  gap: var(--panel-gap-lg);
+}
+
+.panel-grid {
+  display: grid;
+  gap: var(--panel-gap);
+}
+
+.panel-grid.lg-gap {
+  gap: var(--panel-gap-lg);
 }
 
 .panel {
