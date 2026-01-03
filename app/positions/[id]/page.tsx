@@ -506,16 +506,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Type</p>
                 <p className="text-sm font-semibold text-white">{typeLabels[position.type]}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-white/5 to-indigo-500/10 p-2.5 shadow-inner shadow-black/20">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Grips</p>
-                <p className="text-sm font-semibold text-white">{position.grips ?? "Non précisé"}</p>
-              </div>
-            {isUnlockedByPurchase && isStudent && !isPremium ? (
-              <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 p-2.5 shadow-inner shadow-emerald-900/25">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-emerald-200">Accès</p>
-                <p className="text-sm font-semibold text-emerald-50">Débloqué par achat</p>
-              </div>
-            ) : null}
+            <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-white/5 to-indigo-500/10 p-2.5 shadow-inner shadow-black/20">
+              <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Grips</p>
+              <p className="text-sm font-semibold text-white">{position.grips ?? "Non précisé"}</p>
+            </div>
             {position.createdBy ? (
               <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
@@ -686,6 +680,13 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                 </div>
               </div>
             )}
+
+            {isUnlockedByPurchase && isStudent && !isPremium ? (
+              <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 p-3 shadow-inner shadow-emerald-900/25">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-emerald-200">Accès</p>
+                <p className="text-sm font-semibold text-emerald-50">Débloqué par achat</p>
+              </div>
+            ) : null}
 
             {isStaff && (
               <div className="flex flex-wrap items-center justify-end gap-2">
