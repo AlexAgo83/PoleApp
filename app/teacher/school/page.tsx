@@ -721,7 +721,6 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
               q: q || undefined,
             }}
             baseFrom={baseFrom}
-            compact
             className="p-0 border-0 bg-transparent shadow-none"
           />
         )}

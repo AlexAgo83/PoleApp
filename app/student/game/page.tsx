@@ -228,7 +228,7 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
     redirect("/login");
   }
 
-  const notEnoughPositions = eligible.length === 0;
+  const notEnoughPositions = eligible.length < 4;
 
   const userSessions = await prisma.gameSession.findMany({
     where: { userId: session.user.id },
@@ -313,13 +313,15 @@ export default async function GamePage({ searchParams }: { searchParams?: Search
                         Débloquer avec Premium
                       </Link>
                     </div>
+                  ) : notEnoughPositions ? (
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-400">
+                      Minimum 4 positions débloquées requises
+                    </span>
                   ) : (
                     <Link
                       href={`/student/game?mode=${mode.id}`}
                       className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition ${
-                        eligible.length < 4
-                          ? "cursor-not-allowed border border-white/10 text-slate-500"
-                          : "border border-white/15 bg-white/5 hover:border-cyan-400/70 hover:bg-white/10"
+                        "border border-white/15 bg-white/5 hover:border-cyan-400/70 hover:bg-white/10"
                       }`}
                     >
                       Jouer

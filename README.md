@@ -1,4 +1,4 @@
-# Pole App — Produit v0.12.11
+# Pole App — Produit v0.13.0
 
 Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. 
 
@@ -49,9 +49,10 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Liens rapides vers la liste/agenda élève et navigation mois/semaine sans scroll horizontal en mobile.
 
 ## Positions
-- `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`, badge “Créé par …”.
-- Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin (bloqué si prof non-propriétaire, legacy positions éditables).
+- `/positions` : liste 2 colonnes (élève/prof/admin) + bandeau + retour contextuel `from`, badge “Créé par …”. Badge “Débloqué par achat” si la position provient d’un preset acheté ou d’un cours où l’élève est inscrit.
+- Détail `/positions/[id]` partageable; bouton “Éditer” pour Professeur/Admin (bloqué si prof non-propriétaire, legacy positions éditables). Badge achat discret dans le panneau info.
 - Discipline mise en avant (badge sur les vignettes et près du titre), stats glassy (type/niveau/grips/créateur) avec overlay “Vu”/progression sur l’image.
+- Contenu premium : élèves non-premium accèdent aux positions débloquées via achat de preset (Purchase PRESET PAID) ou inscription cours CONFIRMED, ainsi qu’à celles déjà entamées en progression; placeholders/verrou conservés sinon.
 - CRUD : `/teacher/positions/new` et `/teacher/positions/[id]/edit` (Professeur/Admin).
 - Médias : image placeholder si absent, vignettes 2 colonnes sur la liste.
 
@@ -75,7 +76,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Notifications : menu cloche (supprimer, tout supprimer, compteur, scroll), déduplication par user/kind/course, limite 50 en fetch; seed plafonné à 30/user. Notifs élèves/profs/admin pour inscriptions/mises à jour/annulations/notes/factures.
 
 ## Mini-jeu
-- `/app/student/game` : quiz photo → nom sur positions débloquées (ou toutes si premium).
+- `/app/student/game` : quiz photo → nom sur positions débloquées (ou toutes si premium). Nécessite au moins 4 positions débloquées (premium ou achat preset/cours) pour démarrer un mode.
 
 ## Admin école
 - `/app/admin` : stats école, actions rapides, vue semaine des cours de l’école.
@@ -95,6 +96,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Généré : 2 écoles (photos Cloudinary `sc_*` + URL http://www.google.com), 5 professeurs + 10 élèves/école, 500 crédits par élève, 30 positions + vidéos Cloudinary authenticated, 40 cours (durées par pas de 15 min) avec photos Cloudinary `co_*` et invoices backfill, blessures types, partenaires Amazon (4 liens produits).
 - Disciplines : catalogue Pole/Pole Exotic/Souplesse/Pilates/Conditioning seeded par école; positions et cours tagués dynamiquement.
 - Muscles/articulations seeded et liés par type de position; positions attribuées à des professeurs seedés (Elza priorisée), favoris prof auto, cours répartis sur les profs avec anti-collisions horaires.
+- Démo déblocage : un achat de preset payant (Purchase PRESET) et un cours “Cours Spin Débutant (démo)” avec attendance CONFIRMED pour illustrer l’accès aux positions via achat/inscription.
 - Extras : séries récurrentes hebdo (dont disciplines alternatives, série courte), cours “edge” (tôt/tard, virtuels, gratuits/quotas waitlist), cours de secours par studio, notes et attendances variées (attente/inscriptions) pour tester blocage d’inscription sans positions; presets seed (images/vidéos Cloudinary).
 
 ## Déploiement Render

@@ -91,7 +91,6 @@ export function HeaderNotificationsMenu() {
       document.removeEventListener("keydown", onKey);
       clearInterval(interval);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const markReadAndNavigate = async (notif: Notification) => {
@@ -104,7 +103,7 @@ export function HeaderNotificationsMenu() {
         body: JSON.stringify({ ids: [notif.id] }),
       });
     } catch (err) {
-      // ignore errors, we still optimistically mark read
+      console.error(err);
     } finally {
       setData((prev) => ({
         unreadCount: prev.unreadCount - (!notif.readAt ? 1 : 0),
@@ -129,7 +128,7 @@ export function HeaderNotificationsMenu() {
       // Reload to ensure server state is reflected (avoid ghost reappear on reopen)
       await load();
     } catch (err) {
-      // fallback: reload to reflect server state
+      console.error(err);
       await load();
     }
   };
@@ -143,6 +142,7 @@ export function HeaderNotificationsMenu() {
       setData({ notifications: [], unreadCount: 0 });
       await load();
     } catch (err) {
+      console.error(err);
       await load();
     }
   };
