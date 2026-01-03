@@ -172,11 +172,11 @@ export function HeaderNotificationsMenu() {
       </button>
       <div
         className={clsx(
-          "absolute right-0 mt-2 w-72 max-h-[60vh] overflow-y-auto rounded-xl border border-white/10 bg-slate-900/90 p-3 shadow-xl shadow-black/30 backdrop-blur",
+          "absolute right-0 mt-2 w-72 max-h-[60vh] rounded-xl border border-white/10 bg-slate-900/90 shadow-xl shadow-black/30 backdrop-blur",
           open ? "block" : "hidden"
         )}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
           <p className="text-sm font-semibold text-white">
             Notifications ({data.notifications.length})
           </p>
@@ -192,52 +192,54 @@ export function HeaderNotificationsMenu() {
             </button>
           )}
         </div>
-        {data.notifications.length === 0 ? (
-          <p className="mt-2 text-xs text-slate-300">Aucune notification pour le moment.</p>
-        ) : (
-          <ul className="mt-2 divide-y divide-white/5">
-            {data.notifications.map((notif) => (
-              <li key={notif.id} className="py-2">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/80 rounded-lg"
-                  onClick={() => void markReadAndNavigate(notif)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      void markReadAndNavigate(notif);
-                    }
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-white">{notif.title}</p>
-                      {notif.body ? <p className="text-xs text-slate-300">{notif.body}</p> : null}
-                      <p className="text-[11px] text-slate-500">{formatDate(notif.createdAt)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {!notif.readAt && <span className="mt-0.5 h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />}
-                      <button
-                        type="button"
-                        className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-300 transition hover:border-rose-300/70 hover:bg-rose-500/15 hover:text-rose-100"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          void deleteOne(notif);
-                        }}
-                        aria-label="Supprimer la notification"
-                        title="Supprimer"
-                      >
-                        ✕
-                      </button>
+        <div className="max-h-[52vh] overflow-y-auto px-3 py-2">
+          {data.notifications.length === 0 ? (
+            <p className="text-xs text-slate-300">Aucune notification pour le moment.</p>
+          ) : (
+            <ul className="divide-y divide-white/5">
+              {data.notifications.map((notif) => (
+                <li key={notif.id} className="py-2">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/80 rounded-lg"
+                    onClick={() => void markReadAndNavigate(notif)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        void markReadAndNavigate(notif);
+                      }
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-semibold text-white">{notif.title}</p>
+                        {notif.body ? <p className="text-xs text-slate-300">{notif.body}</p> : null}
+                        <p className="text-[11px] text-slate-500">{formatDate(notif.createdAt)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!notif.readAt && <span className="mt-0.5 h-2 w-2 rounded-full bg-cyan-300" aria-hidden="true" />}
+                        <button
+                          type="button"
+                          className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-300 transition hover:border-rose-300/70 hover:bg-rose-500/15 hover:text-rose-100"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            void deleteOne(notif);
+                          }}
+                          aria-label="Supprimer la notification"
+                          title="Supprimer"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
