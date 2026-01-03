@@ -1,4 +1,4 @@
-# 03 — Modèle de données (v0.12.x)
+# 03 — Modèle de données (v0.12.11)
 > Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations notables : `photoPublicId` pour Course/Studio/School, Cloudinary avatars, Invoice/CourseRecommendation/PartnerEvent, muscles/disciplines.
 
 ## Principes
