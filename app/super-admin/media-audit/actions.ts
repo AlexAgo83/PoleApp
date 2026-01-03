@@ -33,7 +33,6 @@ export type AuditState =
             resourceType: "image" | "video" | "all";
             deliveryType: "upload" | "authenticated" | "all";
             maxResults: number;
-            includeSeeds: boolean;
           };
         };
       };
@@ -42,18 +41,12 @@ export type AuditState =
 const formSchema = z.object({
   resourceType: z.enum(["image", "video", "all"]).default("all"),
   deliveryType: z.enum(["upload", "authenticated", "all"]).default("all"),
-  prefix: z
-    .string()
-    .trim()
-    .default("")
-    .transform((v) => (typeof v === "string" && v.length > 0 ? v : DEFAULT_MEDIA_PREFIX)),
   maxResults: z.coerce
     .number()
     .int()
     .min(1)
     .max(1500)
     .default(400),
-  includeSeeds: z.coerce.boolean().default(false),
 });
 
 export async function scanMediaAuditAction(_prevState: AuditState, formData: FormData): Promise<AuditState> {
@@ -65,9 +58,7 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
   const parsed = formSchema.safeParse({
     resourceType: formData.get("resourceType") ?? "all",
     deliveryType: formData.get("deliveryType") ?? "all",
-    prefix: formData.get("prefix") ?? DEFAULT_MEDIA_PREFIX,
     maxResults: formData.get("maxResults") ?? 400,
-    includeSeeds: formData.get("includeSeeds") ?? false,
   });
 
   if (!parsed.success) {
@@ -75,7 +66,9 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
   }
 
   const start = Date.now();
-  const { resourceType, deliveryType, prefix, maxResults, includeSeeds } = parsed.data;
+  const { resourceType, deliveryType, maxResults } = parsed.data;
+  const prefix = DEFAULT_MEDIA_PREFIX;
+  const includeSeeds = false;
 
   try {
     const resourceTypes = resourceType === "all" ? ["image", "video"] : [resourceType];
@@ -111,7 +104,7 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
           missing: missing.length,
           durationMs: Date.now() - start,
           startedAt: new Date(start).toISOString(),
-          params: { prefix, resourceType, deliveryType, maxResults, includeSeeds },
+          params: { prefix, resourceType, deliveryType, maxResults },
         },
       },
     };
