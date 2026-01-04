@@ -1515,6 +1515,18 @@ async function ensurePastCoursesForFixedStudents() {
         status: "CONFIRMED",
       },
     });
+
+    const defaultAmountCents = computeDefaultInvoiceAmountCents(1, course.maxSeats);
+    await prisma.invoice.create({
+      data: {
+        courseId: course.id,
+        amountCents: defaultAmountCents,
+        currency: "EUR",
+        status: InvoiceStatus.GENERATED,
+        issuedAt: new Date(),
+        manualStatus: ManualFinancialStatus.NONE,
+      },
+    });
   }
 }
 

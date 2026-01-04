@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { InvoiceStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -83,6 +84,9 @@ export default async function TeacherDashboard() {
     newStudentsMonth,
     nextCourseRow,
     lastCourseRow,
+    paidInvoicesCount,
+    pendingInvoicesCount,
+    paidInvoicesTotalCents,
   ] = await Promise.all([
     prisma.course.count({
       where: {
@@ -131,6 +135,25 @@ export default async function TeacherDashboard() {
       select: { id: true, title: true, date: true, photoPublicId: true },
       orderBy: { date: "desc" },
     }),
+    prisma.invoice.count({
+      where: {
+        course: { teacherId: session.user.id, schoolId: session.user.schoolId },
+        status: InvoiceStatus.PAID,
+      },
+    }),
+    prisma.invoice.count({
+      where: {
+        course: { teacherId: session.user.id, schoolId: session.user.schoolId },
+        status: { in: [InvoiceStatus.GENERATED, InvoiceStatus.SENT] },
+      },
+    }),
+    prisma.invoice.aggregate({
+      where: {
+        course: { teacherId: session.user.id, schoolId: session.user.schoolId },
+        status: InvoiceStatus.PAID,
+      },
+      _sum: { amountCents: true },
+    }),
   ]);
 
   const nextCoursePhoto =
@@ -141,6 +164,15 @@ export default async function TeacherDashboard() {
     lastCourseRow?.photoPublicId && CLOUD_NAME
       ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${lastCourseRow.photoPublicId}`
       : null;
+  const nextCourseLabel = nextCourseRow
+    ? new Intl.DateTimeFormat("fr-FR", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(nextCourseRow.date))
+    : null;
 
   const agendaShortcuts: Shortcut[] = [
     { label: "Mes cours", href: "/teacher/courses/agenda?view=month" },
@@ -169,6 +201,7 @@ export default async function TeacherDashboard() {
       stats: [
         { label: "Aujourd'hui", value: coursesTodayCount },
         { label: "7 jours", value: coursesWeekCount },
+        ...(nextCourseLabel ? [{ label: "Prochain", value: nextCourseLabel }] : []),
       ],
       shortcuts: agendaShortcuts,
     },
@@ -193,6 +226,7 @@ export default async function TeacherDashboard() {
       description: "Studios, partenaires et santé de tes élèves.",
       stats: [
         { label: "Inscriptions (7j)", value: newStudentsWeek },
+        { label: "Élèves", value: studentsCount },
         { label: "Blessures", value: activeInjuries },
       ],
       shortcuts: [
@@ -206,8 +240,9 @@ export default async function TeacherDashboard() {
       title: "Compte",
       description: "Facturation, achats et profil professeur.",
       stats: [
-        { label: "Élèves", value: studentsCount },
-        { label: "Inscriptions (mois)", value: newStudentsMonth },
+        { label: "Payées", value: paidInvoicesCount },
+        { label: "En attente", value: pendingInvoicesCount },
+        { label: "Perçu", value: `${((paidInvoicesTotalCents._sum.amountCents ?? 0) / 100).toFixed(2)} €` },
       ],
       shortcuts: [
         { label: "Facturation", href: "/teacher/billing" },
