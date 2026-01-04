@@ -36,7 +36,9 @@ type CourseWithCounts = {
   waitlistQuota?: number | null;
   isVirtual?: boolean;
   teacherId?: string | null;
-  teacher?: { id: string; name: string | null; email: string | null } | null;
+  teacher?: { id: string; name: string | null; email: string | null; disabledAt: Date | null } | null;
+  studio?: { id: string; disabledAt: Date | null } | null;
+  disciplineRef?: { id: string; disabledAt: Date | null } | null;
   _count: { attendances: number; positions: number };
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null }[];
 };
@@ -51,11 +53,13 @@ type CourseWithCounts = {
         date: true,
         durationMinutes: true,
         maxSeats: true,
-        costCredits: true,
+          studio: { select: { id: true, disabledAt: true } },
+          disciplineRef: { select: { id: true, disabledAt: true } },
+          costCredits: true,
         waitlistQuota: true,
         isVirtual: true,
         teacherId: true,
-        teacher: { select: { id: true, name: true, email: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
         _count: { select: { attendances: true, positions: true } },
         attendances: {
           where: { studentId: session.user.id },
@@ -78,7 +82,7 @@ type CourseWithCounts = {
           maxSeats: true,
           costCredits: true,
           teacherId: true,
-          teacher: { select: { id: true, name: true, email: true } },
+          teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
           _count: { select: { attendances: true, positions: true } },
           attendances: {
             where: { studentId: session.user.id },
@@ -96,8 +100,17 @@ type CourseWithCounts = {
     throw new Error("Cours introuvable ou non accessible");
   }
 
+  const isDisabledSource =
+    Boolean(course.teacher?.disabledAt) ||
+    Boolean(course.studio?.disabledAt) ||
+    Boolean(course.disciplineRef?.disabledAt);
+
   if (course.isVirtual || course._count.positions === 0) {
     throw new Error("Inscription indisponible tant que les positions ne sont pas définies");
+  }
+
+  if (isDisabledSource) {
+    throw new Error("Inscriptions closes");
   }
 
   if (course.attendances.length > 0) {
