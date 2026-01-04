@@ -89,15 +89,51 @@ export default async function LogicsPage({ searchParams }: PageProps) {
 
   const renderMarkdown = (raw: string) => {
     const elements: React.ReactNode[] = [];
-    let listItems: string[] = [];
+    let listItems: { content: string; isTask: boolean; checked?: boolean }[] = [];
+
+    const renderInline = (text: string, keyPrefix: string) => {
+      const parts = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+      return parts.map((part, i) =>
+        part.startsWith("**") && part.endsWith("**") ? (
+          <strong key={`${keyPrefix}-${i}`} className="text-white">
+            {part.replace(/\*\*/g, "")}
+          </strong>
+        ) : (
+          <React.Fragment key={`${keyPrefix}-${i}`}>{part}</React.Fragment>
+        ),
+      );
+    };
 
     const flushList = () => {
       if (listItems.length > 0) {
+        const taskOnly = listItems.every((item) => item.isTask);
         elements.push(
-          <ul key={`ul-${elements.length}`} className="list-disc space-y-1 pl-5 text-sm text-slate-200">
+          <ul
+            key={`ul-${elements.length}`}
+            className={`${taskOnly ? "space-y-1 pl-1" : "list-disc space-y-1 pl-5"} text-sm text-slate-200`}
+          >
             {listItems.map((item, idx) => (
-              <li key={`li-${elements.length}-${idx}`} className="leading-relaxed">
-                {item}
+              <li key={`li-${elements.length}-${idx}`} className={item.isTask ? "list-none" : "leading-relaxed"}>
+                {item.isTask ? (
+                  <div className="flex items-start gap-2">
+                    <span
+                      className={`mt-0.5 inline-flex h-4 w-4 flex-none items-center justify-center rounded border text-[10px] font-semibold ${
+                        item.checked
+                          ? "border-emerald-400/70 bg-emerald-500/20 text-emerald-100"
+                          : "border-white/20 bg-white/5 text-slate-300"
+                      }`}
+                    >
+                      {item.checked ? "✓" : ""}
+                    </span>
+                    <span className="leading-relaxed">
+                      {renderInline(item.content, `task-${elements.length}-${idx}`)}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="leading-relaxed">
+                    {renderInline(item.content, `li-${elements.length}-${idx}`)}
+                  </span>
+                )}
               </li>
             ))}
           </ul>,
@@ -128,22 +164,11 @@ export default async function LogicsPage({ searchParams }: PageProps) {
       }
       const isQuote = line.startsWith(">");
       const normalized = isQuote ? line.replace(/^>\s?/, "") : line;
-      const parts = normalized.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
       const Wrapper = isQuote ? "em" : React.Fragment;
       const textClass = isQuote ? "text-cyan-200" : "text-slate-200";
       return (
         <p key={`p-${idx}`} className={`whitespace-pre-wrap text-sm leading-relaxed ${textClass}`}>
-          <Wrapper>
-            {parts.map((part, i) =>
-              part.startsWith("**") && part.endsWith("**") ? (
-                <strong key={i} className="text-white">
-                  {part.replace(/\*\*/g, "")}
-                </strong>
-              ) : (
-                <span key={i}>{part}</span>
-              ),
-            )}
-          </Wrapper>
+          <Wrapper>{renderInline(normalized, `p-${idx}`)}</Wrapper>
         </p>
       );
     };
@@ -171,7 +196,16 @@ export default async function LogicsPage({ searchParams }: PageProps) {
 
       if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
         const itemText = trimmed.replace(/^[-*]\s+/, "");
-        listItems.push(itemText);
+        const taskMatch = itemText.match(/^\[([ xX])\]\s+(.*)$/);
+        if (taskMatch) {
+          listItems.push({
+            content: taskMatch[2],
+            isTask: true,
+            checked: taskMatch[1].toLowerCase() === "x",
+          });
+        } else {
+          listItems.push({ content: itemText, isTask: false });
+        }
         return;
       }
 
