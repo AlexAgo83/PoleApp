@@ -6,11 +6,10 @@ import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCourseSuggestions } from "@/lib/courseGenerator";
-import { applySuggestedPositionsAction, updateCourseNotesOnlyAction } from "./actions";
+import { applySuggestedPositionsAction } from "./actions";
 import { LearningStatus } from "@prisma/client";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { LocalDateTime } from "@/components/LocalDateTime";
-import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 const COURSE_PHOTO_PLACEHOLDER = COURSE_PLACEHOLDER;
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
@@ -41,7 +40,13 @@ function learningStatusLabel(status: LearningStatus | null | undefined) {
 
 type PageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ from?: string; applied?: string; forceDiscovery?: string }>;
+  searchParams?: Promise<{
+    from?: string;
+    applied?: string;
+    forceDiscovery?: string;
+    notesApplied?: string;
+    notesSkipped?: string;
+  }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -162,6 +167,18 @@ export default async function TeacherCourseDetailPage({
 
   const resolvedSearch = (await searchParams) ?? {};
   const forceDiscovery = resolvedSearch.forceDiscovery === "1";
+  const notesAppliedCount = Math.max(
+    0,
+    Number.isFinite(Number(resolvedSearch.notesApplied))
+      ? Number(resolvedSearch.notesApplied)
+      : 0
+  );
+  const notesSkippedCount = Math.max(
+    0,
+    Number.isFinite(Number(resolvedSearch.notesSkipped))
+      ? Number(resolvedSearch.notesSkipped)
+      : 0
+  );
 
   const studentIds = course.attendances.map((a) => a.studentId).filter(Boolean);
   const suggestions =
@@ -198,9 +215,6 @@ export default async function TeacherCourseDetailPage({
   const appliedCount = storedRecommendations.filter((r) => r.appliedAt).length;
   const forcedCount = storedRecommendations.filter((r) => r.forced).length;
   const excludedCount = storedRecommendations.filter((r) => r.excludedForInjury && !r.forced).length;
-  const statusMap = new Map(
-    course.notes.map((n) => [`${n.studentId}-${n.positionId}`, n.learningStatus ?? LearningStatus.NOT_STARTED]),
-  );
 
   const rawFrom = resolvedSearch.from;
   const safeFrom =
@@ -209,6 +223,7 @@ export default async function TeacherCourseDetailPage({
       : undefined;
   const baseHref = `/teacher/courses/${course.id}`;
   const successToast = resolvedSearch.applied === "1";
+  const showNotesToast = notesAppliedCount > 0 || notesSkippedCount > 0;
   const currentPath = `${baseHref}${
     safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""
   }`;
@@ -441,73 +456,6 @@ export default async function TeacherCourseDetailPage({
         </ul>
       </section>
 
-      <section className="panel panel-body lg-gap border-indigo-300/20">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Niveaux par élève</p>
-            <h2 className="text-lg font-semibold text-white">Tricks et niveaux atteints</h2>
-            <p className="text-sm text-slate-300">
-              Pour chaque élève inscrit, renseigne le niveau atteint sur les positions du cours.
-            </p>
-          </div>
-        </div>
-        {course.attendances.length === 0 || course.positions.length === 0 ? (
-          <p className="text-sm text-slate-300">
-            Ajoute des élèves et des positions au cours pour renseigner les niveaux.
-          </p>
-        ) : (
-          <form action={updateCourseNotesOnlyAction} className="panel-body lg-gap">
-            <input type="hidden" name="courseId" value={course.id} />
-        <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/5">
-              <table className="min-w-full text-sm text-slate-200">
-                <thead>
-                  <tr className="border-b border-white/10 text-left text-xs uppercase tracking-[0.12em] text-indigo-100">
-                    <th className="px-3 py-2">Élève</th>
-                    {course.positions.map((p) => (
-                      <th key={p.position.id} className="px-3 py-2">
-                        {p.position.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {course.attendances.map((att) => (
-                    <tr key={att.id} className="border-b border-white/5">
-                      <td className="px-3 py-3 font-semibold text-white">
-                        {att.student?.name ?? att.student?.email ?? "Élève"}
-                      </td>
-                      {course.positions.map((p) => {
-                        const key = `${att.studentId}-${p.position.id}`;
-                        const current = statusMap.get(key) ?? LearningStatus.NOT_STARTED;
-                        return (
-                          <td key={p.position.id} className="px-3 py-2 align-top">
-                            <ProgressSlider
-                              name={`note:${att.studentId}:${p.position.id}`}
-                              defaultValue={current}
-                              hideLabel
-                              hideValue
-                              tone="neutral"
-                            />
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
-              >
-                Sauvegarder les niveaux
-              </button>
-            </div>
-          </form>
-        )}
-      </section>
-
       {!isPastCourse && (
       <section className="panel panel-body lg-gap border-indigo-400/15">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -686,6 +634,25 @@ export default async function TeacherCourseDetailPage({
       {successToast && (
         <div className="fixed bottom-4 right-4 z-20 rounded-xl border border-emerald-300/50 bg-emerald-600/80 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/40">
           Suggestions appliquées au cours.
+        </div>
+      )}
+      {showNotesToast && (
+        <div
+          className={`fixed bottom-4 right-4 z-20 mt-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg ${
+            notesSkippedCount > 0
+              ? "border border-amber-300/60 bg-amber-600/85 shadow-amber-900/40"
+              : "border border-emerald-300/60 bg-emerald-600/85 shadow-emerald-900/40"
+          }`}
+        >
+          <p>
+            {notesSkippedCount > 0
+              ? "Notes sauvegardées. Certaines progressions globales plus fraîches n’ont pas été écrasées."
+              : "Notes appliquées au suivi global."}
+          </p>
+          <p className="mt-1 text-[12px] font-semibold text-white/90">
+            Appliquées : {notesAppliedCount}
+            {notesSkippedCount > 0 ? ` · Ignorées : ${notesSkippedCount}` : ""}
+          </p>
         </div>
       )}
 

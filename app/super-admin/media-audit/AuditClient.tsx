@@ -219,19 +219,22 @@ export function AuditClient() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 overflow-hidden rounded-lg border border-white/10 bg-white/10">
-                      {cloudName && row.category === "orphan" && buildThumbUrl(row, cloudName) ? (
+                    {cloudName && row.category === "orphan" && buildThumbUrl(row, cloudName) ? (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={buildThumbUrl(row, cloudName) as string}
                           alt={row.publicId}
                           className="h-full w-full object-cover"
                           loading="lazy"
                         />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-[10px] uppercase text-slate-500">
-                          —
-                        </div>
-                      )}
-                    </div>
+                      </>
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-[10px] uppercase text-slate-500">
+                        —
+                      </div>
+                    )}
+                  </div>
                       <div className="flex-1">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div>

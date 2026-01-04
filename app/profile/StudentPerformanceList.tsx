@@ -41,11 +41,11 @@ export function StudentPerformanceList({
 }) {
   const [page, setPage] = useState(1);
 
-  const { pageItems, totalPages } = useMemo(() => {
+  const { pageItems } = useMemo(() => {
     const total = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
     const current = Math.min(Math.max(1, page), total);
     const slice = items.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
-    return { pageItems: slice, totalPages: total };
+    return { pageItems: slice };
   }, [items, page]);
 
   const canPrev = page > 1;
@@ -106,17 +106,15 @@ export function StudentPerformanceList({
                   {statusLabels[p.learningStatus]}
                 </span>
               </span>
-              <span className="flex items-center gap-1 truncate text-white">
-                {p.hasComment ? (
-                  <span title="Note du professeur" aria-label="Note du professeur" className="text-[12px] text-cyan-200">
-                    📝
-                  </span>
-                ) : null}
-                <span className="truncate">{p.positionName || "Position"}</span>
-              </span>
+              <span className="truncate text-white">{p.positionName || "Position"}</span>
             </span>
-            <span className="text-xs text-slate-300">
-              {p.updatedAt ? new Date(p.updatedAt).toLocaleDateString("fr-FR") : "—"}
+            <span className="flex items-center gap-2 text-xs text-slate-300">
+              {p.hasComment ? (
+                <span title="Note du professeur" aria-label="Note du professeur" className="text-[12px] text-cyan-200">
+                  📝
+                </span>
+              ) : null}
+              <span>{p.updatedAt ? new Date(p.updatedAt).toLocaleDateString("fr-FR") : "—"}</span>
             </span>
           </Link>
         ))}

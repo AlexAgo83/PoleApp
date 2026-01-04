@@ -277,7 +277,13 @@ export async function createCourseAction(formData: FormData) {
         })),
       });
 
-      await upsertProgressFromNotes(tx, parsed.data.notes, session.user.id);
+      await upsertProgressFromNotes(
+        tx,
+        parsed.data.notes,
+        session.user.id,
+        course.id,
+        parsed.data.date
+      );
     }
 
     const defaultAmountCents = computeDefaultInvoiceAmountCents(
@@ -375,10 +381,70 @@ async function upsertProgressFromNotes(
     learningStatus?: LearningStatus;
     comment?: string;
   }[],
-  teacherId: string
+  teacherId: string,
+  courseId: string,
+  courseDate: Date
 ) {
+  if (notes.length === 0) return { applied: 0, skipped: 0 };
+
+  const courseTime = courseDate ? new Date(courseDate).getTime() : 0;
+  const byKey = new Map<
+    string,
+    {
+      studentId: string;
+      positionId: string;
+      learningStatus: LearningStatus;
+      comment: string | null;
+      freshness: number;
+    }
+  >();
+
   for (const note of notes) {
+    const key = `${note.studentId}-${note.positionId}`;
     const learningStatus = note.learningStatus ?? LearningStatus.NOT_STARTED;
+    const now = Date.now();
+    const freshness = Math.max(now, courseTime);
+    byKey.set(key, {
+      studentId: note.studentId,
+      positionId: note.positionId,
+      learningStatus,
+      comment: note.comment?.trim() || null,
+      freshness,
+    });
+  }
+
+  const keys = Array.from(byKey.values()).map((n) => ({
+    studentId: n.studentId,
+    positionId: n.positionId,
+  }));
+
+  const existing = await tx.studentPositionProgress.findMany({
+    where: {
+      OR: keys.map((k) => ({ studentId: k.studentId, positionId: k.positionId })),
+    },
+    select: { studentId: true, positionId: true, updatedAt: true, lastCourseNoteAt: true },
+  });
+  const existingMap = new Map<string, number>();
+  existing.forEach((p) => {
+    const key = `${p.studentId}-${p.positionId}`;
+    existingMap.set(
+      key,
+      Math.max(p.updatedAt.getTime(), p.lastCourseNoteAt ? p.lastCourseNoteAt.getTime() : 0)
+    );
+  });
+
+  let applied = 0;
+  let skipped = 0;
+
+  for (const note of byKey.values()) {
+    const key = `${note.studentId}-${note.positionId}`;
+    const globalFreshness = existingMap.get(key) ?? 0;
+    const shouldApply = note.freshness > globalFreshness;
+    if (!shouldApply) {
+      skipped += 1;
+      continue;
+    }
+    applied += 1;
 
     await tx.studentPositionProgress.upsert({
       where: {
@@ -388,17 +454,23 @@ async function upsertProgressFromNotes(
         },
       },
       update: {
-        learningStatus,
-        comment: note.comment ?? null,
+        learningStatus: note.learningStatus,
+        comment: note.comment,
         lastUpdatedByUserId: teacherId,
+        lastCourseNoteAt: new Date(note.freshness),
+        lastCourseNoteSourceId: courseId,
       },
       create: {
         studentId: note.studentId,
         positionId: note.positionId,
-        learningStatus,
-        comment: note.comment ?? null,
+        learningStatus: note.learningStatus,
+        comment: note.comment,
         lastUpdatedByUserId: teacherId,
+        lastCourseNoteAt: new Date(note.freshness),
+        lastCourseNoteSourceId: courseId,
       },
     });
   }
+
+  return { applied, skipped };
 }

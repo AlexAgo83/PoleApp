@@ -169,6 +169,8 @@ export async function updateCourseAction(formData: FormData) {
     redirect(`/teacher/courses/${data.id}/edit?error=collision`);
   }
 
+  let notesSyncResult: { applied: number; skipped: number } | null = null;
+
   await prisma.$transaction(async (tx) => {
     try {
       const teacherToConnect = teacherId ?? existing.teacherId;
@@ -249,7 +251,13 @@ export async function updateCourseAction(formData: FormData) {
         })),
       });
 
-      await upsertProgressFromNotes(tx, data.notes, session.user.id);
+      notesSyncResult = await upsertProgressFromNotes(
+        tx,
+        data.notes,
+        session.user.id,
+        data.id,
+        new Date(data.date)
+      );
     }
   });
 
@@ -302,7 +310,15 @@ export async function updateCourseAction(formData: FormData) {
 
   revalidatePath("/teacher/courses");
   revalidatePath(`/teacher/courses/${data.id}`);
-  redirect(`/teacher/courses/${data.id}`);
+  const query = new URLSearchParams();
+  const { applied, skipped } = notesSyncResult ?? { applied: 0, skipped: 0 };
+  if (applied > 0 || skipped > 0) {
+    query.set("notesApplied", `${applied}`);
+    if (skipped > 0) {
+      query.set("notesSkipped", `${skipped}`);
+    }
+  }
+  redirect(`/teacher/courses/${data.id}${query.toString() ? `?${query.toString()}` : ""}`);
 }
 
 export async function updateCourseNotesOnlyAction(formData: FormData) {
@@ -358,7 +374,7 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
 
   const course = await prisma.course.findFirst({
     where: { id: courseId, schoolId: session.user.schoolId },
-    select: { id: true, teacherId: true, title: true },
+    select: { id: true, teacherId: true, title: true, date: true },
   });
   if (!course) {
     redirect("/access-denied");
@@ -366,6 +382,9 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
   if (session.user.role === "TEACHER" && course.teacherId !== session.user.id) {
     redirect("/access-denied");
   }
+
+  const courseDate = course.date ? new Date(course.date) : new Date();
+  let notesSyncResult: { applied: number; skipped: number } | null = null;
 
   await prisma.$transaction(async (tx) => {
     await tx.courseNote.deleteMany({ where: { courseId } });
@@ -379,7 +398,13 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
           comment: n.comment || null,
         })),
       });
-      await upsertProgressFromNotes(tx, parsedNotes, session.user.id);
+      notesSyncResult = await upsertProgressFromNotes(
+        tx,
+        parsedNotes,
+        session.user.id,
+        courseId,
+        courseDate
+      );
     }
   });
 
@@ -402,6 +427,15 @@ export async function updateCourseNotesOnlyAction(formData: FormData) {
   }
 
   revalidatePath(`/teacher/courses/${courseId}`);
+  const query = new URLSearchParams();
+  const { applied, skipped } = notesSyncResult ?? { applied: 0, skipped: 0 };
+  if (applied > 0 || skipped > 0) {
+    query.set("notesApplied", `${applied}`);
+    if (skipped > 0) {
+      query.set("notesSkipped", `${skipped}`);
+    }
+  }
+  redirect(`/teacher/courses/${courseId}${query.toString() ? `?${query.toString()}` : ""}`);
 }
 
 async function upsertProgressFromNotes(
@@ -412,11 +446,84 @@ async function upsertProgressFromNotes(
     learningStatus?: LearningStatus;
     comment?: string;
   }[],
-  teacherId: string
-) {
-  for (const note of notes) {
-    const learningStatus = note.learningStatus ?? LearningStatus.NOT_STARTED;
+  teacherId: string,
+  courseId: string,
+  courseDate: Date
+): Promise<{ applied: number; skipped: number }> {
+  if (notes.length === 0) return { applied: 0, skipped: 0 };
 
+  const courseTime = courseDate ? new Date(courseDate).getTime() : 0;
+  const byKey = new Map<
+    string,
+    {
+      studentId: string;
+      positionId: string;
+      learningStatus: LearningStatus;
+      comment: string | null;
+      freshness: number;
+    }
+  >();
+
+  for (const note of notes) {
+    const key = `${note.studentId}-${note.positionId}`;
+    const learningStatus = note.learningStatus ?? LearningStatus.NOT_STARTED;
+    const now = Date.now();
+    const freshness = Math.max(now, courseTime);
+    byKey.set(key, {
+      studentId: note.studentId,
+      positionId: note.positionId,
+      learningStatus,
+      comment: note.comment?.trim() || null,
+      freshness,
+    });
+  }
+
+  const keys = Array.from(byKey.values()).map((n) => ({
+    studentId: n.studentId,
+    positionId: n.positionId,
+  }));
+
+  const existing = await tx.studentPositionProgress.findMany({
+    where: {
+      OR: keys.map((k) => ({ studentId: k.studentId, positionId: k.positionId })),
+    },
+    select: { studentId: true, positionId: true, updatedAt: true, lastCourseNoteAt: true },
+  });
+  const existingMap = new Map<string, number>();
+  existing.forEach((p) => {
+    const key = `${p.studentId}-${p.positionId}`;
+    existingMap.set(
+      key,
+      Math.max(p.updatedAt.getTime(), p.lastCourseNoteAt ? p.lastCourseNoteAt.getTime() : 0)
+    );
+  });
+
+  let applied = 0;
+  let skipped = 0;
+  const debugLogs = process.env.DEBUG_PROGRESS_SYNC === "1";
+
+  for (const note of byKey.values()) {
+    const key = `${note.studentId}-${note.positionId}`;
+    const globalFreshness = existingMap.get(key) ?? 0;
+    const shouldApply = note.freshness > globalFreshness;
+
+    if (debugLogs) {
+      console.info("[progress-sync]", {
+        studentId: note.studentId,
+        positionId: note.positionId,
+        courseId,
+        action: shouldApply ? "applied" : "skipped",
+        noteFreshness: note.freshness,
+        globalFreshness,
+      });
+    }
+
+    if (!shouldApply) {
+      skipped += 1;
+      continue;
+    }
+
+    applied += 1;
     await tx.studentPositionProgress.upsert({
       where: {
         studentId_positionId: {
@@ -425,19 +532,25 @@ async function upsertProgressFromNotes(
         },
       },
       update: {
-        learningStatus,
-        comment: note.comment ?? null,
+        learningStatus: note.learningStatus,
+        comment: note.comment,
         lastUpdatedByUserId: teacherId,
+        lastCourseNoteAt: new Date(note.freshness),
+        lastCourseNoteSourceId: courseId,
       },
       create: {
         studentId: note.studentId,
         positionId: note.positionId,
-        learningStatus,
-        comment: note.comment ?? null,
+        learningStatus: note.learningStatus,
+        comment: note.comment,
         lastUpdatedByUserId: teacherId,
+        lastCourseNoteAt: new Date(note.freshness),
+        lastCourseNoteSourceId: courseId,
       },
     });
   }
+
+  return { applied, skipped };
 }
 
 const deleteSchema = z.object({

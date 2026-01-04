@@ -68,7 +68,9 @@ export default async function TeacherDashboard() {
   endOfToday.setHours(23, 59, 59, 999);
   const startOfLast7Days = new Date(startOfToday);
   startOfLast7Days.setDate(startOfLast7Days.getDate() - 7);
-  const startOfMonth = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
+
+  // Stats supprimées pour l'instant (API simplifiée)
+  const newStudentsWeek = 0;
 
   const [
     coursesTodayCount,
@@ -76,12 +78,7 @@ export default async function TeacherDashboard() {
     positionsCount,
     combosCount,
     activeInjuries,
-    studiosCount,
-    partnersCount,
     studentsCount,
-    disciplinesCount,
-    newStudentsWeek,
-    newStudentsMonth,
     nextCourseRow,
     lastCourseRow,
     paidInvoicesCount,
@@ -105,25 +102,8 @@ export default async function TeacherDashboard() {
     prisma.studentInjury.count({
       where: { isActive: true, student: { schoolId: session.user.schoolId } },
     }),
-    prisma.studio.count({ where: { schoolId: session.user.schoolId } }),
-    prisma.partner.count({ where: { schoolId: session.user.schoolId } }),
     prisma.user.count({
       where: { schoolId: session.user.schoolId, role: "STUDENT" },
-    }),
-    prisma.discipline.count(),
-    prisma.user.count({
-      where: {
-        schoolId: session.user.schoolId,
-        role: "STUDENT",
-        createdAt: { gte: startOfLast7Days, lte: endOfToday },
-      },
-    }),
-    prisma.user.count({
-      where: {
-        schoolId: session.user.schoolId,
-        role: "STUDENT",
-        createdAt: { gte: startOfMonth },
-      },
     }),
     prisma.course.findFirst({
       where: { teacherId: session.user.id, date: { gte: new Date() } },

@@ -90,7 +90,6 @@ export default async function StudentDashboard() {
 
   const isPremium = Boolean(user.isPremium);
   const credits = user.credits ?? 0;
-  const displayName = user.name?.trim() || user.email;
 
   const now = new Date();
   const startOfWeek = new Date(now);
@@ -107,7 +106,6 @@ export default async function StudentDashboard() {
     subs,
     confirmedUpcoming,
     waitlistUpcoming,
-    weekCoursesCount,
     inProgressCount,
     passedCount,
     masteredCount,
@@ -137,13 +135,6 @@ export default async function StudentDashboard() {
     }),
     prisma.courseAttendance.count({
       where: { studentId: session.user.id, status: "WAITLIST", course: { date: { gte: now } } },
-    }),
-    prisma.courseAttendance.count({
-      where: {
-        studentId: session.user.id,
-        status: { in: ["CONFIRMED", "WAITLIST"] },
-        course: { date: { gte: startOfWeek, lte: endOfWeek } },
-      },
     }),
     prisma.studentPositionProgress.count({
       where: { studentId: session.user.id, learningStatus: "IN_PROGRESS" },

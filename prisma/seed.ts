@@ -1474,12 +1474,12 @@ async function ensurePastCoursesForFixedStudents() {
   const disciplinePositions = await prisma.position.findMany({
     where: { disciplineId: discipline.id },
     select: { id: true },
-    take: 3,
+    take: 8,
   });
   const fallbackPositions =
     disciplinePositions.length > 0
       ? disciplinePositions
-      : await prisma.position.findMany({ select: { id: true }, take: 3 });
+      : await prisma.position.findMany({ select: { id: true }, take: 8 });
   if (fallbackPositions.length === 0) return;
 
   const fixedStudents = await prisma.user.findMany({
@@ -1489,21 +1489,28 @@ async function ensurePastCoursesForFixedStudents() {
   if (fixedStudents.length === 0) return;
 
   const now = new Date();
-  let dayOffset = 3;
-  for (const student of fixedStudents) {
-    const hasPastWithTeacher = await prisma.courseAttendance.findFirst({
-      where: { studentId: student.id, course: { teacherId: teacher.id, date: { lt: now } } },
-    });
-    if (hasPastWithTeacher) continue;
+  const studentIds = fixedStudents.map((s) => s.id);
+  if (studentIds.length === 0) return;
 
+  const statuses: LearningStatus[] = [
+    LearningStatus.IN_PROGRESS,
+    LearningStatus.PASSED,
+    LearningStatus.MASTERED,
+    LearningStatus.NOT_STARTED,
+    LearningStatus.IN_PROGRESS,
+  ];
+
+  // Crée 5 cours passés avec notes et progression pour tester la synchro
+  for (let i = 0; i < 5; i++) {
     const date = new Date(now);
-    date.setDate(now.getDate() - dayOffset);
+    date.setDate(now.getDate() - (3 + i * 2));
     date.setHours(18, 0, 0, 0);
-    dayOffset += 2;
 
+    const positionsForCourse = fallbackPositions.slice(0, 5);
+    const photoIdx = (i * 3 + Math.floor(Math.random() * COURSE_PUBLIC_IDS.length)) % COURSE_PUBLIC_IDS.length;
     const course = await prisma.course.create({
       data: {
-        title: "Cours passé (seed)",
+        title: `Cours passé (seed) #${i + 1}`,
         date,
         durationMinutes: 60,
         teacherId: teacher.id,
@@ -1514,33 +1521,67 @@ async function ensurePastCoursesForFixedStudents() {
         maxSeats: 20,
         costCredits: 80,
         waitlistQuota: 5,
-        photoPublicId: COURSE_PUBLIC_IDS[0],
+        photoPublicId: COURSE_PUBLIC_IDS[photoIdx],
         isVirtual: false,
         positions: {
-          create: fallbackPositions.map((p) => ({ positionId: p.id })),
+          create: positionsForCourse.map((p) => ({ positionId: p.id })),
+        },
+        attendances: {
+          create: studentIds.map((studentId) => ({
+            studentId,
+            status: "CONFIRMED",
+          })),
         },
       },
     });
 
-    await prisma.courseAttendance.create({
-      data: {
-        courseId: course.id,
-        studentId: student.id,
-        status: "CONFIRMED",
-      },
-    });
-
-    const defaultAmountCents = computeDefaultInvoiceAmountCents(1, course.maxSeats);
     await prisma.invoice.create({
       data: {
         courseId: course.id,
-        amountCents: defaultAmountCents,
+        amountCents: computeDefaultInvoiceAmountCents(studentIds.length, course.maxSeats),
         currency: "EUR",
-        status: InvoiceStatus.GENERATED,
+        status: InvoiceStatus.PAID,
         issuedAt: new Date(),
-        manualStatus: ManualFinancialStatus.NONE,
+        manualStatus: ManualFinancialStatus.PAID,
+        paidAt: new Date(),
       },
     });
+
+    // Notes de cours + progression globale alignée (statut/commentaire)
+    const noteRows: Prisma.CourseNoteCreateManyInput[] = [];
+    const progressRows: Prisma.StudentPositionProgressCreateManyInput[] = [];
+    positionsForCourse.forEach((p, idx) => {
+      const status = statuses[idx % statuses.length];
+      const comment = `Feedback seed ${status.toLowerCase()}`;
+      studentIds.forEach((studentId) => {
+        noteRows.push({
+          courseId: course.id,
+          studentId,
+          positionId: p.id,
+          learningStatus: status,
+          comment,
+        });
+        progressRows.push({
+          studentId,
+          positionId: p.id,
+          learningStatus: status,
+          comment,
+          lastUpdatedByUserId: teacher.id,
+          lastCourseNoteAt: date,
+          lastCourseNoteSourceId: course.id,
+        });
+      });
+    });
+
+    if (noteRows.length > 0) {
+      await prisma.courseNote.createMany({ data: noteRows });
+    }
+    if (progressRows.length > 0) {
+      await prisma.studentPositionProgress.createMany({
+        data: progressRows,
+        skipDuplicates: true,
+      });
+    }
   }
 }
 
