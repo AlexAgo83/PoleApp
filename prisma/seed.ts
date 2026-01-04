@@ -1460,6 +1460,64 @@ async function seedCourses(schoolsData: {
   }
 }
 
+// Garantit que student1 et student2 disposent d'au moins un cours passé avec le prof principal.
+async function ensurePastCoursesForFixedStudents() {
+  const teacher = await prisma.user.findFirst({ where: { email: "teacher@poleapp.test" } });
+  if (!teacher?.schoolId) return;
+
+  const [discipline, studio] = await Promise.all([
+    prisma.discipline.findFirst(),
+    prisma.studio.findFirst({ where: { schoolId: teacher.schoolId } }),
+  ]);
+  if (!discipline) return;
+
+  const fixedStudents = await prisma.user.findMany({
+    where: { email: { in: ["student1@poleapp.test", "student2@poleapp.test"] } },
+    select: { id: true },
+  });
+  if (fixedStudents.length === 0) return;
+
+  const now = new Date();
+  let dayOffset = 3;
+  for (const student of fixedStudents) {
+    const hasPastWithTeacher = await prisma.courseAttendance.findFirst({
+      where: { studentId: student.id, course: { teacherId: teacher.id, date: { lt: now } } },
+    });
+    if (hasPastWithTeacher) continue;
+
+    const date = new Date(now);
+    date.setDate(now.getDate() - dayOffset);
+    date.setHours(18, 0, 0, 0);
+    dayOffset += 2;
+
+    const course = await prisma.course.create({
+      data: {
+        title: "Cours passé (seed)",
+        date,
+        durationMinutes: 60,
+        teacherId: teacher.id,
+        schoolId: teacher.schoolId,
+        studioId: studio?.id ?? null,
+        discipline: discipline.name,
+        disciplineId: discipline.id,
+        maxSeats: 20,
+        costCredits: 80,
+        waitlistQuota: 5,
+        photoPublicId: COURSE_PUBLIC_IDS[0],
+        isVirtual: false,
+      },
+    });
+
+    await prisma.courseAttendance.create({
+      data: {
+        courseId: course.id,
+        studentId: student.id,
+        status: "CONFIRMED",
+      },
+    });
+  }
+}
+
 async function seedPartners(schools: { id: string }[]) {
   for (const school of schools) {
     const partner = await prisma.partner.create({
@@ -2215,6 +2273,7 @@ async function main() {
   await seedPresets({ schools, positions, teachers, disciplinesBySchool });
   await seedPurchases(students);
   await seedCourses({ schools, teachers, students, admins, positions, disciplinesBySchool, positionsByTeacher });
+  await ensurePastCoursesForFixedStudents();
   await seedUnlockDemo({ students, teachers, positions });
   await seedNotificationsSamples();
   await seedAdminNotifications();

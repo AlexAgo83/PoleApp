@@ -40,10 +40,10 @@ function ShortcutLink({ href, label }: { href: string; label: string }) {
 
 function PanelHero({ title, description }: { title: string; description: string }) {
   const heroBg =
-    "linear-gradient(135deg, rgba(14,24,45,0.95), rgba(10,18,36,0.92)), radial-gradient(circle at 12% 20%, rgba(56,189,248,0.22), transparent 38%), radial-gradient(circle at 82% -8%, rgba(236,72,153,0.18), transparent 35%)";
+    "linear-gradient(135deg, rgba(22,36,66,0.68), rgba(16,26,52,0.62)), radial-gradient(circle at 12% 20%, rgba(56,189,248,0.25), transparent 42%), radial-gradient(circle at 82% -8%, rgba(236,72,153,0.22), transparent 38%)";
   return (
     <div
-      className="relative -mx-[var(--panel-px)] -mt-[var(--panel-py)] overflow-hidden rounded-t-2xl border-b border-white/10 bg-[#0b142a] px-4 py-5 shadow-inner shadow-black/30 sm:px-6"
+      className="relative -mx-[var(--panel-px)] -mt-[var(--panel-py)] overflow-hidden rounded-t-2xl border-b border-white/10 bg-[#0f1a32] px-4 py-5 shadow-inner shadow-black/20 sm:px-6"
       style={{ backgroundImage: heroBg, backgroundSize: "cover", backgroundPosition: "center" }}
     >
       <div className="relative flex flex-col gap-2">
@@ -101,6 +101,8 @@ export default async function StudentDashboard() {
     attendanceWithPositions,
     presetPurchases,
     totalPositionsCount,
+    lastPastCourseAttendance,
+    lastAnyCourseAttendance,
   ] = await Promise.all([
     prisma.creditPackOffer.findMany({
       where: { isActive: true, isOpen: true },
@@ -173,6 +175,16 @@ export default async function StudentDashboard() {
       select: { offerId: true },
     }),
     prisma.position.count(),
+    prisma.courseAttendance.findFirst({
+      where: { studentId: session.user.id, status: { in: ["CONFIRMED", "WAITLIST"] }, course: { date: { lt: now } } },
+      select: { courseId: true },
+      orderBy: { course: { date: "desc" } },
+    }),
+    prisma.courseAttendance.findFirst({
+      where: { studentId: session.user.id, status: { in: ["CONFIRMED", "WAITLIST"] } },
+      select: { courseId: true },
+      orderBy: { course: { date: "desc" } },
+    }),
   ]);
 
   const progressTotal = inProgressCount + passedCount + masteredCount;
@@ -191,6 +203,7 @@ export default async function StudentDashboard() {
   ]);
   const unlockedCount = user.isPremium ? totalPositionsCount : unlockedIds.size;
   const nextCourse = nextCourseAttendance?.course;
+  const lastCourseId = lastPastCourseAttendance?.courseId;
   const nextCourseLabel = nextCourse
     ? new Intl.DateTimeFormat("fr-FR", {
         weekday: "short",
@@ -202,12 +215,14 @@ export default async function StudentDashboard() {
     : null;
 
   const agendaShortcuts: Shortcut[] = [
-    { label: "Réserver un cours", href: "/student/courses/agenda?mine=false" },
+    { label: "Réserver un cours", href: "/student/school" },
     { label: "Tous mes cours", href: "/student/courses/agenda?mine=true" },
-    { label: "Studios & école", href: "/student/school" },
   ];
+  if (lastCourseId) {
+    agendaShortcuts.push({ label: "Mon dernier cours", href: `/student/courses/${lastCourseId}?from=/student` });
+  }
   if (nextCourse) {
-    agendaShortcuts.push({ label: "Détails du prochain cours", href: `/student/courses/${nextCourse.id}?from=/student` });
+    agendaShortcuts.push({ label: "Mon prochain cours", href: `/student/courses/${nextCourse.id}?from=/student` });
   }
 
   const progressionShortcuts: Shortcut[] = [

@@ -68,6 +68,7 @@ type SearchParams = Promise<{
   teacher?: string;
   discipline?: string;
   unlocked?: string;
+  favorites?: string;
 }>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
@@ -79,6 +80,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     teacher?: string;
     discipline?: string;
     unlocked?: string;
+    favorites?: string;
   };
   const rawPage = Number(resolvedParams.page ?? "1");
   const typeFilter =
@@ -102,6 +104,8 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (!session?.user) {
     redirect("/login");
   }
+  const favoritesOnly =
+    session.user.role === "STUDENT" && ["1", "true"].includes((resolvedParams.favorites ?? "").toLowerCase());
   const userKey = session.user.id ?? "anon";
   const homeForRole = defaultHomeForRole(session.user.role);
   const isStudent = session.user.role === "STUDENT";
@@ -146,6 +150,17 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         })()
       : Promise.resolve(new Set<string>());
   const unlockedPositions = await unlockedPositionSet;
+  const favoriteIds =
+    isStudent && session.user.id
+      ? new Set(
+          (
+            await prisma.studentFavoritePosition.findMany({
+              where: { studentId: session.user.id },
+              select: { positionId: true },
+            })
+          ).map((f) => f.positionId),
+        )
+      : new Set<string>();
 
   const where: Prisma.PositionWhereInput = {
     ...(typeFilter ? { type: typeFilter } : {}),
@@ -168,6 +183,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         }
       : {}),
     ...(unlockedOnly ? { id: { in: Array.from(unlockedPositions) } } : {}),
+    ...(favoritesOnly ? { id: { in: Array.from(favoriteIds) } } : {}),
   };
 
   const activeFilters = [
@@ -177,6 +193,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     teacherFilter && teacherFilter.length > 0,
     disciplineFilters.length > 0,
     unlockedOnly,
+    favoritesOnly,
   ].filter(Boolean).length;
 
   const totalCount = await prisma.position.count({ where });
@@ -190,6 +207,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
   if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
   if (unlockedOnly) queryParams.set("unlocked", "1");
+  if (favoritesOnly) queryParams.set("favorites", "1");
   const qs = queryParams.toString();
   const [disciplineRows, creatorOptions, positions, studentProgress] = await Promise.all([
     prisma.discipline.findMany({
@@ -453,17 +471,29 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
               </select>
             </label>
             {isStudent ? (
-              <label className="text-sm text-slate-200">
+              <label className="block w-full text-sm text-slate-200">
                 Accès
-                <div className="mt-1 flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2">
-                  <input
-                    type="checkbox"
-                    name="unlocked"
-                    value="1"
-                    defaultChecked={unlockedOnly}
-                    className="h-4 w-4 accent-cyan-400"
-                  />
-                  <span className="text-sm text-white">Seulement mes positions débloquées</span>
+                <div className="mt-2 flex w-full flex-wrap items-center gap-4">
+                  <label className="flex items-center gap-2 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      name="unlocked"
+                      value="1"
+                      defaultChecked={unlockedOnly}
+                      className="h-4 w-4 accent-cyan-400"
+                    />
+                    <span className="text-sm text-white">Mes positions débloquées</span>
+                  </label>
+                  <label className="flex items-center gap-2 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      name="favorites"
+                      value="1"
+                      defaultChecked={favoritesOnly}
+                      className="h-4 w-4 accent-cyan-400"
+                    />
+                    <span className="text-sm text-white">Mes coups de cœur</span>
+                  </label>
                 </div>
               </label>
             ) : null}
