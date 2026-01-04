@@ -96,11 +96,7 @@ export default async function StudentProgressPage({
       : undefined;
   const disciplineFilter = resolvedParams.discipline?.toString().trim() || "";
   const progressRaw = resolvedParams.progress;
-  const onlyInProgress =
-    progressRaw === undefined ||
-    progressRaw === "1" ||
-    progressRaw === "true" ||
-    progressRaw === "on";
+  const onlyInProgress = progressRaw === "1" || progressRaw === "true" || progressRaw === "on";
   const q = resolvedParams.q?.toString().trim() || "";
   const activeFilters = [typeFilter, levelFilter, disciplineFilter, onlyInProgress ? "progress" : null, q && q.length > 0 ? "q" : null].filter(
     Boolean
@@ -230,7 +226,7 @@ export default async function StudentProgressPage({
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-3xl font-semibold text-white">Ma progression</h1>
             <p className="text-sm text-slate-300">
@@ -238,6 +234,34 @@ export default async function StudentProgressPage({
                 ? "Accès complet à la base des positions."
                 : "Accès aux positions vues (compte gratuit)."}
             </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-200">
+            <Link
+              aria-disabled={page <= 1}
+              href={page <= 1 ? "#" : `/student/progress?page=${page - 1}${qs ? `&${qs}` : ""}`}
+              className={`rounded-full border px-3 py-1 font-semibold transition ${
+                page <= 1
+                  ? "cursor-not-allowed border-white/10 text-slate-500"
+                  : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+              }`}
+            >
+              ←
+            </Link>
+            <Link
+              aria-disabled={page >= totalPages}
+              href={
+                page >= totalPages
+                  ? "#"
+                  : `/student/progress?page=${page + 1}${qs ? `&${qs}` : ""}`
+              }
+              className={`rounded-full border px-3 py-1 font-semibold transition ${
+                page >= totalPages
+                  ? "cursor-not-allowed border-white/10 text-slate-500"
+                  : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
+              }`}
+            >
+              →
+            </Link>
           </div>
         </div>
 
@@ -452,11 +476,6 @@ export default async function StudentProgressPage({
                       <span />
                     )}
                     <div className="flex flex-col items-end gap-2 text-right">
-                      {isUnlockedByPurchase ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-semibold text-emerald-50 shadow-inner shadow-emerald-900/20">
-                          Débloqué par achat
-                        </span>
-                      ) : null}
                       {showProgress ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
                           Vu : {seen}
@@ -494,36 +513,8 @@ export default async function StudentProgressPage({
             </div>
           )}
         </div>
-        <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-200">
-          <Link
-            aria-disabled={page <= 1}
-            href={page <= 1 ? "#" : `/student/progress?page=${page - 1}${qs ? `&${qs}` : ""}`}
-            className={`rounded-full border px-3 py-1 font-semibold transition ${
-              page <= 1
-                ? "cursor-not-allowed border-white/10 text-slate-500"
-                : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
-            }`}
-          >
-            Précédent
-          </Link>
-          <span>
-            Page {page} / {totalPages}
-          </span>
-          <Link
-            aria-disabled={page >= totalPages}
-            href={
-              page >= totalPages
-                ? "#"
-                : `/student/progress?page=${page + 1}${qs ? `&${qs}` : ""}`
-            }
-            className={`rounded-full border px-3 py-1 font-semibold transition ${
-              page >= totalPages
-                ? "cursor-not-allowed border-white/10 text-slate-500"
-                : "border-white/20 hover:border-cyan-400 hover:text-cyan-200"
-            }`}
-          >
-            Suivant
-          </Link>
+        <div className="mt-2 text-left text-sm text-slate-200">
+          Page {page} / {totalPages} · {filteredCount} positions
         </div>
       </section>
     </main>

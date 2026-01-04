@@ -13,6 +13,8 @@ import { POSITION_PLACEHOLDER } from "@/lib/placeholders";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
 import { toggleFavoriteAction } from "../actions";
+import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
+import { BuyCreditsButton } from "@/app/student/BuyCreditsButton";
 
 export const dynamic = "force-dynamic";
 
@@ -348,6 +350,13 @@ export default async function PositionDetailPage({ params, searchParams }: Props
           ).map((p) => p.offerId),
         )
       : new Set<string>();
+  const [packOffers, subscriptionOffers, studentCredits] = isStudent
+    ? await Promise.all([
+        prisma.creditPackOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+        prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+        prisma.user.findUnique({ where: { id: session.user.id }, select: { credits: true } }),
+      ])
+    : [[], [], { credits: 0 }];
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-2 pt-0 pb-2 md:gap-6 md:px-8 md:pt-0 md:pb-4">
@@ -372,6 +381,16 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         ]}
         foxHref="/"
       />
+      {isStudent ? (
+        <div className="hidden">
+          <BuyCreditsButton
+            currentCredits={studentCredits?.credits ?? 0}
+            showUpgrade={!isPremium}
+            packs={packOffers as any}
+            subscriptions={subscriptionOffers as any}
+          />
+        </div>
+      ) : null}
       <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -487,6 +506,11 @@ export default async function PositionDetailPage({ params, searchParams }: Props
                     <p className="text-center">
                       Débloque cette position via un cours ou passe en Premium pour accéder à la vidéo.
                     </p>
+                    {isStudent && !isPremium ? (
+                      <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-xs font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
+                        Passer premium
+                      </PremiumUpsellButton>
+                    ) : null}
                   </div>
                 </div>
               ))}

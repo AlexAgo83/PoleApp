@@ -12,6 +12,7 @@ import { isSeedPublicId, normalizeFolderedPublicId } from "@/lib/media";
 import { prisma } from "@/lib/prisma";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { buyPresetAction } from "@/app/student/actions";
+import { BuyCreditsButton } from "@/app/student/BuyCreditsButton";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -103,6 +104,13 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
 
   const priceLabel = PRICE_LABEL(preset.priceCredits, preset.premiumRequired ?? false);
   const isStudent = session?.user?.role === "STUDENT";
+  const [packOffers, subscriptionOffers, studentCredits] = isStudent
+    ? await Promise.all([
+        prisma.creditPackOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+        prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
+        prisma.user.findUnique({ where: { id: session.user.id }, select: { credits: true } }),
+      ])
+    : [[], [], { credits: 0 }];
   const hasPurchase = isStudent
     ? Boolean(
         await prisma.purchase.findFirst({
@@ -166,6 +174,16 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
           },
         ]}
       />
+      {isStudent ? (
+        <div className="hidden">
+          <BuyCreditsButton
+            currentCredits={studentCredits?.credits ?? 0}
+            showUpgrade={!session.user.isPremium}
+            packs={packOffers as any}
+            subscriptions={subscriptionOffers as any}
+          />
+        </div>
+      ) : null}
 
       <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6 lg:p-8">
         <div className="space-y-2">
@@ -298,7 +316,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-white">Timeline</p>
+                <p className="text-sm text-cyan-200">Timeline</p>
                 {canViewContent ? (
                   preset.positions.length > 0 ? (
                     <div className="space-y-2">

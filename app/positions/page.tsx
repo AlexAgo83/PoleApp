@@ -583,11 +583,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                           </span>
                         );
                       })()}
-                      {isUnlockedByPurchase && isStudent && !isPremium ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-semibold text-emerald-50 shadow-inner shadow-emerald-900/20">
-                          Débloqué par achat
-                        </span>
-                      ) : null}
                       {showPremiumBadge ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/25 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-inner shadow-amber-500/20">
                           🔒 Premium
@@ -609,6 +604,11 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                     <p className="text-sm text-slate-300 line-clamp-2">
                       {p.tips ?? p.description ?? "Aucun détail"}
                     </p>
+                  ) : null}
+                  {isUnlockedByPurchase && isStudent && !isPremium ? (
+                    <span className="self-start inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-semibold text-emerald-50 shadow-inner shadow-emerald-900/20">
+                      Débloqué par achat
+                    </span>
                   ) : null}
                   {showPremiumBadge && (
                     <div className="rounded-xl border border-amber-300/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-50">
