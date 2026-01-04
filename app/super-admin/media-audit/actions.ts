@@ -34,6 +34,7 @@ export type AuditState =
             resourceType: "image" | "video" | "all";
             deliveryType: "upload" | "authenticated" | "all";
             maxResults: number;
+            includeSeeds: boolean;
           };
         };
         cloudName?: string;
@@ -41,14 +42,9 @@ export type AuditState =
     };
 
 const formSchema = z.object({
-  resourceType: z.enum(["image", "video", "all"]).default("all"),
-  deliveryType: z.enum(["upload", "authenticated", "all"]).default("all"),
-  maxResults: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(1500)
-    .default(400),
+  excludeSeeds: z
+    .union([z.literal("on"), z.literal("true"), z.literal("false"), z.null(), z.undefined()])
+    .transform((v) => v === "on" || v === "true"),
 });
 
 export async function scanMediaAuditAction(_prevState: AuditState, formData: FormData): Promise<AuditState> {
@@ -58,9 +54,7 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
   }
 
   const parsed = formSchema.safeParse({
-    resourceType: formData.get("resourceType") ?? "all",
-    deliveryType: formData.get("deliveryType") ?? "all",
-    maxResults: formData.get("maxResults") ?? 400,
+    excludeSeeds: formData.get("excludeSeeds"),
   });
 
   if (!parsed.success) {
@@ -68,9 +62,11 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
   }
 
   const start = Date.now();
-  const { resourceType, deliveryType, maxResults } = parsed.data;
+  const resourceType: "image" | "video" | "all" = "all";
+  const deliveryType: "upload" | "authenticated" | "all" = "all";
+  const maxResults = 400;
   const prefix = DEFAULT_MEDIA_PREFIX;
-  const includeSeeds = false;
+  const includeSeeds = !parsed.data.excludeSeeds;
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
   try {
@@ -125,7 +121,7 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
           missing: missing.length,
           durationMs: Date.now() - start,
           startedAt: new Date(start).toISOString(),
-          params: { prefix, resourceType, deliveryType, maxResults },
+          params: { prefix, resourceType, deliveryType, maxResults, includeSeeds },
         },
         cloudName: cloudName ?? undefined,
       },
