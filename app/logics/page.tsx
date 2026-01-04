@@ -143,7 +143,7 @@ export default async function LogicsPage({ searchParams }: PageProps) {
     };
 
     const renderText = (line: string, idx: number) => {
-      const isMetaLine = /\[.*(Compréhension|Confiance)/i.test(line);
+      const isMetaLine = /\[.*(Compréhension|Confiance|Obsolete|Avancement)/i.test(line);
       if (isMetaLine) {
         const cleaned = line.replace(/^[\[\(]\s*/, "").replace(/[\]\)]\s*$/, "");
         const parts = cleaned.split(/\s*[|/]\s*/).filter(Boolean);
