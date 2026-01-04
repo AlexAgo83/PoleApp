@@ -46,11 +46,13 @@ type SchoolCourse = {
   durationMinutes: number | null;
   maxSeats: number | null;
   photoPublicId: string | null;
-  teacher: { id: string; name: string | null; email: string | null } | null;
-  studio: { id: string; name: string } | null;
+  teacher: { id: string; name: string | null; email: string | null; disabledAt: Date | null } | null;
+  studio: { id: string; name: string; disabledAt: Date | null } | null;
+  disciplineRef?: { id: string; disabledAt: Date | null } | null;
   waitlistQuota?: number | null;
   positions: { position: { id: string; name: string; type: string } | null }[];
   attendances: { id: string; status: "CONFIRMED" | "WAITLIST"; waitlistRank: number | null; studentId?: string | null }[];
+  isDisabledSource?: boolean;
 };
 
 type PageProps = {
@@ -295,8 +297,9 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
         photoPublicId: true,
         isVirtual: true,
         waitlistQuota: true,
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { id: true, name: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { id: true, name: true, disabledAt: true } },
+        disciplineRef: { select: { id: true, disabledAt: true } },
         positions: { include: { position: { select: { id: true, name: true, type: true } } } },
         attendances: {
           select: { id: true, status: true, waitlistRank: true, studentId: true },
@@ -319,6 +322,10 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
     myAttendance: SchoolCourse["attendances"][number] | undefined;
   }> = courses.map((course) => {
     const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
+    const isDisabledSource =
+      Boolean(course.teacher?.disabledAt) ||
+      Boolean(course.studio?.disabledAt) ||
+      Boolean(course.disciplineRef?.disabledAt);
     return {
       id: course.id,
       courseId: course.id,
@@ -326,6 +333,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
         ...course,
         discipline: disciplineNameById.get(course.disciplineId ?? "") ?? course.discipline ?? undefined,
         disciplineId: course.disciplineId ?? undefined,
+        isDisabledSource,
       },
       myAttendance,
     };
@@ -352,6 +360,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
         past: isPastCourse(a.course.date, a.course.durationMinutes),
         positionsCount: a.course.positions?.length ?? 0,
         isVirtual: (a.course as any).isVirtual ?? false,
+        isDisabledSource: (a.course as any).isDisabledSource ?? false,
       })),
     };
   });
@@ -406,6 +415,7 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
       waitlistRank: a.myAttendance?.waitlistRank ?? null,
       past: isPastCourse(a.course.date, a.course.durationMinutes),
       isVirtual: (a.course as any).isVirtual ?? false,
+      isDisabledSource: (a.course as any).isDisabledSource ?? false,
     })),
   }));
   const legendItems = [
