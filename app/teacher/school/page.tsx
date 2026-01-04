@@ -822,6 +822,11 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
                       ●
                     </span>
                     <p className="text-base font-semibold text-white">{course.title ?? "Cours"}</p>
+                    {course.isDisabledSource && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-rose-50">
+                        Désactivé · Inscriptions closes
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-slate-200">
                     {formattedDate} · {formatDuration(course.durationMinutes ?? 60)}

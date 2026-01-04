@@ -18,6 +18,7 @@ type DayCourse = {
   past: boolean;
   isVirtual?: boolean;
   positionsCount?: number;
+  isDisabledSource?: boolean;
 };
 
 type Day = {
@@ -255,6 +256,11 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                         <p className="text-[10px] text-slate-200 break-words">
                           {course.studioName}
                         </p>
+                        {course.isDisabledSource && (
+                          <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-100">
+                            Désactivé · Inscriptions closes
+                          </p>
+                        )}
                         {course.discipline && (
                           <p className="text-[10px] text-cyan-50/90 break-words">
                             {course.discipline}
