@@ -97,7 +97,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
       : COURSE_PLACEHOLDER;
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section
         className="panel panel-body lg-gap"
         style={{
