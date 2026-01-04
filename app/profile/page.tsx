@@ -25,7 +25,7 @@ const statusLabels: Record<LearningStatus, string> = {
   NOT_STARTED: "Nouveauté",
   IN_PROGRESS: "Initié",
   PASSED: "Passé",
-  MASTERED: "Fluide chorégraphié",
+  MASTERED: "Fluide",
 };
 
 const statusOrder: Record<LearningStatus, number> = {
@@ -109,18 +109,8 @@ export default async function ProfilePage() {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-sm uppercase tracking-[0.14em] text-cyan-200">
-              Profil
-            </p>
-            <h1 className="text-2xl font-semibold text-white">
-              Informations du compte
-            </h1>
-          </div>
-        </div>
-        <div className="mt-4 flex items-center gap-4">
+      <section className="panel p-5 md:p-6">
+        <div className="flex items-center gap-4">
           <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-black/30">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
