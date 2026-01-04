@@ -42,8 +42,9 @@ export async function GET(req: Request) {
       date: { gte: startWeek, lte: endWeek },
     },
     include: {
-      teacher: { select: { name: true, email: true } },
-      studio: { select: { name: true } },
+      teacher: { select: { name: true, email: true, disabledAt: true } },
+      studio: { select: { name: true, disabledAt: true } },
+      disciplineRef: { select: { disabledAt: true } },
       _count: { select: { positions: true } },
     },
     orderBy: { date: "asc" },
@@ -69,6 +70,10 @@ export async function GET(req: Request) {
         past: isPastCourse(course.date, course.durationMinutes),
         isVirtual: course.isVirtual,
         positionsCount: course._count.positions,
+        isDisabledSource:
+          Boolean(course.teacher?.disabledAt) ||
+          Boolean(course.studio?.disabledAt) ||
+          Boolean(course.disciplineRef?.disabledAt),
       }));
     return {
       isoDate: d.toISOString(),
