@@ -132,6 +132,15 @@ export async function deletePositionAction(formData: FormData) {
   if (!role || (role !== "TEACHER" && role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
+  if (role === "TEACHER") {
+    const teacher = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { canDeletePositionAndPreset: true },
+    });
+    if (!teacher?.canDeletePositionAndPreset) {
+      redirect("/access-denied");
+    }
+  }
 
   const parsed = deleteSchema.safeParse({
     positionId: formData.get("positionId"),
