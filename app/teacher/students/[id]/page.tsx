@@ -301,11 +301,11 @@ export default async function TeacherStudentDetailPage({
       )}
 
       {canEdit && (
-        <section className="panel panel-body lg-gap border-indigo-400/15">
-          <details className="group">
-            <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-              <div>
-                <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
+      <section className="panel panel-body lg-gap border-indigo-400/15">
+        <details className="group">
+          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
                 <h2 className="text-lg font-semibold text-white">Photo de profil</h2>
               </div>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
@@ -326,6 +326,36 @@ export default async function TeacherStudentDetailPage({
           </details>
         </section>
       )}
+
+      <section className="panel panel-body lg-gap border-indigo-400/15">
+        <PersistedSection
+          id={`student-progress:${student.id}`}
+          summary={
+            <>
+              <div>
+                <h2 className="text-lg font-semibold text-white">Progression</h2>
+                <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <span className="group-open:hidden">Ouvrir</span>
+                <span className="hidden group-open:inline">Fermer</span>
+              </span>
+            </>
+          }
+        >
+          <div className="panel-grid lg-gap md:grid-cols-2">
+            {filteredPositions.map((position) => {
+              const progress = progressMap.get(position.id);
+              return <ProgressCard key={position.id} position={position} progress={progress} studentId={student.id} />;
+            })}
+            {filteredPositions.length === 0 && (
+              <p className="md:col-span-2 text-sm text-slate-200">
+                Aucune position enseignée pour l&apos;instant.
+              </p>
+            )}
+          </div>
+        </PersistedSection>
+      </section>
 
       <section className="panel panel-body lg-gap border-indigo-400/15">
         <details className="group" open={false}>
@@ -405,36 +435,6 @@ export default async function TeacherStudentDetailPage({
             </ul>
           )}
         </details>
-      </section>
-
-      <section className="panel panel-body lg-gap border-indigo-400/15">
-        <PersistedSection
-          id={`student-progress:${student.id}`}
-          summary={
-            <>
-              <div>
-                <h2 className="text-lg font-semibold text-white">Progression</h2>
-                <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
-              </div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-                <span className="group-open:hidden">Ouvrir</span>
-                <span className="hidden group-open:inline">Fermer</span>
-              </span>
-            </>
-          }
-        >
-          <div className="panel-grid lg-gap md:grid-cols-2">
-            {filteredPositions.map((position) => {
-              const progress = progressMap.get(position.id);
-              return <ProgressCard key={position.id} position={position} progress={progress} studentId={student.id} />;
-            })}
-            {filteredPositions.length === 0 && (
-              <p className="md:col-span-2 text-sm text-slate-200">
-                Aucune position enseignée pour l&apos;instant.
-              </p>
-            )}
-          </div>
-        </PersistedSection>
       </section>
     </main>
   );
