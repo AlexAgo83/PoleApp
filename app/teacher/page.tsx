@@ -6,21 +6,42 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { appSignature } from "@/lib/appMeta";
 
-function Stat({ label, value }: { label: string; value: number | string }) {
+type StatPillProps = { label: string; value: string | number };
+type Shortcut = { label: string; href?: string; backgroundUrl?: string | null };
+type Panel = {
+  id: string;
+  title: string;
+  description: string;
+  stats: { label: string; value: string | number }[];
+  shortcuts: Shortcut[];
+};
+
+function StatPill({ label, value }: StatPillProps) {
   return (
-    <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 shadow-sm">
-      <div className="absolute inset-0 opacity-20 blur-2xl" aria-hidden>
-        <div className="h-full w-full bg-gradient-to-br from-cyan-500/40 via-white/30 to-transparent" />
-      </div>
-      <div className="relative flex items-center justify-between gap-2">
-        <p className="text-[11px] uppercase tracking-[0.14em] text-slate-300">{label}</p>
-        <span className="inline-flex h-5 min-w-[2.5rem] items-center justify-center rounded-full border border-white/10 bg-white/10 px-2 text-xs font-semibold text-white">
-          {value}
-        </span>
+    <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-slate-200">
+      <span className="uppercase tracking-[0.14em] text-cyan-200">{label}</span>
+      <span className="rounded-md bg-white/10 px-1.5 py-[2px] text-[10px] font-semibold text-white">{value}</span>
+    </div>
+  );
+}
+
+function PanelHero({ title, description }: { title: string; description: string }) {
+  const heroBg =
+    "linear-gradient(135deg, rgba(22,36,66,0.68), rgba(16,26,52,0.62)), radial-gradient(circle at 12% 20%, rgba(56,189,248,0.25), transparent 42%), radial-gradient(circle at 82% -8%, rgba(236,72,153,0.22), transparent 38%)";
+  return (
+    <div
+      className="relative -mx-[var(--panel-px)] -mt-[var(--panel-py)] overflow-hidden rounded-t-2xl border-b border-white/10 bg-[#0f1a32] px-4 py-5 shadow-inner shadow-black/20 sm:px-6"
+      style={{ backgroundImage: heroBg, backgroundSize: "cover", backgroundPosition: "center" }}
+    >
+      <div className="relative flex flex-col gap-2">
+        <h2 className="text-xl font-semibold text-white sm:text-2xl">{title}</h2>
+        <p className="text-sm text-slate-200/90">{description}</p>
       </div>
     </div>
   );
 }
+
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
 export default async function TeacherDashboard() {
   const session = await getServerSession(authOptions);
@@ -38,6 +59,7 @@ export default async function TeacherDashboard() {
       </main>
     );
   }
+
   const teacherProfileHref = session?.user?.id ? `/teachers/${session.user.id}` : "/profile";
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
@@ -59,6 +81,8 @@ export default async function TeacherDashboard() {
     disciplinesCount,
     newStudentsWeek,
     newStudentsMonth,
+    nextCourseRow,
+    lastCourseRow,
   ] = await Promise.all([
     prisma.course.count({
       where: {
@@ -97,268 +121,156 @@ export default async function TeacherDashboard() {
         createdAt: { gte: startOfMonth },
       },
     }),
+    prisma.course.findFirst({
+      where: { teacherId: session.user.id, date: { gte: new Date() } },
+      select: { id: true, title: true, date: true, photoPublicId: true },
+      orderBy: { date: "asc" },
+    }),
+    prisma.course.findFirst({
+      where: { teacherId: session.user.id, date: { lt: new Date() } },
+      select: { id: true, title: true, date: true, photoPublicId: true },
+      orderBy: { date: "desc" },
+    }),
   ]);
+
+  const nextCoursePhoto =
+    nextCourseRow?.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${nextCourseRow.photoPublicId}`
+      : null;
+  const lastCoursePhoto =
+    lastCourseRow?.photoPublicId && CLOUD_NAME
+      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${lastCourseRow.photoPublicId}`
+      : null;
+
+  const agendaShortcuts: Shortcut[] = [
+    { label: "Mes cours", href: "/teacher/courses/agenda?view=month" },
+    { label: "Créer un cours", href: "/teacher/courses/new" },
+  ];
+  if (lastCourseRow) {
+    agendaShortcuts.push({
+      label: "Mon dernier cours",
+      href: `/teacher/courses/${lastCourseRow.id}?from=/teacher`,
+      backgroundUrl: lastCoursePhoto,
+    });
+  }
+  if (nextCourseRow) {
+    agendaShortcuts.push({
+      label: "Mon prochain cours",
+      href: `/teacher/courses/${nextCourseRow.id}?from=/teacher`,
+      backgroundUrl: nextCoursePhoto,
+    });
+  }
+
+  const panels: Panel[] = [
+    {
+      id: "agenda",
+      title: "Cours & agenda",
+      description: "Planifie et pilote tes cours en un coup d’œil.",
+      stats: [
+        { label: "Aujourd'hui", value: coursesTodayCount },
+        { label: "7 jours", value: coursesWeekCount },
+      ],
+      shortcuts: agendaShortcuts,
+    },
+    {
+      id: "positions",
+      title: "Positions & combos",
+      description: "Gère ton catalogue et tes créations clés.",
+      stats: [
+        { label: "Positions", value: positionsCount },
+        { label: "Combos", value: combosCount },
+      ],
+      shortcuts: [
+        { label: "Catalogue positions", href: "/positions" },
+        { label: "Créer une position", href: "/teacher/positions/new" },
+        { label: "Combos", href: "/teacher/presets" },
+        { label: "Mini-jeux révision", href: "/student/game" },
+      ],
+    },
+    {
+      id: "communaute",
+      title: "Communauté",
+      description: "Studios, partenaires et santé de tes élèves.",
+      stats: [
+        { label: "Inscriptions (7j)", value: newStudentsWeek },
+        { label: "Blessures", value: activeInjuries },
+      ],
+      shortcuts: [
+        { label: "Mes élèves", href: "/teacher/students" },
+        { label: "École & studios", href: "/teacher/school" },
+        { label: "Partenaires", href: "/teacher/partners" },
+      ],
+    },
+    {
+      id: "compte",
+      title: "Compte",
+      description: "Facturation, achats et profil professeur.",
+      stats: [
+        { label: "Élèves", value: studentsCount },
+        { label: "Inscriptions (mois)", value: newStudentsMonth },
+      ],
+      shortcuts: [
+        { label: "Facturation", href: "/teacher/billing" },
+        { label: "Achats élèves", href: "/teacher/purchases" },
+        { label: "Profil professeur", href: teacherProfileHref },
+      ],
+    },
+  ];
+
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="grid gap-3 md:gap-4 md:grid-cols-2">
-        <div className="panel panel-body md:col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white leading-tight">Stats</h2>
-          </div>
-          <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
-            <Stat label="Positions" value={positionsCount} />
-            <Stat label="Combos" value={combosCount} />
-            <Stat label="Studios" value={studiosCount} />
-            <Stat label="Partenaires" value={partnersCount} />
-            <Stat label="Étudiants" value={studentsCount} />
-            <Stat label="Disciplines" value={disciplinesCount} />
-          </div>
-        </div>
-        <div className="panel panel-body md:col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white leading-tight">Activité</h2>
-          </div>
-          <div className="panel-grid grid-cols-1 sm:grid-cols-2 text-[11px] md:text-xs text-slate-200">
-            <Stat label="Cours (aujourd'hui)" value={coursesTodayCount} />
-            <Stat label="Cours (7j)" value={coursesWeekCount} />
-            <Stat label="Inscriptions (7j)" value={newStudentsWeek} />
-            <Stat label="Inscriptions (mois)" value={newStudentsMonth} />
-            <Stat label="Blessures actives" value={activeInjuries} />
-          </div>
-        </div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-body panel-grid lg-gap md:grid-cols-2">
-          <Link
-            href="/teacher/students"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="8" r="3" />
-                  <circle cx="17" cy="9" r="3" />
-                  <path d="M4 19v-1a4 4 0 014-4h2a4 4 0 014 4v1" />
-                  <path d="M15 19v-1a3.5 3.5 0 013.5-3.5H20" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Élèves
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Liste et fiches élèves
-                </p>
+      <section className="grid gap-4 xl:grid-cols-2">
+        {panels.map((panel) => (
+          <article key={panel.id} className="panel border border-white/5">
+            <div className="panel-body gap-4">
+              <PanelHero title={panel.title} description={panel.description} />
+              <div className="flex flex-wrap gap-2">
+                {panel.stats.map((stat) => (
+                  <StatPill key={`${panel.id}-${stat.label}`} label={stat.label} value={stat.value} />
+                ))}
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {panel.shortcuts.map((shortcut) => (
+                  <Link
+                    key={`${panel.id}-${shortcut.label}`}
+                    href={shortcut.href ?? "#"}
+                    className="group flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    style={
+                      shortcut.backgroundUrl
+                        ? {
+                            backgroundImage: `linear-gradient(135deg, rgba(26,35,69,0.55), rgba(88,28,135,0.4)), url(${shortcut.backgroundUrl})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }
+                        : undefined
+                    }
+                  >
+                    <span
+                      className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]"
+                      style={
+                        shortcut.backgroundUrl
+                          ? { textShadow: "0 0 6px rgba(0,0,0,0.65), 0 1px 2px rgba(0,0,0,0.55)" }
+                          : undefined
+                      }
+                    >
+                      {shortcut.label}
+                    </span>
+                    <span
+                      className="text-cyan-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] transition-transform group-hover:translate-x-1"
+                      style={
+                        shortcut.backgroundUrl
+                          ? { textShadow: "0 0 6px rgba(0,0,0,0.65), 0 1px 2px rgba(0,0,0,0.55)" }
+                          : undefined
+                      }
+                    >
+                      →
+                    </span>
+                  </Link>
+                ))}
               </div>
             </div>
-          </Link>
-          <Link
-            href="/teacher/courses/agenda?view=month"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="5" width="16" height="15" rx="2" />
-                  <path d="M16 3v4" />
-                  <path d="M8 3v4" />
-                  <path d="M4 11h16" />
-                  <path d="M9 15h2" />
-                  <path d="M13 15h2" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Planning
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Créer et suivre les cours
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href={teacherProfileHref}
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="6" width="16" height="12" rx="2" />
-                  <path d="M8 10h5" />
-                  <path d="M8 13h3" />
-                  <circle cx="16.5" cy="12" r="1.8" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Fiche professeur
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Photo, diplômes, positions coup de cœur
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/teacher/school"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 4l8 4-8 4-8-4 8-4z" />
-                  <path d="M4 12v5.5a1.5 1.5 0 001.5 1.5H9v-5.5" />
-                  <path d="M20 12v5.5a1.5 1.5 0 01-1.5 1.5H15v-5.5" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  École
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Fiche école et studios
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/positions"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5c-2 0-3.5 1.5-3.5 3.5S10 12 12 12s3.5 1.5 3.5 3.5S14 19 12 19" />
-                  <path d="M12 5V3" />
-                  <path d="M12 21v-2" />
-                  <path d="M5 12h2" />
-                  <path d="M17 12h2" />
-                  <path d="M7 7l1.5 1.5" />
-                  <path d="M15.5 15.5 17 17" />
-                  <path d="M7 17l1.5-1.5" />
-                  <path d="M15.5 8.5 17 7" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Positions
-                </p>
-                <p className="text-base font-semibold text-white">Gérer les positions</p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/presets"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="5" width="16" height="14" rx="2" />
-                  <path d="M4 9h16" />
-                  <path d="M8 5v14" />
-                  <path d="M16 5v14" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Combos</p>
-                <p className="text-base font-semibold text-white">Créer et gérer les combos</p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/teacher/purchases"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="6" width="18" height="12" rx="2" />
-                  <path d="M3 10h18" />
-                  <path d="M7 15h2" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">Achats élèves</p>
-                <p className="text-base font-semibold text-white">Packs / Abos / Combos</p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/teacher/billing"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 4h10a2 2 0 012 2v12l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
-                  <path d="M9 8h6" />
-                  <path d="M9 12h6" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Facturation
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Suivre tes factures
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/student/game"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="7" />
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 5V3" />
-                  <path d="M12 21v-2" />
-                  <path d="M5 12H3" />
-                  <path d="M21 12h-2" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Jeux
-                </p>
-                <p className="text-base font-semibold text-white">
-                  6 mini-jeux de révision
-                </p>
-              </div>
-            </div>
-          </Link>
-          <Link
-            href="/teacher/partners"
-            className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/70 hover:bg-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8a6 6 0 00-9.33-5" />
-                  <path d="M5 22a7 7 0 0010-6.71" />
-                  <path d="M16 8a6 6 0 00-9.33-5" />
-                  <path d="M2 22a7 7 0 0010-6.71" />
-                  <path d="M7 10h10" />
-                  <path d="M7 14h10" />
-                </svg>
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm uppercase tracking-[0.12em] text-cyan-200">
-                  Partenaires
-                </p>
-                <p className="text-base font-semibold text-white">
-                  Voir partenaires/links sponsorisés
-                </p>
-              </div>
-            </div>
-          </Link>
-        </div>
+          </article>
+        ))}
       </section>
 
       <div className="pb-4 text-center text-xs text-slate-300/80">{appSignature}</div>
