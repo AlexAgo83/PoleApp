@@ -67,6 +67,7 @@ type SearchParams = Promise<{
   q?: string;
   teacher?: string;
   discipline?: string;
+  unlocked?: string;
 }>;
 
 export default async function PositionsPage({ searchParams }: { searchParams?: SearchParams }) {
@@ -77,6 +78,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
     q?: string;
     teacher?: string;
     discipline?: string;
+    unlocked?: string;
   };
   const rawPage = Number(resolvedParams.page ?? "1");
   const typeFilter =
@@ -96,41 +98,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
       .filter(Boolean) ?? [];
   const q = resolvedParams.q?.toString().trim() || "";
   const teacherFilter = resolvedParams.teacher?.toString().trim() || "";
-  const activeFilters = [
-    typeFilter,
-    levelFilter,
-    q && q.length > 0,
-    teacherFilter && teacherFilter.length > 0,
-    disciplineFilters.length > 0,
-  ].filter(Boolean).length;
-
-  const where: Prisma.PositionWhereInput = {
-    ...(typeFilter ? { type: typeFilter } : {}),
-    ...(levelFilter ? { levelRequired: levelFilter } : {}),
-    ...(q
-      ? {
-          name: { contains: q, mode: Prisma.QueryMode.insensitive },
-        }
-      : {}),
-    ...(teacherFilter
-      ? {
-          createdByUserId: teacherFilter,
-        }
-      : {}),
-    ...(disciplineFilters.length
-      ? {
-          OR: [
-            { disciplineId: { in: disciplineFilters } },
-          ],
-        }
-      : {}),
-  };
-
-  const totalCount = await prisma.position.count({ where });
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
-  const skip = (currentPage - 1) * PAGE_SIZE;
-
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     redirect("/login");
@@ -148,6 +115,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         prisma.subscriptionOffer.findMany({ where: { isActive: true, isOpen: true }, orderBy: { sortOrder: "asc" } }),
       ])
     : [[], []];
+  const unlockedOnly = isStudent && ["1", "true"].includes((resolvedParams.unlocked ?? "").toLowerCase());
   const unlockedPositionSet =
     isStudent && session.user.id
       ? (() => {
@@ -177,12 +145,51 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
           });
         })()
       : Promise.resolve(new Set<string>());
+  const unlockedPositions = await unlockedPositionSet;
+
+  const where: Prisma.PositionWhereInput = {
+    ...(typeFilter ? { type: typeFilter } : {}),
+    ...(levelFilter ? { levelRequired: levelFilter } : {}),
+    ...(q
+      ? {
+          name: { contains: q, mode: Prisma.QueryMode.insensitive },
+        }
+      : {}),
+    ...(teacherFilter
+      ? {
+          createdByUserId: teacherFilter,
+        }
+      : {}),
+    ...(disciplineFilters.length
+      ? {
+          OR: [
+            { disciplineId: { in: disciplineFilters } },
+          ],
+        }
+      : {}),
+    ...(unlockedOnly ? { id: { in: Array.from(unlockedPositions) } } : {}),
+  };
+
+  const activeFilters = [
+    typeFilter,
+    levelFilter,
+    q && q.length > 0,
+    teacherFilter && teacherFilter.length > 0,
+    disciplineFilters.length > 0,
+    unlockedOnly,
+  ].filter(Boolean).length;
+
+  const totalCount = await prisma.position.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, rawPage || 1), totalPages);
+  const skip = (currentPage - 1) * PAGE_SIZE;
   const queryParams = new URLSearchParams();
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
   if (q) queryParams.set("q", q);
   if (teacherFilter) queryParams.set("teacher", teacherFilter);
   if (disciplineFilters.length) queryParams.set("discipline", disciplineFilters.join(","));
+  if (unlockedOnly) queryParams.set("unlocked", "1");
   const qs = queryParams.toString();
   const [disciplineRows, creatorOptions, positions, studentProgress] = await Promise.all([
     prisma.discipline.findMany({
@@ -248,7 +255,6 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
 
   const disciplineOptions = disciplineRows.map((d) => ({ id: d.id, name: d.name }));
   const progressMap = new Map(studentProgress.map((p) => [p.positionId, p]));
-  const unlockedPositions = await unlockedPositionSet;
   const progressBadgeClass: Record<string, string> = {
     NOT_STARTED: "border-[#2563eb] bg-[#2563eb] text-white",
     IN_PROGRESS: "border-[#f59e0b] bg-[#f59e0b] text-white",
@@ -367,7 +373,7 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
         >
           {/* key force le rerender des inputs lorsque les filtres changent pour que “Réinitialiser” remette bien les valeurs par défaut. */}
           <form
-            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${disciplineFilters.join("|") || "all"}-${q || "all"}`}
+            key={`filters-${typeFilter ?? "all"}-${levelFilter ?? "all"}-${teacherFilter || "all"}-${disciplineFilters.join("|") || "all"}-${q || "all"}-${unlockedOnly ? "unlocked" : "any"}`}
             className="mt-4 grid w-full gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-indigo-900/20 md:grid-cols-5 md:items-end"
             method="get"
           >
@@ -446,6 +452,21 @@ export default async function PositionsPage({ searchParams }: { searchParams?: S
                 ))}
               </select>
             </label>
+            {isStudent ? (
+              <label className="text-sm text-slate-200">
+                Accès
+                <div className="mt-1 flex items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2">
+                  <input
+                    type="checkbox"
+                    name="unlocked"
+                    value="1"
+                    defaultChecked={unlockedOnly}
+                    className="h-4 w-4 accent-cyan-400"
+                  />
+                  <span className="text-sm text-white">Seulement mes positions débloquées</span>
+                </div>
+              </label>
+            ) : null}
             <div className="md:col-span-5 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="submit"
