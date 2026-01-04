@@ -123,7 +123,7 @@ export default async function TeacherStudentDetailPage({
   const canEdit = session.user.role === "SCHOOL_ADMIN" || session.user.role === "TEACHER";
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-center gap-4">

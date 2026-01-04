@@ -151,7 +151,7 @@ export default async function TeacherBillingPage({
     .length;
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel space-y-4 p-4 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>

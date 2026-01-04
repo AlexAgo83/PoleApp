@@ -55,7 +55,7 @@ export default async function TeacherPartnersPage() {
     .slice(0, 16);
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-2xl font-semibold text-white">Partenaires de l’école</h1>
