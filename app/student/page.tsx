@@ -10,9 +10,9 @@ type StatPillProps = { label: string; value: string | number };
 
 function StatPill({ label, value }: StatPillProps) {
   return (
-    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] text-slate-100">
+    <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-slate-100">
       <span className="uppercase tracking-[0.14em] text-cyan-200">{label}</span>
-      <span className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-semibold text-white">{value}</span>
+      <span className="rounded-md bg-white/10 px-1.5 py-[2px] text-[10px] font-semibold text-white">{value}</span>
     </div>
   );
 }
@@ -157,7 +157,7 @@ export default async function StudentDashboard() {
     : null;
 
   const agendaShortcuts: Shortcut[] = [
-    { label: "Agenda mensuel", href: "/student/courses/agenda?view=month" },
+    { label: "Réserver un cours", href: "/student/courses/agenda?view=month" },
     { label: "Tous mes cours", href: "/student/courses" },
     { label: "Studios & école", href: "/student/school" },
   ];
@@ -168,7 +168,7 @@ export default async function StudentDashboard() {
   const progressionShortcuts: Shortcut[] = [
     { label: "Mon suivi", href: "/student/progress" },
     { label: "Catalogue positions", href: "/positions" },
-    { label: "Combos (presets)", href: "/presets" },
+    { label: "Combos", href: "/presets" },
     { label: "Mini-jeux révision", href: "/student/game" },
   ];
 
@@ -189,10 +189,10 @@ export default async function StudentDashboard() {
     {
       id: "agenda",
       title: "Cours & agenda",
-      description: "Réserve, attends et retrouve tes cours en un coup d’œil.",
+      description: "Réserve et retrouve tes cours en un coup d’œil.",
       stats: [
         { label: "Confirmés", value: confirmedUpcoming },
-        { label: "Liste d'attente", value: waitlistUpcoming },
+        { label: "En attente", value: waitlistUpcoming },
         ...(nextCourseLabel ? [{ label: "Prochain", value: nextCourseLabel }] : []),
       ],
       shortcuts: agendaShortcuts,
@@ -212,7 +212,7 @@ export default async function StudentDashboard() {
     {
       id: "communaute",
       title: "Communauté",
-      description: "Reste connecté aux profs, partenaires et à ta santé.",
+      description: "Reste connecté aux profs, aux offres et à ta santé.",
       stats: [
         { label: "Profs", value: teachersCount },
         { label: "Partenaires", value: partnersCount },
@@ -223,7 +223,7 @@ export default async function StudentDashboard() {
     {
       id: "compte",
       title: "Compte",
-      description: "Crédits, profil et upgrade premium quand tu veux.",
+      description: "Crédits, abonnement et achats",
       stats: [
         { label: "Crédits", value: credits },
         { label: "Statut", value: isPremium ? "Premium" : "Freemium" },
