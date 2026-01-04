@@ -95,8 +95,10 @@ export default async function StudentProgressPage({
       ? (resolvedParams.level as PositionLevel)
       : undefined;
   const disciplineFilter = resolvedParams.discipline?.toString().trim() || "";
-  const progressRaw = resolvedParams.progress;
-  const onlyInProgress = progressRaw === "1" || progressRaw === "true" || progressRaw === "on";
+  const progressRaw = Array.isArray(resolvedParams.progress)
+    ? resolvedParams.progress[resolvedParams.progress.length - 1]
+    : resolvedParams.progress;
+  const onlyInProgress = progressRaw === undefined || progressRaw === "1" || progressRaw === "true" || progressRaw === "on";
   const q = resolvedParams.q?.toString().trim() || "";
   const activeFilters = [typeFilter, levelFilter, disciplineFilter, onlyInProgress ? "progress" : null, q && q.length > 0 ? "q" : null].filter(
     Boolean
@@ -219,7 +221,10 @@ export default async function StudentProgressPage({
   if (typeFilter) queryParams.set("type", typeFilter);
   if (levelFilter) queryParams.set("level", levelFilter);
   if (disciplineFilter) queryParams.set("discipline", disciplineFilter);
-  if (onlyInProgress) queryParams.set("progress", "1");
+  if (progressRaw !== undefined) {
+    if (onlyInProgress) queryParams.set("progress", "1");
+    else queryParams.set("progress", "0");
+  }
   if (q) queryParams.set("q", q);
   const qs = queryParams.toString();
 
@@ -363,6 +368,7 @@ export default async function StudentProgressPage({
             </label>
             <div className="flex flex-col justify-end gap-2 text-sm text-slate-200">
               <label className="inline-flex items-center gap-2">
+                <input type="hidden" name="progress" value="0" />
                 <input
                   type="checkbox"
                   name="progress"
