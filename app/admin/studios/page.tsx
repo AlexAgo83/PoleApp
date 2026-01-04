@@ -55,7 +55,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
   let totalCount = 0;
   let totalPages = 1;
   let currentPage = 1;
-  let studios: { id: string; name: string; address: string | null; photoPublicId: string | null }[] = [];
+  let studios: { id: string; name: string; address: string | null; photoPublicId: string | null; disabledAt: Date | null }[] = [];
   try {
     const whereClause = {
       schoolId: session.user.schoolId,
@@ -78,7 +78,7 @@ export default async function AdminStudiosPage({ searchParams }: PageProps) {
       orderBy: { name: "asc" },
       skip,
       take: 10,
-      select: { id: true, name: true, address: true, photoPublicId: true },
+      select: { id: true, name: true, address: true, photoPublicId: true, disabledAt: true },
     });
   } catch {
     return (

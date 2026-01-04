@@ -135,6 +135,7 @@ export async function deleteDisciplineAction(formData: FormData) {
     redirect("/access-denied");
   }
   const disciplineId = formData.get("disciplineId") as string | null;
+  const action = (formData.get("action") as string | null) ?? "disable";
   if (!disciplineId) {
     return;
   }
@@ -145,19 +146,17 @@ export async function deleteDisciplineAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  const usedCount = await prisma.course.count({
-    where: {
-      OR: [
-        { disciplineId: disciplineId },
-        { discipline: discipline.name },
-      ],
-    },
-  });
-  if (usedCount > 0) {
-    return;
+  if (action === "disable") {
+    await prisma.discipline.update({
+      where: { id: disciplineId },
+      data: { disabledAt: new Date(), disabledById: session.user.id },
+    });
+  } else {
+    await prisma.discipline.update({
+      where: { id: disciplineId },
+      data: { disabledAt: null, disabledById: null },
+    });
   }
-
-  await prisma.discipline.delete({ where: { id: disciplineId } });
   revalidatePath("/admin/school");
   revalidatePath("/admin");
   return;

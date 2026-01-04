@@ -21,8 +21,9 @@ const updateSchema = z.object({
   photoPublicId: z.string().trim().max(512).optional(),
 });
 
-const deleteSchema = z.object({
+const toggleSchema = z.object({
   id: z.string().cuid(),
+  action: z.enum(["disable", "enable"]),
 });
 
 const basePath = "/admin/studios";
@@ -104,7 +105,10 @@ export async function updateStudioAction(formData: FormData) {
 
 export async function deleteStudioAction(formData: FormData) {
   const schoolId = await requireAdminWithSchool();
-  const parsed = deleteSchema.safeParse({ id: formData.get("studioId") });
+  const parsed = toggleSchema.safeParse({
+    id: formData.get("studioId"),
+    action: formData.get("action")?.toString().trim() as "disable" | "enable",
+  });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
   }
@@ -117,11 +121,17 @@ export async function deleteStudioAction(formData: FormData) {
     redirect("/access-denied");
   }
 
-  await prisma.course.updateMany({
-    where: { studioId: parsed.data.id },
-    data: { studioId: null },
-  });
-  await prisma.studio.delete({ where: { id: parsed.data.id } });
+  if (parsed.data.action === "disable") {
+    await prisma.studio.update({
+      where: { id: parsed.data.id },
+      data: { disabledAt: new Date(), disabledById: undefined },
+    });
+  } else {
+    await prisma.studio.update({
+      where: { id: parsed.data.id },
+      data: { disabledAt: null, disabledById: undefined },
+    });
+  }
 
   revalidatePath(basePath);
   return;
