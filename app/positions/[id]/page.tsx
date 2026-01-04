@@ -372,10 +372,10 @@ export default async function PositionDetailPage({ params, searchParams }: Props
         ]}
         foxHref="/"
       />
-      <section className="panel p-4 md:p-6 lg:p-8">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 md:mb-6">
+      <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6 lg:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-semibold leading-tight text-white md:text-4xl">{position.name}</h1>
+            <h1 className="text-2xl font-semibold leading-tight text-white md:text-3xl">{position.name}</h1>
             {(isStudent || isTeacher) && (
               <form action={toggleFavoriteAction}>
                 <input type="hidden" name="positionId" value={position.id} />

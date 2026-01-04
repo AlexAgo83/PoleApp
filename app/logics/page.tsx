@@ -81,12 +81,8 @@ export default async function LogicsPage({ searchParams }: PageProps) {
   const getValue = (value?: string | string[]) => (Array.isArray(value) ? value[0] : value);
   const sectionParam = (getValue(resolvedParams.section) ?? "").toLowerCase();
   const fileParam = getValue(resolvedParams.file) ?? "";
-  const selectedCategory =
-    docsByCategory.find((c) => c.key === sectionParam) ?? docsByCategory[docsByCategory.length - 1] ?? null;
-  const defaultDoc =
-    selectedCategory && selectedCategory.docs.length > 0
-      ? selectedCategory.docs[selectedCategory.docs.length - 1]
-      : null;
+  const selectedCategory = docsByCategory.find((c) => c.key === sectionParam) ?? docsByCategory[0] ?? null;
+  const defaultDoc = selectedCategory && selectedCategory.docs.length > 0 ? selectedCategory.docs[0] : null;
   const selectedDoc = selectedCategory?.docs.find((doc) => doc.slug === fileParam) ?? defaultDoc;
 
   const content = selectedDoc ? fs.readFileSync(selectedDoc.path, "utf-8") : null;
