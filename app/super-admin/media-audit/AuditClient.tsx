@@ -79,9 +79,19 @@ function toCsv(rows: Row[]) {
     .join("\n");
 }
 
+function buildThumbUrl(row: Row, cloudName?: string | null) {
+  if (!cloudName) return null;
+  const publicId = row.publicId;
+  const isVideo = row.category === "orphan" ? row.resourceType === "video" : row.resourceType === "video";
+  const type = isVideo ? "video" : "image";
+  const suffix = isVideo ? ".jpg" : "";
+  return `https://res.cloudinary.com/${cloudName}/${type}/upload/c_fill,g_auto,f_auto,q_auto,w_96,h_96/${publicId}${suffix}`;
+}
+
 export function AuditClient() {
   const [state, formAction] = useActionState(scanMediaAuditAction, initialState);
   const [filter, setFilter] = useState<CategoryFilter>("all");
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
 
   const rows: Row[] = useMemo(() => {
     if (state.status !== "ok") return [];
@@ -218,22 +228,40 @@ export function AuditClient() {
                   key={`${row.category}-${row.normalizedFull}-${"source" in row ? row.source.id : row.createdAt ?? row.publicId}`}
                   className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="font-mono text-xs text-white">{row.publicId}</p>
-                      <p className="text-xs text-slate-400">
-                        {row.category === "orphan"
-                          ? `${row.resourceType}/${row.deliveryType}${row.folder ? ` · ${row.folder}` : ""}${row.format ? ` · ${row.format}` : ""}`
-                          : `${row.source.table}.${row.source.field} · ${row.source.id}`}
-                        {row.isSeed ? " · seed" : ""}
-                      </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 overflow-hidden rounded-lg border border-white/10 bg-white/10">
+                      {cloudName ? (
+                        <img
+                          src={buildThumbUrl(row, cloudName) ?? ""}
+                          alt={row.publicId}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-[10px] uppercase text-slate-500">
+                          N/A
+                        </div>
+                      )}
                     </div>
-                    {row.category === "orphan" ? (
-                      <div className="text-right text-xs text-slate-400">
-                        {row.bytes ? <span>{Math.round(row.bytes / 1024)} Ko</span> : null}
-                        {row.createdAt ? <span className="ml-2">{new Date(row.createdAt).toLocaleString("fr-FR")}</span> : null}
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="font-mono text-xs text-white">{row.publicId}</p>
+                          <p className="text-xs text-slate-400">
+                            {row.category === "orphan"
+                              ? `${row.resourceType}/${row.deliveryType}${row.folder ? ` · ${row.folder}` : ""}${row.format ? ` · ${row.format}` : ""}`
+                              : `${row.source.table}.${row.source.field} · ${row.source.id}`}
+                            {row.isSeed ? " · seed" : ""}
+                          </p>
+                        </div>
+                        {row.category === "orphan" ? (
+                          <div className="text-right text-xs text-slate-400">
+                            {row.bytes ? <span>{Math.round(row.bytes / 1024)} Ko</span> : null}
+                            {row.createdAt ? <span className="ml-2">{new Date(row.createdAt).toLocaleString("fr-FR")}</span> : null}
+                          </div>
+                        ) : null}
                       </div>
-                    ) : null}
+                    </div>
                   </div>
                 </div>
               ))
