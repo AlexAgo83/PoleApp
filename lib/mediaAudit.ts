@@ -67,6 +67,8 @@ export type CloudAsset = {
   createdAt?: string;
   tags?: string[];
   isSeed: boolean;
+  previewUrl?: string;
+  openUrl?: string;
 };
 
 export type MediaDiffResult = {

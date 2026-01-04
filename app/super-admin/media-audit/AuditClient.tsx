@@ -80,6 +80,7 @@ function toCsv(rows: Row[]) {
 }
 
 function buildThumbUrl(row: Row, cloudName?: string | null) {
+  if (row.category === "orphan" && row.previewUrl) return row.previewUrl;
   if (!cloudName) return null;
   if (row.category !== "orphan") return null;
   if (row.deliveryType !== "upload") return null; // pas d’URL publique pour authenticated
@@ -91,6 +92,7 @@ function buildThumbUrl(row: Row, cloudName?: string | null) {
 }
 
 function buildAssetUrl(row: Row, cloudName?: string | null) {
+  if (row.category === "orphan" && row.openUrl) return row.openUrl;
   if (!cloudName) return null;
   if (row.category !== "orphan") return null;
   if (row.deliveryType !== "upload") return null;

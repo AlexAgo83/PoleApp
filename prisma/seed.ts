@@ -464,16 +464,6 @@ const seedPresetsData = [
     videoPublicId: "ps_001_qo2alr",
   },
   {
-    title: "Orion Breath",
-    discipline: "Pole",
-    premiumRequired: true,
-    description:
-      "Choré axée sur la régularité du souffle et la connexion corps-sol. Elle s’appuie sur 8 à 11 positions avec des moments suspendus et des resets très calmes. On démarre par un tour de hanche, un climb alternatif puis un inside leg hang tenu quatre temps. La transition vers le sol se fait en wave continue, suivi d’un back hook spin qui prolonge la rotation. Le bloc central propose une variation de butterfly low, une remontée en roll-up et un accent de bassin sur la musique. Les indications pédagogiques invitent à visualiser un métronome respiratoire, à gérer l’angle des épaules et à répartir le grip pour éviter la fatigue d’un seul bras. Le final laisse le choix entre une sortie au sol ou un petit slide dynamique, sans perdre le tempo posé.",
-    imagePublicId: "ps_002_fhyron",
-    videoPublicId: "ps_pole_08_v",
-    priceCredits: 140,
-  },
-  {
     title: "Apogee Draft",
     discipline: "Pole",
     premiumRequired: false,
