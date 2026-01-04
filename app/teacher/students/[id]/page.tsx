@@ -1,12 +1,14 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { GameMode } from "@prisma/client";
+import { GameMode, LearningStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { SafeImage } from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
+import { StudentPerformanceList } from "@/app/profile/StudentPerformanceList";
 import { updateStudentProfileAction } from "./actions";
 import { StudentAvatarManager } from "./StudentAvatarManager";
 import { PersistedSection } from "./PersistedSection";
@@ -58,11 +60,17 @@ export default async function TeacherStudentDetailPage({
       avatarPublicId: true,
       age: true,
       isPremium: true,
+      school: {
+        select: { name: true },
+      },
       injuries: {
         include: { injuryType: true },
         orderBy: { createdAt: "desc" },
       },
       progress: {
+        include: { position: true },
+      },
+      studentFavoritePositions: {
         include: { position: true },
       },
     },
@@ -121,6 +129,20 @@ export default async function TeacherStudentDetailPage({
   const firstNameDefault = nameParts[0] ?? "";
   const lastNameDefault = nameParts.slice(1).join(" ");
   const canEdit = session.user.role === "SCHOOL_ADMIN" || session.user.role === "TEACHER";
+  const roleLabel = "Étudiant";
+  const statusOrder: Record<LearningStatus, number> = {
+    MASTERED: 0,
+    PASSED: 1,
+    IN_PROGRESS: 2,
+    NOT_STARTED: 3,
+  };
+  const sortedProgression = student.progress
+    .filter((p) => p.position)
+    .sort((a, b) => {
+      const orderDiff = statusOrder[a.learningStatus] - statusOrder[b.learningStatus];
+      if (orderDiff !== 0) return orderDiff;
+      return (a.position?.name || "").localeCompare(b.position?.name || "");
+    });
 
   return (
     <main className="flex w-full flex-col gap-4">
@@ -137,11 +159,23 @@ export default async function TeacherStudentDetailPage({
             />
             <div>
               <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Fiche élève</p>
-              <h1 className="text-2xl font-semibold text-white">{studentDisplayName}</h1>
+              <h1 className="text-2xl font-semibold text-white flex items-center gap-2">
+                <span>{studentDisplayName}</span>
+                {student.age ? (
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                    {student.age} ans
+                  </span>
+                ) : null}
+              </h1>
               <p className="text-sm text-slate-200">{student.email}</p>
-              <p className="text-sm text-slate-300">
-                Statut : {student.isPremium ? "Premium" : "Free"} ·{" "}
-                {student.age ? `${student.age} ans` : "Âge non renseigné"}
+              <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                <span>École : {student.school?.name ?? "Non rattaché"}</span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                  {roleLabel}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                  {student.isPremium ? "Premium" : "Gratuit"}
+                </span>
               </p>
             </div>
           </div>
@@ -156,6 +190,46 @@ export default async function TeacherStudentDetailPage({
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-50">
                 Premium
               </span>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-6 md:grid-cols-2">
+          <div>
+            <StudentPerformanceList
+              labelClassName="text-lg font-semibold text-white"
+              items={sortedProgression.map((p) => ({
+                positionId: p.positionId,
+                positionName: p.position?.name ?? "Position",
+                learningStatus: p.learningStatus,
+                updatedAt: p.updatedAt,
+              }))}
+            />
+            {sortedProgression.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-300">
+                Aucune progression enregistrée pour l’instant.
+              </p>
+            ) : null}
+          </div>
+
+          <div className="space-y-3 text-sm text-slate-200">
+            <h3 className="text-lg font-semibold text-white">Positions coups de cœur</h3>
+            {student.studentFavoritePositions.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {student.studentFavoritePositions
+                  .filter((fav) => fav.position)
+                  .map((fav) => (
+                    <Link
+                      key={fav.positionId}
+                      href={`/positions/${fav.positionId}`}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                    >
+                      {fav.position?.name}
+                    </Link>
+                  ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
             )}
           </div>
         </div>
