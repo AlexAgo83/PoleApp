@@ -7,6 +7,7 @@ import { FilterPanel } from "@/components/FilterPanel";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { SafeImage } from "@/components/SafeImage";
 import { BuyCreditsButton } from "@/app/student/BuyCreditsButton";
+import { ConfirmEnrollButton } from "@/components/ConfirmEnrollButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { defaultHomeForRole } from "@/lib/rbac";
@@ -381,6 +382,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               const canEditPreset =
                 isTeacherOrAdmin &&
                 (session.user.role === "SCHOOL_ADMIN" || preset.createdByUserId === session.user.id);
+              const showConfirm = isStudent && !disablePurchase && cost > 0;
 
               let cta = "Voir le détail";
               if (alreadyBought) cta = "Déjà acheté";
@@ -461,17 +463,33 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                     {isStudent ? (
                       <form action={buyPresetAction} className="flex flex-wrap items-center gap-2">
                         <input type="hidden" name="presetId" value={preset.id} />
-                        <button
-                          type="submit"
-                          disabled={disablePurchase || (premiumLocked && isStudent)}
-                          className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
-                            disablePurchase || (premiumLocked && isStudent)
-                              ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
-                              : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
-                          }`}
-                        >
-                          {cta}
-                        </button>
+                        {showConfirm ? (
+                          <ConfirmEnrollButton
+                            cost={cost}
+                            label={cta}
+                            disabled={disablePurchase || (premiumLocked && isStudent)}
+                            title="Confirmer l'achat du preset"
+                            heading="Acheter ce preset"
+                            description={`Vous allez dépenser ${cost} crédits pour acheter ce preset.`}
+                            className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
+                              disablePurchase || (premiumLocked && isStudent)
+                                ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
+                                : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
+                            }`}
+                          />
+                        ) : (
+                          <button
+                            type="submit"
+                            disabled={disablePurchase || (premiumLocked && isStudent)}
+                            className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
+                              disablePurchase || (premiumLocked && isStudent)
+                                ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
+                                : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
+                            }`}
+                          >
+                            {cta}
+                          </button>
+                        )}
                         {premiumLocked && isStudent ? (
                           <PremiumUpsellButton className="rounded-full border border-amber-300/70 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-50 transition hover:border-amber-200 hover:bg-amber-500/30">
                             Passer premium

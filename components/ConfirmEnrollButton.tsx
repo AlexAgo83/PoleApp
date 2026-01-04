@@ -11,9 +11,21 @@ type Props = {
   className?: string;
   title?: string;
   ariaLabel?: string;
+  heading?: string;
+  description?: string;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "onClick" | "children">;
 
-export function ConfirmEnrollButton({ cost, label, disabled, className, title, ariaLabel, ...rest }: Props) {
+export function ConfirmEnrollButton({
+  cost,
+  label,
+  disabled,
+  className,
+  title,
+  ariaLabel,
+  heading,
+  description,
+  ...rest
+}: Props) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [formEl, setFormEl] = useState<HTMLFormElement | null>(null);
@@ -39,6 +51,11 @@ export function ConfirmEnrollButton({ cost, label, disabled, className, title, a
     }
   };
 
+  const modalHeading = heading ?? "S'inscrire au cours";
+  const modalDescription =
+    description ??
+    `Vous allez dépenser ${cost} crédits pour rejoindre ce cours. Confirmez pour continuer.`;
+
   const modal = (
     <div className="fixed inset-0 z-[140] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" aria-hidden="true" onClick={close} />
@@ -46,11 +63,8 @@ export function ConfirmEnrollButton({ cost, label, disabled, className, title, a
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">Confirmation</p>
-            <h3 className="text-xl font-semibold text-white">S&apos;inscrire au cours</h3>
-            <p className="mt-1 text-sm text-slate-300">
-              Vous allez dépenser <span className="font-semibold text-white">{cost} crédits</span> pour rejoindre ce cours.
-              Confirmez pour continuer.
-            </p>
+            <h3 className="text-xl font-semibold text-white">{modalHeading}</h3>
+            <p className="mt-1 text-sm text-slate-300">{modalDescription}</p>
           </div>
           <button
             type="button"
