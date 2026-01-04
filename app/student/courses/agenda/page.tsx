@@ -458,7 +458,7 @@ export default async function StudentCoursesAgendaPage({
           <div>
             <h1 className="text-3xl font-semibold text-white">Agenda</h1>
             <p className="text-sm text-slate-200">
-              Navigation hebdo/mensuelle sans rechargement.
+              Agenda des cours à venir et passés.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 md:self-start">
