@@ -35,6 +35,7 @@ export type AuditState =
             maxResults: number;
           };
         };
+        cloudName?: string;
       };
     };
 
@@ -69,6 +70,7 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
   const { resourceType, deliveryType, maxResults } = parsed.data;
   const prefix = DEFAULT_MEDIA_PREFIX;
   const includeSeeds = false;
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
   try {
     const resourceTypes = resourceType === "all" ? ["image", "video"] : [resourceType];
@@ -106,6 +108,7 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
           startedAt: new Date(start).toISOString(),
           params: { prefix, resourceType, deliveryType, maxResults },
         },
+        cloudName: cloudName ?? undefined,
       },
     };
   } catch (error) {
