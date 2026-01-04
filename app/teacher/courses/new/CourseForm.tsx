@@ -818,7 +818,7 @@ export function CourseForm({
       )}
 
       {!hideFooterActions && (
-        <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-white/10 pt-4">
+        <div className="mt-6 flex flex-wrap justify-end gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900/70 via-slate-900/50 to-slate-900/70 px-4 py-3 shadow-inner shadow-cyan-900/30 backdrop-blur">
           {formError && <p className="text-sm font-semibold text-amber-200">{formError}</p>}
           {cancelHref && (
             <a

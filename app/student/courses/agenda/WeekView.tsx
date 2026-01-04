@@ -177,7 +177,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
             return (
               <div
                 key={day.isoDate}
-                className={`rounded-xl px-1 pb-1 text-sm text-slate-200 ${
+                className={`flex min-h-[90px] flex-col rounded-xl px-1 pb-1 text-sm text-slate-200 ${
                   isToday ? "border border-cyan-300/70 bg-cyan-500/10 shadow-sm shadow-cyan-500/30" : "border border-white/10 bg-white/5"
                 }`}
               >
@@ -198,7 +198,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                     <span className="text-[11px] text-cyan-100 pr-1">{day.courses.length} cours</span>
                   )}
                 </div>
-                <div className="flex flex-col gap-1 md:gap-1.5">
+                <div className="flex flex-1 flex-col gap-1 md:gap-1.5">
                   {day.courses.map((course) => {
                     const isWaitlist = course.myStatus === "WAITLIST";
                     const isMineConfirmed = course.myStatus === "CONFIRMED";
