@@ -12,6 +12,7 @@ import {
   collectDbMediaRefs,
   diffMediaAssets,
 } from "@/lib/mediaAudit";
+import { generateSignedUrl } from "@/lib/cloudinary";
 
 export type AuditState =
   | { status: "idle" }
@@ -93,11 +94,29 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
 
     const dbRefs = await collectDbMediaRefs({ includeSeeds, folderPrefix: prefix });
     const { orphans, missing } = diffMediaAssets({ cloudAssets, dbRefs });
+    const enrichedOrphans = orphans.map((asset) => {
+      if (asset.deliveryType !== "authenticated") return asset;
+      const previewUrl = generateSignedUrl({
+        publicId: asset.publicId,
+        resourceType: asset.resourceType,
+        deliveryType: "authenticated",
+        expiresInSeconds: 600,
+        format: asset.resourceType === "video" ? "jpg" : undefined,
+      });
+      const openUrl = generateSignedUrl({
+        publicId: asset.publicId,
+        resourceType: asset.resourceType,
+        deliveryType: "authenticated",
+        expiresInSeconds: 600,
+        format: asset.resourceType === "video" ? "mp4" : undefined,
+      });
+      return { ...asset, previewUrl: previewUrl ?? undefined, openUrl: openUrl ?? undefined };
+    });
 
     return {
       status: "ok",
       data: {
-        orphans,
+        orphans: enrichedOrphans,
         missing,
         stats: {
           cloudCount: cloudAssets.length,
