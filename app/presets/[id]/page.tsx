@@ -116,7 +116,16 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
   const canViewContent = isAdmin || isTeacher || ((!isStudent && !preset.premiumRequired && isFree) || hasPurchase);
   const lockedReason = preset.premiumRequired
     ? "Contenu réservé aux élèves premium et aux achats validés."
-    : "Achetez ce preset pour débloquer la description et la vidéo.";
+    : "Achetez ce preset pour débloquer le contenu.";
+  const videoLockedText = preset.premiumRequired
+    ? "Contenu réservé aux élèves premium et aux achats validés."
+    : "Achetez ce preset pour débloquer la vidéo.";
+  const descriptionLockedText = preset.premiumRequired
+    ? "Contenu réservé aux élèves premium et aux achats validés."
+    : "Achetez ce preset pour débloquer les explications.";
+  const timelineLockedText = preset.premiumRequired
+    ? "Contenu réservé aux élèves premium et aux achats validés."
+    : "Achetez ce preset pour débloquer la timeline de la vidéo.";
   const price = preset.priceCredits ?? 0;
   const showPremiumCta = isStudent && preset.premiumRequired && !hasPurchase && !session.user.isPremium;
   const showBuyCta =
@@ -181,13 +190,8 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
               ↑
             </Link>
           </div>
-          {canViewContent ? (
-            <p className="text-sm text-slate-300">{preset.description || "Pas de description"}</p>
-          ) : (
-              <p className="text-sm text-amber-100">{lockedReason}</p>
-          )}
         </div>
-        <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-[1.35fr,1fr]">
           <div className="space-y-4">
             {preset.imagePublicId ? (
               <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
@@ -225,7 +229,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-3">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-50">Contenu verrouillé</span>
-                  <p className="text-center">{lockedReason}</p>
+                  <p className="text-center">{videoLockedText}</p>
                   {showPremiumCta || showBuyCta ? (
                     <div className="flex flex-wrap items-center justify-center gap-2">
                       {showPremiumCta ? (
@@ -251,72 +255,88 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
             )}
           </div>
           <div className="space-y-4">
-            <div className="grid gap-2 md:grid-cols-2">
-              <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
-                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
-                <p className="font-semibold text-white">{preset.discipline ?? "Non renseignée"}</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Discipline</p>
+                <p className="text-sm font-semibold text-white">{preset.discipline ?? "Non renseignée"}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
-                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-300">Tarification</p>
-                <p className="font-semibold text-white">{priceLabel}</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-500/10 via-white/5 to-emerald-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Tarification</p>
+                <p className="text-sm font-semibold text-white">{priceLabel}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
-                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-300">Positions liées</p>
-                <p className="font-semibold text-white">{preset.positions.length}</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-white/5 to-cyan-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Positions liées</p>
+                <p className="text-sm font-semibold text-white">{preset.positions.length}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
-                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/10 via-white/5 to-rose-500/10 p-2.5 shadow-inner shadow-black/20">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-slate-300">Créé par</p>
                 {preset.createdBy?.id ? (
                   <Link
                     href={`/teachers/${preset.createdBy.id}`}
-                    className="font-semibold text-white underline-offset-2 hover:underline"
+                    className="text-sm font-semibold text-white underline-offset-2 hover:underline"
                   >
                     {preset.createdBy.name ?? preset.createdBy.email ?? "Inconnu"}
                   </Link>
                 ) : (
-                  <p className="font-semibold text-white">{preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}</p>
+                  <p className="text-sm font-semibold text-white">{preset.createdBy?.name ?? preset.createdBy?.email ?? "Inconnu"}</p>
                 )}
               </div>
             </div>
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-white">Timeline</p>
-              {canViewContent ? (
-                preset.positions.length > 0 ? (
-                  <div className="space-y-2">
-                    {preset.positions.map((pp) => (
-                      <Link
-                        key={pp.positionId}
-                        href={`/positions/${pp.positionId}?from=${encodeURIComponent(`/presets/${preset.id}`)}`}
-                        className="block rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.12em] text-indigo-100">
-                              #{pp.order ?? 0}
-                            </span>
-                            <p className="text-base font-semibold">{pp.position.name}</p>
-                          </div>
-                          {pp.timestampSeconds !== null && pp.timestampSeconds !== undefined && (
-                            <span className="rounded-full border border-cyan-300/50 bg-cyan-500/15 px-2 py-0.5 text-cyan-50 text-xs">
-                              {formatTime(pp.timestampSeconds)}
-                            </span>
-                          )}
-                        </div>
-                        {pp.note ? (
-                          <p className="text-xs text-slate-200">{pp.note}</p>
-                        ) : null}
-                      </Link>
-                    ))}
-                  </div>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <p className="text-sm text-cyan-200">Description</p>
+                {canViewContent ? (
+                  <p className="whitespace-pre-wrap text-sm leading-6 text-slate-100">
+                    {preset.description || "Pas de description"}
+                  </p>
                 ) : (
-                  <p className="text-sm text-slate-300">Aucune position liée.</p>
-                )
-              ) : (
-                <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-                  <p className="font-semibold text-white">Contenu verrouillé</p>
-                  <p className="mt-1">{lockedReason}</p>
-                </div>
-              )}
+                  <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-3 text-sm text-amber-100">
+                    <p className="font-semibold text-white">Contenu verrouillé</p>
+                    <p className="mt-1">{descriptionLockedText}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-white">Timeline</p>
+                {canViewContent ? (
+                  preset.positions.length > 0 ? (
+                    <div className="space-y-2">
+                      {preset.positions.map((pp) => (
+                        <Link
+                          key={pp.positionId}
+                          href={`/positions/${pp.positionId}?from=${encodeURIComponent(`/presets/${preset.id}`)}`}
+                          className="block rounded-xl border border-white/10 bg-white/5 p-2 text-sm text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.12em] text-indigo-100">
+                                #{pp.order ?? 0}
+                              </span>
+                              <p className="text-base font-semibold">{pp.position.name}</p>
+                            </div>
+                            {pp.timestampSeconds !== null && pp.timestampSeconds !== undefined && (
+                              <span className="rounded-full border border-cyan-300/50 bg-cyan-500/15 px-2 py-0.5 text-cyan-50 text-xs">
+                                {formatTime(pp.timestampSeconds)}
+                              </span>
+                            )}
+                          </div>
+                          {pp.note ? (
+                            <p className="text-xs text-slate-200">{pp.note}</p>
+                          ) : null}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-300">Aucune position liée.</p>
+                  )
+                ) : (
+                  <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+                    <p className="font-semibold text-white">Contenu verrouillé</p>
+                    <p className="mt-1">{timelineLockedText}</p>
+                  </div>
+                )}
+              </div>
             </div>
             {canEdit && (session.user.role !== "SCHOOL_ADMIN" && session.user.id !== preset.createdBy?.id) ? (
               <div className="flex justify-end">

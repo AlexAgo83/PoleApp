@@ -307,17 +307,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 <option value="free">Gratuit</option>
               </select>
             </label>
-            <label className="text-sm text-slate-200">
-              Mes combos
-              <select
-                name="owner"
-                defaultValue={ownerFilter}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              >
-                <option value="">Tous</option>
-                <option value="me">Mes combos</option>
-              </select>
-            </label>
             {isStudent ? (
               <label className="text-sm text-slate-200">
                 Achats
@@ -332,18 +321,6 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 </select>
               </label>
             ) : null}
-            <label className="text-sm text-slate-200">
-              Médias
-              <select
-                name="media"
-                defaultValue={mediaFilter}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
-              >
-                <option value="">Tous</option>
-                <option value="image">Avec image</option>
-                <option value="video">Avec vidéo</option>
-              </select>
-            </label>
             <div className="flex items-end justify-end">
               <button
                 type="submit"
@@ -381,20 +358,11 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                 Tarification : {priceFilter === "premium" ? "Premium" : priceFilter === "credits" ? "Crédits" : "Gratuit"}
               </span>
             )}
-            {ownerFilter === "me" && (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Mes combos</span>
-            )}
             {purchaseFilter === "bought" && (
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Achetés</span>
             )}
             {purchaseFilter === "notBought" && (
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Non achetés</span>
-            )}
-            {mediaFilter === "image" && (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Avec image</span>
-            )}
-            {mediaFilter === "video" && (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-slate-200">Avec vidéo</span>
             )}
           </div>
         )}
