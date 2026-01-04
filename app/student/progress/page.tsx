@@ -229,7 +229,7 @@ export default async function StudentProgressPage({
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="panel space-y-4 border-indigo-400/15 p-6 sm:p-8">
+      <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
             <h1 className="text-3xl font-semibold text-white">Ma progression</h1>
