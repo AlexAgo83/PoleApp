@@ -8,7 +8,7 @@ const statusLabels: Record<LearningStatus, string> = {
   NOT_STARTED: "Nouveauté",
   IN_PROGRESS: "Initié",
   PASSED: "Passé",
-  MASTERED: "Fluide chorégraphié",
+  MASTERED: "Fluide",
 };
 
 const statusProgress: Record<LearningStatus, number> = {
