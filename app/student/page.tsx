@@ -38,6 +38,22 @@ function ShortcutLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+function PanelHero({ title, description }: { title: string; description: string }) {
+  const heroBg =
+    "linear-gradient(135deg, rgba(14,24,45,0.95), rgba(10,18,36,0.92)), radial-gradient(circle at 12% 20%, rgba(56,189,248,0.22), transparent 38%), radial-gradient(circle at 82% -8%, rgba(236,72,153,0.18), transparent 35%)";
+  return (
+    <div
+      className="relative -mx-[var(--panel-px)] -mt-[var(--panel-py)] overflow-hidden rounded-t-2xl border-b border-white/10 bg-[#0b142a] px-4 py-5 shadow-inner shadow-black/30 sm:px-6"
+      style={{ backgroundImage: heroBg, backgroundSize: "cover", backgroundPosition: "center" }}
+    >
+      <div className="relative flex flex-col gap-2">
+        <h2 className="text-xl font-semibold text-white sm:text-2xl">{title}</h2>
+        <p className="text-sm text-slate-200/90">{description}</p>
+      </div>
+    </div>
+  );
+}
+
 export default async function StudentDashboard() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -175,7 +191,6 @@ export default async function StudentDashboard() {
       title: "Cours & agenda",
       description: "Réserve, attends et retrouve tes cours en un coup d’œil.",
       stats: [
-        { label: "Semaine", value: weekCoursesCount },
         { label: "Confirmés", value: confirmedUpcoming },
         { label: "Liste d'attente", value: waitlistUpcoming },
         ...(nextCourseLabel ? [{ label: "Prochain", value: nextCourseLabel }] : []),
@@ -187,8 +202,7 @@ export default async function StudentDashboard() {
       title: "Progression & figures",
       description: "Suis tes positions, tes favoris et tes combos clés.",
       stats: [
-        { label: "Positions suivies", value: progressTotal },
-        { label: "En cours", value: inProgressCount },
+        { label: "Suivies", value: progressTotal },
         { label: "Validées", value: passedCount },
         { label: "Mastered", value: masteredCount },
         { label: "Favoris", value: favoritesCount },
@@ -202,7 +216,7 @@ export default async function StudentDashboard() {
       stats: [
         { label: "Profs", value: teachersCount },
         { label: "Partenaires", value: partnersCount },
-        { label: "Blessures actives", value: injuriesCount },
+        { label: "Blessures", value: injuriesCount },
       ],
       shortcuts: communauteShortcuts,
     },
@@ -225,53 +239,46 @@ export default async function StudentDashboard() {
         {panels.map((panel) => (
           <article key={panel.id} className="panel border border-white/5">
             <div className="panel-body gap-4">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-200">
-                    {panel.title}
-                  </span>
-                </div>
-                <p className="text-base font-semibold text-white">{panel.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {panel.stats.map((stat) => (
-                    <StatPill key={`${panel.id}-${stat.label}`} label={stat.label} value={stat.value} />
-                  ))}
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {panel.shortcuts.map((shortcut) => {
-                    if (shortcut.kind === "credits") {
-                      return (
-                        <BuyCreditsButton
-                          key="shortcut-credits"
-                          currentCredits={credits}
-                          packs={packs}
-                          subscriptions={subs}
-                          showUpgrade={false}
-                          buttonLabel={shortcut.label}
-                          buttonClassName="group flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 after:content-['→'] after:text-cyan-200 after:transition-transform after:group-hover:translate-x-1"
-                        />
-                      );
+              <PanelHero title={panel.title} description={panel.description} />
+              <div className="flex flex-wrap gap-2">
+                {panel.stats.map((stat) => (
+                  <StatPill key={`${panel.id}-${stat.label}`} label={stat.label} value={stat.value} />
+                ))}
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {panel.shortcuts.map((shortcut) => {
+                  if (shortcut.kind === "credits") {
+                    return (
+                      <BuyCreditsButton
+                        key="shortcut-credits"
+                        currentCredits={credits}
+                        packs={packs}
+                        subscriptions={subs}
+                        showUpgrade={false}
+                        buttonLabel={shortcut.label}
+                        buttonClassName="group flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 after:content-['→'] after:text-cyan-200 after:transition-transform after:group-hover:translate-x-1"
+                      />
+                    );
+                  }
+                  if (shortcut.kind === "upgrade") {
+                    if (isPremium) {
+                      return null;
                     }
-                    if (shortcut.kind === "upgrade") {
-                      if (isPremium) {
-                        return null;
-                      }
-                      return (
-                        <BuyCreditsButton
-                          key="shortcut-upgrade"
-                          mode="upgrade"
-                          currentCredits={credits}
-                          packs={packs}
-                          subscriptions={subs}
-                          showUpgrade={false}
-                          buttonLabel={`${shortcut.label}`}
-                          buttonClassName="group flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 after:content-['→'] after:text-cyan-200 after:transition-transform after:group-hover:translate-x-1"
-                        />
-                      );
-                    }
-                    return <ShortcutLink key={shortcut.href} href={shortcut.href ?? "#"} label={shortcut.label} />;
-                  })}
-                </div>
+                    return (
+                      <BuyCreditsButton
+                        key="shortcut-upgrade"
+                        mode="upgrade"
+                        currentCredits={credits}
+                        packs={packs}
+                        subscriptions={subs}
+                        showUpgrade={false}
+                        buttonLabel={`${shortcut.label}`}
+                        buttonClassName="group flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10 after:content-['→'] after:text-cyan-200 after:transition-transform after:group-hover:translate-x-1"
+                      />
+                    );
+                  }
+                  return <ShortcutLink key={shortcut.href} href={shortcut.href ?? "#"} label={shortcut.label} />;
+                })}
               </div>
             </div>
           </article>
