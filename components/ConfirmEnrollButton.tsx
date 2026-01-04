@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { ButtonHTMLAttributes, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 
@@ -9,9 +9,11 @@ type Props = {
   label: string;
   disabled?: boolean;
   className?: string;
-};
+  title?: string;
+  ariaLabel?: string;
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "onClick" | "children">;
 
-export function ConfirmEnrollButton({ cost, label, disabled, className }: Props) {
+export function ConfirmEnrollButton({ cost, label, disabled, className, title, ariaLabel, ...rest }: Props) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [formEl, setFormEl] = useState<HTMLFormElement | null>(null);
@@ -88,6 +90,9 @@ export function ConfirmEnrollButton({ cost, label, disabled, className }: Props)
         onClick={openModal}
         disabled={disabled}
         className={clsx(className)}
+        title={title}
+        aria-label={ariaLabel ?? title}
+        {...rest}
       >
         {label}
       </button>
