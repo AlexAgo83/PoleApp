@@ -40,10 +40,10 @@ const levelLabels: Record<PositionLevel, string> = {
 };
 
 const statusLabels: Record<LearningStatus, string> = {
+  MASTERED: "Fluide",
+  PASSED: "Passé",
+  IN_PROGRESS: "Initié",
   NOT_STARTED: "Nouveauté",
-  IN_PROGRESS: "En cours",
-  PASSED: "Validée",
-  MASTERED: "Maîtrisée",
 };
 
 const statusProgress: Record<LearningStatus, number> = {

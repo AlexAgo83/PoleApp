@@ -234,6 +234,8 @@ model StudentPositionProgress {
   learningStatus      LearningStatus
   comment             String?
   lastUpdatedByUserId String?
+  lastCourseNoteAt    DateTime?
+  lastCourseNoteSourceId String?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   student             User           @relation(fields: [studentId], references: [id])

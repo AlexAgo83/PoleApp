@@ -22,13 +22,6 @@ const roleLabels: Record<string, string> = {
 const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 const TEACHER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
-const statusLabels: Record<LearningStatus, string> = {
-  NOT_STARTED: "Nouveauté",
-  IN_PROGRESS: "Initié",
-  PASSED: "Passé",
-  MASTERED: "Fluide",
-};
-
 const statusOrder: Record<LearningStatus, number> = {
   MASTERED: 0,
   PASSED: 1,

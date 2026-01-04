@@ -122,9 +122,6 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
   const isAdmin = session?.user?.role === "SCHOOL_ADMIN";
   const isTeacher = session?.user?.role === "TEACHER";
   const canViewContent = isAdmin || isTeacher || ((!isStudent && !preset.premiumRequired && isFree) || hasPurchase);
-  const lockedReason = preset.premiumRequired
-    ? "Contenu réservé aux élèves premium et aux achats validés."
-    : "Achetez ce preset pour débloquer le contenu.";
   const videoLockedText = preset.premiumRequired
     ? "Contenu réservé aux élèves premium et aux achats validés."
     : "Achetez ce preset pour débloquer la vidéo.";
