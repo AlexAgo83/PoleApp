@@ -93,7 +93,7 @@ function buildThumbUrl(row: Row, cloudName?: string | null) {
 export function AuditClient() {
   const [state, formAction] = useActionState(scanMediaAuditAction, initialState);
   const [filter, setFilter] = useState<CategoryFilter>("all");
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const cloudName = state.status === "ok" ? state.data.cloudName ?? null : null;
 
   const rows: Row[] = useMemo(() => {
     if (state.status !== "ok") return [];
