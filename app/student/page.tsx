@@ -197,7 +197,7 @@ export default async function StudentDashboard() {
     },
     {
       id: "communaute",
-      title: "Communauté & avantages",
+      title: "Communauté",
       description: "Reste connecté aux profs, partenaires et à ta santé.",
       stats: [
         { label: "Profs", value: teachersCount },
@@ -208,7 +208,7 @@ export default async function StudentDashboard() {
     },
     {
       id: "compte",
-      title: "Compte & avantages premium",
+      title: "Compte",
       description: "Crédits, profil et upgrade premium quand tu veux.",
       stats: [
         { label: "Crédits", value: credits },
