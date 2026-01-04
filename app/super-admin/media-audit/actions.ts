@@ -11,6 +11,8 @@ import {
   collectCloudinaryAssets,
   collectDbMediaRefs,
   diffMediaAssets,
+  MediaDeliveryType,
+  MediaResourceType,
 } from "@/lib/mediaAudit";
 import { generateSignedUrl } from "@/lib/cloudinary";
 
@@ -70,8 +72,10 @@ export async function scanMediaAuditAction(_prevState: AuditState, formData: For
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
   try {
-    const resourceTypes = resourceType === "all" ? ["image", "video"] : [resourceType];
-    const deliveryTypes = deliveryType === "all" ? ["upload", "authenticated"] : [deliveryType];
+    const resourceTypes: MediaResourceType[] =
+      resourceType === "all" ? ["image", "video"] : [resourceType];
+    const deliveryTypes: MediaDeliveryType[] =
+      deliveryType === "all" ? ["upload", "authenticated"] : [deliveryType];
     const combinations = resourceTypes.flatMap((rt) => deliveryTypes.map((dt) => ({ rt, dt })));
     const maxPerCombo = Math.max(1, Math.ceil(maxResults / combinations.length));
 
