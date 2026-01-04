@@ -115,7 +115,7 @@ export function StudentPerformanceList({
       </div>
 
       {items.length > PAGE_SIZE && (
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-xs text-slate-400 pb-1">
           <span>
             Page {page} / {Math.max(1, Math.ceil(items.length / PAGE_SIZE))} ({items.length} positions)
           </span>

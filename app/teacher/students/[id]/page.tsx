@@ -173,9 +173,6 @@ export default async function TeacherStudentDetailPage({
                 <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
                   {roleLabel}
                 </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
-                  {student.isPremium ? "Premium" : "Gratuit"}
-                </span>
               </p>
             </div>
           </div>
@@ -194,7 +191,7 @@ export default async function TeacherStudentDetailPage({
           </div>
         </div>
 
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
+        <div className="mt-3 grid gap-6 md:grid-cols-2">
           <div>
             <StudentPerformanceList
               labelClassName="text-lg font-semibold text-white"
@@ -231,6 +228,96 @@ export default async function TeacherStudentDetailPage({
             ) : (
               <p className="mt-2 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
             )}
+          </div>
+        </div>
+
+        <div className="mt-0 grid gap-4 md:grid-cols-2">
+          <div className="space-y-2 text-sm text-slate-200">
+            <PersistedSection
+              id={`student-injuries:${student.id}`}
+              summary={
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="text-lg font-semibold text-white">Blessures ({student.injuries.length})</h2>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                    <span className="group-open:hidden">Ouvrir</span>
+                    <span className="hidden group-open:inline">Fermer</span>
+                  </span>
+                </div>
+              }
+              defaultOpen={false}
+            >
+              <div className="mt-3 flex flex-col divide-y divide-white/5">
+                {student.injuries.map((injury) => (
+                  <article key={injury.id} className="py-3">
+                    <p className="text-base font-semibold text-white">
+                      {injury.injuryType.name} ·{" "}
+                      <span className={injury.isActive ? "text-amber-200" : "text-green-200"}>
+                        {injury.isActive ? "Active" : "Résolue"}
+                      </span>
+                    </p>
+                    {injury.notes && (
+                      <p className="text-sm text-slate-200">Notes : {injury.notes}</p>
+                    )}
+                  </article>
+                ))}
+                {student.injuries.length === 0 && (
+                  <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
+                )}
+              </div>
+            </PersistedSection>
+          </div>
+
+          <div className="space-y-2 text-sm text-slate-200">
+            <PersistedSection
+              id={`student-games:${student.id}`}
+              summary={
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="text-lg font-semibold text-white">Mini-jeux ({gameSessions.length})</h2>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                    <span className="group-open:hidden">Ouvrir</span>
+                    <span className="hidden group-open:inline">Fermer</span>
+                  </span>
+                </div>
+              }
+              defaultOpen={false}
+            >
+              <div className="mt-3">
+                {gameSessions.length === 0 ? (
+                  <p className="text-sm text-slate-200">Aucune session jouée pour le moment.</p>
+                ) : (
+                  <ul className="divide-y divide-white/5 text-sm text-slate-200">
+                    {gameSessions.map((g) => {
+                      const accuracy =
+                        g.totalQuestions > 0
+                          ? Math.round((g.correctAnswers / g.totalQuestions) * 100)
+                          : 0;
+                      return (
+                        <li key={g.id} className="py-2">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                              <p className="font-semibold text-white">
+                                {gameModeLabel[g.mode]} ({g.mode})
+                              </p>
+                              <p className="text-xs text-slate-400">
+                                {g.correctAnswers}/{g.totalQuestions} · {accuracy}% ·{" "}
+                                {g.durationMs ? `${Math.round(g.durationMs / 1000)}s` : "—"}
+                              </p>
+                            </div>
+                            <p className="text-xs text-slate-300">
+                              {g.createdAt.toLocaleDateString("fr-FR", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </p>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            </PersistedSection>
           </div>
         </div>
       </section>
@@ -358,85 +445,6 @@ export default async function TeacherStudentDetailPage({
         </PersistedSection>
       </section>
 
-      <section className="panel panel-body lg-gap border-indigo-400/15">
-        <details className="group" open={false}>
-          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-            <h2 className="text-lg font-semibold text-white">
-              Blessures ({student.injuries.length})
-            </h2>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-              <span className="group-open:hidden">Ouvrir</span>
-              <span className="hidden group-open:inline">Fermer</span>
-            </span>
-          </summary>
-          <div className="flex flex-col divide-y divide-white/5">
-            {student.injuries.map((injury) => (
-              <article key={injury.id} className="py-3">
-                <p className="text-base font-semibold text-white">
-                  {injury.injuryType.name} ·{" "}
-                  <span className={injury.isActive ? "text-amber-200" : "text-green-200"}>
-                    {injury.isActive ? "Active" : "Résolue"}
-                  </span>
-                </p>
-                {injury.notes && (
-                  <p className="text-sm text-slate-200">Notes : {injury.notes}</p>
-                )}
-              </article>
-            ))}
-            {student.injuries.length === 0 && (
-              <p className="py-4 text-slate-200">Aucune blessure déclarée.</p>
-            )}
-          </div>
-        </details>
-      </section>
-
-      <section className="panel panel-body lg-gap border-indigo-400/15">
-        <details className="group" open={false}>
-          <summary className="flex cursor-pointer items-center justify-between text-lg font-semibold text-white outline-none transition hover:text-cyan-100">
-            <h2 className="text-lg font-semibold text-white">
-              Mini-jeux ({gameSessions.length})
-            </h2>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-              <span className="group-open:hidden">Ouvrir</span>
-              <span className="hidden group-open:inline">Fermer</span>
-            </span>
-          </summary>
-          {gameSessions.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-200">Aucune session jouée pour le moment.</p>
-          ) : (
-            <ul className="mt-3 divide-y divide-white/5 text-sm text-slate-200">
-              {gameSessions.map((g) => {
-                const accuracy =
-                  g.totalQuestions > 0
-                    ? Math.round((g.correctAnswers / g.totalQuestions) * 100)
-                    : 0;
-                return (
-                  <li key={g.id} className="py-2">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <p className="font-semibold text-white">
-                          {gameModeLabel[g.mode]} ({g.mode})
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          {g.correctAnswers}/{g.totalQuestions} · {accuracy}% ·{" "}
-                          {g.durationMs ? `${Math.round(g.durationMs / 1000)}s` : "—"}
-                        </p>
-                      </div>
-                      <p className="text-xs text-slate-300">
-                        {g.createdAt.toLocaleDateString("fr-FR", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </details>
-      </section>
     </main>
   );
 }
