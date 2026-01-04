@@ -320,9 +320,9 @@ export default async function StudentDashboard() {
       title: "Compte",
       description: "Crédits, abonnement et achats",
       stats: [
-        { label: "Crédits", value: credits },
         { label: "Statut", value: isPremium ? "Premium" : "Freemium" },
         { label: "Achats", value: purchasesCount },
+        { label: "Crédits", value: credits },
       ],
       shortcuts: compteShortcuts,
     },
