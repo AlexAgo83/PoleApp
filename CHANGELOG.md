@@ -1,8 +1,13 @@
 # Changelog
+## 2026-MM-DD - Release v0.14.X (???)
 
-# Changelog
+## 2026-02-04 — Release v0.13.X (Audit médias Cloudinary + UI logics)
+- Super-admin : page `/super-admin/media-audit` (filtres resource/type, diff orphelins Cloudinary vs références cassées DB, stats, export CSV).
+- Services audit : normalisation DB/Cloudinary, diff orphans/missing, cache/cooldown, audit log.
+- UI logics : rendu visuel des tâches Markdown (checkboxes stylisées) sur la page `app/logics`.
+- Tech : alignement package v0.14.0, lint/build OK.
 
-## 2026-02-03 — Unreleased v0.13.0 (Déblocage positions via achats)
+## 2026-01-03 — Unreleased (Features & Déblocage positions via achats)
 - Positions : badge “Débloqué par achat” sur liste/détail, accès premium étendu aux positions contenues dans un preset acheté (Purchase PRESET PAID) ou un cours avec inscription CONFIRMED, placeholders conservés sinon.
 - Progression élève : badge achat et description masquée si non débloqué/premium.
 - Mini-jeu : nécessite au moins 4 positions débloquées (premium ou achat preset/cours) pour lancer un mode.

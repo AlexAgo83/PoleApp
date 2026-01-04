@@ -1,5 +1,5 @@
 # Backlog — Retours QA S010 (session 2025-12-25 11:48 "06_QA_S010" & "06_QA_S011")
-[Compréhension: 95% / Confiance: 85% / Avancement: 90%]
+[Compréhension: 95% / Confiance: 85% / Avancement: 90% / Obsolete: 20%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

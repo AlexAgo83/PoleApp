@@ -1,7 +1,7 @@
-# 05 — Seed content (v0.12.x)
+# 05 — Seed content (v0.14.0)
 
-> Seed dev actuelle : 2 écoles (photos Cloudinary `sc_*` + URL http://www.google.com), comptes fixes (super admin global + admin/teacher/student1/2, mdp `DATABASE_SEED_PWD`), studios avec photos Cloudinary `st_*`, 20 cours démo/école avec photos Cloudinary `co_*`, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits), crédits 500 par élève.
-> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions (30) créées par des professeurs seedés (Elza priorisée) + favoris prof auto + vidéo Cloudinary authentifiée par position (pool fixe). Cours répartis entre profs de l’école sans collision horaire, durées par pas de 15 min.
+> Seed dev actuelle : 2 écoles (photos Cloudinary `sc_*` + URL http://www.google.com), comptes fixes (super admin global + admin/teacher/student1/2, mdp `DATABASE_SEED_PWD`), studios avec photos Cloudinary `st_*`, ~40 cours démo (20/école) avec photos Cloudinary `co_*`, progression/blessures, favoris profs, invoices/backfill pour facturation, offres/packs globaux EUR/TVA20, partenaire Amazon (4 liens produits), crédits 500 par élève, notifs seed (≤30/user).
+> Disciplines seedées : Pole / Pole Exotic / Souplesse / Pilates / Conditioning (taggées sur positions et cours). Muscles/articulations seedés et liés aux positions selon leur type. Positions (30) créées par des professeurs seedés (Elza priorisée) + favoris prof auto + vidéo Cloudinary authentifiée par position (pool fixe). Cours répartis entre profs de l’école sans collision horaire, durées par pas de 15 min. Démo déblocage : achat preset payant et cours démo avec attendance CONFIRMED pour tester l’accès positions via achat/inscription.
 
 ## Taxonomies
 
@@ -71,7 +71,7 @@ Exemple (format libre, tronqué) :
 - Photos cours : pool Cloudinary `co_*` appliqué en rotation sur les cours seedés.
 - Pour chaque école : **2 professeurs** (`teacher(X).(nom-ecole-simple)@poleapp.test`) et **10 élèves** (`student(X).(nom-ecole-simple)@poleapp.test`), mot de passe `DATABASE_SEED_PWD`, premium pour 1 élève sur 2, **500 crédits** par élève.
 - Pour chaque utilisateurs : Les nom prenom et photos de profile sont sélectionnés dans la liste plus bas (Choisir aléatoirement selon le genre).
-- 20 cours de démo créés par école (répartis aléatoirement entre professeurs sans collisions studio/prof sur le créneau, élèves 2–6 par cours, positions 2–4) + il doit y avoir 5 cours déjà passés sur les 15 derniers jours et le reste étalés sur 15 jours, horaire entre 16h et 21h, durées par pas de 15 min, ne peut pas se chevaucher si même studio et/ou même professeur. Positions privilégiées du prof assigné quand dispo.
+- ~40 cours de démo (≈20/école) répartis aléatoirement entre professeurs sans collisions studio/prof sur le créneau, élèves 2–6 par cours, positions 2–4. Inclure ~5 cours déjà passés sur les 15 derniers jours et le reste étalé sur 15 jours, horaires 16h–21h, durées par pas de 15 min, pas de chevauchement si même studio et/ou même professeur. Positions privilégiées du prof assigné quand dispo. Inclure un cours démo “Spin Débutant” avec attendance CONFIRMED pour illustrer le déblocage positions via inscription.
 
 ### Pools médias Cloudinary (seed)
 - Écoles : `sc_02_iidqs5`, `sc_01_hgtgz4`, `sc_03_kouzh8`

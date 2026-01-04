@@ -1,5 +1,5 @@
-# 03 — Modèle de données (v0.12.11)
-> Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations notables : `photoPublicId` pour Course/Studio/School, Cloudinary avatars, Invoice/CourseRecommendation/PartnerEvent, muscles/disciplines.
+# 03 — Modèle de données (v0.14.0)
+> Aligné sur le schéma Prisma actuel (PostgreSQL). Dernières migrations notables : audit log, récurrences cours, champs progression cours → globale (`lastCourseNoteAt/SourceId`), facturation enrichie, notifs, presets médias.
 
 ## Principes
 - Provider Prisma : **PostgreSQL** (`DATABASE_URL` requis).
@@ -13,8 +13,9 @@
 
 ### User
 - id (cuid), email (unique), passwordHash, role (Role)
-- name, age, avatarUrl, avatarPublicId, diplomas (prof), credits, isPremium, schoolId?
-- Relations : injuries, progress, courseNotes, attendances, coursesTaught, favoritePositions (teacher), studentFavoritePositions (élève), gameSessions
+- name, age, avatarPublicId, diplomas (prof), credits, isPremium, schoolId?
+- createdAt/updatedAt
+- Relations : injuries, progress, courseNotes, attendances, coursesTaught, favoritePositions (teacher), studentFavoritePositions (élève), gameSessions, purchases, notifications, auditLogs, recurrenceSeries
 
 ### School
 - id, name, website?, photoPublicId?, archivedAt?, createdAt
@@ -37,21 +38,21 @@
 - StudentInjury : studentId, injuryTypeId, isActive, createdAt/updatedAt
 
 ### Progression
-- StudentPositionProgress : studentId, positionId, learningStatus (LearningStatus), masteryLevel (MasteryLevel?), comment?, lastUpdatedByUserId?, createdAt/updatedAt
+- StudentPositionProgress : studentId, positionId, learningStatus (LearningStatus), comment?, lastUpdatedByUserId?, lastCourseNoteAt?, lastCourseNoteSourceId?, createdAt/updatedAt
 
 ### Course et dérivés
-- Course : id, schoolId, teacherId, studioId?, title?, discipline (string, défaut `Danse`), photoPublicId?, date, durationMinutes, maxSeats, costCredits, createdAt
+- Course : id, schoolId, teacherId, studioId?, title?, discipline (string, défaut `Danse`), disciplineId, photoPublicId?, date, durationMinutes, maxSeats, costCredits, waitlistQuota, isVirtual?, recurrenceSeriesId?, createdAt
 - CourseAttendance : courseId, studentId, status (AttendanceStatus: CONFIRMED | WAITLIST), waitlistRank?, createdAt
 - CoursePosition : courseId, positionId
 - CourseNote : courseId, studentId, positionId, masteryLevel, comment?, createdAt
 - CourseRecommendation (optionnel) : courseId, positionId, tag (SuggestionTag), reason?, appliedAt?, createdAt
 
-### Billing & offres
-- Invoice : id, courseId (unique FK Course), amountCents, currency (EUR), status (InvoiceStatus: GENERATED | SENT | PAID | LATE | CANCELLED), issuedAt, paidAt?, note?, createdAt/updatedAt
+- ### Billing & offres
+- Invoice : id, courseId (unique FK Course), amountCents, currency (EUR), status (InvoiceStatus: GENERATED | SENT | PAID | LATE | CANCELLED | REFUNDED), issuedAt, paidAt?, refundedAt?, refundedById?, refundNote?, manualStatus?, manualNote?, manualSetById?, manualSetAt?, note?, createdAt/updatedAt
 - SubscriptionOffer (global) : nom, prix mensuel/annuel TTC, crédits mensuels (1000 par défaut), TVA %, actif/ouvert, ordre, defaultTerm (libre).
 - CreditPackOffer (global) : nom, crédits, prix TTC, TVA %, actif/ouvert, ordre.
 - GlobalSetting : TVA par défaut (20%), devise (EUR), timestamps.
-- Purchase : userId, offerId, offerName, kind (PACK | SUBSCRIPTION), amountCents, vatPercent, currency, creditsGranted, isPremiumGranted, status (default "PAID"), createdAt.
+- Purchase : userId, offerId, offerName, kind (PACK | SUBSCRIPTION | PRESET), amountCents, vatPercent, currency, creditsGranted, isPremiumGranted, status (default "PAID"), createdAt.
 
 ### Studios / Partenaires
 - Studio : id, name, address?, photoPublicId?, schoolId, createdAt/updatedAt
@@ -59,13 +60,18 @@
 - SponsoredLink : id, category, label?, url, partnerId
 - PartnerEvent : partnerId, userId?, courseId?, studioId?, type (PartnerEventType: CLICK | PURCHASE), createdAt
 
-### Favoris & jeux
+### Favoris, jeux & notifications
 - TeacherFavoritePosition : teacherId, positionId
 - StudentFavoritePosition : studentId, positionId (source “cœurs” élèves)
+- Notification : userId, kind (course signup/update/cancel, waitlist, note added, invoice status, admin variants), title/body/link?, courseId?, readAt?, createdAt
 - GameSession : userId, schoolId?, mode (GameMode), totalQuestions, correctAnswers, durationMs?, createdAt
 
+### Audit & récurrences
+- CourseRecurrenceSeries : schoolId, teacherId, frequency (DAILY|WEEKLY|BIWEEKLY|MONTHLY), until, courses[]
+- AuditLog : actorId?, action, target?, details Json?, createdAt
+
 ## Enums principaux
-- Role, PositionLevel, PositionType, MediaKind, LearningStatus, MasteryLevel, AttendanceStatus, SuggestionTag, InvoiceStatus, PartnerEventType, GameMode.
+- Role, PositionLevel, PositionType, MediaKind, LearningStatus, AttendanceStatus, SuggestionTag, InvoiceStatus, PartnerEventType, GameMode, RecurrenceFrequency.
 
 ## Seed (dev)
 - Comptes fixes : super-admin global + admin/teacher/student1/student2 (`DATABASE_SEED_PWD`), École 1.

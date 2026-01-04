@@ -1,4 +1,4 @@
-# 04 — Écrans & routes (v0.12.11)
+# 04 — Écrans & routes (v0.14.0)
 > Routes App Router actuelles. Pagination 10 sur les listes, filtres persistés côté client quand c’est pertinent.
 
 ## Public
@@ -34,8 +34,9 @@
 - `/app/admin/partners` (CRUD + tracking clic/achat), `/app/admin/studios` (CRUD)
 
 ## Super admin
-- `/super-admin` (gestion écoles/offres/packs, reset mot de passe, audit)
-- `/logics` (lecture docs internes)
+- `/super-admin` (gestion écoles/offres/packs, reset mot de passe, audit, media audit)
+- `/super-admin/media-audit` (diff Cloudinary vs DB, filtres, export CSV)
+- `/logics` (lecture docs internes avec checkboxes stylisées)
 
 ## API principales
 - Auth `/api/auth/[...nextauth]`, reset `/api/auth/reset`

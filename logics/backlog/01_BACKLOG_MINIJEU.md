@@ -1,5 +1,5 @@
 # Backlog — Mini-jeux (session 2025-12-21)
-[Compréhension: 100% / Avancement: 80%]
+[Compréhension: 100% / Avancement: 80% / Obsolete: 20%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

@@ -1,5 +1,5 @@
 # Backlog — Optimisations navigation/rendus
-[Compréhension: 80% / Confiance: 70% / Avancement: 0%]
+[Compréhension: 80% / Confiance: 70% / Avancement: 0% / Obsolete: 10%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

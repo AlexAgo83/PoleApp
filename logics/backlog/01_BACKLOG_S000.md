@@ -1,5 +1,5 @@
 # 01 — Backlog Produit (v0.6.10 → produit complet)
-[Compréhension: 92% / Avancement: 82%]
+[Compréhension: 92% / Avancement: 82% / Obsolete: 50%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

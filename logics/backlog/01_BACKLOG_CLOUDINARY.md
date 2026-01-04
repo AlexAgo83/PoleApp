@@ -1,5 +1,5 @@
 # Backlog Cloudinary (uploads médias)
-[Compréhension: 90% / Confiance: 85% / Avancement: 80%]
+[Compréhension: 90% / Confiance: 85% / Avancement: 80% / Obsolete: 10%]
 > FAIBLE PRIORITE
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
