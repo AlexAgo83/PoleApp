@@ -63,7 +63,7 @@ export default async function StudentInjuriesPage({
   if (statusFilter) filterParams.set("status", statusFilter);
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel border-indigo-400/15 p-6 space-y-4">
         <div className="flex flex-wrap items-start gap-2">
           <div>
@@ -165,17 +165,9 @@ export default async function StudentInjuriesPage({
                   <details className="group flex w-full flex-col items-end gap-2 md:w-auto">
                     <div className="order-1 hidden w-full group-open:block">
                       <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                        <form
-                          action={updateInjuryAction}
-                          className="flex flex-wrap items-center gap-3"
-                        >
-                          <input type="hidden" name="injuryId" value={injury.id} />
-                          <input
-                            type="hidden"
-                            name="isActive"
-                            value={injury.isActive ? "false" : "true"}
-                          />
-                          <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <form action={updateInjuryAction} className="flex flex-wrap items-center gap-2">
+                            <input type="hidden" name="injuryId" value={injury.id} />
                             <input
                               name="notes"
                               defaultValue={injury.notes ?? ""}
@@ -188,14 +180,18 @@ export default async function StudentInjuriesPage({
                             >
                               Sauver
                             </button>
+                          </form>
+                          <form action={updateInjuryAction} className="flex flex-wrap items-center gap-2">
+                            <input type="hidden" name="injuryId" value={injury.id} />
+                            <input type="hidden" name="isActive" value={injury.isActive ? "false" : "true"} />
                             <button
                               type="submit"
                               className="rounded-full bg-amber-500 px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-amber-400"
                             >
                               Marquer {injury.isActive ? "résolue" : "active"}
                             </button>
-                          </div>
-                        </form>
+                          </form>
+                        </div>
                       </div>
                     </div>
                     <summary className="order-2 inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-indigo-300/70 hover:bg-white/10 [&::marker]:hidden">

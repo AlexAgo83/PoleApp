@@ -15,21 +15,20 @@ const createSchema = z.object({
 
 const updateSchema = z.object({
   injuryId: z.string().min(1),
-  notes: z.string().optional(),
+  notes: z
+    .preprocess((v) => {
+      if (v === null || v === undefined) return undefined;
+      return String(v);
+    }, z.string().optional()),
   isActive: z
-    .preprocess(
-      (value) => {
-        if (typeof value === "string") {
-          return value === "true";
-        }
-        if (typeof value === "boolean") {
-          return value;
-        }
-        return undefined;
-      },
-      z.boolean()
-    )
-    .optional(),
+    .preprocess((v) => {
+      if (v === null || v === undefined) return undefined;
+      if (typeof v === "boolean") return v;
+      const val = String(v).toLowerCase();
+      if (["true", "1", "on", "yes"].includes(val)) return true;
+      if (["false", "0", "off", "no"].includes(val)) return false;
+      return undefined;
+    }, z.boolean().optional()),
 });
 
 const deleteSchema = z.object({

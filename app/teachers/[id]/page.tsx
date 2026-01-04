@@ -119,7 +119,7 @@ export default async function TeacherPublicProfilePage({
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME ?? "";
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel panel-body border-indigo-400/25 shadow-indigo-900/30">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-center gap-4">

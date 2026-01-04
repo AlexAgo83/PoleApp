@@ -192,7 +192,7 @@ export default async function StudentCourseDetailPage({
   };
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <header
         className="panel relative space-y-4 overflow-hidden border-indigo-400/25 p-6 shadow-indigo-900/30"
         style={headerBgStyle}
