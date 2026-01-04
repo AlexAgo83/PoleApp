@@ -214,6 +214,11 @@ export default async function StudentCourseDetailPage({
               <h1 className="text-3xl font-semibold text-white">
                 {course.title ?? "Cours"}
               </h1>
+              {isDisabledSource && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-rose-50">
+                  Désactivé · Inscriptions closes
+                </span>
+              )}
             </div>
             <div className="space-y-1 text-sm text-slate-200">
               <p className="text-base text-white flex flex-wrap items-center gap-2">
@@ -270,6 +275,11 @@ export default async function StudentCourseDetailPage({
                     {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
                   </span>
                 )}
+                {isDisabledSource && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2 py-0.5 text-[11px] font-semibold text-rose-50">
+                    Désactivé · Inscriptions closes
+                  </span>
+                )}
               </p>
               {course.school?.name && (
                 <p className="text-slate-300">
@@ -317,6 +327,8 @@ export default async function StudentCourseDetailPage({
                             : waitlistFull
                             ? "Liste d'attente complète"
                             : "Rejoindre la liste d’attente"
+                          : isDisabledSource
+                          ? "Inscriptions closes"
                           : isVirtual || !hasPositions
                           ? "Inscription bloquée tant que les positions ne sont pas définies"
                           : endTime <= NOW_MS
