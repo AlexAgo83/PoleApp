@@ -82,69 +82,114 @@ export default async function StudentDashboard() {
   endOfWeek.setDate(endOfWeek.getDate() + 6);
   endOfWeek.setHours(23, 59, 59, 999);
 
-  const [packs, subs, confirmedUpcoming, waitlistUpcoming, weekCoursesCount, inProgressCount, passedCount, masteredCount, favoritesCount, injuriesCount, teachersCount, partnersCount, purchasesCount, nextCourseAttendance] =
-    await Promise.all([
-      prisma.creditPackOffer.findMany({
-        where: { isActive: true, isOpen: true },
-        orderBy: { sortOrder: "asc" },
-      }),
-      prisma.subscriptionOffer.findMany({
-        where: { isActive: true, isOpen: true },
-        orderBy: { sortOrder: "asc" },
-      }),
-      prisma.courseAttendance.count({
-        where: { studentId: session.user.id, status: "CONFIRMED", course: { date: { gte: now } } },
-      }),
-      prisma.courseAttendance.count({
-        where: { studentId: session.user.id, status: "WAITLIST", course: { date: { gte: now } } },
-      }),
-      prisma.courseAttendance.count({
-        where: {
-          studentId: session.user.id,
-          status: { in: ["CONFIRMED", "WAITLIST"] },
-          course: { date: { gte: startOfWeek, lte: endOfWeek } },
-        },
-      }),
-      prisma.studentPositionProgress.count({
-        where: { studentId: session.user.id, learningStatus: "IN_PROGRESS" },
-      }),
-      prisma.studentPositionProgress.count({
-        where: { studentId: session.user.id, learningStatus: "PASSED" },
-      }),
-      prisma.studentPositionProgress.count({
-        where: { studentId: session.user.id, learningStatus: "MASTERED" },
-      }),
-      prisma.studentFavoritePosition.count({ where: { studentId: session.user.id } }),
-      prisma.studentInjury.count({ where: { studentId: session.user.id, isActive: true } }),
-      user.schoolId
-        ? prisma.user.count({ where: { schoolId: user.schoolId, role: "TEACHER" } })
-        : Promise.resolve(0),
-      user.schoolId ? prisma.partner.count({ where: { schoolId: user.schoolId } }) : Promise.resolve(0),
-      prisma.purchase.count({ where: { userId: session.user.id } }),
-      prisma.courseAttendance.findFirst({
-        where: {
-          studentId: session.user.id,
-          status: { in: ["CONFIRMED", "WAITLIST"] },
-          course: { date: { gte: now } },
-        },
-        select: {
-          status: true,
-          course: {
-            select: {
-              id: true,
-              title: true,
-              date: true,
-              studio: { select: { name: true } },
-              teacher: { select: { name: true } },
-              disciplineRef: { select: { name: true, color: true } },
-            },
+  const [
+    packs,
+    subs,
+    confirmedUpcoming,
+    waitlistUpcoming,
+    weekCoursesCount,
+    inProgressCount,
+    passedCount,
+    masteredCount,
+    favoritesCount,
+    injuriesCount,
+    teachersCount,
+    partnersCount,
+    purchasesCount,
+    nextCourseAttendance,
+    progressPositionRows,
+    attendanceWithPositions,
+    presetPurchases,
+    totalPositionsCount,
+  ] = await Promise.all([
+    prisma.creditPackOffer.findMany({
+      where: { isActive: true, isOpen: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.subscriptionOffer.findMany({
+      where: { isActive: true, isOpen: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.courseAttendance.count({
+      where: { studentId: session.user.id, status: "CONFIRMED", course: { date: { gte: now } } },
+    }),
+    prisma.courseAttendance.count({
+      where: { studentId: session.user.id, status: "WAITLIST", course: { date: { gte: now } } },
+    }),
+    prisma.courseAttendance.count({
+      where: {
+        studentId: session.user.id,
+        status: { in: ["CONFIRMED", "WAITLIST"] },
+        course: { date: { gte: startOfWeek, lte: endOfWeek } },
+      },
+    }),
+    prisma.studentPositionProgress.count({
+      where: { studentId: session.user.id, learningStatus: "IN_PROGRESS" },
+    }),
+    prisma.studentPositionProgress.count({
+      where: { studentId: session.user.id, learningStatus: "PASSED" },
+    }),
+    prisma.studentPositionProgress.count({
+      where: { studentId: session.user.id, learningStatus: "MASTERED" },
+    }),
+    prisma.studentFavoritePosition.count({ where: { studentId: session.user.id } }),
+    prisma.studentInjury.count({ where: { studentId: session.user.id, isActive: true } }),
+    user.schoolId ? prisma.user.count({ where: { schoolId: user.schoolId, role: "TEACHER" } }) : Promise.resolve(0),
+    user.schoolId ? prisma.partner.count({ where: { schoolId: user.schoolId } }) : Promise.resolve(0),
+    prisma.purchase.count({ where: { userId: session.user.id } }),
+    prisma.courseAttendance.findFirst({
+      where: {
+        studentId: session.user.id,
+        status: { in: ["CONFIRMED", "WAITLIST"] },
+        course: { date: { gte: now } },
+      },
+      select: {
+        status: true,
+        course: {
+          select: {
+            id: true,
+            title: true,
+            date: true,
+            studio: { select: { name: true } },
+            teacher: { select: { name: true } },
+            disciplineRef: { select: { name: true, color: true } },
           },
         },
-        orderBy: { course: { date: "asc" } },
-      }),
-    ]);
+      },
+      orderBy: { course: { date: "asc" } },
+    }),
+    prisma.studentPositionProgress.findMany({
+      where: { studentId: session.user.id },
+      select: { positionId: true },
+    }),
+    prisma.courseAttendance.findMany({
+      where: { studentId: session.user.id, status: "CONFIRMED" },
+      select: {
+        course: { select: { positions: { select: { positionId: true } } } },
+      },
+    }),
+    prisma.purchase.findMany({
+      where: { userId: session.user.id, kind: "PRESET", status: "PAID" },
+      select: { offerId: true },
+    }),
+    prisma.position.count(),
+  ]);
 
   const progressTotal = inProgressCount + passedCount + masteredCount;
+  const presetIds = presetPurchases.map((p) => p.offerId).filter(Boolean);
+  const presetPositions =
+    presetIds.length > 0
+      ? await prisma.presetPosition.findMany({
+          where: { presetId: { in: presetIds } },
+          select: { positionId: true },
+        })
+      : [];
+  const unlockedIds = new Set<string>([
+    ...progressPositionRows.map((p) => p.positionId),
+    ...attendanceWithPositions.flatMap((att) => att.course.positions.map((cp) => cp.positionId)),
+    ...presetPositions.map((p) => p.positionId),
+  ]);
+  const unlockedCount = user.isPremium ? totalPositionsCount : unlockedIds.size;
   const nextCourse = nextCourseAttendance?.course;
   const nextCourseLabel = nextCourse
     ? new Intl.DateTimeFormat("fr-FR", {
@@ -157,8 +202,8 @@ export default async function StudentDashboard() {
     : null;
 
   const agendaShortcuts: Shortcut[] = [
-    { label: "Réserver un cours", href: "/student/courses/agenda?view=month" },
-    { label: "Tous mes cours", href: "/student/courses" },
+    { label: "Réserver un cours", href: "/student/courses/agenda?mine=false" },
+    { label: "Tous mes cours", href: "/student/courses/agenda?mine=true" },
     { label: "Studios & école", href: "/student/school" },
   ];
   if (nextCourse) {
@@ -191,7 +236,7 @@ export default async function StudentDashboard() {
       title: "Cours & agenda",
       description: "Réserve et retrouve tes cours en un coup d’œil.",
       stats: [
-        { label: "Confirmés", value: confirmedUpcoming },
+        { label: "À venir", value: confirmedUpcoming },
         { label: "En attente", value: waitlistUpcoming },
         ...(nextCourseLabel ? [{ label: "Prochain", value: nextCourseLabel }] : []),
       ],
@@ -202,9 +247,8 @@ export default async function StudentDashboard() {
       title: "Progression & figures",
       description: "Suis tes positions, tes favoris et tes combos clés.",
       stats: [
+        { label: "Débloquées", value: unlockedCount },
         { label: "Suivies", value: progressTotal },
-        { label: "Validées", value: passedCount },
-        { label: "Mastered", value: masteredCount },
         { label: "Favoris", value: favoritesCount },
       ],
       shortcuts: progressionShortcuts,
