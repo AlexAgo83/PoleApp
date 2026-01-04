@@ -237,6 +237,12 @@ export default async function StudentProgressPage({
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-200">
             <Link
+              href="/profile"
+              className="rounded-full border border-white/20 px-3 py-1 font-semibold text-white transition hover:border-cyan-400 hover:text-cyan-200"
+            >
+              Performance
+            </Link>
+            <Link
               aria-disabled={page <= 1}
               href={page <= 1 ? "#" : `/student/progress?page=${page - 1}${qs ? `&${qs}` : ""}`}
               className={`rounded-full border px-3 py-1 font-semibold transition ${

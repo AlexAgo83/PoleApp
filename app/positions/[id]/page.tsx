@@ -1,4 +1,4 @@
-import { MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
+import { LearningStatus, MediaKind, PositionLevel, PositionType, Prisma } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -37,6 +37,20 @@ const levelLabels: Record<PositionLevel, string> = {
   BEGINNER: "Beginner",
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
+};
+
+const statusLabels: Record<LearningStatus, string> = {
+  NOT_STARTED: "Nouveauté",
+  IN_PROGRESS: "En cours",
+  PASSED: "Validée",
+  MASTERED: "Maîtrisée",
+};
+
+const statusProgress: Record<LearningStatus, number> = {
+  NOT_STARTED: 10,
+  IN_PROGRESS: 40,
+  PASSED: 70,
+  MASTERED: 100,
 };
 export default async function PositionDetailPage({ params, searchParams }: Props) {
   const awaitedParams = await params;
@@ -322,7 +336,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
   const studentProgress = isStudent
     ? await prisma.studentPositionProgress.findUnique({
         where: { studentId_positionId: { studentId: session.user.id, positionId: position.id } },
-        select: { learningStatus: true },
+        select: { learningStatus: true, comment: true },
       })
     : null;
   const seenByCurrentUser = isStudent && studentProgress ? 1 : 0;
@@ -567,6 +581,28 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
             {canViewContent ? (
               <div className="space-y-4 text-slate-200">
+                {(studentProgress?.comment || studentProgress?.learningStatus) && (
+                  <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-white">Feedback professeur</p>
+                      {studentProgress?.learningStatus ? (
+                        <span className="relative inline-flex items-center overflow-hidden rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-[12px] font-semibold text-cyan-100">
+                          <span
+                            className="absolute left-0 top-0 h-full bg-cyan-400/25"
+                            style={{ width: `${statusProgress[studentProgress.learningStatus]}%` }}
+                          />
+                          <span className="relative z-10">
+                            {statusLabels[studentProgress.learningStatus]}
+                          </span>
+                        </span>
+                      ) : null}
+                    </div>
+                    {studentProgress?.comment ? (
+                      <p className="text-sm text-slate-200">{studentProgress.comment}</p>
+                    ) : null}
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <p className="text-sm text-cyan-200">Description</p>
                   <p className="whitespace-pre-wrap text-sm leading-6 text-slate-100">

@@ -180,9 +180,6 @@ export default async function TeacherStudentDetailPage({
             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
               Vu : {student.progress.length}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
-              Blessures actives : {student.injuries.filter((inj) => inj.isActive).length}
-            </span>
             {student.isPremium && (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-50">
                 Premium
@@ -236,9 +233,14 @@ export default async function TeacherStudentDetailPage({
             <PersistedSection
               id={`student-injuries:${student.id}`}
               summary={
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-lg font-semibold text-white">Blessures ({student.injuries.length})</h2>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-white">Blessures</h2>
+                    <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[12px] font-semibold text-cyan-100">
+                      {student.injuries.length}
+                    </span>
+                  </div>
+                  <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
                     <span className="group-open:hidden">Ouvrir</span>
                     <span className="hidden group-open:inline">Fermer</span>
                   </span>
@@ -271,9 +273,14 @@ export default async function TeacherStudentDetailPage({
             <PersistedSection
               id={`student-games:${student.id}`}
               summary={
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-lg font-semibold text-white">Mini-jeux ({gameSessions.length})</h2>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-white">Mini-jeux</h2>
+                    <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[12px] font-semibold text-cyan-100">
+                      {gameSessions.length}
+                    </span>
+                  </div>
+                  <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
                     <span className="group-open:hidden">Ouvrir</span>
                     <span className="hidden group-open:inline">Fermer</span>
                   </span>
