@@ -80,7 +80,7 @@ export default async function StudentTeachersPage({
   }`;
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel panel-body lg-gap border-indigo-400/15 shadow-indigo-900/30">
         <div className="flex flex-wrap items-center gap-3">
           <div>
