@@ -92,8 +92,9 @@ export default async function StudentCourseDetailPage({
         photoPublicId: true,
         isVirtual: true,
         school: { select: { name: true } },
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { name: true, address: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, address: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         positions: { include: { position: true } },
         notes: {
           where: { studentId: session.user.id },
@@ -175,8 +176,17 @@ export default async function StudentCourseDetailPage({
     user.studentFavoritePositions?.map((fav) => fav.positionId) ?? []
   );
   const isVirtual = course.isVirtual;
+  const isDisabledSource =
+    Boolean(course.teacher?.disabledAt) ||
+    Boolean(course.studio?.disabledAt) ||
+    Boolean(course.disciplineRef?.disabledAt);
   const canBuy =
-    !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost && hasPositions && !isVirtual;
+    !isAttending &&
+    endTime > NOW_MS &&
+    (user.credits ?? 0) >= cost &&
+    hasPositions &&
+    !isVirtual &&
+    !isDisabledSource;
   const isPastCourse = endTime <= NOW_MS;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
