@@ -27,7 +27,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
   const userKey = session.user.id ?? "anon";
   if (!session.user.schoolId) {
     return (
-      <main className="flex min-h-screen w-full flex-col gap-4">
+      <main className="flex w-full flex-col gap-4">
         <section className="panel p-4 md:p-6">
           <h1 className="text-3xl font-semibold text-white">Professeurs</h1>
           <p className="text-slate-300">Aucune école associée à ce compte.</p>
@@ -82,7 +82,7 @@ export default async function AdminTeachersPage({ searchParams }: { searchParams
   });
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel space-y-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold text-white">Professeurs de l&apos;école</h2>

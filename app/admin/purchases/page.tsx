@@ -63,7 +63,7 @@ export default async function AdminPurchasesPage({ searchParams }: { searchParam
   const totalPages = Math.max(1, Math.ceil(count / 10));
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-4">
+    <main className="flex w-full flex-col gap-4">
       <section className="panel mt-4 space-y-4 p-6">
         <h2 className="text-lg font-semibold text-white">Historique des achats</h2>
         <FilterPanel title="Filtres" activeCount={[kind, status, q && q.length > 0].filter(Boolean).length} storageKey="filters:admin-purchases">

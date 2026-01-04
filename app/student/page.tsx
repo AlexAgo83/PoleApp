@@ -6,6 +6,8 @@ import { appSignature } from "@/lib/appMeta";
 import { prisma } from "@/lib/prisma";
 import { BuyCreditsButton } from "./BuyCreditsButton";
 
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+
 type StatPillProps = { label: string; value: string | number };
 
 function StatPill({ label, value }: StatPillProps) {
@@ -17,7 +19,7 @@ function StatPill({ label, value }: StatPillProps) {
   );
 }
 
-type Shortcut = { label: string; href?: string; kind?: "credits" | "upgrade" };
+type Shortcut = { label: string; href?: string; kind?: "credits" | "upgrade"; backgroundUrl?: string | null };
 type Panel = {
   id: string;
   title: string;
@@ -26,14 +28,32 @@ type Panel = {
   shortcuts: Shortcut[];
 };
 
-function ShortcutLink({ href, label }: { href: string; label: string }) {
+function ShortcutLink({ href, label, backgroundUrl }: { href: string; label: string; backgroundUrl?: string | null }) {
+  const backgroundStyle = backgroundUrl
+    ? {
+        backgroundImage: `linear-gradient(135deg, rgba(26,35,69,0.55), rgba(88,28,135,0.4)), url(${backgroundUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    : undefined;
+  const textShadowStyle = backgroundUrl
+    ? { textShadow: "0 0 6px rgba(0,0,0,0.65), 0 1px 2px rgba(0,0,0,0.55)" }
+    : undefined;
   return (
     <Link
       href={href}
       className="group flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+      style={backgroundStyle}
     >
-      <span>{label}</span>
-      <span className="text-cyan-200 transition-transform group-hover:translate-x-1">→</span>
+      <span className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]" style={textShadowStyle}>
+        {label}
+      </span>
+      <span
+        className="text-cyan-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] transition-transform group-hover:translate-x-1"
+        style={textShadowStyle}
+      >
+        →
+      </span>
     </Link>
   );
 }
@@ -139,26 +159,27 @@ export default async function StudentDashboard() {
     user.schoolId ? prisma.user.count({ where: { schoolId: user.schoolId, role: "TEACHER" } }) : Promise.resolve(0),
     user.schoolId ? prisma.partner.count({ where: { schoolId: user.schoolId } }) : Promise.resolve(0),
     prisma.purchase.count({ where: { userId: session.user.id } }),
-    prisma.courseAttendance.findFirst({
-      where: {
-        studentId: session.user.id,
-        status: { in: ["CONFIRMED", "WAITLIST"] },
-        course: { date: { gte: now } },
-      },
-      select: {
-        status: true,
-        course: {
-          select: {
-            id: true,
-            title: true,
-            date: true,
-            studio: { select: { name: true } },
-            teacher: { select: { name: true } },
-            disciplineRef: { select: { name: true, color: true } },
+      prisma.courseAttendance.findFirst({
+        where: {
+          studentId: session.user.id,
+          status: { in: ["CONFIRMED", "WAITLIST"] },
+          course: { date: { gte: now } },
+        },
+        select: {
+          status: true,
+          course: {
+            select: {
+              id: true,
+              title: true,
+              date: true,
+              photoPublicId: true,
+              studio: { select: { name: true } },
+              teacher: { select: { name: true } },
+              disciplineRef: { select: { name: true, color: true } },
+            },
           },
         },
-      },
-      orderBy: { course: { date: "asc" } },
+        orderBy: { course: { date: "asc" } },
     }),
     prisma.studentPositionProgress.findMany({
       where: { studentId: session.user.id },
@@ -177,12 +198,12 @@ export default async function StudentDashboard() {
     prisma.position.count(),
     prisma.courseAttendance.findFirst({
       where: { studentId: session.user.id, status: { in: ["CONFIRMED", "WAITLIST"] }, course: { date: { lt: now } } },
-      select: { courseId: true },
+      select: { courseId: true, course: { select: { id: true, photoPublicId: true, title: true } } },
       orderBy: { course: { date: "desc" } },
     }),
     prisma.courseAttendance.findFirst({
       where: { studentId: session.user.id, status: { in: ["CONFIRMED", "WAITLIST"] } },
-      select: { courseId: true },
+      select: { courseId: true, course: { select: { id: true, photoPublicId: true, title: true } } },
       orderBy: { course: { date: "desc" } },
     }),
   ]);
@@ -203,7 +224,14 @@ export default async function StudentDashboard() {
   ]);
   const unlockedCount = user.isPremium ? totalPositionsCount : unlockedIds.size;
   const nextCourse = nextCourseAttendance?.course;
-  const lastCourseId = lastPastCourseAttendance?.courseId;
+  const nextCoursePhoto = nextCourse?.photoPublicId
+    ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${nextCourse.photoPublicId}`
+    : null;
+  const lastCourse = lastPastCourseAttendance?.course ?? lastAnyCourseAttendance?.course ?? null;
+  const lastCourseId = lastCourse?.id ?? lastPastCourseAttendance?.courseId ?? null;
+  const lastCoursePhoto = lastCourse?.photoPublicId
+    ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${lastCourse.photoPublicId}`
+    : null;
   const nextCourseLabel = nextCourse
     ? new Intl.DateTimeFormat("fr-FR", {
         weekday: "short",
@@ -219,10 +247,18 @@ export default async function StudentDashboard() {
     { label: "Tous mes cours", href: "/student/courses/agenda?mine=true" },
   ];
   if (lastCourseId) {
-    agendaShortcuts.push({ label: "Mon dernier cours", href: `/student/courses/${lastCourseId}?from=/student` });
+    agendaShortcuts.push({
+      label: "Mon dernier cours",
+      href: `/student/courses/${lastCourseId}?from=/student`,
+      backgroundUrl: lastCoursePhoto,
+    });
   }
   if (nextCourse) {
-    agendaShortcuts.push({ label: "Mon prochain cours", href: `/student/courses/${nextCourse.id}?from=/student` });
+    agendaShortcuts.push({
+      label: "Mon prochain cours",
+      href: `/student/courses/${nextCourse.id}?from=/student`,
+      backgroundUrl: nextCoursePhoto,
+    });
   }
 
   const progressionShortcuts: Shortcut[] = [
@@ -336,7 +372,14 @@ export default async function StudentDashboard() {
                       />
                     );
                   }
-                  return <ShortcutLink key={shortcut.href} href={shortcut.href ?? "#"} label={shortcut.label} />;
+                  return (
+                    <ShortcutLink
+                      key={shortcut.href}
+                      href={shortcut.href ?? "#"}
+                      label={shortcut.label}
+                      backgroundUrl={shortcut.backgroundUrl ?? undefined}
+                    />
+                  );
                 })}
               </div>
             </div>
