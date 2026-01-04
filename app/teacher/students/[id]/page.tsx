@@ -333,17 +333,18 @@ export default async function TeacherStudentDetailPage({
           summary={
             <>
               <div>
+                <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Édition</p>
                 <h2 className="text-lg font-semibold text-white">Progression</h2>
-                <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
               </div>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
-                <span className="group-open:hidden">Ouvrir</span>
+                <span className="group-open:hidden">Modifier</span>
                 <span className="hidden group-open:inline">Fermer</span>
               </span>
             </>
           }
         >
-          <div className="panel-grid lg-gap md:grid-cols-2">
+          <p className="text-xs text-slate-300">Positions enseignées : {filteredPositions.length}</p>
+          <div className="panel-grid lg-gap md:grid-cols-2 mt-2">
             {filteredPositions.map((position) => {
               const progress = progressMap.get(position.id);
               return <ProgressCard key={position.id} position={position} progress={progress} studentId={student.id} />;
