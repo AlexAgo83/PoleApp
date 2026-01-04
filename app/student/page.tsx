@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 
@@ -25,7 +24,6 @@ type Panel = {
   description: string;
   stats: { label: string; value: string | number }[];
   shortcuts: Shortcut[];
-  illustration: ReactNode;
 };
 
 function ShortcutLink({ href, label }: { href: string; label: string }) {
@@ -37,99 +35,6 @@ function ShortcutLink({ href, label }: { href: string; label: string }) {
       <span>{label}</span>
       <span className="text-cyan-200 transition-transform group-hover:translate-x-1">→</span>
     </Link>
-  );
-}
-
-
-function PanelIllustration({ children }: { children: ReactNode }) {
-  return (
-    <div className="relative isolate overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-slate-900/50 via-slate-900/80 to-slate-950 p-4 shadow-inner shadow-cyan-900/30 min-h-[240px]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.25),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(236,72,153,0.18),transparent_40%)]" />
-      <div className="pointer-events-none absolute -left-10 top-4 h-24 w-24 rounded-full border border-cyan-400/15" />
-      <div className="pointer-events-none absolute -right-12 bottom-2 h-20 w-20 rounded-full border border-fuchsia-400/10" />
-      <div className="relative flex h-full w-full items-center justify-center text-cyan-50/80">{children}</div>
-    </div>
-  );
-}
-
-function OrbitPlaceholder() {
-  return (
-    <svg viewBox="0 0 240 180" role="img" aria-label="Illustration cours" className="h-48 w-full text-cyan-200/70">
-      <defs>
-        <linearGradient id="orbit" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop stopColor="currentColor" stopOpacity="0.85" offset="0%" />
-          <stop stopColor="currentColor" stopOpacity="0.15" offset="100%" />
-        </linearGradient>
-      </defs>
-      <circle cx="120" cy="90" r="65" fill="none" stroke="url(#orbit)" strokeWidth="2" />
-      <circle cx="120" cy="90" r="90" fill="none" stroke="currentColor" strokeDasharray="6 10" strokeOpacity="0.4" />
-      <circle cx="120" cy="90" r="42" fill="none" stroke="currentColor" strokeOpacity="0.35" />
-      <circle cx="74" cy="68" r="6" fill="currentColor" opacity="0.9" />
-      <circle cx="176" cy="88" r="8" fill="currentColor" opacity="0.7" />
-      <circle cx="118" cy="132" r="5" fill="currentColor" opacity="0.8" />
-      <rect x="96" y="70" width="48" height="12" rx="6" fill="currentColor" opacity="0.75" />
-      <rect x="86" y="90" width="68" height="12" rx="6" fill="currentColor" opacity="0.5" />
-      <rect x="104" y="112" width="44" height="10" rx="5" fill="currentColor" opacity="0.35" />
-    </svg>
-  );
-}
-
-function GridPlaceholder() {
-  return (
-    <svg viewBox="0 0 240 180" role="img" aria-label="Illustration progression" className="h-48 w-full text-fuchsia-200/80">
-      <rect x="26" y="20" width="188" height="140" rx="14" fill="currentColor" opacity="0.08" />
-      <rect x="40" y="36" width="72" height="24" rx="8" fill="currentColor" opacity="0.8" />
-      <rect x="132" y="36" width="68" height="24" rx="8" fill="currentColor" opacity="0.5" />
-      <rect x="40" y="80" width="60" height="16" rx="6" fill="currentColor" opacity="0.7" />
-      <rect x="108" y="80" width="48" height="16" rx="6" fill="currentColor" opacity="0.45" />
-      <rect x="166" y="80" width="24" height="16" rx="6" fill="currentColor" opacity="0.3" />
-      <rect x="40" y="110" width="58" height="16" rx="6" fill="currentColor" opacity="0.7" />
-      <rect x="104" y="110" width="90" height="16" rx="6" fill="currentColor" opacity="0.5" />
-      <rect x="40" y="140" width="120" height="12" rx="6" fill="currentColor" opacity="0.35" />
-      <circle cx="178" cy="118" r="10" fill="currentColor" opacity="0.8" />
-      <circle cx="192" cy="54" r="6" fill="currentColor" opacity="0.7" />
-    </svg>
-  );
-}
-
-function WavePlaceholder() {
-  return (
-    <svg viewBox="0 0 240 180" role="img" aria-label="Illustration communauté" className="h-48 w-full text-emerald-200/80">
-      <path d="M20 120c22 16 50 22 82-6 42-35 60-16 94-4 17 6 28 6 44-2v48H20z" fill="currentColor" opacity="0.25" />
-      <path d="M14 92c20 22 58 30 92-2 42-38 66-14 102-4 12 4 22 6 32 4v90H14z" fill="currentColor" opacity="0.18" />
-      <circle cx="64" cy="94" r="10" fill="currentColor" opacity="0.8" />
-      <circle cx="118" cy="82" r="8" fill="currentColor" opacity="0.65" />
-      <circle cx="168" cy="90" r="12" fill="currentColor" opacity="0.75" />
-      <circle cx="198" cy="74" r="6" fill="currentColor" opacity="0.8" />
-      <rect x="44" y="46" width="64" height="12" rx="6" fill="currentColor" opacity="0.45" />
-      <rect x="128" y="46" width="52" height="12" rx="6" fill="currentColor" opacity="0.35" />
-      <rect x="94" y="64" width="42" height="12" rx="6" fill="currentColor" opacity="0.5" />
-    </svg>
-  );
-}
-
-function PremiumPlaceholder() {
-  return (
-    <svg viewBox="0 0 320 200" role="img" aria-label="Illustration premium" className="h-52 w-full text-fuchsia-200/80">
-      <defs>
-        <linearGradient id="premiumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0.2" />
-        </linearGradient>
-      </defs>
-      <rect x="12" y="12" width="296" height="176" rx="20" fill="url(#premiumGrad)" opacity="0.12" />
-      <circle cx="160" cy="100" r="68" fill="none" stroke="currentColor" strokeOpacity="0.6" strokeWidth="2" />
-      <circle cx="160" cy="100" r="46" fill="none" stroke="currentColor" strokeOpacity="0.4" strokeWidth="2" strokeDasharray="6 10" />
-      <circle cx="160" cy="100" r="28" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="2" />
-      <path d="M130 100c12 10 26 10 40 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.65" fill="none" />
-      <path d="M146 84c6 4 12 4 18 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.5" fill="none" />
-      <path d="M146 116c6 4 12 4 18 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.5" fill="none" />
-      <circle cx="118" cy="104" r="6" fill="currentColor" opacity="0.8" />
-      <circle cx="202" cy="96" r="8" fill="currentColor" opacity="0.7" />
-      <circle cx="160" cy="136" r="5" fill="currentColor" opacity="0.75" />
-      <rect x="134" y="70" width="52" height="12" rx="6" fill="currentColor" opacity="0.55" />
-      <rect x="122" y="128" width="76" height="12" rx="6" fill="currentColor" opacity="0.35" />
-    </svg>
   );
 }
 
@@ -276,11 +181,6 @@ export default async function StudentDashboard() {
         ...(nextCourseLabel ? [{ label: "Prochain", value: nextCourseLabel }] : []),
       ],
       shortcuts: agendaShortcuts,
-      illustration: (
-        <div className="relative h-full w-full">
-          <OrbitPlaceholder />
-        </div>
-      ),
     },
     {
       id: "progression",
@@ -294,7 +194,6 @@ export default async function StudentDashboard() {
         { label: "Favoris", value: favoritesCount },
       ],
       shortcuts: progressionShortcuts,
-      illustration: <GridPlaceholder />,
     },
     {
       id: "communaute",
@@ -306,7 +205,6 @@ export default async function StudentDashboard() {
         { label: "Blessures actives", value: injuriesCount },
       ],
       shortcuts: communauteShortcuts,
-      illustration: <WavePlaceholder />,
     },
     {
       id: "compte",
@@ -318,7 +216,6 @@ export default async function StudentDashboard() {
         { label: "Achats", value: purchasesCount },
       ],
       shortcuts: compteShortcuts,
-      illustration: <PremiumPlaceholder />,
     },
   ];
 
@@ -327,7 +224,7 @@ export default async function StudentDashboard() {
       <section className="grid gap-4 xl:grid-cols-2">
         {panels.map((panel) => (
           <article key={panel.id} className="panel border border-white/5">
-            <div className="panel-body grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="panel-body gap-4">
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-200">
@@ -376,9 +273,6 @@ export default async function StudentDashboard() {
                   })}
                 </div>
               </div>
-              <PanelIllustration>
-                {panel.illustration}
-              </PanelIllustration>
             </div>
           </article>
         ))}
