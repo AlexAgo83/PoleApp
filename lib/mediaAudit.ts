@@ -10,6 +10,40 @@ export const DEFAULT_MEDIA_PREFIX = "";
 export type MediaResourceType = "image" | "video";
 export type MediaDeliveryType = "upload" | "authenticated";
 const DEFAULT_EXCLUDED_PREFIXES = ["samples/"];
+const EXTRA_SEED_IDS = new Set<string>([
+  // Seed schools
+  "sc_02_iidqs5",
+  "sc_01_hgtgz4",
+  "sc_03_kouzh8",
+  // Seed studios
+  "st_02_csmng8",
+  "st_05_iryeuf",
+  "st_01_os2kvs",
+  "st_04_xfg65z",
+  "st_03_ywhrxt",
+  "st_06_o2bp6z",
+  // Seed courses (photos)
+  "co_20_fuk1vy",
+  "co_01_lzy3th",
+  "co_06_etu7av",
+  "co_09_wsasz3",
+  "co_11_v4xldz",
+  "co_05_d3ydvl",
+  "co_03_qd4h2w",
+  "co_02_i3tc6p",
+  "co_12_ywslqp",
+  "co_13_hagigy",
+  "co_08_pbc6av",
+  "co_16_ssjjra",
+  "co_04_fujy4g",
+  "co_07_u5usuw",
+  "co_17_s1kvva",
+  "co_10_jlkxrd",
+  "co_15_dnmanu",
+  "co_18_boe3wh",
+  "co_14_oiur1r",
+  "co_19_g7eim2",
+]);
 
 export type DbMediaRef = {
   publicId: string;
@@ -62,14 +96,14 @@ export function normalizePublicId(raw: string | null | undefined, folderPrefix: 
 
 function buildSeedSet(folderPrefix: string) {
   const avatarIds = getDefaultAvatarPublicIds();
-  const candidates = new Set<string>();
+  const candidates = new Set<string>(EXTRA_SEED_IDS);
   for (const id of avatarIds) {
-    const norm = normalizePublicId(id, folderPrefix, null);
+    const norm = normalizePublicId(id, folderPrefix);
     if (norm?.full) candidates.add(norm.full);
     if (norm?.base) candidates.add(norm.base);
   }
   for (const seed of SEED_MEDIA_IDS) {
-    const norm = normalizePublicId(seed, folderPrefix, null);
+    const norm = normalizePublicId(seed, folderPrefix);
     if (norm?.full) candidates.add(norm.full);
     if (norm?.base) candidates.add(norm.base);
   }
