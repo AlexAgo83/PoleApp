@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { PremiumUpsellButton } from "@/components/PremiumUpsellButton";
 import { buyPresetAction } from "@/app/student/actions";
 import { BuyCreditsButton } from "@/app/student/BuyCreditsButton";
+import { ConfirmEnrollButton } from "@/components/ConfirmEnrollButton";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -141,6 +142,11 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
       (!preset.premiumRequired) ||
       (preset.premiumRequired && session.user.isPremium)
     );
+  const premiumLocked = preset.premiumRequired && isStudent && !session.user.isPremium;
+  const insufficientCredits = isStudent && price > 0 && (studentCredits?.credits ?? 0) < price;
+  const disablePurchase = hasPurchase || premiumLocked || insufficientCredits;
+  const showConfirm = isStudent && !disablePurchase && price > 0;
+  const currentPath = `/presets/${preset.id}`;
 
   const formatTime = (seconds: number | null | undefined) => {
     if (seconds === null || seconds === undefined) return "";
@@ -255,12 +261,30 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
                       {showBuyCta ? (
                         <form action={buyPresetAction} className="flex flex-wrap items-center gap-2">
                           <input type="hidden" name="presetId" value={preset.id} />
-                          <button
-                            type="submit"
-                            className="rounded-full border border-cyan-300/70 bg-cyan-500/20 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-200 hover:bg-cyan-500/30"
-                          >
-                            Acheter ({preset.priceCredits} crédits)
-                          </button>
+                          <input type="hidden" name="returnTo" value={currentPath} />
+                          {showConfirm ? (
+                            <ConfirmEnrollButton
+                              cost={price}
+                              label={`Acheter (${price} crédits)`}
+                              disabled={disablePurchase}
+                              title="Confirmer l'achat du preset"
+                              heading="Acheter ce preset"
+                              description={`Vous allez dépenser ${price} crédits pour acheter ce preset.`}
+                              className="rounded-full border border-cyan-300/70 bg-cyan-500/20 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-200 hover:bg-cyan-500/30"
+                            />
+                          ) : (
+                            <button
+                              type="submit"
+                              disabled={disablePurchase}
+                              className={`rounded-full px-3 py-1.5 text-sm font-semibold text-white transition ${
+                                disablePurchase
+                                  ? "cursor-not-allowed border border-white/10 bg-white/5 text-slate-300"
+                                  : "border border-cyan-300/70 bg-cyan-500/20 hover:border-cyan-200 hover:bg-cyan-500/30"
+                              }`}
+                            >
+                              Acheter ({preset.priceCredits} crédits)
+                            </button>
+                          )}
                         </form>
                       ) : null}
                     </div>
