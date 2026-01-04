@@ -141,9 +141,9 @@ export async function FoxPageHeader({
   const navLinks =
     session?.user?.role === "STUDENT"
       ? [
-          { label: "Mon suivi", href: "/student/progress" },
           { label: "Réserver", href: "/student/school" },
           { label: "Mes cours", href: "/student/courses/agenda?view=month" },
+          { label: "Mon suivi", href: "/student/progress" },
         ]
       : session?.user?.role === "TEACHER"
         ? [
