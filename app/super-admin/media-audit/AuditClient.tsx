@@ -81,8 +81,10 @@ function toCsv(rows: Row[]) {
 
 function buildThumbUrl(row: Row, cloudName?: string | null) {
   if (!cloudName) return null;
+  if (row.category !== "orphan") return null;
+  if (row.deliveryType !== "upload") return null; // pas d’URL publique pour authenticated
   const publicId = row.publicId;
-  const isVideo = row.category === "orphan" ? row.resourceType === "video" : row.resourceType === "video";
+  const isVideo = row.resourceType === "video";
   const type = isVideo ? "video" : "image";
   const suffix = isVideo ? ".jpg" : "";
   return `https://res.cloudinary.com/${cloudName}/${type}/upload/c_fill,g_auto,f_auto,q_auto,w_96,h_96/${publicId}${suffix}`;
@@ -91,7 +93,7 @@ function buildThumbUrl(row: Row, cloudName?: string | null) {
 export function AuditClient() {
   const [state, formAction] = useActionState(scanMediaAuditAction, initialState);
   const [filter, setFilter] = useState<CategoryFilter>("all");
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   const rows: Row[] = useMemo(() => {
     if (state.status !== "ok") return [];
@@ -230,16 +232,16 @@ export function AuditClient() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 overflow-hidden rounded-lg border border-white/10 bg-white/10">
-                      {cloudName ? (
+                      {cloudName && row.category === "orphan" && buildThumbUrl(row, cloudName) ? (
                         <img
-                          src={buildThumbUrl(row, cloudName) ?? ""}
+                          src={buildThumbUrl(row, cloudName) as string}
                           alt={row.publicId}
                           className="h-full w-full object-cover"
                           loading="lazy"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-[10px] uppercase text-slate-500">
-                          N/A
+                          —
                         </div>
                       )}
                     </div>
