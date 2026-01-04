@@ -88,10 +88,6 @@ export default async function ProfilePage() {
             <h1 className="text-2xl font-semibold text-white">
               Informations du compte
             </h1>
-            <p className="text-slate-300">
-              Mets à jour ton profil (nom, âge, photo). Les autres champs restent informatifs
-              et liés à ton compte existant.
-            </p>
           </div>
         </div>
         <div className="mt-4 flex items-center gap-4">
