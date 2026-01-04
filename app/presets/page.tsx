@@ -379,6 +379,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
               const insufficientCredits = isStudent && cost > 0 && hasCredits < cost;
               const disablePurchase = alreadyBought || premiumLocked || insufficientCredits;
               const detailHref = `/presets/${preset.id}?from=${encodeURIComponent(`/presets?page=${currentPage}`)}`;
+              const returnTo = detailHref;
               const canEditPreset =
                 isTeacherOrAdmin &&
                 (session.user.role === "SCHOOL_ADMIN" || preset.createdByUserId === session.user.id);
@@ -463,6 +464,7 @@ export default async function PresetsCatalogPage({ searchParams }: { searchParam
                     {isStudent ? (
                       <form action={buyPresetAction} className="flex flex-wrap items-center gap-2">
                         <input type="hidden" name="presetId" value={preset.id} />
+                        <input type="hidden" name="returnTo" value={returnTo} />
                         {showConfirm ? (
                           <ConfirmEnrollButton
                             cost={cost}
