@@ -20,6 +20,7 @@ type MonthCourse = {
   past?: boolean;
   isVirtual?: boolean;
   positionsCount?: number;
+  isDisabledSource?: boolean;
 };
 
 type MonthCell = {
@@ -231,6 +232,11 @@ export function MonthView({
                         <p className="text-[10px] text-slate-200 break-words">
                           {course.studioName}
                         </p>
+                        {course.isDisabledSource && (
+                          <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-100">
+                            Désactivé · Inscriptions closes
+                          </p>
+                        )}
                         {course.isVirtual && (
                           <p
                             className="text-[12px] text-amber-100"
