@@ -38,7 +38,7 @@ export function CloudinaryUpload({
   currentPublicId,
   folder,
   resourceType = "image",
-  accept = "image/jpeg,image/png,image/webp",
+  accept = "image/*",
   maxSizeMB = 5,
   transformPreset,
   deliveryType = "authenticated",
