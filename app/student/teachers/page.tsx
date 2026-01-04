@@ -79,6 +79,8 @@ export default async function StudentTeachersPage({
     qs ? `&${qs}` : ""
   }`;
 
+  const summaryText = `Page ${safePage} / ${totalPages} · ${totalCount} professeurs`;
+
   return (
     <main className="flex w-full flex-col gap-4">
       <section className="panel panel-body lg-gap border-indigo-400/15 shadow-indigo-900/30">
@@ -89,12 +91,6 @@ export default async function StudentTeachersPage({
               Fiches professeurs qui t&apos;ont déjà donné cours. Accède à leurs diplômes et positions
               coup de cœur.
             </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-end gap-3 text-sm text-slate-300">
-          <div>
-            Page {safePage} / {totalPages} · {totalCount} professeurs
           </div>
         </div>
         <FilterPanel
@@ -140,7 +136,7 @@ export default async function StudentTeachersPage({
             Aucun professeur associé pour le moment. Participe à un cours pour voir leur fiche.
           </p>
         ) : (
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-2">
             {teachers.map((teacher) => {
               const avatar =
                 resolveAvatarUrl({
@@ -186,35 +182,35 @@ export default async function StudentTeachersPage({
             })}
           </div>
         )}
-        {totalCount > PAGE_SIZE && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-200">
-            <Link
-              href={prevHref}
-              aria-disabled={safePage === 1}
-              className={`rounded-full border border-white/10 px-3 py-2 ${
-                safePage === 1
-                  ? "cursor-not-allowed text-slate-500"
-                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              }`}
-            >
-              Précédent
-            </Link>
-            <span className="text-slate-200">
-              Page {safePage} / {totalPages} · {totalCount} professeurs
-            </span>
-            <Link
-              href={nextHref}
-              aria-disabled={safePage === totalPages}
-              className={`rounded-full border border-white/10 px-3 py-2 ${
-                safePage === totalPages
-                  ? "cursor-not-allowed text-slate-500"
-                  : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-              }`}
-            >
-              Suivant
-            </Link>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
+          <span>{summaryText}</span>
+          {totalCount > PAGE_SIZE && (
+            <>
+              <Link
+                href={prevHref}
+                aria-disabled={safePage === 1}
+                className={`rounded-full border border-white/10 px-3 py-2 ${
+                  safePage === 1
+                    ? "cursor-not-allowed text-slate-500"
+                    : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                }`}
+              >
+                Précédent
+              </Link>
+              <Link
+                href={nextHref}
+                aria-disabled={safePage === totalPages}
+                className={`rounded-full border border-white/10 px-3 py-2 ${
+                  safePage === totalPages
+                    ? "cursor-not-allowed text-slate-500"
+                    : "bg-white/5 text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                }`}
+              >
+                Suivant
+              </Link>
+            </>
+          )}
+        </div>
       </section>
     </main>
   );
