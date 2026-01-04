@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { LearningStatus } from "@prisma/client";
+import { GameMode, LearningStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -11,6 +11,7 @@ import { updateProfileAction } from "./actions";
 import { ProfileCollapsible } from "./ProfileCollapsible";
 import { AvatarManager } from "./AvatarManager";
 import { StudentPerformanceList } from "./StudentPerformanceList";
+import { PersistedSection as StudentPersistedSection } from "@/app/teacher/students/[id]/PersistedSection";
 
 const roleLabels: Record<string, string> = {
   STUDENT: "Étudiant",
@@ -34,6 +35,15 @@ const statusOrder: Record<LearningStatus, number> = {
   IN_PROGRESS: 2,
   NOT_STARTED: 3,
 };
+
+const gameModeLabel: Record<GameMode, string> = {
+  PHOTO_NAME: "Photo → nom",
+  NAME_TYPE: "Nom → type",
+  NAME_LEVEL: "Nom → niveau",
+  NAME_GRIPS: "Nom → grips",
+  DESCRIPTION_NAME: "Description → nom",
+  BLITZ_MIX: "Blitz mix",
+};
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
@@ -50,6 +60,11 @@ export default async function ProfilePage() {
       },
       studentFavoritePositions: {
         include: { position: true },
+      },
+      injuries: {
+        include: { injuryType: true },
+        orderBy: { createdAt: "desc" },
+        take: 5,
       },
     },
   });
@@ -88,6 +103,14 @@ export default async function ProfilePage() {
     : isStudent
       ? user.studentFavoritePositions.map((fp) => fp.positionId)
       : [];
+  const injuries = isStudent ? user.injuries ?? [] : [];
+  const gameSessions = isStudent
+    ? await prisma.gameSession.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      })
+    : [];
 
   const roleLabel = roleLabels[user.role] ?? user.role;
   const [firstNameDefault, ...restName] =
@@ -181,6 +204,89 @@ export default async function ProfilePage() {
                   <p className="mt-2 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
                 )}
               </div>
+            </div>
+
+            <div className="mt-4 grid gap-6 sm:grid-cols-2 text-sm text-slate-200">
+              <StudentPersistedSection
+                id={`profile-injuries:${user.id}`}
+                summary={
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white">Blessures ({injuries.length})</h3>
+                    <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                      <span className="group-open:hidden">Ouvrir</span>
+                      <span className="hidden group-open:inline">Fermer</span>
+                    </span>
+                  </div>
+                }
+                defaultOpen={false}
+              >
+                <div className="mt-3 flex flex-col divide-y divide-white/5">
+                  {injuries.length === 0 ? (
+                    <p className="py-4 text-slate-300">Aucune blessure déclarée.</p>
+                  ) : (
+                    injuries.map((injury) => (
+                      <article key={injury.id} className="py-3">
+                        <p className="text-sm font-semibold text-white">
+                          {injury.injuryType.name} ·{" "}
+                          <span className={injury.isActive ? "text-amber-200" : "text-green-200"}>
+                            {injury.isActive ? "Active" : "Résolue"}
+                          </span>
+                        </p>
+                        {injury.notes && <p className="text-xs text-slate-200 mt-1">Notes : {injury.notes}</p>}
+                      </article>
+                    ))
+                  )}
+                </div>
+              </StudentPersistedSection>
+
+              <StudentPersistedSection
+                id={`profile-games:${user.id}`}
+                summary={
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white">Mini-jeux ({gameSessions.length})</h3>
+                    <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
+                      <span className="group-open:hidden">Ouvrir</span>
+                      <span className="hidden group-open:inline">Fermer</span>
+                    </span>
+                  </div>
+                }
+                defaultOpen={false}
+              >
+                <div className="mt-3">
+                  {gameSessions.length === 0 ? (
+                    <p className="py-4 text-sm text-slate-300">Aucune session jouée pour le moment.</p>
+                  ) : (
+                    <ul className="divide-y divide-white/5 text-sm text-slate-200">
+                      {gameSessions.map((g) => {
+                        const accuracy =
+                          g.totalQuestions > 0 ? Math.round((g.correctAnswers / g.totalQuestions) * 100) : 0;
+                        return (
+                          <li key={g.id} className="py-2">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div>
+                                <p className="font-semibold text-white">
+                                  {gameModeLabel[g.mode]} ({g.mode})
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                  {g.correctAnswers}/{g.totalQuestions} · {accuracy}% ·{" "}
+                                  {g.durationMs ? `${Math.round(g.durationMs / 1000)}s` : "—"}
+                                </p>
+                              </div>
+                              <p className="text-xs text-slate-300">
+                                {g.createdAt.toLocaleDateString("fr-FR", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </p>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              </StudentPersistedSection>
             </div>
           </div>
         )}
