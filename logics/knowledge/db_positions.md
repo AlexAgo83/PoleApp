@@ -134,7 +134,7 @@
 - Type: SPIN
 - Grip: Base grip
 
-## ⏩ Open Front hook
+## Open Front hook
 **Description**
 > C’est spin est très élégant quand il est bien maîtrisé. Il démarre exactement comme le Close Front hook (crochet avant fermé), sauf que la deuxième jambe au lieu de rejoindre, la première va se passer un miroir de celle-ci, c’est-à-dire en opposition, mais dans la même position exactement, une fois le corps en déséquilibre vers l’avant
 - Muscles / articulations sollicitées: Ceinture scapulaire (grand dorsal, deltoïdes, biceps/triceps), gainage profond (transverse/obliques), adducteurs + fléchisseurs de hanche pour l'accroche ; articulations épaules, poignets, hanches, rachis.

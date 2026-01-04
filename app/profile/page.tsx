@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { LearningStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +10,7 @@ import { resolveAvatarUrl } from "@/lib/avatar";
 import { updateProfileAction } from "./actions";
 import { ProfileCollapsible } from "./ProfileCollapsible";
 import { AvatarManager } from "./AvatarManager";
+import { StudentPerformanceList } from "./StudentPerformanceList";
 
 const roleLabels: Record<string, string> = {
   STUDENT: "Étudiant",
@@ -19,6 +21,19 @@ const roleLabels: Record<string, string> = {
 const STUDENT_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 const TEACHER_AVATAR_PLACEHOLDER = AVATAR_PLACEHOLDER;
 
+const statusLabels: Record<LearningStatus, string> = {
+  NOT_STARTED: "Nouveauté",
+  IN_PROGRESS: "Initié",
+  PASSED: "Passé",
+  MASTERED: "Fluide chorégraphié",
+};
+
+const statusOrder: Record<LearningStatus, number> = {
+  MASTERED: 0,
+  PASSED: 1,
+  IN_PROGRESS: 2,
+  NOT_STARTED: 3,
+};
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
@@ -45,6 +60,22 @@ export default async function ProfilePage() {
 
   const isTeacher = user.role === "TEACHER";
   const isStudent = user.role === "STUDENT";
+  const progressionEntries =
+    isStudent
+      ? await prisma.studentPositionProgress.findMany({
+          where: { studentId: user.id, learningStatus: { not: LearningStatus.NOT_STARTED } },
+          include: { position: true },
+        })
+      : [];
+  const sortedProgression = isStudent
+    ? progressionEntries
+        .filter((p) => p.position)
+        .sort((a, b) => {
+          const orderDiff = statusOrder[a.learningStatus] - statusOrder[b.learningStatus];
+          if (orderDiff !== 0) return orderDiff;
+          return (a.position?.name || "").localeCompare(b.position?.name || "");
+        })
+    : [];
   const positions =
     isTeacher || isStudent
       ? await prisma.position.findMany({
@@ -67,7 +98,6 @@ export default async function ProfilePage() {
   const lastNameDefault = restName.join(" ");
   const displayName = user.name?.trim() || user.email;
   const currentDisplay = [firstNameDefault, lastNameDefault].filter(Boolean).join(" ") || displayName;
-  const ageLabel = user.age ? `${user.age} ans` : "Non renseigné";
   const avatarPlaceholder = isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER;
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: user.avatarPublicId,
@@ -100,20 +130,70 @@ export default async function ProfilePage() {
             />
           </div>
           <div className="text-sm text-slate-300">
-            <p className="text-base font-semibold text-white">{currentDisplay}</p>
-            <p className="text-xs text-slate-400">Ton portrait actuel.</p>
+            <p className="text-base font-semibold text-white flex items-center gap-2">
+              <span>{currentDisplay}</span>
+              {user.age ? (
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                  {user.age} ans
+                </span>
+              ) : null}
+            </p>
+            <p className="text-xs text-slate-400">{user.email}</p>
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+              <span>École : {user.school?.name ?? "Non rattaché"}</span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                {roleLabel}
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                {user.isPremium ? "Premium" : "Gratuit"}
+              </span>
+            </p>
           </div>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <InfoRow label="Email" value={user.email} />
-          <InfoRow label="Rôle" value={roleLabel} />
-          <InfoRow label="École" value={user.school?.name ?? "Non rattaché"} />
-          <InfoRow
-            label="Abonnement"
-            value={user.isPremium ? "Premium" : "Gratuit"}
-          />
-          <InfoRow label="Âge" value={ageLabel} />
-        </div>
+
+        {isStudent && (
+          <div className="mt-6">
+            <div className="mt-3 grid gap-6 sm:grid-cols-2">
+              <div>
+                <StudentPerformanceList
+                  labelClassName="text-lg font-semibold text-white"
+                  items={sortedProgression.map((p) => ({
+                    positionId: p.positionId,
+                    positionName: p.position?.name ?? "Position",
+                    learningStatus: p.learningStatus,
+                    updatedAt: p.updatedAt,
+                  }))}
+                />
+                {sortedProgression.length === 0 ? (
+                  <p className="mt-2 text-sm text-slate-300">
+                    Aucune progression enregistrée pour l’instant.
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="space-y-3 text-sm text-slate-200">
+                <h3 className="text-lg font-semibold text-white">Positions coups de cœur</h3>
+                {favoritePositionIds.length > 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {user.studentFavoritePositions
+                      .filter((fav) => fav.position)
+                      .map((fav) => (
+                        <Link
+                          key={fav.positionId}
+                          href={`/positions/${fav.positionId}`}
+                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+                        >
+                          {fav.position?.name}
+                        </Link>
+                      ))}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="panel p-6">
@@ -268,53 +348,6 @@ export default async function ProfilePage() {
         </section>
       )}
 
-      {isStudent && (
-        <section className="panel p-6">
-          <ProfileCollapsible
-            id="student-preferences"
-            eyebrow="Profil élève"
-            heading="Préférences"
-            defaultOpen={false}
-          >
-            <div className="space-y-3 text-sm text-slate-200">
-              <div>
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
-                  Positions coups de cœur
-                </p>
-                {favoritePositionIds.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {user.studentFavoritePositions
-                      .filter((fav) => fav.position)
-                      .map((fav) => (
-                        <Link
-                          key={fav.positionId}
-                          href={`/positions/${fav.positionId}`}
-                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-                        >
-                          {fav.position?.name}
-                        </Link>
-                      ))}
-                  </div>
-                ) : (
-                  <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
-                )}
-              </div>
-            </div>
-          </ProfileCollapsible>
-        </section>
-      )}
-
     </main>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-      <p className="text-xs uppercase tracking-[0.14em] text-slate-300">
-        {label}
-      </p>
-      <p className="text-sm font-semibold text-white">{value}</p>
-    </div>
   );
 }
