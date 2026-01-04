@@ -1,5 +1,5 @@
 # Step 9 — Discovery QA (terminée) — v0.4.4 baseline (release v0.4.6)
-[Compréhension: 100% / Avancement: 100%]
+[Compréhension: 100% / Avancement: 100% / Obsolete: 70%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

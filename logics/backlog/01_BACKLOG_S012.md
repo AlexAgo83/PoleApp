@@ -1,5 +1,5 @@
 # Backlog — Retours QA S013 (06_QA_S013.md)
-[Compréhension: 100% / Confiance: 90% | Avancement: 87% (P0 en cours de validation)]
+[Compréhension: 100% / Confiance: 90% | Avancement: 87% (P0 en cours de validation) / Obsolete: 10%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage

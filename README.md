@@ -1,4 +1,4 @@
-# Pole App — Produit v0.13.0
+# Pole App — Produit v0.14.X
 
 Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. 
 
@@ -61,6 +61,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Avatars : upload contrôlé (4 Mo max, 2160x2160, jpg/png/webp), suppression nettoie Cloudinary sauf images seed; fallback par `avatarPublicId` seed (15H/15F) sans doublons.
 - Photos cours/studios/écoles/presets : stockage `photoPublicId` (ou `imagePublicId`/`videoPublicId` pour presets), affichage via Cloudinary transformé (headers en `c_fill,w=1200,h=600,q=60`), placeholders si absent.
 - Positions : vidéos Cloudinary authentifiées, lecture via URL signées.
+- Super-admin : audit médias Cloudinary vs base (`/super-admin/media-audit`) avec filtres resource/type, diff orphelins/cassés, export CSV.
 
 ## Blessures & progression
 - Élève : `/app/student/injuries` (CRUD, pagination 10) ; `/app/student/progress` (pagination 10).
@@ -112,6 +113,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 3) Limit Prisma `select` to fields actually rendered in lists (users/courses/studios) to reduce payload and speed up rendering.
 
 ## Changelog
+- v0.14.0 : Super-admin audit médias Cloudinary vs base (filtres, diff orphelins/cassés, export CSV), UI logics : rendu visuel des tâches Markdown, version bump.
 - v0.8.2 : Palette accent fuchsia (remap global des couleurs cyan), panels super-admin harmonisés (Nouvelle offre abonnement, Nouveau pack crédits, Créer une école) sur le thème sombre glassy, fond global légèrement atténué pour améliorer la lisibilité.
 - v0.4.6 : Panel filtres persistés par utilisateur, panels création admin repliables, harmonisation UI studios/partenaires/utilisateurs, versioning bump et préparations Cloudinary.
 - v0.4.5 : Profils enrichis (photo, âge, diplômes, positions préférées prof) + fiches prof publiques accessibles aux élèves. Cours avec photos optionnelles, listes/détails alignés élèves/profs, filtres studios/partenaires/admin, avatars dans les listes (élèves/profs/users).
