@@ -39,11 +39,11 @@ async function requireAdminWithSchool() {
   if (!session?.user || session.user.role !== "SCHOOL_ADMIN" || !session.user.schoolId) {
     redirect("/access-denied");
   }
-  return session.user.schoolId;
+  return { schoolId: session.user.schoolId, userId: session.user.id };
 }
 
 export async function createStudioAction(formData: FormData) {
-  const schoolId = await requireAdminWithSchool();
+  const { schoolId, userId } = await requireAdminWithSchool();
   const redirectTo = sanitizeRedirect(formData.get("redirectTo"));
   const parsed = createSchema.safeParse({
     name: formData.get("name"),
@@ -63,6 +63,15 @@ export async function createStudioAction(formData: FormData) {
     },
   });
 
+  await prisma.auditLog.create({
+    data: {
+      actorId: userId ?? null,
+      action: "studio.create",
+      target: parsed.data.name,
+      details: { schoolId },
+    },
+  });
+
   revalidatePath(basePath);
   if (redirectTo && redirectTo !== basePath) {
     revalidatePath(redirectTo);
@@ -71,7 +80,7 @@ export async function createStudioAction(formData: FormData) {
 }
 
 export async function updateStudioAction(formData: FormData) {
-  const schoolId = await requireAdminWithSchool();
+  const { schoolId, userId } = await requireAdminWithSchool();
   const parsed = updateSchema.safeParse({
     id: formData.get("studioId"),
     name: formData.get("name"),
@@ -99,12 +108,21 @@ export async function updateStudioAction(formData: FormData) {
     },
   });
 
+  await prisma.auditLog.create({
+    data: {
+      actorId: userId ?? null,
+      action: "studio.update",
+      target: parsed.data.id,
+      details: { schoolId },
+    },
+  });
+
   revalidatePath(basePath);
   return;
 }
 
 export async function deleteStudioAction(formData: FormData) {
-  const schoolId = await requireAdminWithSchool();
+  const { schoolId, userId } = await requireAdminWithSchool();
   const parsed = toggleSchema.safeParse({
     id: formData.get("studioId"),
     action: formData.get("action")?.toString().trim() as "disable" | "enable",
@@ -126,10 +144,26 @@ export async function deleteStudioAction(formData: FormData) {
       where: { id: parsed.data.id },
       data: { disabledAt: new Date(), disabledById: undefined },
     });
+    await prisma.auditLog.create({
+      data: {
+        actorId: userId ?? null,
+        action: "studio.disable",
+        target: parsed.data.id,
+        details: { schoolId },
+      },
+    });
   } else {
     await prisma.studio.update({
       where: { id: parsed.data.id },
       data: { disabledAt: null, disabledById: undefined },
+    });
+    await prisma.auditLog.create({
+      data: {
+        actorId: userId ?? null,
+        action: "studio.enable",
+        target: parsed.data.id,
+        details: { schoolId },
+      },
     });
   }
 
