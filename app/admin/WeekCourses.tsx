@@ -200,8 +200,8 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                           {course.isVirtual && (
                             <p
                               className="truncate text-[12px] text-amber-100"
-                              title="Occurrence programmée · positions à définir"
-                              aria-label="Occurrence programmée"
+                              title="À valider · positions à définir"
+                              aria-label="À valider"
                             >
                               🗓️
                             </p>

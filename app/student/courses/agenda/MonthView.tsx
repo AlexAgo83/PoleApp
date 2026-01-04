@@ -200,7 +200,7 @@ export function MonthView({
                       : isMineConfirmed
                       ? past
                         ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                        : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                        : "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50"
                       : "border border-white/20 bg-white/10 text-slate-300";
                     const statusLabel = past
                       ? "Passé"
@@ -257,8 +257,8 @@ export function MonthView({
                           {course.isVirtual && (
                             <p
                               className="truncate text-[12px] text-amber-100"
-                              title="Occurrence programmée · positions à définir"
-                              aria-label="Occurrence programmée"
+                            title="Bientôt disponible · positions à définir"
+                            aria-label="Bientôt disponible"
                             >
                               🗓️
                             </p>

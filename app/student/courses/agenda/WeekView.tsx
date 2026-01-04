@@ -208,7 +208,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       : isWaitlist
                       ? "border border-purple-300/70 bg-purple-500/25 text-purple-50"
                       : isMineConfirmed
-                      ? "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                      ? "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50"
                       : "border border-white/20 bg-white/10 text-slate-300";
                     const statusLabel = course.past
                       ? "Passé"
@@ -271,8 +271,8 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                           {course.isVirtual && (
                             <p
                               className="text-[12px] text-amber-100"
-                              title="Occurrence programmée · positions à définir"
-                              aria-label="Occurrence programmée"
+                            title="Bientôt disponible · positions à définir"
+                            aria-label="Bientôt disponible"
                             >
                               🗓️
                             </p>

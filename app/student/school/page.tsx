@@ -16,7 +16,7 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.
 const NOW_MS = Date.now();
 const LEGEND_ITEMS = [
   { label: "Passé (déjà suivi)", className: "border border-blue-400/70 bg-blue-600/30 text-blue-50" },
-  { label: "Inscrit", className: "border border-amber-300/70 bg-amber-500/25 text-amber-50" },
+  { label: "Inscrit", className: "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50" },
   { label: "Liste d’attente", className: "border border-purple-300/70 bg-purple-500/25 text-purple-50" },
   { label: "Disponible (non inscrit)", className: "border border-white/20 bg-white/10 text-slate-300" },
 ];
@@ -790,7 +790,7 @@ export default async function StudentSchoolPage({
               : isAttending
               ? isPast
                 ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                : "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50"
               : "border border-white/20 bg-white/10 text-slate-300";
             const badgeTitle = isWaitlist
               ? "Liste d'attente"
