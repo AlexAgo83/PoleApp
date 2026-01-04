@@ -228,12 +228,7 @@ export default async function StudentProgressPage({
       <section className="panel panel-body lg-gap border-indigo-400/25 p-4 shadow-indigo-900/30 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-semibold text-white">Ma progression</h1>
-            <p className="text-sm text-slate-300">
-              {session.user.isPremium
-                ? "Accès complet à la base des positions."
-                : "Accès aux positions vues (compte gratuit)."}
-            </p>
+            <h1 className="text-3xl font-semibold text-white">Mon suivi</h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-200">
             <Link
