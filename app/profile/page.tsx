@@ -78,7 +78,7 @@ export default async function ProfilePage() {
   const progressionEntries =
     isStudent
       ? await prisma.studentPositionProgress.findMany({
-          where: { studentId: user.id, learningStatus: { not: LearningStatus.NOT_STARTED } },
+          where: { studentId: user.id },
           include: { position: true },
         })
       : [];
@@ -211,7 +211,12 @@ export default async function ProfilePage() {
                 id={`profile-injuries:${user.id}`}
                 summary={
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-white">Blessures ({injuries.length})</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-white">Blessures</h3>
+                      <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[12px] font-semibold text-cyan-100">
+                        {injuries.length}
+                      </span>
+                    </div>
                     <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
                       <span className="group-open:hidden">Ouvrir</span>
                       <span className="hidden group-open:inline">Fermer</span>
@@ -243,7 +248,12 @@ export default async function ProfilePage() {
                 id={`profile-games:${user.id}`}
                 summary={
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-white">Mini-jeux ({gameSessions.length})</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-white">Mini-jeux</h3>
+                      <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 text-[12px] font-semibold text-cyan-100">
+                        {gameSessions.length}
+                      </span>
+                    </div>
                     <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10 group-open:border-white/15 group-open:bg-white/5">
                       <span className="group-open:hidden">Ouvrir</span>
                       <span className="hidden group-open:inline">Fermer</span>
