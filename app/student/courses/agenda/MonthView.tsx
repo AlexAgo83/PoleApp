@@ -207,7 +207,7 @@ export function MonthView({
                       : isWaitlist
                       ? "Attente"
                       : isMineConfirmed
-                      ? "À venir"
+                      ? "Inscris"
                       : "Ouvert";
                     return (
                       <Link

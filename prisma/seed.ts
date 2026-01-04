@@ -1658,7 +1658,14 @@ async function seedStudentInjuries(students: { id: string; schoolId: string }[])
 }
 
 async function seedGameSessions(students: { id: string; schoolId: string }[]) {
-  const sampleStudents = students.slice(0, 3);
+  const fixedStudents = await prisma.user.findMany({
+    where: { email: { in: ["student1@poleapp.test", "student2@poleapp.test"] } },
+    select: { id: true, schoolId: true },
+  });
+  const sampleStudents = [
+    ...fixedStudents,
+    ...students.filter((s) => !fixedStudents.some((f) => f.id === s.id)).slice(0, 3),
+  ].slice(0, 3);
   const modes: GameMode[] = [
     "PHOTO_NAME",
     "NAME_TYPE",

@@ -215,7 +215,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       : isWaitlist
                       ? "Attente"
                       : isMineConfirmed
-                      ? "À venir"
+                      ? "Inscris"
                       : "Ouvert";
                     return (
                       <Link
