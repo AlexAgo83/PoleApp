@@ -6,6 +6,7 @@ import type { LearningStatus } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { COURSE_PLACEHOLDER } from "@/lib/placeholders";
+import { ConfirmEnrollButton } from "@/components/ConfirmEnrollButton";
 import { purchaseCourseAction } from "../actions";
 import { LocalDateTime } from "@/components/LocalDateTime";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
@@ -276,7 +277,7 @@ export default async function StudentCourseDetailPage({
           <div className="flex w-full flex-col items-end gap-3 md:w-1/3 md:self-stretch md:justify-end">
             {(isVirtual || !hasPositions) && (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
-                Occurrence programmée
+                Bientôt disponible
               </span>
             )}
             <div className="flex w-full flex-col items-end gap-3 md:mt-auto">
@@ -284,8 +285,15 @@ export default async function StudentCourseDetailPage({
                 <div className="flex w-full flex-wrap items-center justify-end">
                   <form action={purchaseCourseAction} className="flex">
                     <input type="hidden" name="courseId" value={course.id} />
-                    <button
-                      type="submit"
+                    <ConfirmEnrollButton
+                      cost={cost}
+                      label={
+                        remainingSeats > 0
+                          ? `S'inscrire (${cost} crédits)`
+                          : waitlistFull
+                          ? "Liste d’attente complète"
+                          : `Liste d’attente (${cost} crédits)`
+                      }
                       disabled={!canBuy || (remainingSeats <= 0 && waitlistFull)}
                       className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                         canBuy && !(remainingSeats <= 0 && waitlistFull)
@@ -307,14 +315,7 @@ export default async function StudentCourseDetailPage({
                           ? "Crédits insuffisants"
                           : "Non disponible"
                       }
-                    >
-                      {remainingSeats > 0
-                        ? "S'inscrire"
-                        : waitlistFull
-                        ? "Liste d’attente complète"
-                        : "Liste d’attente"}{" "}
-                      ({cost} crédits)
-                    </button>
+                    />
                   </form>
                 </div>
               )}
@@ -379,7 +380,7 @@ export default async function StudentCourseDetailPage({
             </li>
           ))}
           {course.positions.length === 0 && (
-            <li className="text-slate-300">Aucune position associée.</li>
+            <li className="text-slate-300">Attends que le prof ajoute des positions pour ce cours.</li>
           )}
         </ul>
       </section>
@@ -387,7 +388,7 @@ export default async function StudentCourseDetailPage({
       <section className="panel border-indigo-400/15 p-6">
         <h2 className="text-lg font-semibold text-white">Notes / progression</h2>
         {course.notes.length === 0 ? (
-          <p className="text-slate-300">Aucune note pour ce cours.</p>
+          <p className="text-slate-300">Pas encore de note pour ce cours.</p>
         ) : (
           <ul className="mt-3 space-y-2 text-sm text-slate-200">
             {course.notes.map((note) => (

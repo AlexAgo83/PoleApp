@@ -283,7 +283,7 @@ export default async function StudentCoursesPage({
     },
     {
       label: "Inscrit (à venir)",
-      className: "border border-amber-300/70 bg-amber-500/25 text-amber-50",
+      className: "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50",
     },
     {
       label: "Liste d’attente",
@@ -475,7 +475,7 @@ export default async function StudentCoursesPage({
               : isAttending
               ? isPast
                 ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                : "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50"
               : "border border-white/20 bg-white/10 text-slate-300";
             const badgeTitle = isWaitlist
               ? "Liste d'attente"

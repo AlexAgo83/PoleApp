@@ -208,7 +208,7 @@ export function StudioMonthView({
                     : isMine
                     ? past
                       ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
-                      : "border border-amber-300/70 bg-amber-500/25 text-amber-50"
+                      : "border border-emerald-300/70 bg-emerald-500/20 text-emerald-50"
                     : past
                     ? "border border-white/15 bg-slate-800/60 text-slate-300 opacity-80 line-through"
                     : "border border-white/20 bg-white/10 text-slate-300";
@@ -262,7 +262,7 @@ export function StudioMonthView({
                           {course.studioName ?? "Studio"}
                         </p>
                         {isVirtual && (
-                          <p className="text-[12px] text-amber-100" title="Occurrence programmée · positions à définir">
+                          <p className="text-[12px] text-amber-100" title="Bientôt disponible · positions à définir">
                             🗓️
                           </p>
                         )}

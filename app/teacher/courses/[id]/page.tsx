@@ -315,7 +315,7 @@ export default async function TeacherCourseDetailPage({
           <div className="flex w-full flex-col items-end gap-2 md:w-auto md:self-end">
             {course.isVirtual && (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
-                Occurrence programmée
+                À valider
               </span>
             )}
             <div className="flex w-full flex-wrap items-center justify-end gap-3 md:flex-nowrap">
