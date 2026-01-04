@@ -95,10 +95,14 @@ model Discipline {
   name      String
   color     String   @default("#7c3aed")
   createdAt DateTime @default(now())
+  disabledAt DateTime?
+  disabledById String?
 
   positions Position[]
   courses   Course[]
   presets   Preset[]
+  favoriteByTeachers TeacherFavoriteDiscipline[]
+  disabledBy User?   @relation("DisciplineDisabledBy", fields: [disabledById], references: [id], onDelete: SetNull)
 
   @@unique([name])
 }
@@ -115,6 +119,12 @@ model User {
   credits       Int                       @default(0)
   schoolId      String?
   isPremium     Boolean                   @default(false)
+  verifiedAt    DateTime?
+  forcedVerifiedById String?
+  disabledAt    DateTime?
+  disabledById  String?
+  canCreatePositionAndPreset Boolean      @default(true)
+  canDeletePositionAndPreset Boolean      @default(true)
   createdAt     DateTime                  @default(now())
   updatedAt     DateTime                  @updatedAt
   school        School?                   @relation(fields: [schoolId], references: [id])
@@ -133,10 +143,19 @@ model User {
   refundedInvoices  Invoice[] @relation("InvoiceRefundedBy")
   recurrenceSeries  CourseRecurrenceSeries[]
   notifications    Notification[]
+  favoriteDisciplines TeacherFavoriteDiscipline[]
+  verificationTokens EmailVerificationToken[]
 
   createdPositions    Position[]                @relation("CreatedPositions")
   lastUpdatedProgress StudentPositionProgress[] @relation("ProgressUpdatedBy")
   auditLogs          AuditLog[]
+  forcedVerifiedBy   User?     @relation("UserForcedVerify", fields: [forcedVerifiedById], references: [id], onDelete: SetNull)
+  usersForcedVerified User[]    @relation("UserForcedVerify")
+  disabledBy         User?     @relation("UserDisabledBy", fields: [disabledById], references: [id], onDelete: SetNull)
+  usersDisabled      User[]    @relation("UserDisabledBy")
+  studiosDisabled    Studio[]  @relation("StudioDisabledBy")
+  disciplinesDisabled Discipline[] @relation("DisciplineDisabledBy")
+  emailVerificationsSent EmailVerificationToken[] @relation("EmailVerificationSender")
 
   @@index([role, isPremium])
   @@index([schoolId, role])
@@ -355,6 +374,20 @@ model Notification {
   @@index([userId, kind, courseId, createdAt])
 }
 
+model EmailVerificationToken {
+  id          String   @id @default(cuid())
+  userId      String
+  token       String   @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  createdById String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdBy   User?    @relation("EmailVerificationSender", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
 model CourseNote {
   id           String       @id @default(cuid())
   courseId     String
@@ -377,11 +410,14 @@ model Studio {
   address   String?
   photoPublicId String?
   schoolId  String
+  disabledAt DateTime?
+  disabledById String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   school    School   @relation(fields: [schoolId], references: [id])
   courses   Course[]
   partnerEvents PartnerEvent[]
+  disabledBy User? @relation("StudioDisabledBy", fields: [disabledById], references: [id], onDelete: SetNull)
 
   @@index([schoolId])
 }
@@ -446,6 +482,18 @@ model TeacherFavoritePosition {
   @@unique([teacherId, positionId])
   @@index([teacherId])
   @@index([positionId])
+}
+
+model TeacherFavoriteDiscipline {
+  id           String      @id @default(cuid())
+  teacherId    String
+  disciplineId String
+  teacher      User        @relation(fields: [teacherId], references: [id])
+  discipline   Discipline  @relation(fields: [disciplineId], references: [id])
+
+  @@unique([teacherId, disciplineId])
+  @@index([teacherId])
+  @@index([disciplineId])
 }
 
 model StudentFavoritePosition {

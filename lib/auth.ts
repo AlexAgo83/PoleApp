@@ -34,11 +34,29 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email },
+          select: {
+            id: true,
+            email: true,
+            passwordHash: true,
+            role: true,
+            schoolId: true,
+            isPremium: true,
+            credits: true,
+            verifiedAt: true,
+            disabledAt: true,
+          },
         });
         if (!user) return null;
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
         if (!isValid) return null;
+
+        if (user.disabledAt) {
+          throw new Error("Compte désactivé, contactez l’admin.");
+        }
+        if (!user.verifiedAt) {
+          throw new Error("Compte non vérifié, consulte ton email ou renvoie un mail de vérification.");
+        }
 
         return {
           id: user.id,
