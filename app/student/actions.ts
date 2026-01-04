@@ -132,11 +132,15 @@ export async function buyPresetAction(formData: FormData) {
   if (!session?.user?.id || session.user.role !== "STUDENT" || !session.user.schoolId) {
     redirect("/access-denied");
   }
+  const presetIdRaw = formData.get("presetId");
+  if (!presetIdRaw || typeof presetIdRaw !== "string") {
+    redirect("/presets?flash=invalid");
+  }
   const parsed = presetPurchaseSchema.safeParse({
-    presetId: formData.get("presetId"),
+    presetId: presetIdRaw,
     returnTo: formData.get("returnTo"),
   });
-  if (!parsed.success) throw new Error("Preset invalide");
+  if (!parsed.success) redirect("/presets?flash=invalid");
 
   const preset = await prisma.preset.findFirst({
     where: { id: parsed.data.presetId, schoolId: session.user.schoolId },

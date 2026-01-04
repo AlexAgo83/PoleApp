@@ -411,6 +411,7 @@ export default async function StudentProgressPage({
             const seen = Math.max(seenBase, progress ? 1 : 0);
             const showProgress = seen > 0 || status !== "NOT_STARTED";
             const statusColor = statusBarColor[status as LearningStatus] ?? "#2563eb";
+            const hasFeedback = Boolean(progress?.comment && progress.comment.trim().length > 0);
             const fillRatio =
               status === "NOT_STARTED"
                 ? 0.12
@@ -486,6 +487,15 @@ export default async function StudentProgressPage({
                       {showProgress ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-slate-50">
                           Vu : {seen}
+                          {hasFeedback ? (
+                            <span
+                              className="text-[12px] text-cyan-200"
+                              title="Note du professeur disponible"
+                              aria-label="Note du professeur disponible"
+                            >
+                              📝
+                            </span>
+                          ) : null}
                         </span>
                       ) : null}
                     </div>
