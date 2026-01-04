@@ -90,6 +90,17 @@ function buildThumbUrl(row: Row, cloudName?: string | null) {
   return `https://res.cloudinary.com/${cloudName}/${type}/upload/c_fill,g_auto,f_auto,q_auto,w_96,h_96/${publicId}${suffix}`;
 }
 
+function buildAssetUrl(row: Row, cloudName?: string | null) {
+  if (!cloudName) return null;
+  if (row.category !== "orphan") return null;
+  if (row.deliveryType !== "upload") return null;
+  const publicId = row.publicId;
+  const isVideo = row.resourceType === "video";
+  const type = isVideo ? "video" : "image";
+  const suffix = isVideo ? ".mp4" : "";
+  return `https://res.cloudinary.com/${cloudName}/${type}/upload/${publicId}${suffix}`;
+}
+
 export function AuditClient() {
   const [state, formAction] = useActionState(scanMediaAuditAction, initialState);
   const [filter, setFilter] = useState<CategoryFilter>("all");
@@ -245,28 +256,40 @@ export function AuditClient() {
                         </div>
                       )}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div>
-                          <p className="font-mono text-xs text-white">{row.publicId}</p>
-                          <p className="text-xs text-slate-400">
-                            {row.category === "orphan"
-                              ? `${row.resourceType}/${row.deliveryType}${row.folder ? ` · ${row.folder}` : ""}${row.format ? ` · ${row.format}` : ""}`
-                              : `${row.source.table}.${row.source.field} · ${row.source.id}`}
-                            {row.isSeed ? " · seed" : ""}
-                          </p>
-                        </div>
-                        {row.category === "orphan" ? (
-                          <div className="text-right text-xs text-slate-400">
-                            {row.bytes ? <span>{Math.round(row.bytes / 1024)} Ko</span> : null}
-                            {row.createdAt ? <span className="ml-2">{new Date(row.createdAt).toLocaleString("fr-FR")}</span> : null}
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div>
+                            <p className="font-mono text-xs text-white">{row.publicId}</p>
+                            <p className="text-xs text-slate-400">
+                              {row.category === "orphan"
+                                ? `${row.resourceType}/${row.deliveryType}${row.folder ? ` · ${row.folder}` : ""}${row.format ? ` · ${row.format}` : ""}`
+                                : `${row.source.table}.${row.source.field} · ${row.source.id}`}
+                              {row.isSeed ? " · seed" : ""}
+                            </p>
                           </div>
-                        ) : null}
+                          {row.category === "orphan" ? (
+                            <div className="flex flex-col items-end gap-1 text-xs text-slate-400">
+                              <div>
+                                {row.bytes ? <span>{Math.round(row.bytes / 1024)} Ko</span> : null}
+                                {row.createdAt ? <span className="ml-2">{new Date(row.createdAt).toLocaleString("fr-FR")}</span> : null}
+                              </div>
+                              {buildAssetUrl(row, cloudName) ? (
+                                <a
+                                  href={buildAssetUrl(row, cloudName) as string}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-cyan-200 hover:text-cyan-100"
+                                >
+                                  Ouvrir l’asset →
+                                </a>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
