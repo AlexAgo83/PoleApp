@@ -18,6 +18,7 @@ const subscriptionPurchaseSchema = z.object({
 
 const presetPurchaseSchema = z.object({
   presetId: z.string().cuid(),
+  returnTo: z.string().optional(),
 });
 
 export async function demoAddCreditsAction(formData: FormData) {
@@ -133,6 +134,7 @@ export async function buyPresetAction(formData: FormData) {
   }
   const parsed = presetPurchaseSchema.safeParse({
     presetId: formData.get("presetId"),
+    returnTo: formData.get("returnTo"),
   });
   if (!parsed.success) throw new Error("Preset invalide");
 
@@ -152,7 +154,10 @@ export async function buyPresetAction(formData: FormData) {
   const alreadyBought = await prisma.purchase.findFirst({
     where: { userId: session.user.id, kind: "PRESET", offerId: preset.id, status: "PAID" },
   });
-  if (alreadyBought) return redirect("/presets?flash=already");
+  const safeReturn =
+    parsed.data.returnTo && parsed.data.returnTo.toString().startsWith("/") ? parsed.data.returnTo.toString() : null;
+  const redirectAlready = safeReturn ?? "/presets?flash=already";
+  if (alreadyBought) return redirect(redirectAlready);
 
   const cost = preset.priceCredits ?? 0;
   if (cost > 0 && (user.credits ?? 0) < cost) {
@@ -191,5 +196,9 @@ export async function buyPresetAction(formData: FormData) {
 
   revalidatePath("/presets");
   revalidatePath("/student");
+  if (safeReturn) {
+    revalidatePath(safeReturn);
+    redirect(safeReturn);
+  }
   redirect("/presets?flash=ok");
 }
