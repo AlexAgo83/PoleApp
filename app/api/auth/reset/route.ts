@@ -18,10 +18,14 @@ export async function POST(request: Request) {
     }
     const user = await prisma.user.findUnique({
       where: { email: parsed.data.email.toLowerCase() },
-      select: { id: true, email: true },
+      select: { id: true, email: true, verifiedAt: true, disabledAt: true },
     });
     if (!user) {
       // Ne pas divulguer l'existence des comptes
+      return NextResponse.json({ ok: true }, { status: 200 });
+    }
+    if (!user.verifiedAt || user.disabledAt) {
+      // Bloquer les resets pour comptes non vérifiés ou désactivés
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
