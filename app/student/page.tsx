@@ -19,6 +19,14 @@ function StatPill({ label, value }: StatPillProps) {
 }
 
 type Shortcut = { label: string; href?: string; kind?: "credits" | "upgrade" };
+type Panel = {
+  id: string;
+  title: string;
+  description: string;
+  stats: { label: string; value: string | number }[];
+  shortcuts: Shortcut[];
+  illustration: ReactNode;
+};
 
 function ShortcutLink({ href, label }: { href: string; label: string }) {
   return (
@@ -227,7 +235,36 @@ export default async function StudentDashboard() {
       }).format(new Date(nextCourse.date))
     : null;
 
-  const panels = [
+  const agendaShortcuts: Shortcut[] = [
+    { label: "Agenda mensuel", href: "/student/courses/agenda?view=month" },
+    { label: "Tous mes cours", href: "/student/courses" },
+    { label: "Studios & école", href: "/student/school" },
+  ];
+  if (nextCourse) {
+    agendaShortcuts.push({ label: "Détails du prochain cours", href: `/student/courses/${nextCourse.id}?from=/student` });
+  }
+
+  const progressionShortcuts: Shortcut[] = [
+    { label: "Mon suivi", href: "/student/progress" },
+    { label: "Catalogue positions", href: "/positions" },
+    { label: "Combos (presets)", href: "/presets" },
+    { label: "Mini-jeux révision", href: "/student/game" },
+  ];
+
+  const communauteShortcuts: Shortcut[] = [
+    { label: "Mes professeurs", href: "/student/teachers" },
+    { label: "Partenaires & offres", href: "/student/partners" },
+    { label: "Déclarer une blessure", href: "/student/injuries" },
+  ];
+
+  const compteShortcuts: Shortcut[] = [
+    { label: "Fiche élève", href: "/profile" },
+    { label: "Historique achats", href: "/student/purchases" },
+    { label: "Gérer mes crédits", kind: "credits" },
+    { label: "Passer premium", kind: "upgrade" },
+  ];
+
+  const panels: Panel[] = [
     {
       id: "agenda",
       title: "Cours & agenda",
@@ -238,14 +275,7 @@ export default async function StudentDashboard() {
         { label: "Liste d'attente", value: waitlistUpcoming },
         ...(nextCourseLabel ? [{ label: "Prochain", value: nextCourseLabel }] : []),
       ],
-      shortcuts: [
-        { label: "Agenda mensuel", href: "/student/courses/agenda?view=month" },
-        { label: "Tous mes cours", href: "/student/courses" },
-        { label: "Studios & école", href: "/student/school" },
-        nextCourse
-          ? { label: "Détails du prochain cours", href: `/student/courses/${nextCourse.id}?from=/student` }
-          : null,
-      ].filter(Boolean) as { label: string; href: string }[],
+      shortcuts: agendaShortcuts,
       illustration: (
         <div className="relative h-full w-full">
           <OrbitPlaceholder />
@@ -263,12 +293,7 @@ export default async function StudentDashboard() {
         { label: "Mastered", value: masteredCount },
         { label: "Favoris", value: favoritesCount },
       ],
-      shortcuts: [
-        { label: "Mon suivi", href: "/student/progress" },
-        { label: "Catalogue positions", href: "/positions" },
-        { label: "Combos (presets)", href: "/presets" },
-        { label: "Mini-jeux révision", href: "/student/game" },
-      ],
+      shortcuts: progressionShortcuts,
       illustration: <GridPlaceholder />,
     },
     {
@@ -280,11 +305,7 @@ export default async function StudentDashboard() {
         { label: "Partenaires", value: partnersCount },
         { label: "Blessures actives", value: injuriesCount },
       ],
-      shortcuts: [
-        { label: "Mes professeurs", href: "/student/teachers" },
-        { label: "Partenaires & offres", href: "/student/partners" },
-        { label: "Historique achats", href: "/student/purchases" },
-      ] as Shortcut[],
+      shortcuts: communauteShortcuts,
       illustration: <WavePlaceholder />,
     },
     {
@@ -296,15 +317,8 @@ export default async function StudentDashboard() {
         { label: "Statut", value: isPremium ? "Premium" : "Freemium" },
         { label: "Achats", value: purchasesCount },
       ],
-      shortcuts: [
-        { label: "Fiche élève", href: "/profile" },
-        { label: "Déclarer une blessure", href: "/student/injuries" },
-        { label: "Gérer mes crédits", kind: "credits" },
-        { label: "Passer premium", kind: "upgrade" },
-      ] as Shortcut[],
-      illustration: (
-        <PremiumPlaceholder />
-      ),
+      shortcuts: compteShortcuts,
+      illustration: <PremiumPlaceholder />,
     },
   ];
 
