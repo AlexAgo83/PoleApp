@@ -449,80 +449,82 @@ export default async function TeacherSchoolPage({ searchParams }: PageProps) {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <header
-        className="panel relative flex flex-col gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30 overflow-hidden"
-        style={headerBgStyle}
-      >
-        <div className="flex flex-wrap items-start gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
-              Fiche école et studios
-            </p>
-            <h1 className="text-3xl font-semibold text-white">{school.name}</h1>
-            <p className="text-sm text-slate-200">Retrouve les infos de l’école</p>
-            {school.website ? (
-              <a
-                href={school.website}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
-              >
-                Site web
-              </a>
-            ) : null}
+      <div className="grid gap-4 md:grid-cols-2">
+        <header
+          className="panel relative flex flex-col gap-3 border-indigo-400/25 p-6 shadow-indigo-900/30 overflow-hidden"
+          style={headerBgStyle}
+        >
+          <div className="flex flex-wrap items-start gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-indigo-100">
+                Fiche école et studios
+              </p>
+              <h1 className="text-3xl font-semibold text-white">{school.name}</h1>
+              <p className="text-sm text-slate-200">Retrouve les infos de l’école</p>
+              {school.website ? (
+                <a
+                  href={school.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-cyan-200 underline underline-offset-2"
+                >
+                  Site web
+                </a>
+              ) : null}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <section className="panel panel-body lg-gap">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Studios</p>
-            <h2 className="text-lg font-semibold text-white">Studios associés</h2>
+        <section className="panel h-full p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Studios</p>
+              <h2 className="text-lg font-semibold text-white">Studios associés</h2>
+            </div>
           </div>
-        </div>
-        {school.studios.length === 0 ? (
-          <p className="text-slate-300">Aucun studio renseigné.</p>
-        ) : (
-          <ul className="mt-3 grid gap-3 md:grid-cols-2">
-            {school.studios.map((studio) => (
-              <li
-                key={studio.id}
-                className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.7)), url(${
-                    studio.photoPublicId && CLOUD_NAME
-                      ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${studio.photoPublicId}`
-                      : COURSE_PLACEHOLDER
-                  })`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-base font-semibold text-white">{studio.name}</p>
-                  <Link
-                    href={`/school/${studio.id}?view=agenda&range=month`}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
-                  >
-                    Voir le studio
-                  </Link>
-                </div>
-                {studio.address && (
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm text-cyan-300 transition hover:text-cyan-200"
-                  >
-                    {studio.address}
-                  </a>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+          {school.studios.length === 0 ? (
+            <p className="text-slate-300">Aucun studio renseigné.</p>
+          ) : (
+            <ul className="mt-2 grid gap-3 md:grid-cols-2">
+              {school.studios.map((studio) => (
+                <li
+                  key={studio.id}
+                  className="rounded-xl border border-white/10 bg-white/5 p-3 text-slate-200"
+                  style={{
+                    backgroundImage: `linear-gradient(135deg, rgba(10,15,30,0.82), rgba(15,25,45,0.7)), url(${
+                      studio.photoPublicId && CLOUD_NAME
+                        ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${studio.photoPublicId}`
+                        : COURSE_PLACEHOLDER
+                    })`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-base font-semibold text-white">{studio.name}</p>
+                    <Link
+                      href={`/school/${studio.id}?view=agenda&range=month`}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    >
+                      Voir le studio
+                    </Link>
+                  </div>
+                  {studio.address && (
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm text-cyan-300 transition hover:text-cyan-200"
+                    >
+                      {studio.address}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
 
       <section className="panel panel-body lg-gap">
         <div className="flex flex-wrap items-start gap-2">
