@@ -323,13 +323,19 @@ export default async function TeacherCourseDetailPage({
                 path={sharePath}
                 className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-semibold"
               />
-              <Link
-                href={icsHref}
-                prefetch={false}
-                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
-              >
-                Ajouter à mon agenda
-              </Link>
+              {isPastCourse ? (
+                <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-emerald-300/40 bg-emerald-500/10 px-4 py-2.5 text-sm font-semibold text-emerald-100">
+                  Passé
+                </span>
+              ) : (
+                <Link
+                  href={icsHref}
+                  prefetch={false}
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-cyan-300/40 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/70 hover:bg-cyan-500/20"
+                >
+                  Ajouter à mon agenda
+                </Link>
+              )}
             </div>
           </div>
         </div>

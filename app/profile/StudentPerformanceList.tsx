@@ -23,6 +23,7 @@ type PerformanceEntry = {
   positionName: string;
   learningStatus: LearningStatus;
   updatedAt: Date | null;
+  hasComment?: boolean;
 };
 
 const PAGE_SIZE = 5;
@@ -105,7 +106,14 @@ export function StudentPerformanceList({
                   {statusLabels[p.learningStatus]}
                 </span>
               </span>
-              <span className="truncate text-white">{p.positionName || "Position"}</span>
+              <span className="flex items-center gap-1 truncate text-white">
+                {p.hasComment ? (
+                  <span title="Note du professeur" aria-label="Note du professeur" className="text-[12px] text-cyan-200">
+                    📝
+                  </span>
+                ) : null}
+                <span className="truncate">{p.positionName || "Position"}</span>
+              </span>
             </span>
             <span className="text-xs text-slate-300">
               {p.updatedAt ? new Date(p.updatedAt).toLocaleDateString("fr-FR") : "—"}

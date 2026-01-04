@@ -175,6 +175,7 @@ export default async function ProfilePage() {
                     positionName: p.position?.name ?? "Position",
                     learningStatus: p.learningStatus,
                     updatedAt: p.updatedAt,
+                    hasComment: Boolean(p.comment?.trim()),
                   }))}
                 />
                 {sortedProgression.length === 0 ? (
