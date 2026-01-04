@@ -1471,6 +1471,17 @@ async function ensurePastCoursesForFixedStudents() {
   ]);
   if (!discipline) return;
 
+  const disciplinePositions = await prisma.position.findMany({
+    where: { disciplineId: discipline.id },
+    select: { id: true },
+    take: 3,
+  });
+  const fallbackPositions =
+    disciplinePositions.length > 0
+      ? disciplinePositions
+      : await prisma.position.findMany({ select: { id: true }, take: 3 });
+  if (fallbackPositions.length === 0) return;
+
   const fixedStudents = await prisma.user.findMany({
     where: { email: { in: ["student1@poleapp.test", "student2@poleapp.test"] } },
     select: { id: true },
@@ -1505,6 +1516,9 @@ async function ensurePastCoursesForFixedStudents() {
         waitlistQuota: 5,
         photoPublicId: COURSE_PUBLIC_IDS[0],
         isVirtual: false,
+        positions: {
+          create: fallbackPositions.map((p) => ({ positionId: p.id })),
+        },
       },
     });
 
