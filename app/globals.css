@@ -34,12 +34,24 @@
 }
 
 body {
+  min-height: 100vh;
+  overscroll-behavior: contain;
   background:
     radial-gradient(circle at 18% 22%, rgba(179, 136, 255, 0.23), transparent 36%),
     radial-gradient(circle at 72% 12%, rgba(127, 214, 255, 0.24), transparent 30%),
     radial-gradient(circle at 86% 64%, rgba(244, 153, 194, 0.18), transparent 28%),
     linear-gradient(135deg, #bca0ff 0%, #93b5ff 45%, #7cd8f0 100%);
   color: var(--foreground);
+}
+
+html {
+  min-height: 100%;
+  background-color: #0b1024;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(179, 136, 255, 0.23), transparent 36%),
+    radial-gradient(circle at 72% 12%, rgba(127, 214, 255, 0.24), transparent 30%),
+    radial-gradient(circle at 86% 64%, rgba(244, 153, 194, 0.18), transparent 28%),
+    linear-gradient(135deg, #bca0ff 0%, #93b5ff 45%, #7cd8f0 100%);
 }
 
 button,
