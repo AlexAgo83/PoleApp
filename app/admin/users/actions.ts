@@ -88,7 +88,7 @@ export async function createUserAction(formData: FormData) {
   const credits = data.role === "STUDENT" ? (isPremium ? 1000 : 0) : 0;
   const defaultAvatar = randomDefaultAvatarPublicId();
 
-  await prisma.user.create({
+  const created = await prisma.user.create({
     data: {
       email: data.email,
       name: `${firstName} ${lastName}`.trim(),
@@ -98,6 +98,15 @@ export async function createUserAction(formData: FormData) {
       credits,
       schoolId: admin.schoolId,
       avatarPublicId: defaultAvatar ?? undefined,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id ?? null,
+      action: "user.create",
+      target: created.id,
+      details: { schoolId: admin.schoolId, role: data.role },
     },
   });
 
@@ -143,6 +152,15 @@ export async function updateUserAction(formData: FormData) {
     },
   });
 
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id ?? null,
+      action: "user.update",
+      target: data.userId,
+      details: { schoolId: admin.schoolId, role: data.role },
+    },
+  });
+
   revalidatePath(basePath);
   redirectWithMessage("Utilisateur mis à jour");
 }
@@ -178,6 +196,14 @@ export async function toggleUserAction(formData: FormData) {
         disabledById: admin.id,
       },
     });
+    await prisma.auditLog.create({
+      data: {
+        actorId: admin.id ?? null,
+        action: "user.disable",
+        target: data.userId,
+        details: { schoolId: admin.schoolId },
+      },
+    });
     revalidatePath(basePath);
     redirectWithMessage("Utilisateur désactivé");
   }
@@ -191,6 +217,15 @@ export async function toggleUserAction(formData: FormData) {
     data: {
       disabledAt: null,
       disabledById: null,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id ?? null,
+      action: "user.enable",
+      target: data.userId,
+      details: { schoolId: admin.schoolId },
     },
   });
 

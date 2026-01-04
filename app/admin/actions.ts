@@ -80,6 +80,14 @@ export async function createDisciplineAction(formData: FormData) {
         color,
       },
     });
+    await prisma.auditLog.create({
+      data: {
+        actorId: session.user.id ?? null,
+        action: "discipline.create",
+        target: name,
+        details: { schoolId: session.user.schoolId },
+      },
+    });
     revalidatePath("/admin/school");
     revalidatePath("/admin");
     return;
@@ -118,6 +126,14 @@ export async function updateDisciplineAction(formData: FormData) {
       where: { id: disciplineId },
       data: { name: name.trim(), color: color.trim() },
     });
+    await prisma.auditLog.create({
+      data: {
+        actorId: session.user.id ?? null,
+        action: "discipline.update",
+        target: disciplineId,
+        details: { schoolId: session.user.schoolId },
+      },
+    });
     revalidatePath("/admin/school");
     revalidatePath("/admin");
     return;
@@ -151,10 +167,26 @@ export async function deleteDisciplineAction(formData: FormData) {
       where: { id: disciplineId },
       data: { disabledAt: new Date(), disabledById: session.user.id },
     });
+    await prisma.auditLog.create({
+      data: {
+        actorId: session.user.id ?? null,
+        action: "discipline.disable",
+        target: disciplineId,
+        details: { schoolId: session.user.schoolId },
+      },
+    });
   } else {
     await prisma.discipline.update({
       where: { id: disciplineId },
       data: { disabledAt: null, disabledById: null },
+    });
+    await prisma.auditLog.create({
+      data: {
+        actorId: session.user.id ?? null,
+        action: "discipline.enable",
+        target: disciplineId,
+        details: { schoolId: session.user.schoolId },
+      },
     });
   }
   revalidatePath("/admin/school");
