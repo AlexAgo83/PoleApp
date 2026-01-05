@@ -116,8 +116,9 @@ export default async function StudentCourseDetailPage({
           where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
         school: { select: { name: true } },
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { name: true, address: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, address: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         positions: { include: { position: true } },
         notes: {
           where: { studentId: session.user.id },

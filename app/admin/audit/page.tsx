@@ -55,7 +55,7 @@ export default async function AuditPage({ searchParams }: { searchParams?: Searc
     where.details = {
       path: ["schoolId"],
       equals: session.user.schoolId,
-    } as Prisma.JsonFilter;
+    } as any;
   }
   const fromDate = params.from ? new Date(`${params.from}T00:00:00`) : null;
   const toDate = params.to ? new Date(`${params.to}T23:59:59`) : null;
