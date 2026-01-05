@@ -1,5 +1,5 @@
 # Index des specs fonctionnelles
-[Aligné v0.14.x | Compréhension: 100% | Confiance: 85% | Avancement: 10% | Portée: mapping domaines ↔ routes ↔ specs (réelles ou TODO)]
+[Aligné v0.14.0 | Compréhension: 100% | Confiance: 90% | Couverture du code: 92% | Portée: mapping domaines ↔ routes ↔ specs (réelles ou TODO)]
 
 ## Mapping domaines / routes / fichiers
 - Public/Auth — routes : `/`, `/login`, `/signup`, `/health`, APIs auth/reset — spec : `logics/specs/auth.md`
@@ -15,12 +15,13 @@
 - Uploads/Cloudinary — routes/API : `/api/uploads`, `/api/uploads/signature`, `/api/uploads/signed-url` — spec : `logics/specs/uploads.md`
 - Partenaires — routes : `/app/student/partners`, `/app/admin/partners`, `/api/partners/redirect` — spec : `logics/specs/partners.md`
 - ICS — route : `/api/courses/[id]/ics` — spec : `logics/specs/ics.md`
-- Agenda professeur (fiche élève) — route : `/teachers/[id]` (non listée dans routes), `/student/week-courses` — spec : `logics/specs/2026-01-05_agenda-prof.md`
+- Agenda professeur (fiche élève) — route : `/teachers/[id]` (non listée dans routes), `/student/week-courses` — spec : `logics/specs/2026-01-05_agenda-prof.md` (à implémenter)
 
-## Questions pour booster la compréhension
-- Faut-il scinder les specs par rôle ou par feature (ex. progression, facturation) au-delà des routes ?
-- Y a-t-il d’autres écrans publics non listés dans `04_ROUTES_AND_SCREENS.md` à intégrer ?
+## Décisions
+- Découpage par rôle conservé ; pas de specs additionnelles par feature sauf besoin transverse explicite.
+- Écrans publics hors App : seulement `/`, `/login`, `/signup`, `/health`, `/teachers/[id]` (déjà couvert).
+- Mapping routes ↔ specs aligné sur `04_ROUTES_AND_SCREENS.md` + fiche prof publique.
 
-## Questions pour booster la confiance
-- Le mapping routes ↔ specs est-il complet et reflète-t-il la codebase actuelle ?
-- Prioriser quels domaines en premier pour rédiger les specs manquantes ?
+## Priorités / points ouverts
+- Livrer l’agenda prof public (spec agenda-prof, Avancement 0%).
+- Clarifier points ouverts dans chaque spec (agendas : bornes navigation/filtres persistés ; billing : transitions statuts/remboursement ; ICS : virtuel/location) au fil des évolutions.
