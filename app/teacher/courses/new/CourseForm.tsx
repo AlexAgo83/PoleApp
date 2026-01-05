@@ -8,9 +8,9 @@ import { ProgressSlider } from "../../students/[id]/ProgressSlider";
 
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string; discipline?: string | null; disciplineId?: string | null };
-type DisciplineOption = { id?: string; name: string; color?: string | null };
+type DisciplineOption = { id?: string; name: string; color?: string | null; disabledAt?: string | Date | null };
 type Teacher = { id: string; name: string | null; email: string };
-type Studio = { id: string; name: string };
+type Studio = { id: string; name: string; disabledAt?: string | Date | null };
 type ProgressRecord = {
   studentId: string;
   positionId: string;
@@ -130,7 +130,7 @@ export function CourseForm({
   isVirtual = false,
   enableRecurrence = true,
 }: Props) {
-  const resolvedStudioId = defaultStudioId ?? studios[0]?.id ?? "";
+  const resolvedStudioId = defaultStudioId ?? studios.find((s) => !s.disabledAt)?.id ?? studios[0]?.id ?? "";
   const resolvedDefaultDate = useMemo(() => {
     const dateValue = defaultDate ? new Date(defaultDate) : new Date();
     const pad = (n: number) => n.toString().padStart(2, "0");
@@ -249,7 +249,9 @@ export function CourseForm({
   const hasDefaultDisciplineInList =
     defaultDiscipline &&
     disciplines.some(
-      (d) => (d.id && d.id === defaultDiscipline) || d.name.toLowerCase() === defaultDiscipline.toLowerCase()
+      (d) =>
+        ((d.id && d.id === defaultDiscipline) || d.name.toLowerCase() === defaultDiscipline.toLowerCase()) &&
+        !d.disabledAt
     );
   const favoritePositionsForTeacher = useMemo(() => {
     return new Set(teacherFavorites[selectedTeacherId] ?? []);
@@ -473,8 +475,13 @@ export function CourseForm({
             >
               <option value="">Sélectionner une discipline</option>
               {disciplines.map((d) => (
-                <option key={d.id ?? d.name} value={d.id ?? d.name}>
+                <option
+                  key={d.id ?? d.name}
+                  value={d.id ?? d.name}
+                  disabled={Boolean(d.disabledAt && (d.id ?? d.name) !== selectedDiscipline)}
+                >
                   {d.name}
+                  {d.disabledAt ? " (désactivée)" : ""}
                 </option>
               ))}
               {!hasDefaultDisciplineInList && defaultDiscipline ? (
@@ -493,8 +500,9 @@ export function CourseForm({
                   className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white outline-none focus:border-indigo-400"
                 >
                   {studios.map((s) => (
-                    <option key={s.id} value={s.id}>
+                    <option key={s.id} value={s.id} disabled={Boolean(s.disabledAt && s.id !== studioValue)}>
                       {s.name}
+                      {s.disabledAt ? " (désactivé)" : ""}
                     </option>
                   ))}
                 </select>

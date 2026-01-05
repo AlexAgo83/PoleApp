@@ -41,7 +41,7 @@ export async function GET() {
       : Promise.resolve([]),
     prisma.studio.findMany({
       where: { schoolId },
-      select: { id: true, name: true },
+      select: { id: true, name: true, disabledAt: true },
       orderBy: { name: "asc" },
     }),
     prisma.studentPositionProgress.findMany({
@@ -54,7 +54,7 @@ export async function GET() {
       },
     }),
     prisma.discipline.findMany({
-      select: { id: true, name: true, color: true },
+      select: { id: true, name: true, color: true, disabledAt: true },
       orderBy: { name: "asc" },
     }),
   ]);
@@ -112,7 +112,7 @@ export async function GET() {
     teachers: session.user.role === "SCHOOL_ADMIN" ? teachers : [],
     studios,
     defaultTeacherId: session.user.role === "TEACHER" ? session.user.id : teachers[0]?.id ?? null,
-    defaultStudioId: studios[0]?.id ?? null,
+    defaultStudioId: studios.find((s) => !s.disabledAt)?.id ?? studios[0]?.id ?? null,
     disciplines: mergedDisciplines,
     teacherFavorites,
     studentsWithActiveInjury,
