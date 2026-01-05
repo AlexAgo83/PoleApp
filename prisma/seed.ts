@@ -1068,6 +1068,76 @@ async function seedCourses(schoolsData: {
       createdStudios.map((s) => [s.id, 0])
     );
 
+    // Cours QA pour sources désactivées (studio/discipline)
+    const disabledStudio = createdStudios.find((s) => s.disabledAt);
+    const disabledDiscipline = disciplinePool.find((d) => (d as any).disabledAt);
+    if (disabledStudio && schoolTeachers[0]) {
+      const disciplineName = disabledDiscipline?.name ?? PRIMARY_DISCIPLINE;
+      const disciplineId = disabledDiscipline?.id ?? null;
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 5);
+      futureDate.setHours(18, 0, 0, 0);
+      const positionsForDisc = positions.filter(
+        (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
+      );
+      await prisma.course.create({
+        data: {
+          title: `Cours QA studio/discipline désactivés`,
+          date: futureDate,
+          durationMinutes: 60,
+          teacherId: schoolTeachers[0].id,
+          schoolId: school.id,
+          studioId: disabledStudio.id,
+          discipline: disciplineName,
+          disciplineId,
+          maxSeats: 15,
+          costCredits: 100,
+          photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
+          positions:
+            positionsForDisc.length > 0
+              ? { create: positionsForDisc.slice(0, 2).map((p) => ({ positionId: p.id })) }
+              : undefined,
+        },
+      });
+      courseImageIdx += 1;
+      reservedSlots.push({
+        start: futureDate,
+        end: new Date(futureDate.getTime() + 60 * 60_000),
+      });
+    }
+
+    // Cours QA pour prof désactivé (unique prof)
+    const disabledTeacher = schoolTeachers.find((t) => t.email?.includes("teacher-disabled"));
+    const activeStudio = createdStudios.find((s) => !s.disabledAt);
+    if (disabledTeacher && activeStudio) {
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 8);
+      futureDate.setHours(19, 0, 0, 0);
+      const disciplineName = PRIMARY_DISCIPLINE;
+      const disciplineId =
+        disciplinePool.find((d) => d.name.toLowerCase() === disciplineName.toLowerCase())?.id ?? null;
+      await prisma.course.create({
+        data: {
+          title: "Cours QA prof désactivé",
+          date: futureDate,
+          durationMinutes: 75,
+          teacherId: disabledTeacher.id,
+          schoolId: school.id,
+          studioId: activeStudio.id,
+          discipline: disciplineName,
+          disciplineId,
+          maxSeats: 12,
+          costCredits: 120,
+          photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
+        },
+      });
+      courseImageIdx += 1;
+      reservedSlots.push({
+        start: futureDate,
+        end: new Date(futureDate.getTime() + 75 * 60_000),
+      });
+    }
+
     const slots = buildSchedule({ daysPast: 15, daysFuture: 45, total: 40 }, reservedSlots);
     const forcedStatuses = ["REFUNDED", "MANUAL_PAID", "MANUAL_LATE"];
 
