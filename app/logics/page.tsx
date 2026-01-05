@@ -25,25 +25,31 @@ type DocMeta = {
 const CATEGORIES: Category[] = [
   // Produit
   { key: "specs", label: "Specs", dir: path.join(process.cwd(), "logics", "specs") },
-  { key: "backlog", label: "Produit — Backlog", dir: path.join(process.cwd(), "logics", "backlog") },
+  { key: "backlog", label: "Backlog", dir: path.join(process.cwd(), "logics", "backlog") },
   {
     key: "discovery-qa",
-    label: "Produit — Discovery QA",
+    label: "Discovery QA",
     dir: path.join(process.cwd(), "logics", "discovery"),
     filter: (file) => file.startsWith("06_QA_"),
   },
   {
     key: "discovery-qe",
-    label: "Produit — Discovery QE",
+    label: "Discovery QE",
     dir: path.join(process.cwd(), "logics", "discovery"),
     filter: (file) => file.startsWith("07_QE_"),
   },
-  { key: "knowledge", label: "Produit — Knowledge", dir: path.join(process.cwd(), "logics", "knowledge") },
+  { key: "knowledge", label: "Knowledge", dir: path.join(process.cwd(), "logics", "knowledge") },
 
   // Tech
-  { key: "instructions", label: "Tech — Instructions", dir: path.join(process.cwd(), "logics", "instructions") },
-  { key: "foundry", label: "Tech — Foundry", dir: path.join(process.cwd(), "logics", "foundry") },
-  { key: "models", label: "Tech — Models", dir: path.join(process.cwd(), "logics", "models") },
+  { key: "instructions", label: "Instructions", dir: path.join(process.cwd(), "logics", "instructions") },
+  { key: "foundry", label: "Foundry", dir: path.join(process.cwd(), "logics", "foundry") },
+  { key: "models", label: "Models", dir: path.join(process.cwd(), "logics", "models") },
+];
+
+const CATEGORY_GROUPS: { label: string; keys: string[] }[] = [
+  { label: "Specs", keys: ["specs"] },
+  { label: "Produit", keys: ["backlog", "discovery-qa", "discovery-qe", "knowledge"] },
+  { label: "Tech", keys: ["instructions", "foundry", "models"] },
 ];
 
 function formatTitle(file: string) {
@@ -77,6 +83,11 @@ export default async function LogicsPage({ searchParams }: PageProps) {
     ...cat,
     docs: listDocs(cat),
   })).filter((c) => c.docs.length > 0);
+  const categoryByKey = Object.fromEntries(docsByCategory.map((c) => [c.key, c]));
+  const groupedCategories = CATEGORY_GROUPS.map((group) => ({
+    label: group.label,
+    cats: group.keys.map((key) => categoryByKey[key]).filter(Boolean),
+  })).filter((g) => g.cats.length > 0);
 
   const resolvedParams = (await (searchParams ?? Promise.resolve({}))) as Record<
     string,
@@ -86,7 +97,12 @@ export default async function LogicsPage({ searchParams }: PageProps) {
   const sectionParam = (getValue(resolvedParams.section) ?? "").toLowerCase();
   const fileParam = getValue(resolvedParams.file) ?? "";
   const selectedCategory = docsByCategory.find((c) => c.key === sectionParam) ?? docsByCategory[0] ?? null;
-  const defaultDoc = selectedCategory && selectedCategory.docs.length > 0 ? selectedCategory.docs[0] : null;
+  const defaultDoc =
+    selectedCategory && selectedCategory.key === "specs"
+      ? selectedCategory.docs.find((doc) => doc.slug.toLowerCase() === "_index") ?? selectedCategory.docs[0] ?? null
+      : selectedCategory && selectedCategory.docs.length > 0
+        ? selectedCategory.docs[0]
+        : null;
   const selectedDoc = selectedCategory?.docs.find((doc) => doc.slug === fileParam) ?? defaultDoc;
 
   const content = selectedDoc ? fs.readFileSync(selectedDoc.path, "utf-8") : null;
@@ -242,24 +258,35 @@ export default async function LogicsPage({ searchParams }: PageProps) {
       <section className="panel space-y-3 p-5">
         <h1 className="text-2xl font-semibold text-white">Navigation</h1>
         <p className="text-sm text-slate-300">Choisis une section puis un fichier pour afficher son contenu.</p>
-        <div className="flex flex-wrap gap-2">
-          {docsByCategory.map((cat) => (
-            <a
-              key={cat.key}
-              href={`?section=${cat.key}`}
-              className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
-                selectedCategory?.key === cat.key
-                  ? "border-cyan-400/70 bg-cyan-500/20 text-cyan-100"
-                  : "border-white/10 bg-white/5 text-slate-100 hover:border-cyan-400/60 hover:text-cyan-200"
-              }`}
-            >
-              {cat.label}
-            </a>
+        <div className="space-y-3">
+          {groupedCategories.map((group) => (
+            <div key={group.label} className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">{group.label}</p>
+              <div className="flex flex-wrap gap-2">
+                {group.cats.map((cat) => (
+                  <a
+                    key={cat.key}
+                    href={`?section=${cat.key}`}
+                    className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                      selectedCategory?.key === cat.key
+                        ? "border-cyan-400/70 bg-cyan-500/20 text-cyan-100"
+                        : "border-white/10 bg-white/5 text-slate-100 hover:border-cyan-400/60 hover:text-cyan-200"
+                    }`}
+                  >
+                    {cat.label}
+                  </a>
+                ))}
+                {group.cats.length === 0 && (
+                  <span className="text-sm text-slate-400">Aucun document pour cette catégorie.</span>
+                )}
+              </div>
+            </div>
           ))}
         </div>
 
         {selectedCategory ? (
           <div className="space-y-2">
+            <div className="h-px w-full bg-white/10" />
             <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">{selectedCategory.label}</p>
             <div className="flex flex-wrap gap-2">
               {selectedCategory.docs.map((doc) => (
