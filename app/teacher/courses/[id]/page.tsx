@@ -81,8 +81,9 @@ export default async function TeacherCourseDetailPage({
         disciplineId: true,
         photoPublicId: true,
         isVirtual: true,
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { name: true, address: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, address: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         attendances: {
           include: {
             student: {
@@ -235,6 +236,11 @@ export default async function TeacherCourseDetailPage({
       ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_60,w_1200,h_600/${course.photoPublicId}`
       : COURSE_PHOTO_PLACEHOLDER;
   const NOW_MS = Date.now();
+  const disabledSources: string[] = [];
+  if ((course as any).teacher?.disabledAt) disabledSources.push("Professeur");
+  if ((course as any).studio?.disabledAt) disabledSources.push("Studio");
+  if ((course as any).disciplineRef?.disabledAt) disabledSources.push("Discipline");
+  const isDisabledSource = disabledSources.length > 0;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
     year: "numeric",
@@ -278,6 +284,14 @@ export default async function TeacherCourseDetailPage({
                 {course.notes.length > 0 && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs font-semibold text-white">
                     Notes : {course.notes.length}
+                  </span>
+                )}
+                {isDisabledSource && (
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-50"
+                    title={`Source désactivée: ${disabledSources.join(", ")}`}
+                  >
+                    Désactivé · Inscriptions closes
                   </span>
                 )}
               </div>
