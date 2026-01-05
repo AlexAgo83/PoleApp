@@ -37,6 +37,7 @@ export const authOptions: NextAuthOptions = {
           select: {
             id: true,
             email: true,
+            name: true,
             passwordHash: true,
             role: true,
             schoolId: true,

@@ -1073,7 +1073,11 @@ async function seedCourses(schoolsData: {
     const disabledDiscipline = disciplinePool.find((d) => (d as any).disabledAt);
     if (disabledStudio && schoolTeachers[0]) {
       const disciplineName = disabledDiscipline?.name ?? PRIMARY_DISCIPLINE;
-      const disciplineId = disabledDiscipline?.id ?? null;
+      const disciplineId =
+        disabledDiscipline?.id ??
+        disciplinePool.find((d) => d.id)?.id ??
+        disciplinePool[0]?.id ??
+        PRIMARY_DISCIPLINE;
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 5);
       futureDate.setHours(18, 0, 0, 0);
@@ -1115,7 +1119,10 @@ async function seedCourses(schoolsData: {
       futureDate.setHours(19, 0, 0, 0);
       const disciplineName = PRIMARY_DISCIPLINE;
       const disciplineId =
-        disciplinePool.find((d) => d.name.toLowerCase() === disciplineName.toLowerCase())?.id ?? null;
+        disciplinePool.find((d) => d.name.toLowerCase() === disciplineName.toLowerCase())?.id ??
+        disciplinePool.find((d) => d.id)?.id ??
+        disciplinePool[0]?.id ??
+        PRIMARY_DISCIPLINE;
       await prisma.course.create({
         data: {
           title: "Cours QA prof désactivé",
