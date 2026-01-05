@@ -23,24 +23,27 @@ type DocMeta = {
 };
 
 const CATEGORIES: Category[] = [
-  { key: "backlog", label: "Backlog", dir: path.join(process.cwd(), "logics", "backlog") },
+  // Produit
+  { key: "specs", label: "Specs", dir: path.join(process.cwd(), "logics", "specs") },
+  { key: "backlog", label: "Produit — Backlog", dir: path.join(process.cwd(), "logics", "backlog") },
   {
     key: "discovery-qa",
-    label: "Discovery QA",
+    label: "Produit — Discovery QA",
     dir: path.join(process.cwd(), "logics", "discovery"),
     filter: (file) => file.startsWith("06_QA_"),
   },
   {
     key: "discovery-qe",
-    label: "Discovery QE",
+    label: "Produit — Discovery QE",
     dir: path.join(process.cwd(), "logics", "discovery"),
     filter: (file) => file.startsWith("07_QE_"),
   },
-  { key: "foundry", label: "Foundry", dir: path.join(process.cwd(), "logics", "foundry") },
-  { key: "specs", label: "Specs", dir: path.join(process.cwd(), "logics", "specs") },
-  { key: "instructions", label: "Instructions", dir: path.join(process.cwd(), "logics", "instructions") },
-  { key: "knowledge", label: "Knowledge", dir: path.join(process.cwd(), "logics", "knowledge") },
-  { key: "models", label: "Models", dir: path.join(process.cwd(), "logics", "models") },
+  { key: "knowledge", label: "Produit — Knowledge", dir: path.join(process.cwd(), "logics", "knowledge") },
+
+  // Tech
+  { key: "instructions", label: "Tech — Instructions", dir: path.join(process.cwd(), "logics", "instructions") },
+  { key: "foundry", label: "Tech — Foundry", dir: path.join(process.cwd(), "logics", "foundry") },
+  { key: "models", label: "Tech — Models", dir: path.join(process.cwd(), "logics", "models") },
 ];
 
 function formatTitle(file: string) {
