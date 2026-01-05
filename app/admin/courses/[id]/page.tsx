@@ -105,6 +105,7 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
   if (course.studio?.disabledAt) disabledSources.push("Studio");
   if (course.disciplineRef?.disabledAt) disabledSources.push("Discipline");
   const isDisabledSource = disabledSources.length > 0;
+  const isFutureCourse = new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 > Date.now();
   const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
   const coursePhoto =
     course.photoPublicId && CLOUD_NAME
@@ -168,6 +169,11 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
+        {isDisabledSource && isFutureCourse && (
+          <div className="mb-3 rounded-lg border border-rose-300/60 bg-rose-500/10 px-3 py-2 text-sm text-rose-50">
+            Prof/Studio/Discipline désactivé(e) : cours maintenu pour les inscrits, pas de nouvelles inscriptions (notif élèves à gérer manuellement).
+          </div>
+        )}
         <h2 className="text-lg font-semibold text-white">Participants</h2>
         <ul className="mt-3 space-y-2 text-sm text-slate-200">
           {course.attendances.map((attendance) => (

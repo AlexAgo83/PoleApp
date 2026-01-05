@@ -371,6 +371,11 @@ export default async function TeacherCourseDetailPage({
       </header>
 
       <section className="panel panel-body lg-gap border-indigo-400/15">
+        {isDisabledSource && !isPastCourse && (
+          <div className="mb-3 rounded-lg border border-rose-300/60 bg-rose-500/10 px-3 py-2 text-sm text-rose-50">
+            Prof/Studio/Discipline désactivé(e) : cours maintenu pour les inscrits, pas de nouvelles inscriptions (notif élèves à gérer manuellement).
+          </div>
+        )}
         <h2 className="text-lg font-semibold text-white">Positions couvertes</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.positions.map((cp) => (
