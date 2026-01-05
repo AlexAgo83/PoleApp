@@ -1035,10 +1035,13 @@ async function seedCourses(schoolsData: {
     const schoolStudents = students.filter((s) => s.schoolId === school.id);
     const schoolAdmin = admins.find((a) => a.schoolId === school.id);
     const teacherUsage = new Map<string, number>();
-    const disciplinePool: SeedDiscipline[] =
+    const baseDisciplines: SeedDiscipline[] =
       disciplinesBySchool[school.id] && disciplinesBySchool[school.id].length > 0
         ? disciplinesBySchool[school.id]
         : disciplinesCatalog.map((d) => ({ id: undefined as unknown as string, name: d.name, color: d.color }));
+    const disciplinePool: SeedDiscipline[] = baseDisciplines.map((d, idx) =>
+      idx === 0 ? { ...d, disabledAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) } : d
+    );
     const reservedSlots: { start: Date; end: Date }[] = [];
 
     // studios
@@ -1046,6 +1049,7 @@ async function seedCourses(schoolsData: {
       name,
       address: `Paris ${idx + 1}`,
       photoPublicId: STUDIO_PUBLIC_IDS[idx % STUDIO_PUBLIC_IDS.length],
+      disabledAt: idx === 2 ? new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) : null,
     }));
     const createdStudios = await Promise.all(
       studiosForSchool.map((s) =>
@@ -1055,6 +1059,7 @@ async function seedCourses(schoolsData: {
             address: s.address,
             schoolId: school.id,
             photoPublicId: s.photoPublicId,
+            disabledAt: s.disabledAt,
           },
         })
       )
