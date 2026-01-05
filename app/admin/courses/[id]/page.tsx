@@ -100,10 +100,11 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
   });
   const teacherName = course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const cost = course.costCredits ?? 100;
-  const isDisabledSource =
-    Boolean(course.teacher?.disabledAt) ||
-    Boolean(course.studio?.disabledAt) ||
-    Boolean(course.disciplineRef?.disabledAt);
+  const disabledSources: string[] = [];
+  if (course.teacher?.disabledAt) disabledSources.push("Professeur");
+  if (course.studio?.disabledAt) disabledSources.push("Studio");
+  if (course.disciplineRef?.disabledAt) disabledSources.push("Discipline");
+  const isDisabledSource = disabledSources.length > 0;
   const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
   const coursePhoto =
     course.photoPublicId && CLOUD_NAME
@@ -144,7 +145,10 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
               {teacherName} · {course.studio?.name ?? "Studio non renseigné"} · {course._count.attendances} élève(s) · {cost} crédits
             </p>
             {isDisabledSource && (
-              <p className="mt-1 inline-flex items-center gap-2 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-xs font-semibold text-rose-100">
+              <p
+                className="mt-1 inline-flex items-center gap-2 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-xs font-semibold text-rose-100"
+                title={`Source désactivée: ${disabledSources.join(", ")}`}
+              >
                 Désactivé · Inscriptions closes (source)
               </p>
             )}
