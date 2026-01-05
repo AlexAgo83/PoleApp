@@ -10,6 +10,7 @@ import crypto from "crypto";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/mailer";
+import { createVerificationToken, canResendVerification } from "@/lib/emailVerification";
 
 const basePath = "/super-admin";
 const defaultForcedDiscipline = { name: "Pole", color: "#0ea5e9" };
@@ -242,6 +243,26 @@ const forceVerifySchema = z.object({
   email: z.string().email(),
 });
 
+const resendVerifySchema = z.object({
+  email: z.string().email(),
+});
+
+function verificationBaseUrl() {
+  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+}
+
+function buildVerificationEmail(email: string, link: string) {
+  const subject = "Vérification de votre compte Pole App";
+  const text = `Bonjour,
+
+Merci pour votre inscription. Pour activer votre compte, clique sur ce lien :
+${link}
+
+Si tu n'es pas à l'origine de cette demande, ignore cet email.`;
+  const html = `<p>Bonjour,</p><p>Merci pour votre inscription. Pour activer votre compte, cliquez sur ce lien :</p><p><a href="${link}">${link}</a></p><p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`;
+  return { subject, text, html };
+}
+
 export async function resetUserPasswordAction(formData: FormData) {
   const admin = await requireSuperAdmin();
   const redirectTo = formData.get("redirectTo")?.toString() || basePath;
@@ -334,6 +355,46 @@ export async function forceVerifyUserAction(formData: FormData) {
   revalidatePath(redirectTo);
   if (redirectTo !== basePath) revalidatePath(basePath);
   redirect(`${redirectTo}?flash=force-ok&email=${encodeURIComponent(parsed.data.email)}`);
+}
+
+export async function resendVerificationSuperAdminAction(formData: FormData) {
+  const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
+  const parsed = resendVerifySchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) {
+    redirect(`${redirectTo}?flash=resend-invalid`);
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  if (!user) {
+    redirect(`${redirectTo}?flash=resend-not-found`);
+  }
+  if (user?.disabledAt) {
+    redirect(`${redirectTo}?flash=resend-disabled`);
+  }
+  if (user?.verifiedAt) {
+    redirect(`${redirectTo}?flash=resend-already`);
+  }
+
+  const canResend = await canResendVerification(user!.id);
+  if (!canResend) {
+    await logAudit("user:verify-email:resend:rate-limited", user!.id, { by: admin.email });
+    redirect(`${redirectTo}?flash=resend-rate-limit`);
+  }
+
+  const { token } = await createVerificationToken(user!.id, admin.id);
+  const link = `${verificationBaseUrl()}/auth/verify?token=${token}`;
+  const mail = buildVerificationEmail(user!.email, link);
+  const mailResult = await sendMail({ to: user!.email, ...mail });
+
+  await logAudit("user:verify-email:resend:admin", user!.id, {
+    by: admin.email,
+    sent: mailResult.sent ?? false,
+  });
+
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
+  redirect(`${redirectTo}?flash=resend-ok&email=${encodeURIComponent(user!.email)}`);
 }
 
 function euroToCents(value: number) {

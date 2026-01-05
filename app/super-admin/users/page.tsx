@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { promoteSuperAdminAction, resetUserPasswordAction, forceVerifyUserAction } from "../actions";
+import { promoteSuperAdminAction, resetUserPasswordAction, forceVerifyUserAction, resendVerificationSuperAdminAction } from "../actions";
 import { ResetCopyButton } from "../ResetCopyButton";
 import { authOptions } from "@/lib/auth";
 
@@ -26,6 +26,12 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
   const flashForceOk = flash === "force-ok";
   const flashForceNotFound = flash === "force-not-found";
   const flashForceInvalid = flash === "force-invalid";
+  const flashResendOk = flash === "resend-ok";
+  const flashResendNotFound = flash === "resend-not-found";
+  const flashResendInvalid = flash === "resend-invalid";
+  const flashResendDisabled = flash === "resend-disabled";
+  const flashResendAlready = flash === "resend-already";
+  const flashResendRateLimit = flash === "resend-rate-limit";
 
   return (
     <main className="grid gap-4 md:gap-6">
@@ -74,6 +80,36 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
       {flashForceInvalid && (
         <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
           Formulaire invalide pour la vérification forcée.
+        </div>
+      )}
+      {flashResendOk && (
+        <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
+          Mail de vérification renvoyé à {flashEmail ?? "l'utilisateur"}.
+        </div>
+      )}
+      {flashResendNotFound && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Utilisateur introuvable pour cet email.
+        </div>
+      )}
+      {flashResendDisabled && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Compte désactivé : renvoi non autorisé.
+        </div>
+      )}
+      {flashResendAlready && (
+        <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
+          Compte déjà vérifié.
+        </div>
+      )}
+      {flashResendInvalid && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Formulaire invalide pour le renvoi.
+        </div>
+      )}
+      {flashResendRateLimit && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Trop de demandes récentes pour cet utilisateur (cooldown).
         </div>
       )}
 
@@ -145,6 +181,37 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
             >
               Forcer la vérification
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="panel space-y-4 border-cyan-300/25 p-5 shadow-cyan-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">Vérification email</p>
+          <h3 className="text-lg font-semibold text-white">Renvoyer l’email de vérification</h3>
+        </div>
+        <p className="text-sm text-slate-300">
+          Envoie à nouveau le lien de vérification (respecte le cooldown, journalise l’action).
+        </p>
+        <form action={resendVerificationSuperAdminAction} className="grid gap-2 md:grid-cols-[2fr_1fr]">
+          <input type="hidden" name="redirectTo" value="/super-admin/users" />
+          <label className="space-y-1">
+            <span className="text-xs text-slate-300">Email</span>
+            <input
+              name="email"
+              type="email"
+              placeholder="user@poleapp.test"
+              required
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+            />
+          </label>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+            >
+              Renvoyer l’email
             </button>
           </div>
         </form>
