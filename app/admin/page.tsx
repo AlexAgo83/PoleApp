@@ -303,6 +303,18 @@ export default async function AdminDashboard() {
             }
           />
           <ActionCard
+            title="Journal d’audit"
+            description="Logs des actions admin/super-admin (création, désactivation, vérif…)."
+            href="/admin/audit"
+            cta="Voir les logs"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="2" ry="2" />
+                <path d="M7 8h10M7 12h10M7 16h6" />
+              </svg>
+            }
+          />
+          <ActionCard
             title="Facturation"
             description="Factures cours, exports CSV, statuts et montants."
             href="/admin/billing"
