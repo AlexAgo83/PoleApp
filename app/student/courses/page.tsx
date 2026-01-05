@@ -36,8 +36,10 @@ type CourseRow = {
   discipline?: string | null;
   disciplineId?: string | null;
   isVirtual?: boolean;
-  teacher: { id: string; name: string | null; email: string | null } | null;
-  studio: { name: string } | null;
+  teacher: { id: string; name: string | null; email: string | null; disabledAt: Date | null } | null;
+  studio: { name: string; disabledAt: Date | null } | null;
+  disciplineRef?: { disabledAt: Date | null } | null;
+  isDisabledSource?: boolean;
   positions: { position: { id: string; name: string } }[];
   notes: CourseNote[];
   _count: { attendances: number };
@@ -174,9 +176,10 @@ export default async function StudentCoursesPage({
           skip,
           take: 10,
           include: {
-            teacher: { select: { id: true, name: true, email: true } },
+            teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
             positions: { include: { position: true } },
-            studio: { select: { name: true } },
+            studio: { select: { name: true, disabledAt: true } },
+            disciplineRef: { select: { disabledAt: true } },
             notes: {
               where: { studentId: session.user.id },
               include: { position: true },
@@ -198,9 +201,10 @@ export default async function StudentCoursesPage({
               skip,
               take: 10,
               include: {
-                teacher: { select: { id: true, name: true, email: true } },
+                teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
                 positions: { include: { position: true } },
-                studio: { select: { name: true } },
+                studio: { select: { name: true, disabledAt: true } },
+                disciplineRef: { select: { disabledAt: true } },
                 notes: {
                   where: { studentId: session.user.id },
                   include: { position: true },
@@ -250,9 +254,13 @@ export default async function StudentCoursesPage({
         const myAttendance = course.attendances.find((a) => a.studentId === session.user.id);
         const discipline =
           (course.disciplineId ? disciplineNameById.get(course.disciplineId) : undefined) ?? course.discipline ?? undefined;
+        const isDisabledSource =
+          Boolean(course.teacher?.disabledAt) ||
+          Boolean(course.studio?.disabledAt) ||
+          Boolean(course.disciplineRef?.disabledAt);
         return {
           key: course.id,
-          course: { ...course, discipline, disciplineId: course.disciplineId ?? null },
+          course: { ...course, discipline, disciplineId: course.disciplineId ?? null, isDisabledSource },
           myAttendance,
         };
       })
@@ -500,6 +508,11 @@ export default async function StudentCoursesPage({
                     <p className="text-lg font-semibold text-white">
                       {course.title ?? "Cours"}
                     </p>
+                    {course.isDisabledSource && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-50">
+                        Désactivé · Inscriptions closes
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
                     <SafeImage

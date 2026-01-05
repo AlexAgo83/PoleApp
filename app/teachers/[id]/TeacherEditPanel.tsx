@@ -14,12 +14,14 @@ type Props = {
     age?: number | null;
     diplomas?: string | null;
     favoritePositionIds: string[];
+    favoriteDisciplineIds: string[];
   };
   positions: PositionOption[];
+  disciplines: { id: string; name: string }[];
   returnTo?: string;
 };
 
-export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: Props) {
+export function TeacherEditPanel({ teacherId, defaults, positions, disciplines, returnTo }: Props) {
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
 
@@ -107,6 +109,24 @@ export function TeacherEditPanel({ teacherId, defaults, positions, returnTo }: P
             </select>
             <p className="text-xs text-slate-400">
               Maintiens Ctrl/Cmd (ou Maj) pour sélectionner plusieurs positions.
+            </p>
+          </label>
+          <label className="md:col-span-2 space-y-2 text-sm text-slate-200">
+            Disciplines favorites (max 5)
+            <select
+              name="favoriteDisciplines"
+              multiple
+              defaultValue={defaults.favoriteDisciplineIds}
+              className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            >
+              {disciplines.map((discipline) => (
+                <option key={discipline.id} value={discipline.id}>
+                  {discipline.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-slate-400">
+              Limite 5 disciplines. Maintiens Ctrl/Cmd (ou Maj) pour multi-sélection.
             </p>
           </label>
           <div className="md:col-span-2 flex flex-wrap justify-end gap-2">

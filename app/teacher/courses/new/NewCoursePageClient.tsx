@@ -9,7 +9,7 @@ import { createCourseAction } from "./actions";
 type Student = { id: string; name: string | null; email: string };
 type Position = { id: string; name: string; type: string; discipline?: string | null; disciplineId?: string | null };
 type Teacher = { id: string; name: string | null; email: string };
-type Studio = { id: string; name: string };
+type Studio = { id: string; name: string; disabledAt?: string | null };
 type ProgressRecord = {
   studentId: string;
   positionId: string;
@@ -25,7 +25,7 @@ type NewCourseData = {
   studios: Studio[];
   defaultTeacherId?: string | null;
   defaultStudioId?: string | null;
-  disciplines: { id?: string; name: string; color?: string | null }[];
+  disciplines: { id?: string; name: string; color?: string | null; disabledAt?: string | null }[];
   teacherFavorites: Record<string, string[]>;
   studentsWithActiveInjury: Record<string, number>;
   progressByStudent: ProgressRecord[];

@@ -4,11 +4,10 @@ import { Prisma, Role } from "@prisma/client";
 import { SafeImage } from "@/components/SafeImage";
 
 import { authOptions } from "@/lib/auth";
-import { createUserAction, deleteUserAction } from "./actions";
+import { createUserAction, toggleUserAction } from "./actions";
 import { prisma } from "@/lib/prisma";
 import { FilterPanel } from "@/components/FilterPanel";
 import { PersistedPanel } from "@/components/PersistedPanel";
-import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
 
@@ -90,6 +89,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams?: 
       role: true,
       isPremium: true,
       createdAt: true,
+      disabledAt: true,
     },
     orderBy: { createdAt: "desc" },
     skip,
@@ -282,22 +282,35 @@ export default async function AdminUsersPage({ searchParams }: { searchParams?: 
                     >
                       {user.isPremium ? "Premium" : "Free"}
                     </span>
+                    {user.disabledAt && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-rose-400/40 bg-rose-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-rose-100">
+                        Désactivé
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-slate-300">{user.email}</p>
-                  <p className="text-xs text-slate-400">
-                    Créé le {new Date(user.createdAt).toLocaleDateString()}
-                  </p>
+                  <p className="text-xs text-slate-400">Créé le {new Date(user.createdAt).toLocaleDateString()}</p>
+                  {user.disabledAt && (
+                    <p className="text-xs font-semibold text-rose-100">
+                      Désactivé le {new Date(user.disabledAt).toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex w-full flex-col items-start gap-2 text-sm">
-                <form action={deleteUserAction} className="w-full">
+                <form action={toggleUserAction} className="w-full">
                   <input type="hidden" name="userId" value={user.id} />
-                  <ConfirmDeleteButton
+                  <input type="hidden" name="action" value={user.disabledAt ? "enable" : "disable"} />
+                  <button
                     type="submit"
-                    className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-amber-200 transition hover:border-red-500/70 hover:text-white"
+                    className={`w-full rounded-full border px-3 py-2 font-semibold transition ${
+                      user.disabledAt
+                        ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-100 hover:border-emerald-300/70 hover:text-white"
+                        : "border-amber-400/50 bg-amber-500/10 text-amber-100 hover:border-rose-400/70 hover:text-white"
+                    }`}
                   >
-                    Supprimer
-                  </ConfirmDeleteButton>
+                    {user.disabledAt ? "Réactiver" : "Désactiver"}
+                  </button>
                 </form>
                 {user.role !== "SCHOOL_ADMIN" && (
                   <Link

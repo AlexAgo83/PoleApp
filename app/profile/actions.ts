@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -33,6 +34,7 @@ const schema = z.object({
     .max(2000, "Texte trop long")
     .optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
+  favoriteDisciplines: z.array(z.string().cuid()).max(5, "Max 5 disciplines").optional(),
 });
 
 export async function updateProfileAction(formData: FormData) {
@@ -51,14 +53,20 @@ export async function updateProfileAction(formData: FormData) {
       ? formData.get("diplomas")?.toString().trim() || undefined
       : undefined,
     favoritePositions: (formData.getAll("favoritePositions") ?? []).map((value) => value.toString()),
+    favoriteDisciplines: (formData.getAll("favoriteDisciplines") ?? []).map((value) =>
+      value.toString()
+    ),
   });
 
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
   }
 
-  const { firstName, lastName, age, diplomas, favoritePositions = [] } = parsed.data;
+  const { firstName, lastName, age, diplomas, favoritePositions = [], favoriteDisciplines = [] } =
+    parsed.data;
   const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || null;
+  const dedupedDisciplines = Array.from(new Set(favoriteDisciplines)).slice(0, 5);
+  const dedupedPositions = Array.from(new Set(favoritePositions));
 
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
@@ -74,11 +82,23 @@ export async function updateProfileAction(formData: FormData) {
       await tx.teacherFavoritePosition.deleteMany({
         where: { teacherId: session.user.id },
       });
-      if (favoritePositions.length > 0) {
+      if (dedupedPositions.length > 0) {
         await tx.teacherFavoritePosition.createMany({
-          data: favoritePositions.map((positionId) => ({
+          data: dedupedPositions.map((positionId) => ({
             teacherId: session.user.id,
             positionId,
+          })),
+          skipDuplicates: true,
+        });
+      }
+      await tx.teacherFavoriteDiscipline.deleteMany({
+        where: { teacherId: session.user.id },
+      });
+      if (dedupedDisciplines.length > 0) {
+        await tx.teacherFavoriteDiscipline.createMany({
+          data: dedupedDisciplines.map((disciplineId) => ({
+            teacherId: session.user.id,
+            disciplineId,
           })),
           skipDuplicates: true,
         });
@@ -87,9 +107,9 @@ export async function updateProfileAction(formData: FormData) {
       await tx.studentFavoritePosition.deleteMany({
         where: { studentId: session.user.id },
       });
-      if (favoritePositions.length > 0) {
+      if (dedupedPositions.length > 0) {
         await tx.studentFavoritePosition.createMany({
-          data: favoritePositions.map((positionId) => ({
+          data: dedupedPositions.map((positionId) => ({
             studentId: session.user.id,
             positionId,
           })),
@@ -149,6 +169,58 @@ export async function updateAvatarAction(payload: { avatarPublicId?: string | nu
       console.error("[profile] failed to destroy previous avatar", error);
     }
   }
+
+  revalidatePath("/profile");
+  return { ok: true };
+}
+
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(8, "Mot de passe actuel invalide"),
+    newPassword: z.string().min(8, "Mot de passe trop court"),
+    confirmPassword: z.string().min(8, "Confirmation requise"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
+
+export async function updatePasswordAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    redirect("/login?callbackUrl=/profile");
+  }
+
+  const parsed = passwordSchema.safeParse({
+    currentPassword: formData.get("currentPassword")?.toString() ?? "",
+    newPassword: formData.get("newPassword")?.toString() ?? "",
+    confirmPassword: formData.get("confirmPassword")?.toString() ?? "",
+  });
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors[0]?.message ?? "Formulaire invalide");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { passwordHash: true, disabledAt: true },
+  });
+  if (!user) {
+    redirect("/login");
+  }
+  if (user.disabledAt) {
+    throw new Error("Compte désactivé, contactez l’admin.");
+  }
+
+  const isValid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash);
+  if (!isValid) {
+    throw new Error("Mot de passe actuel incorrect.");
+  }
+
+  const newHash = await bcrypt.hash(parsed.data.newPassword, 10);
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { passwordHash: newHash },
+  });
 
   revalidatePath("/profile");
   return { ok: true };

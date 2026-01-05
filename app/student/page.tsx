@@ -218,7 +218,7 @@ export default async function StudentDashboard() {
   const nextCoursePhoto = nextCourse?.photoPublicId
     ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${nextCourse.photoPublicId}`
     : null;
-  const lastCourse = lastPastCourseAttendance?.course ?? lastAnyCourseAttendance?.course ?? null;
+  const lastCourse = lastPastCourseAttendance?.course ?? null;
   const lastCourseId = lastCourse?.id ?? lastPastCourseAttendance?.courseId ?? null;
   const lastCoursePhoto = lastCourse?.photoPublicId
     ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_auto,w_800,h_400/${lastCourse.photoPublicId}`

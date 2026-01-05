@@ -32,6 +32,15 @@ export async function createPresetAction(formData: FormData) {
   if (!session?.user || !session.user.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
+  if (session.user.role === "TEACHER") {
+    const teacher = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { canCreatePositionAndPreset: true },
+    });
+    if (!teacher?.canCreatePositionAndPreset) {
+      redirect("/access-denied");
+    }
+  }
 
   const rawPositionIds = formData.getAll("positionIds").map((id) => id.toString());
   const metaIds = formData.getAll("positionMetaId").map((id) => id.toString());
@@ -243,6 +252,15 @@ export async function deletePresetAction(formData: FormData) {
   if (!session?.user || !session.user.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
+  if (session.user.role === "TEACHER") {
+    const teacher = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { canDeletePositionAndPreset: true },
+    });
+    if (!teacher?.canDeletePositionAndPreset) {
+      redirect("/access-denied");
+    }
+  }
 
   const parsed = deletePresetSchema.safeParse({
     id: formData.get("presetId")?.toString(),
@@ -268,6 +286,15 @@ export async function updatePresetImageAction(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user || !session.user.schoolId || (session.user.role !== "TEACHER" && session.user.role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
+  }
+  if (session.user.role === "TEACHER") {
+    const teacher = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { canDeletePositionAndPreset: true },
+    });
+    if (!teacher?.canDeletePositionAndPreset) {
+      redirect("/access-denied");
+    }
   }
   const parsed = presetImageSchema.safeParse({
     id: formData.get("id")?.toString(),

@@ -13,6 +13,7 @@ type DayCourse = {
   past: boolean;
   isVirtual?: boolean;
   positionsCount?: number;
+  isDisabledSource?: boolean;
 };
 
 type Day = {
@@ -188,20 +189,25 @@ export function WeekCourses({ initialWeek, initialPrev, initialNext, initialDays
                           {new Date(course.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
                           - {formatDuration(course.durationMinutes ?? 60)}
                         </p>
-                        <p className="truncate text-[11px] font-semibold text-white">
-                          {course.title ?? "Cours"}
+                      <p className="truncate text-[11px] font-semibold text-white">
+                        {course.title ?? "Cours"}
+                      </p>
+                      <p className="truncate text-[10px] text-cyan-100">
+                        {course.teacherName}
+                      </p>
+                      <p className="truncate text-[10px] text-slate-200">
+                        {course.studioName}
+                      </p>
+                      {course.isDisabledSource && (
+                        <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-100">
+                          Désactivé · Inscriptions closes
                         </p>
-                        <p className="truncate text-[10px] text-cyan-100">
-                          {course.teacherName}
-                        </p>
-                        <p className="truncate text-[10px] text-slate-200">
-                          {course.studioName}
-                        </p>
-                          {course.isVirtual && (
-                            <p
-                              className="truncate text-[12px] text-amber-100"
-                              title="À valider · positions à définir"
-                              aria-label="À valider"
+                      )}
+                      {course.isVirtual && (
+                        <p
+                          className="truncate text-[12px] text-amber-100"
+                          title="À valider · positions à définir"
+                          aria-label="À valider"
                             >
                               🗓️
                             </p>

@@ -92,8 +92,9 @@ export default async function StudentCourseDetailPage({
         photoPublicId: true,
         isVirtual: true,
         school: { select: { name: true } },
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { name: true, address: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, address: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         positions: { include: { position: true } },
         notes: {
           where: { studentId: session.user.id },
@@ -115,8 +116,9 @@ export default async function StudentCourseDetailPage({
           where: { id, ...(session.user.schoolId ? { schoolId: session.user.schoolId } : {}) },
           include: {
         school: { select: { name: true } },
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { name: true, address: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, address: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         positions: { include: { position: true } },
         notes: {
           where: { studentId: session.user.id },
@@ -175,8 +177,17 @@ export default async function StudentCourseDetailPage({
     user.studentFavoritePositions?.map((fav) => fav.positionId) ?? []
   );
   const isVirtual = course.isVirtual;
+  const isDisabledSource =
+    Boolean(course.teacher?.disabledAt) ||
+    Boolean(course.studio?.disabledAt) ||
+    Boolean(course.disciplineRef?.disabledAt);
   const canBuy =
-    !isAttending && endTime > NOW_MS && (user.credits ?? 0) >= cost && hasPositions && !isVirtual;
+    !isAttending &&
+    endTime > NOW_MS &&
+    (user.credits ?? 0) >= cost &&
+    hasPositions &&
+    !isVirtual &&
+    !isDisabledSource;
   const isPastCourse = endTime <= NOW_MS;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
@@ -204,6 +215,11 @@ export default async function StudentCourseDetailPage({
               <h1 className="text-3xl font-semibold text-white">
                 {course.title ?? "Cours"}
               </h1>
+              {isDisabledSource && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-rose-50">
+                  Désactivé · Inscriptions closes
+                </span>
+              )}
             </div>
             <div className="space-y-1 text-sm text-slate-200">
               <p className="text-base text-white flex flex-wrap items-center gap-2">
@@ -260,6 +276,11 @@ export default async function StudentCourseDetailPage({
                     {waitlistQuota > 0 ? ` · quota ${waitlistCount}/${waitlistQuota}` : ""}
                   </span>
                 )}
+                {isDisabledSource && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2 py-0.5 text-[11px] font-semibold text-rose-50">
+                    Désactivé · Inscriptions closes
+                  </span>
+                )}
               </p>
               {course.school?.name && (
                 <p className="text-slate-300">
@@ -307,6 +328,8 @@ export default async function StudentCourseDetailPage({
                             : waitlistFull
                             ? "Liste d'attente complète"
                             : "Rejoindre la liste d’attente"
+                          : isDisabledSource
+                          ? "Inscriptions closes"
                           : isVirtual || !hasPositions
                           ? "Inscription bloquée tant que les positions ne sont pas définies"
                           : endTime <= NOW_MS

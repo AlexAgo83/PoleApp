@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AVATAR_PLACEHOLDER } from "@/lib/placeholders";
 import { resolveAvatarUrl } from "@/lib/avatar";
-import { updateProfileAction } from "./actions";
+import { updateProfileAction, updatePasswordAction } from "./actions";
 import { ProfileCollapsible } from "./ProfileCollapsible";
 import { AvatarManager } from "./AvatarManager";
 import { StudentPerformanceList } from "./StudentPerformanceList";
@@ -51,6 +51,9 @@ export default async function ProfilePage() {
       favoritePositions: {
         include: { position: true },
       },
+      favoriteDisciplines: {
+        include: { discipline: true },
+      },
       studentFavoritePositions: {
         include: { position: true },
       },
@@ -91,11 +94,20 @@ export default async function ProfilePage() {
           orderBy: { name: "asc" },
         })
       : [];
+  const disciplines = isTeacher
+    ? await prisma.discipline.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+      })
+    : [];
   const favoritePositionIds = isTeacher
     ? user.favoritePositions.map((fp) => fp.positionId)
     : isStudent
       ? user.studentFavoritePositions.map((fp) => fp.positionId)
       : [];
+  const favoriteDisciplineIds = isTeacher
+    ? user.favoriteDisciplines.map((fd) => fd.disciplineId)
+    : [];
   const injuries = isStudent ? user.injuries ?? [] : [];
   const gameSessions = isStudent
     ? await prisma.gameSession.findMany({
@@ -373,6 +385,27 @@ export default async function ProfilePage() {
             </label>
           )}
 
+          {isTeacher && (
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Disciplines favorites (max 5)</span>
+              <select
+                name="favoriteDisciplines"
+                multiple
+                defaultValue={favoriteDisciplineIds}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              >
+                {disciplines.map((discipline) => (
+                  <option key={discipline.id} value={discipline.id}>
+                    {discipline.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-400">
+                Sélection multiple limitée à 5. Maintiens Ctrl/Cmd (ou Maj) pour choisir plusieurs disciplines.
+              </p>
+            </label>
+          )}
+
           <p className="text-xs text-slate-400">
             Ce nom est affiché dans les listes, cours et messages. Les autres
             champs (email, rôle, école) restent informatifs et non éditables ici. L’âge est optionnel.
@@ -404,6 +437,60 @@ export default async function ProfilePage() {
           <p className="text-xs text-slate-400">
             Upload signé Cloudinary (restrict), formats jpg/png/webp, 4 Mo max. Laisse vide pour utiliser l’avatar neutre ({isTeacher ? "prof" : "élève"}).
           </p>
+        </ProfileCollapsible>
+      </section>
+
+      <section className="panel p-6">
+        <ProfileCollapsible
+          id="password"
+          eyebrow="Sécurité"
+          heading="Changer le mot de passe"
+        >
+          <form action={updatePasswordAction} className="space-y-4">
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Mot de passe actuel</span>
+              <input
+                type="password"
+                name="currentPassword"
+                autoComplete="current-password"
+                required
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Nouveau mot de passe</span>
+              <input
+                type="password"
+                name="newPassword"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Confirmer le nouveau mot de passe</span>
+              <input
+                type="password"
+                name="confirmPassword"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              />
+            </label>
+            <div className="flex items-center justify-end">
+              <button
+                type="submit"
+                className="rounded-full bg-cyan-500 px-4 py-2 font-semibold text-white transition hover:bg-cyan-400"
+              >
+                Mettre à jour
+              </button>
+            </div>
+            <p className="text-xs text-slate-400">
+              Minimum 8 caractères. Le mot de passe actuel est requis pour sécuriser le changement.
+            </p>
+          </form>
         </ProfileCollapsible>
       </section>
 
@@ -442,6 +529,27 @@ export default async function ProfilePage() {
                 </div>
               ) : (
                 <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
+              )}
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                Disciplines favorites
+              </p>
+              {favoriteDisciplineIds.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {user.favoriteDisciplines
+                    .filter((fav) => fav.discipline)
+                    .map((fav) => (
+                      <span
+                        key={fav.disciplineId}
+                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                      >
+                        {fav.discipline?.name}
+                      </span>
+                    ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-slate-300">Aucune discipline favorite pour le moment.</p>
               )}
             </div>
           </div>

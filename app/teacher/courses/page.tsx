@@ -151,8 +151,9 @@ export default async function TeacherCoursesPage({
       include: {
         attendances: true,
         positions: true,
-        teacher: { select: { name: true, email: true } },
-        studio: { select: { name: true } },
+        teacher: { select: { name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         _count: { select: { notes: true, attendances: true, positions: true } },
       },
     })
@@ -169,8 +170,9 @@ export default async function TeacherCoursesPage({
           include: {
             attendances: true,
             positions: true,
-            teacher: { select: { name: true, email: true } },
-            studio: { select: { name: true } },
+            teacher: { select: { name: true, email: true, disabledAt: true } },
+            studio: { select: { name: true, disabledAt: true } },
+            disciplineRef: { select: { disabledAt: true } },
             _count: { select: { notes: true, attendances: true, positions: true } },
           },
         });
@@ -386,6 +388,11 @@ export default async function TeacherCoursesPage({
         )}
         <div className="flex flex-col divide-y divide-white/5">
           {courses.map((course) => {
+          const disabledSources: string[] = [];
+          if ((course as any).teacher?.disabledAt) disabledSources.push("Professeur");
+          if ((course as any).studio?.disabledAt) disabledSources.push("Studio");
+          if ((course as any).disciplineRef?.disabledAt) disabledSources.push("Discipline");
+          const isDisabledSource = disabledSources.length > 0;
           const isPast = new Date(course.date).getTime() < NOW_MS;
           const seatsUsed = course._count?.attendances ?? course.attendances.length ?? 0;
           const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
@@ -407,7 +414,17 @@ export default async function TeacherCoursesPage({
               >
                 <article className="flex flex-col gap-2 py-3 px-2">
                   <div className="flex flex-wrap items-start justify-between gap-2">
-                    <p className="text-lg font-semibold text-white">{course.title ?? "Cours sans titre"}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-lg font-semibold text-white">{course.title ?? "Cours sans titre"}</p>
+                      {isDisabledSource && (
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-rose-50"
+                          title={`Source désactivée: ${disabledSources.join(", ")}`}
+                        >
+                          Désactivé · Inscriptions closes
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-wrap items-start gap-3 md:flex-nowrap">
                     <SafeImage
