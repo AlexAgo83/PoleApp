@@ -35,6 +35,9 @@ export default async function SuperAdminSchoolsPage({ searchParams }: PageProps)
         where: { role: "SCHOOL_ADMIN" },
         select: { id: true, name: true, email: true },
       },
+      _count: {
+        select: { users: true, studios: true, courses: true },
+      },
     },
   });
 
@@ -124,8 +127,20 @@ export default async function SuperAdminSchoolsPage({ searchParams }: PageProps)
                       "Site non renseigné"
                     )}
                   </p>
-                  <p className="text-xs text-slate-400">
-                    {school.archivedAt ? "Archivée" : "Active"} — Admins : {school.users.length || 0}
+                  <p className="text-xs text-slate-400 flex flex-wrap items-center gap-2">
+                    {school.archivedAt ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-50">
+                        Archivée
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-50">
+                        Active
+                      </span>
+                    )}
+                    <span className="text-slate-300">Admins : {school.users.length || 0}</span>
+                    <span className="text-slate-400">
+                      {school._count.studios} studios · {school._count.courses} cours
+                    </span>
                   </p>
                 </div>
                 <form action={toggleArchiveSchoolAction}>
