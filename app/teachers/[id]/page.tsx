@@ -266,7 +266,6 @@ export default async function TeacherPublicProfilePage({
               id="teacher-password"
               eyebrow="Sécurité"
               heading="Changer le mot de passe"
-              description="Le mot de passe actuel est requis. Minimum 8 caractères."
             >
               <form action={updateTeacherPasswordAction} className="panel-grid lg-gap md:grid-cols-2">
                 <input type="hidden" name="teacherId" value={teacher.id} />
@@ -312,6 +311,9 @@ export default async function TeacherPublicProfilePage({
                     Mettre à jour
                   </button>
                 </div>
+                <p className="md:col-span-2 text-xs text-slate-400">
+                  Le mot de passe actuel est requis. Minimum 8 caractères.
+                </p>
               </form>
             </ProfileCollapsible>
           </section>
