@@ -9,6 +9,8 @@ import { TeacherEditPanel } from "./TeacherEditPanel";
 import { TeacherAvatarManager } from "./TeacherAvatarManager";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { TeacherCombosGrid } from "./TeacherCombosGrid";
+import { updateTeacherPasswordAction } from "./actions";
+import { ProfileCollapsible } from "@/app/profile/ProfileCollapsible";
 
 const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
@@ -62,6 +64,10 @@ export default async function TeacherPublicProfilePage({
         include: { position: true },
         orderBy: { position: { name: "asc" } },
       },
+      favoriteDisciplines: {
+        include: { discipline: true },
+        orderBy: { discipline: { name: "asc" } },
+      },
       createdPresets: {
         orderBy: { createdAt: "desc" },
         select: {
@@ -92,6 +98,12 @@ export default async function TeacherPublicProfilePage({
         orderBy: { name: "asc" },
       })
     : [];
+  const disciplines = canEdit
+    ? await prisma.discipline.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+      })
+    : [];
 
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: teacher.avatarPublicId,
@@ -102,6 +114,10 @@ export default async function TeacherPublicProfilePage({
     teacher.favoritePositions
       .map((fp) => fp.position)
       .filter((p): p is NonNullable<typeof p> => Boolean(p)) ?? [];
+  const favoriteDisciplines =
+    teacher.favoriteDisciplines
+      .map((fd) => fd.discipline)
+      .filter((d): d is NonNullable<typeof d> => Boolean(d)) ?? [];
   const backHref = safeFrom || undefined;
   const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
   const nameParts = (teacher.name ?? "")
@@ -114,6 +130,7 @@ export default async function TeacherPublicProfilePage({
     firstNameDefault = teacher.email.split("@")[0] ?? "";
   }
   const favoritePositionIds = teacher.favoritePositions.map((fp) => fp.positionId);
+  const favoriteDisciplineIds = teacher.favoriteDisciplines.map((fd) => fd.disciplineId);
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
   const cloudinaryCloudName =
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME ?? "";
@@ -148,7 +165,7 @@ export default async function TeacherPublicProfilePage({
           </div>
         </div>
         <div className="panel-grid md:grid-cols-2">
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <h2 className="text-lg font-semibold text-white">Diplômes</h2>
             <p className="whitespace-pre-line rounded-xl px-0 py-0 text-sm text-slate-100">
               {teacher.diplomas?.trim() || "Non renseigné"}
@@ -172,6 +189,23 @@ export default async function TeacherPublicProfilePage({
               <p className="text-sm text-slate-300">Aucune position préférée renseignée.</p>
             )}
           </div>
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold text-white">Disciplines favorites</h2>
+            {favoriteDisciplines.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {favoriteDisciplines.map((discipline) => (
+                  <span
+                    key={discipline.id}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                  >
+                    {discipline.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-300">Aucune discipline favorite renseignée.</p>
+            )}
+          </div>
         </div>
 
         <TeacherCombosGrid
@@ -193,8 +227,10 @@ export default async function TeacherPublicProfilePage({
               age: teacher.age,
               diplomas: teacher.diplomas,
               favoritePositionIds,
+              favoriteDisciplineIds,
             }}
             positions={positions}
+            disciplines={disciplines}
             returnTo={backHref}
           />
 
@@ -223,6 +259,63 @@ export default async function TeacherPublicProfilePage({
                 </p>
               </div>
             </details>
+          </section>
+
+          <section className="panel panel-body lg-gap border-indigo-400/15">
+            <ProfileCollapsible
+              id="teacher-password"
+              eyebrow="Sécurité"
+              heading="Changer le mot de passe"
+            >
+              <form action={updateTeacherPasswordAction} className="panel-grid lg-gap md:grid-cols-2">
+                <input type="hidden" name="teacherId" value={teacher.id} />
+                {backHref ? <input type="hidden" name="returnTo" value={backHref} /> : null}
+                <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
+                  Mot de passe actuel
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    autoComplete="current-password"
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <label className="space-y-2 text-sm text-slate-200">
+                  Nouveau mot de passe
+                  <input
+                    type="password"
+                    name="newPassword"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <label className="space-y-2 text-sm text-slate-200">
+                  Confirmer le nouveau mot de passe
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <div className="md:col-span-2 flex justify-end">
+                  <button
+                    type="submit"
+                    className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+                  >
+                    Mettre à jour
+                  </button>
+                </div>
+                <p className="md:col-span-2 text-xs text-slate-400">
+                  Le mot de passe actuel est requis. Minimum 8 caractères.
+                </p>
+              </form>
+            </ProfileCollapsible>
           </section>
         </>
       )}

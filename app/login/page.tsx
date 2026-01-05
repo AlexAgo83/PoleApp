@@ -71,7 +71,7 @@ function LoginContent() {
     });
 
     if (result?.error) {
-      setError("Email ou mot de passe incorrect.");
+      setError(result.error);
       setLoading(false);
       return;
     }
@@ -154,9 +154,31 @@ function LoginContent() {
           />
           </div>
           {error && (
-            <p className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
-              {error}
-            </p>
+            <div className="space-y-2">
+              <p className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+                {error}
+              </p>
+              {error.toLowerCase().includes("non vérifié") && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await fetch("/api/auth/verify/resend", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email }),
+                      });
+                      setResetMessage("Email de vérification renvoyé (si le compte existe).");
+                    } catch {
+                      setResetMessage("Email de vérification renvoyé (si le compte existe).");
+                    }
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/30"
+                >
+                  Renvoyer l’email de vérification
+                </button>
+              )}
+            </div>
           )}
           {resetMessage && (
             <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
@@ -165,7 +187,7 @@ function LoginContent() {
           )}
           {signupSuccess && (
             <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
-              Compte créé. Tu peux te connecter avec tes identifiants.
+              Compte créé. Vérifie ton email pour activer ton compte.
             </p>
           )}
           <button

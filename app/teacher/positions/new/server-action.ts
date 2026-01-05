@@ -30,6 +30,15 @@ export async function createPositionAction(input: z.infer<typeof schema>) {
   if (!role || (role !== "TEACHER" && role !== "SCHOOL_ADMIN")) {
     redirect("/access-denied");
   }
+  if (role === "TEACHER") {
+    const teacher = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { canCreatePositionAndPreset: true },
+    });
+    if (!teacher?.canCreatePositionAndPreset) {
+      redirect("/access-denied");
+    }
+  }
 
   const parsed = schema.parse(input);
   const data = {

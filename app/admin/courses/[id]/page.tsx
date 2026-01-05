@@ -38,8 +38,9 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
       discipline: true,
       photoPublicId: true,
       isVirtual: true,
-      teacher: { select: { id: true, name: true, email: true } },
-      studio: { select: { name: true, address: true } },
+      teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+      studio: { select: { name: true, address: true, disabledAt: true } },
+      disciplineRef: { select: { disabledAt: true } },
       attendances: {
         include: { student: { select: { id: true, name: true, email: true } } },
       },
@@ -99,6 +100,12 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
   });
   const teacherName = course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const cost = course.costCredits ?? 100;
+  const disabledSources: string[] = [];
+  if (course.teacher?.disabledAt) disabledSources.push("Professeur");
+  if (course.studio?.disabledAt) disabledSources.push("Studio");
+  if (course.disciplineRef?.disabledAt) disabledSources.push("Discipline");
+  const isDisabledSource = disabledSources.length > 0;
+  const isFutureCourse = new Date(course.date).getTime() + (course.durationMinutes ?? 60) * 60_000 > Date.now();
   const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME;
   const coursePhoto =
     course.photoPublicId && CLOUD_NAME
@@ -138,6 +145,14 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
             <p className="text-sm text-slate-300">
               {teacherName} · {course.studio?.name ?? "Studio non renseigné"} · {course._count.attendances} élève(s) · {cost} crédits
             </p>
+            {isDisabledSource && (
+              <p
+                className="mt-1 inline-flex items-center gap-2 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-xs font-semibold text-rose-100"
+                title={`Source désactivée: ${disabledSources.join(", ")}`}
+              >
+                Désactivé · Inscriptions closes (source)
+              </p>
+            )}
             {course.isVirtual && (
               <p className="mt-1 inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-100">
                 À valider : positions à définir (inscription élève bloquée)
@@ -154,6 +169,11 @@ export default async function AdminCourseDetailPage({ params, searchParams }: Pa
       </header>
 
       <section className="panel border-indigo-400/15 p-6">
+        {isDisabledSource && isFutureCourse && (
+          <div className="mb-3 rounded-lg border border-rose-300/60 bg-rose-500/10 px-3 py-2 text-sm text-rose-50">
+            Prof/Studio/Discipline désactivé(e) : cours maintenu pour les inscrits, pas de nouvelles inscriptions (notif élèves à gérer manuellement).
+          </div>
+        )}
         <h2 className="text-lg font-semibold text-white">Participants</h2>
         <ul className="mt-3 space-y-2 text-sm text-slate-200">
           {course.attendances.map((attendance) => (

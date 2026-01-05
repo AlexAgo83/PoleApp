@@ -103,7 +103,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       : Promise.resolve([]),
     prisma.studio.findMany({
       where: { schoolId },
-      select: { id: true, name: true },
+      select: { id: true, name: true, disabledAt: true },
       orderBy: { name: "asc" },
     }),
     prisma.studentPositionProgress.findMany({
@@ -116,7 +116,7 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
       },
     }),
     prisma.discipline.findMany({
-      select: { id: true, name: true, color: true },
+      select: { id: true, name: true, color: true, disabledAt: true },
       orderBy: { name: "asc" },
     }),
     prisma.teacherFavoritePosition.findMany({

@@ -81,8 +81,9 @@ export default async function TeacherCourseDetailPage({
         disciplineId: true,
         photoPublicId: true,
         isVirtual: true,
-        teacher: { select: { id: true, name: true, email: true } },
-        studio: { select: { name: true, address: true } },
+        teacher: { select: { id: true, name: true, email: true, disabledAt: true } },
+        studio: { select: { name: true, address: true, disabledAt: true } },
+        disciplineRef: { select: { disabledAt: true } },
         attendances: {
           include: {
             student: {
@@ -235,6 +236,14 @@ export default async function TeacherCourseDetailPage({
       ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,f_auto,q_60,w_1200,h_600/${course.photoPublicId}`
       : COURSE_PHOTO_PLACEHOLDER;
   const NOW_MS = Date.now();
+  const disabledSources: string[] = [];
+  const teacherDisabled = (course.teacher as { disabledAt?: Date | null } | null)?.disabledAt;
+  const studioDisabled = (course.studio as { disabledAt?: Date | null } | null)?.disabledAt;
+  const disciplineDisabled = (course as any).disciplineRef?.disabledAt as Date | null | undefined;
+  if (teacherDisabled) disabledSources.push("Professeur");
+  if (studioDisabled) disabledSources.push("Studio");
+  if (disciplineDisabled) disabledSources.push("Discipline");
+  const isDisabledSource = disabledSources.length > 0;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
     year: "numeric",
@@ -278,6 +287,14 @@ export default async function TeacherCourseDetailPage({
                 {course.notes.length > 0 && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs font-semibold text-white">
                     Notes : {course.notes.length}
+                  </span>
+                )}
+                {isDisabledSource && (
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-50"
+                    title={`Source désactivée: ${disabledSources.join(", ")}`}
+                  >
+                    Désactivé · Inscriptions closes
                   </span>
                 )}
               </div>
@@ -357,6 +374,11 @@ export default async function TeacherCourseDetailPage({
       </header>
 
       <section className="panel panel-body lg-gap border-indigo-400/15">
+        {isDisabledSource && !isPastCourse && (
+          <div className="mb-3 rounded-lg border border-rose-300/60 bg-rose-500/10 px-3 py-2 text-sm text-rose-50">
+            Prof/Studio/Discipline désactivé(e) : cours maintenu pour les inscrits, pas de nouvelles inscriptions (notif élèves à gérer manuellement).
+          </div>
+        )}
         <h2 className="text-lg font-semibold text-white">Positions couvertes</h2>
         <ul className="mt-3 grid gap-2 md:grid-cols-2">
           {course.positions.map((cp) => (

@@ -1,7 +1,6 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -10,12 +9,8 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
-  destroyAsset,
-  isCloudinaryEnabled,
-  isDefaultAvatarPublicId,
   randomDefaultAvatarPublicId,
 } from "@/lib/cloudinary";
-import { isSeedPublicId } from "@/lib/media";
 
 const basePath = "/admin/users";
 
@@ -36,8 +31,9 @@ const updateSchema = z.object({
   isPremium: z.string().optional(),
 });
 
-const deleteSchema = z.object({
+const toggleSchema = z.object({
   userId: z.string().cuid(),
+  action: z.enum(["disable", "enable"]),
 });
 
 function redirectWithMessage(message: string, type: "success" | "error" = "success") {
@@ -92,7 +88,7 @@ export async function createUserAction(formData: FormData) {
   const credits = data.role === "STUDENT" ? (isPremium ? 1000 : 0) : 0;
   const defaultAvatar = randomDefaultAvatarPublicId();
 
-  await prisma.user.create({
+  const created = await prisma.user.create({
     data: {
       email: data.email,
       name: `${firstName} ${lastName}`.trim(),
@@ -102,6 +98,15 @@ export async function createUserAction(formData: FormData) {
       credits,
       schoolId: admin.schoolId,
       avatarPublicId: defaultAvatar ?? undefined,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id ?? null,
+      action: "user.create",
+      target: created.id,
+      details: { schoolId: admin.schoolId, role: data.role },
     },
   });
 
@@ -147,85 +152,83 @@ export async function updateUserAction(formData: FormData) {
     },
   });
 
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id ?? null,
+      action: "user.update",
+      target: data.userId,
+      details: { schoolId: admin.schoolId, role: data.role },
+    },
+  });
+
   revalidatePath(basePath);
   redirectWithMessage("Utilisateur mis à jour");
 }
 
-export async function deleteUserAction(formData: FormData) {
+export async function toggleUserAction(formData: FormData) {
   const admin = await requireAdmin();
-  const parsed = deleteSchema.safeParse({ userId: formData.get("userId") });
+  const parsed = toggleSchema.safeParse({ userId: formData.get("userId"), action: formData.get("action") });
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
   }
   const data = parsed.data;
 
   if (data.userId === admin.id) {
-    redirectWithMessage("Impossible de supprimer votre propre compte", "error");
+    redirectWithMessage("Impossible de désactiver votre propre compte", "error");
   }
 
   const user = await prisma.user.findUnique({
     where: { id: data.userId },
-    select: { schoolId: true, avatarPublicId: true },
+    select: { schoolId: true, avatarPublicId: true, disabledAt: true },
   });
   if (!user || user.schoolId !== admin.schoolId) {
     redirect("/access-denied");
   }
 
-  const [
-    attendanceCount,
-    noteCount,
-    progressCount,
-    injuryCount,
-    coursesTaught,
-    positionsAuthored,
-  ] = await prisma.$transaction([
-    prisma.courseAttendance.count({ where: { studentId: data.userId } }),
-    prisma.courseNote.count({ where: { studentId: data.userId } }),
-    prisma.studentPositionProgress.count({
-      where: {
-        OR: [{ studentId: data.userId }, { lastUpdatedByUserId: data.userId }],
+  if (data.action === "disable") {
+    if (user.disabledAt) {
+      redirectWithMessage("Compte déjà désactivé", "error");
+    }
+    await prisma.user.update({
+      where: { id: data.userId },
+      data: {
+        disabledAt: new Date(),
+        disabledById: admin.id,
       },
-    }),
-    prisma.studentInjury.count({ where: { studentId: data.userId } }),
-    prisma.course.count({ where: { teacherId: data.userId } }),
-    prisma.position.count({ where: { createdByUserId: data.userId } }),
-  ]);
-
-  const linkedTotal =
-    attendanceCount +
-    noteCount +
-    progressCount +
-    injuryCount +
-    coursesTaught +
-    positionsAuthored;
-
-  if (linkedTotal > 0) {
-    redirectWithMessage(
-      "Suppression impossible : cet utilisateur est lié à des présences, des notes, une progression ou des cours. Supprime ces liens avant de continuer.",
-      "error"
-    );
+    });
+    await prisma.auditLog.create({
+      data: {
+        actorId: admin.id ?? null,
+        action: "user.disable",
+        target: data.userId,
+        details: { schoolId: admin.schoolId },
+      },
+    });
+    revalidatePath(basePath);
+    redirectWithMessage("Utilisateur désactivé");
   }
 
-  const avatarToDelete =
-    user.avatarPublicId && !isDefaultAvatarPublicId(user.avatarPublicId) ? user.avatarPublicId : null;
-
-  try {
-    await prisma.user.delete({ where: { id: data.userId } });
-    if (avatarToDelete && isCloudinaryEnabled() && !isSeedPublicId(avatarToDelete)) {
-      destroyAsset(avatarToDelete, "image", "authenticated").catch((err) => {
-        console.warn("[admin-user-delete] failed to destroy avatar", err);
-      });
-    }
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
-      redirectWithMessage(
-        "Suppression impossible : des données liées (cours ou progression) empêchent la suppression.",
-        "error"
-      );
-    }
-    throw err;
+  if (!user.disabledAt && data.action === "enable") {
+    redirectWithMessage("Compte déjà actif", "error");
   }
+
+  await prisma.user.update({
+    where: { id: data.userId },
+    data: {
+      disabledAt: null,
+      disabledById: null,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id ?? null,
+      action: "user.enable",
+      target: data.userId,
+      details: { schoolId: admin.schoolId },
+    },
+  });
 
   revalidatePath(basePath);
-  redirectWithMessage("Utilisateur supprimé");
+  redirectWithMessage("Utilisateur réactivé");
 }
