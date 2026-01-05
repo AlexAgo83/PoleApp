@@ -2,6 +2,7 @@
 > Doit rester à jour avec le projet (backlogs, changelog, modèles, routes).
 
 ## Contenu principal
+- `specs/`: specs fonctionnelles par domaine (consultables via `/logics` côté super-admin)
 - `backlog/`: backlogs par Step/feature (SXXX, Cloudinary, Mapbox…)
 - `discovery/`: QA & QE (retours S016/S010 documentés)
 - `models/03_DATA_MODEL.md`: modèle de données à jour (Prisma/Postgres)
