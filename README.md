@@ -100,6 +100,11 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 - Démo déblocage : un achat de preset payant (Purchase PRESET) et un cours “Cours Spin Débutant (démo)” avec attendance CONFIRMED pour illustrer l’accès aux positions via achat/inscription.
 - Extras : séries récurrentes hebdo (dont disciplines alternatives, série courte), cours “edge” (tôt/tard, virtuels, gratuits/quotas waitlist), cours de secours par studio, notes et attendances variées (attente/inscriptions) pour tester blocage d’inscription sans positions; presets seed (images/vidéos Cloudinary).
 
+## Docs internes
+- Specs fonctionnelles : `logics/specs/` (consultables via `/logics` côté super-admin).
+- Backlog/QA/QE/DRY : `logics/backlog/`, `logics/discovery/`, `logics/foundry/`.
+- Modèles/routes : `logics/models/03_DATA_MODEL.md`, `logics/models/04_ROUTES_AND_SCREENS.md`.
+
 ## Déploiement Render
 - Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).
 - Start : `npm run start:render` (start-auto : migrate deploy → seed super-admin si absent → start). Le fallback `db push` est **désactivé** sauf si `ALLOW_DB_PUSH_FALLBACK=true` (éviter les dérives de migrations en prod).
