@@ -893,6 +893,23 @@ async function seedSchoolsAndUsers() {
       admins.push({ id: created.id, schoolId: schools[acc.schoolIdx].id });
     }
   }
+  // S'assure que les comptes fixes (hors unverified) sont marqués vérifiés
+  await prisma.user.updateMany({
+    where: {
+      email: {
+        in: [
+          "admin@poleapp.test",
+          "teacher@poleapp.test",
+          "student1@poleapp.test",
+          "student2@poleapp.test",
+          "student-disabled@poleapp.test",
+          "teacher-create-off@poleapp.test",
+          "teacher-disabled@poleapp.test",
+        ],
+      },
+    },
+    data: { verifiedAt: new Date() },
+  });
 
   // Distribute remaining names for teachers/students
   const peoplePool = [...people];
