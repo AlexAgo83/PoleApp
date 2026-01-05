@@ -238,6 +238,10 @@ const resetSchema = z.object({
   email: z.string().email(),
 });
 
+const forceVerifySchema = z.object({
+  email: z.string().email(),
+});
+
 export async function resetUserPasswordAction(formData: FormData) {
   const admin = await requireSuperAdmin();
   const redirectTo = formData.get("redirectTo")?.toString() || basePath;
@@ -293,6 +297,43 @@ Connecte-toi et change-le dès que possible.`;
     revalidatePath(redirectTo);
     redirect(`${redirectTo}?flash=reset-invalid`);
   }
+}
+
+export async function forceVerifyUserAction(formData: FormData) {
+  const admin = await requireSuperAdmin();
+  const redirectTo = formData.get("redirectTo")?.toString() || basePath;
+  const parsed = forceVerifySchema.safeParse({
+    email: formData.get("email"),
+  });
+  if (!parsed.success) {
+    redirect(`${redirectTo}?flash=force-invalid`);
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  if (!user) {
+    redirect(`${redirectTo}?flash=force-not-found`);
+  }
+
+  const now = new Date();
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { email: parsed.data.email },
+      data: { verifiedAt: now, forcedVerifiedById: admin.id },
+    }),
+    prisma.emailVerificationToken.deleteMany({ where: { userId: user?.id } }),
+    prisma.auditLog.create({
+      data: {
+        actorId: admin.id ?? undefined,
+        action: "user:force-verify",
+        target: user?.id,
+        details: { email: user?.email },
+      },
+    }),
+  ]);
+
+  revalidatePath(redirectTo);
+  if (redirectTo !== basePath) revalidatePath(basePath);
+  redirect(`${redirectTo}?flash=force-ok&email=${encodeURIComponent(parsed.data.email)}`);
 }
 
 function euroToCents(value: number) {
