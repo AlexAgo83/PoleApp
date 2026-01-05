@@ -871,7 +871,7 @@ async function seedSchoolsAndUsers() {
         avatarPublicId: takeAvatarPublicId(acc.gender ?? null),
         age: acc.age ?? null,
         credits: acc.role === Role.STUDENT ? 1000 : undefined,
-        verifiedAt: acc.verifiedAt ?? new Date(),
+        verifiedAt: acc.verifiedAt === undefined ? new Date() : acc.verifiedAt,
         disabledAt: acc.disabledAt ?? null,
         canCreatePositionAndPreset: acc.canCreatePositionAndPreset ?? true,
         canDeletePositionAndPreset: acc.canDeletePositionAndPreset ?? true,
