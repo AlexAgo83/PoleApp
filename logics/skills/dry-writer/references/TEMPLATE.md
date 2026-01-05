@@ -1,0 +1,29 @@
+```markdown
+# 08_DRY_XXX — Titre
+[Aligné vX.Y.Z | Compréhension: ??% | Confiance: ??% | Avancement: 0% | Portée: …]
+
+## Objectif
+- …
+
+## Périmètre (in/out)
+- (in) …
+- (out) …
+
+## Règles fonctionnelles
+- …
+
+## UX cible
+- …
+
+## Données / technique
+- …
+
+## Tests & QA à prévoir
+- …
+
+## Plan & tâches
+- [ ] …
+
+## Risques / points ouverts
+- …
+```
