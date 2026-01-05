@@ -40,6 +40,13 @@ export async function POST(request: Request) {
 
     const canResend = await canResendVerification(user.id);
     if (!canResend) {
+      await prisma.auditLog.create({
+        data: {
+          action: "user:verify-email:resend:rate-limited",
+          target: user.id,
+          details: { reason: "cooldown" },
+        },
+      });
       return NextResponse.json({ ok: false, error: "Trop de demandes, réessaie dans 10 minutes." }, { status: 429 });
     }
 
