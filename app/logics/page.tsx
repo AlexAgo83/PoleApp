@@ -37,6 +37,7 @@ const CATEGORIES: Category[] = [
     filter: (file) => file.startsWith("07_QE_"),
   },
   { key: "foundry", label: "Foundry", dir: path.join(process.cwd(), "logics", "foundry") },
+  { key: "specs", label: "Specs", dir: path.join(process.cwd(), "logics", "specs") },
   { key: "instructions", label: "Instructions", dir: path.join(process.cwd(), "logics", "instructions") },
   { key: "knowledge", label: "Knowledge", dir: path.join(process.cwd(), "logics", "knowledge") },
   { key: "models", label: "Models", dir: path.join(process.cwd(), "logics", "models") },
