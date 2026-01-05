@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -168,6 +169,58 @@ export async function updateAvatarAction(payload: { avatarPublicId?: string | nu
       console.error("[profile] failed to destroy previous avatar", error);
     }
   }
+
+  revalidatePath("/profile");
+  return { ok: true };
+}
+
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(8, "Mot de passe actuel invalide"),
+    newPassword: z.string().min(8, "Mot de passe trop court"),
+    confirmPassword: z.string().min(8, "Confirmation requise"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
+
+export async function updatePasswordAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    redirect("/login?callbackUrl=/profile");
+  }
+
+  const parsed = passwordSchema.safeParse({
+    currentPassword: formData.get("currentPassword")?.toString() ?? "",
+    newPassword: formData.get("newPassword")?.toString() ?? "",
+    confirmPassword: formData.get("confirmPassword")?.toString() ?? "",
+  });
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors[0]?.message ?? "Formulaire invalide");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { passwordHash: true, disabledAt: true },
+  });
+  if (!user) {
+    redirect("/login");
+  }
+  if (user.disabledAt) {
+    throw new Error("Compte désactivé, contactez l’admin.");
+  }
+
+  const isValid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash);
+  if (!isValid) {
+    throw new Error("Mot de passe actuel incorrect.");
+  }
+
+  const newHash = await bcrypt.hash(parsed.data.newPassword, 10);
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { passwordHash: newHash },
+  });
 
   revalidatePath("/profile");
   return { ok: true };
