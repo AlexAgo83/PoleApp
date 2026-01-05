@@ -1,6 +1,6 @@
 # Backlog Mapbox (affichage studios/partenaires)
-[Compréhension: 25% / Confiance: 40% / Avancement: 0% / Obsolete: 15%]
-> NON PRIORISE / NE PAS FAIRE
+[Compréhension: 25% / Confiance: 40% / Avancement: 0% / Obsolete: 100%]
+> OBSOLÈTE / NE PAS FAIRE
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
