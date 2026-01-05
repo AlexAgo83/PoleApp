@@ -237,9 +237,9 @@ export default async function TeacherCourseDetailPage({
       : COURSE_PHOTO_PLACEHOLDER;
   const NOW_MS = Date.now();
   const disabledSources: string[] = [];
-  if ((course as any).teacher?.disabledAt) disabledSources.push("Professeur");
-  if ((course as any).studio?.disabledAt) disabledSources.push("Studio");
-  if ((course as any).disciplineRef?.disabledAt) disabledSources.push("Discipline");
+  if (course.teacher?.disabledAt) disabledSources.push("Professeur");
+  if (course.studio?.disabledAt) disabledSources.push("Studio");
+  if (course.disciplineRef?.disabledAt) disabledSources.push("Discipline");
   const isDisabledSource = disabledSources.length > 0;
   const formattedDate = new Date(course.date).toLocaleString("fr-FR", {
     hour12: false,
