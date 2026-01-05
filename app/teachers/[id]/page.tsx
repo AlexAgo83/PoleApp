@@ -62,6 +62,10 @@ export default async function TeacherPublicProfilePage({
         include: { position: true },
         orderBy: { position: { name: "asc" } },
       },
+      favoriteDisciplines: {
+        include: { discipline: true },
+        orderBy: { discipline: { name: "asc" } },
+      },
       createdPresets: {
         orderBy: { createdAt: "desc" },
         select: {
@@ -92,6 +96,12 @@ export default async function TeacherPublicProfilePage({
         orderBy: { name: "asc" },
       })
     : [];
+  const disciplines = canEdit
+    ? await prisma.discipline.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+      })
+    : [];
 
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: teacher.avatarPublicId,
@@ -102,6 +112,10 @@ export default async function TeacherPublicProfilePage({
     teacher.favoritePositions
       .map((fp) => fp.position)
       .filter((p): p is NonNullable<typeof p> => Boolean(p)) ?? [];
+  const favoriteDisciplines =
+    teacher.favoriteDisciplines
+      .map((fd) => fd.discipline)
+      .filter((d): d is NonNullable<typeof d> => Boolean(d)) ?? [];
   const backHref = safeFrom || undefined;
   const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
   const nameParts = (teacher.name ?? "")
@@ -114,6 +128,7 @@ export default async function TeacherPublicProfilePage({
     firstNameDefault = teacher.email.split("@")[0] ?? "";
   }
   const favoritePositionIds = teacher.favoritePositions.map((fp) => fp.positionId);
+  const favoriteDisciplineIds = teacher.favoriteDisciplines.map((fd) => fd.disciplineId);
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
   const cloudinaryCloudName =
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_CLOUD_NAME ?? "";
@@ -172,6 +187,23 @@ export default async function TeacherPublicProfilePage({
               <p className="text-sm text-slate-300">Aucune position préférée renseignée.</p>
             )}
           </div>
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold text-white">Disciplines favorites</h2>
+            {favoriteDisciplines.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {favoriteDisciplines.map((discipline) => (
+                  <span
+                    key={discipline.id}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                  >
+                    {discipline.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-300">Aucune discipline favorite renseignée.</p>
+            )}
+          </div>
         </div>
 
         <TeacherCombosGrid
@@ -193,8 +225,10 @@ export default async function TeacherPublicProfilePage({
               age: teacher.age,
               diplomas: teacher.diplomas,
               favoritePositionIds,
+              favoriteDisciplineIds,
             }}
             positions={positions}
+            disciplines={disciplines}
             returnTo={backHref}
           />
 

@@ -33,6 +33,7 @@ const schema = z.object({
     .max(2000, "Texte trop long")
     .optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
+  favoriteDisciplines: z.array(z.string().cuid()).max(5, "Max 5 disciplines").optional(),
 });
 
 export async function updateProfileAction(formData: FormData) {
@@ -51,14 +52,20 @@ export async function updateProfileAction(formData: FormData) {
       ? formData.get("diplomas")?.toString().trim() || undefined
       : undefined,
     favoritePositions: (formData.getAll("favoritePositions") ?? []).map((value) => value.toString()),
+    favoriteDisciplines: (formData.getAll("favoriteDisciplines") ?? []).map((value) =>
+      value.toString()
+    ),
   });
 
   if (!parsed.success) {
     throw new Error("Formulaire invalide");
   }
 
-  const { firstName, lastName, age, diplomas, favoritePositions = [] } = parsed.data;
+  const { firstName, lastName, age, diplomas, favoritePositions = [], favoriteDisciplines = [] } =
+    parsed.data;
   const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || null;
+  const dedupedDisciplines = Array.from(new Set(favoriteDisciplines)).slice(0, 5);
+  const dedupedPositions = Array.from(new Set(favoritePositions));
 
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
@@ -74,11 +81,23 @@ export async function updateProfileAction(formData: FormData) {
       await tx.teacherFavoritePosition.deleteMany({
         where: { teacherId: session.user.id },
       });
-      if (favoritePositions.length > 0) {
+      if (dedupedPositions.length > 0) {
         await tx.teacherFavoritePosition.createMany({
-          data: favoritePositions.map((positionId) => ({
+          data: dedupedPositions.map((positionId) => ({
             teacherId: session.user.id,
             positionId,
+          })),
+          skipDuplicates: true,
+        });
+      }
+      await tx.teacherFavoriteDiscipline.deleteMany({
+        where: { teacherId: session.user.id },
+      });
+      if (dedupedDisciplines.length > 0) {
+        await tx.teacherFavoriteDiscipline.createMany({
+          data: dedupedDisciplines.map((disciplineId) => ({
+            teacherId: session.user.id,
+            disciplineId,
           })),
           skipDuplicates: true,
         });
@@ -87,9 +106,9 @@ export async function updateProfileAction(formData: FormData) {
       await tx.studentFavoritePosition.deleteMany({
         where: { studentId: session.user.id },
       });
-      if (favoritePositions.length > 0) {
+      if (dedupedPositions.length > 0) {
         await tx.studentFavoritePosition.createMany({
-          data: favoritePositions.map((positionId) => ({
+          data: dedupedPositions.map((positionId) => ({
             studentId: session.user.id,
             positionId,
           })),

@@ -913,40 +913,42 @@ async function seedSchoolsAndUsers() {
     // 2 profs
     for (let i = 0; i < 2; i += 1) {
       const person = pickPerson();
-      const created = await prisma.user.create({
-        data: {
-          email: `teacher${i + 1}.${slugify(school.name)}@poleapp.test`,
-          passwordHash,
-          role: Role.TEACHER,
-          isPremium: true,
-          schoolId: school.id,
-          name: person.name,
-          age: person.age,
-          avatarPublicId: takeAvatarPublicId(person.gender),
-          diplomas: "Certificat Pole; BPJEPS option danse; Formation pédagogique",
-        },
-      });
-      teachers.push({ id: created.id, schoolId: school.id });
-    }
-    // 10 élèves (1 sur 2 premium)
+    const created = await prisma.user.create({
+      data: {
+        email: `teacher${i + 1}.${slugify(school.name)}@poleapp.test`,
+        passwordHash,
+        role: Role.TEACHER,
+        isPremium: true,
+        schoolId: school.id,
+        name: person.name,
+        age: person.age,
+        avatarPublicId: takeAvatarPublicId(person.gender),
+        diplomas: "Certificat Pole; BPJEPS option danse; Formation pédagogique",
+        verifiedAt: new Date(),
+      },
+    });
+    teachers.push({ id: created.id, schoolId: school.id });
+  }
+  // 10 élèves (1 sur 2 premium)
     for (let i = 0; i < 10; i += 1) {
       const person = pickPerson();
       const created = await prisma.user.create({
         data: {
           email: `student${i + 1}.${slugify(school.name)}@poleapp.test`,
           passwordHash,
-          role: Role.STUDENT,
-          isPremium: i % 2 === 0,
-          schoolId: school.id,
-          name: person.name,
-          age: person.age,
-          avatarPublicId: pickStudentAvatar(person.gender),
-          credits: 500,
-        },
-      });
-      students.push({ id: created.id, schoolId: school.id });
-    }
+        role: Role.STUDENT,
+        isPremium: i % 2 === 0,
+        schoolId: school.id,
+        name: person.name,
+        age: person.age,
+        avatarPublicId: pickStudentAvatar(person.gender),
+        credits: 500,
+        verifiedAt: new Date(),
+      },
+    });
+    students.push({ id: created.id, schoolId: school.id });
   }
+}
 
   return { schools, teachers, students, admins };
 }
@@ -1084,7 +1086,7 @@ async function seedCourses(schoolsData: {
       const positionsForDisc = positions.filter(
         (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
       );
-      await prisma.course.create({
+      const qaCourse = await prisma.course.create({
         data: {
           title: `Cours QA studio/discipline désactivés`,
           date: futureDate,
@@ -1103,6 +1105,13 @@ async function seedCourses(schoolsData: {
               : undefined,
         },
       });
+      const keepStudents = schoolStudents.slice(0, Math.min(3, schoolStudents.length));
+      if (keepStudents.length > 0) {
+        await prisma.courseAttendance.createMany({
+          data: keepStudents.map((s) => ({ courseId: qaCourse.id, studentId: s.id })),
+          skipDuplicates: true,
+        });
+      }
       courseImageIdx += 1;
       reservedSlots.push({
         start: futureDate,
@@ -1123,7 +1132,7 @@ async function seedCourses(schoolsData: {
         disciplinePool.find((d) => d.id)?.id ??
         disciplinePool[0]?.id ??
         PRIMARY_DISCIPLINE;
-      await prisma.course.create({
+      const qaCourse = await prisma.course.create({
         data: {
           title: "Cours QA prof désactivé",
           date: futureDate,
@@ -1138,6 +1147,13 @@ async function seedCourses(schoolsData: {
           photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
         },
       });
+      const keepStudents = schoolStudents.slice(0, Math.min(2, schoolStudents.length));
+      if (keepStudents.length > 0) {
+        await prisma.courseAttendance.createMany({
+          data: keepStudents.map((s) => ({ courseId: qaCourse.id, studentId: s.id })),
+          skipDuplicates: true,
+        });
+      }
       courseImageIdx += 1;
       reservedSlots.push({
         start: futureDate,
@@ -1757,6 +1773,55 @@ async function seedTeacherFavorites(options: {
       skipDuplicates: true,
     });
   }
+}
+
+async function seedTeacherFavoriteDisciplines(options: {
+  teachers: { id: string; schoolId: string }[];
+  disciplinesBySchool: Record<string, SeedDiscipline[]>;
+}) {
+  for (const teacher of options.teachers) {
+    const pool = options.disciplinesBySchool[teacher.schoolId] ?? [];
+    if (pool.length === 0) continue;
+    const pick = pool
+      .slice()
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.min(5, Math.max(2, pool.length)));
+    await prisma.teacherFavoriteDiscipline.createMany({
+      data: pick.map((d) => ({ teacherId: teacher.id, disciplineId: d.id })),
+      skipDuplicates: true,
+    });
+  }
+}
+
+async function seedVerificationTokens() {
+  const admin = await prisma.user.findFirst({
+    where: { email: "admin@poleapp.test" },
+    select: { id: true },
+  });
+  const unverified = await prisma.user.findFirst({
+    where: { email: "student-unverified@poleapp.test" },
+    select: { id: true },
+  });
+  if (!unverified) return;
+  await prisma.emailVerificationToken.deleteMany({ where: { userId: unverified.id } });
+  const now = Date.now();
+  await prisma.emailVerificationToken.createMany({
+    data: [
+      {
+        userId: unverified.id,
+        token: "verify-active-seed-token",
+        expiresAt: new Date(now + 6 * 60 * 60 * 1000),
+        createdById: admin?.id,
+      },
+      {
+        userId: unverified.id,
+        token: "verify-expired-seed-token",
+        expiresAt: new Date(now - 60 * 60 * 1000),
+        createdById: admin?.id,
+      },
+    ],
+    skipDuplicates: true,
+  });
 }
 
 async function seedStudentFavorites(options: {
@@ -2446,6 +2511,7 @@ async function seedSuperAdmin() {
       role: Role.SUPER_ADMIN,
       isPremium: true,
       name,
+      verifiedAt: new Date(),
     },
   });
 }
@@ -2472,7 +2538,9 @@ async function main() {
     disciplines: sharedDisciplines,
   });
   await seedTeacherFavorites({ teachers, positions, positionsByTeacher });
+  await seedTeacherFavoriteDisciplines({ teachers, disciplinesBySchool });
   await seedStudentFavorites({ students, positions });
+  await seedVerificationTokens();
   await seedStudentProgress({ students, positions, teachers });
   await seedStudentInjuries(students);
   await seedPresets({ schools, positions, teachers, disciplinesBySchool });
