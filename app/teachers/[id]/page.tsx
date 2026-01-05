@@ -9,6 +9,8 @@ import { TeacherEditPanel } from "./TeacherEditPanel";
 import { TeacherAvatarManager } from "./TeacherAvatarManager";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { TeacherCombosGrid } from "./TeacherCombosGrid";
+import { updateTeacherPasswordAction } from "./actions";
+import { ProfileCollapsible } from "@/app/profile/ProfileCollapsible";
 
 const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
@@ -257,6 +259,61 @@ export default async function TeacherPublicProfilePage({
                 </p>
               </div>
             </details>
+          </section>
+
+          <section className="panel panel-body lg-gap border-indigo-400/15">
+            <ProfileCollapsible
+              id="teacher-password"
+              eyebrow="Sécurité"
+              heading="Changer le mot de passe"
+              description="Le mot de passe actuel est requis. Minimum 8 caractères."
+            >
+              <form action={updateTeacherPasswordAction} className="panel-grid lg-gap md:grid-cols-2">
+                <input type="hidden" name="teacherId" value={teacher.id} />
+                {backHref ? <input type="hidden" name="returnTo" value={backHref} /> : null}
+                <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
+                  Mot de passe actuel
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    autoComplete="current-password"
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <label className="space-y-2 text-sm text-slate-200">
+                  Nouveau mot de passe
+                  <input
+                    type="password"
+                    name="newPassword"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <label className="space-y-2 text-sm text-slate-200">
+                  Confirmer le nouveau mot de passe
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+                  />
+                </label>
+                <div className="md:col-span-2 flex justify-end">
+                  <button
+                    type="submit"
+                    className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+                  >
+                    Mettre à jour
+                  </button>
+                </div>
+              </form>
+            </ProfileCollapsible>
           </section>
         </>
       )}
