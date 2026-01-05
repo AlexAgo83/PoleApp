@@ -23,6 +23,7 @@ const schema = z.object({
   avatarPublicId: z.string().trim().max(512).optional(),
   diplomas: z.string().trim().max(2000, "Texte trop long").optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
+  favoriteDisciplines: z.array(z.string().cuid()).max(5, "Max 5 disciplines").optional(),
   returnTo: z.string().trim().optional(),
 });
 
@@ -43,6 +44,7 @@ export async function updateTeacherProfileAction(formData: FormData) {
     avatarPublicId: (formData.get("avatarPublicId") as string | null)?.trim() || undefined,
     diplomas: (formData.get("diplomas") as string | null)?.trim() || undefined,
     favoritePositions: formData.getAll("favoritePositions").map((value) => value.toString()),
+    favoriteDisciplines: formData.getAll("favoriteDisciplines").map((value) => value.toString()),
     returnTo: (formData.get("returnTo") as string | null)?.trim() || undefined,
   });
 
@@ -59,6 +61,8 @@ export async function updateTeacherProfileAction(formData: FormData) {
   }
 
   const name = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ").trim() || null;
+  const dedupedPositions = Array.from(new Set(parsed.data.favoritePositions ?? []));
+  const dedupedDisciplines = Array.from(new Set(parsed.data.favoriteDisciplines ?? [])).slice(0, 5);
 
   const updateData: Record<string, unknown> = {
     name,
@@ -78,11 +82,23 @@ export async function updateTeacherProfileAction(formData: FormData) {
     await tx.teacherFavoritePosition.deleteMany({
       where: { teacherId: parsed.data.teacherId },
     });
-    if (parsed.data.favoritePositions?.length) {
+    if (dedupedPositions.length) {
       await tx.teacherFavoritePosition.createMany({
-        data: parsed.data.favoritePositions.map((positionId) => ({
+        data: dedupedPositions.map((positionId) => ({
           teacherId: parsed.data.teacherId,
           positionId,
+        })),
+        skipDuplicates: true,
+      });
+    }
+    await tx.teacherFavoriteDiscipline.deleteMany({
+      where: { teacherId: parsed.data.teacherId },
+    });
+    if (dedupedDisciplines.length) {
+      await tx.teacherFavoriteDiscipline.createMany({
+        data: dedupedDisciplines.map((disciplineId) => ({
+          teacherId: parsed.data.teacherId,
+          disciplineId,
         })),
         skipDuplicates: true,
       });

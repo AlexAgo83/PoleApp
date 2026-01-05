@@ -51,6 +51,9 @@ export default async function ProfilePage() {
       favoritePositions: {
         include: { position: true },
       },
+      favoriteDisciplines: {
+        include: { discipline: true },
+      },
       studentFavoritePositions: {
         include: { position: true },
       },
@@ -91,11 +94,20 @@ export default async function ProfilePage() {
           orderBy: { name: "asc" },
         })
       : [];
+  const disciplines = isTeacher
+    ? await prisma.discipline.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: "asc" },
+      })
+    : [];
   const favoritePositionIds = isTeacher
     ? user.favoritePositions.map((fp) => fp.positionId)
     : isStudent
       ? user.studentFavoritePositions.map((fp) => fp.positionId)
       : [];
+  const favoriteDisciplineIds = isTeacher
+    ? user.favoriteDisciplines.map((fd) => fd.disciplineId)
+    : [];
   const injuries = isStudent ? user.injuries ?? [] : [];
   const gameSessions = isStudent
     ? await prisma.gameSession.findMany({
@@ -373,6 +385,27 @@ export default async function ProfilePage() {
             </label>
           )}
 
+          {isTeacher && (
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-slate-200">Disciplines favorites (max 5)</span>
+              <select
+                name="favoriteDisciplines"
+                multiple
+                defaultValue={favoriteDisciplineIds}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+              >
+                {disciplines.map((discipline) => (
+                  <option key={discipline.id} value={discipline.id}>
+                    {discipline.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-400">
+                Sélection multiple limitée à 5. Maintiens Ctrl/Cmd (ou Maj) pour choisir plusieurs disciplines.
+              </p>
+            </label>
+          )}
+
           <p className="text-xs text-slate-400">
             Ce nom est affiché dans les listes, cours et messages. Les autres
             champs (email, rôle, école) restent informatifs et non éditables ici. L’âge est optionnel.
@@ -442,6 +475,27 @@ export default async function ProfilePage() {
                 </div>
               ) : (
                 <p className="mt-1 text-sm text-slate-300">Aucune position préférée pour le moment.</p>
+              )}
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                Disciplines favorites
+              </p>
+              {favoriteDisciplineIds.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {user.favoriteDisciplines
+                    .filter((fav) => fav.discipline)
+                    .map((fav) => (
+                      <span
+                        key={fav.disciplineId}
+                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white"
+                      >
+                        {fav.discipline?.name}
+                      </span>
+                    ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-slate-300">Aucune discipline favorite pour le moment.</p>
               )}
             </div>
           </div>
