@@ -774,16 +774,20 @@ async function seedSchoolsAndUsers() {
   const fixedAccounts: {
     email: string;
     role: Role;
-    premium: boolean;
-    name: string;
-    schoolIdx: number;
-    age?: number;
-    gender?: Gender;
-  }[] = [
-    { email: "admin@poleapp.test", role: Role.SCHOOL_ADMIN, premium: true, name: "Admin Admin", schoolIdx: 0, age: 40 },
-    {
-      email: "teacher@poleapp.test",
-      role: Role.TEACHER,
+  premium: boolean;
+  name: string;
+  schoolIdx: number;
+  age?: number;
+  gender?: Gender;
+  verifiedAt?: Date | null;
+  disabledAt?: Date | null;
+  canCreatePositionAndPreset?: boolean;
+  canDeletePositionAndPreset?: boolean;
+}[] = [
+  { email: "admin@poleapp.test", role: Role.SCHOOL_ADMIN, premium: true, name: "Admin Admin", schoolIdx: 0, age: 40 },
+  {
+    email: "teacher@poleapp.test",
+    role: Role.TEACHER,
       premium: true,
       name: "Elza Martinez",
       schoolIdx: 0,
@@ -808,6 +812,47 @@ async function seedSchoolsAndUsers() {
       age: 35,
       gender: "M" as Gender,
     },
+    {
+      email: "student-unverified@poleapp.test",
+      role: Role.STUDENT,
+      premium: false,
+      name: "QA Unverified",
+      schoolIdx: 0,
+      age: 26,
+      verifiedAt: null,
+    },
+    {
+      email: "student-disabled@poleapp.test",
+      role: Role.STUDENT,
+      premium: false,
+      name: "QA Disabled",
+      schoolIdx: 0,
+      age: 28,
+      disabledAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    },
+    {
+      email: "teacher-create-off@poleapp.test",
+      role: Role.TEACHER,
+      premium: false,
+      name: "Prof Create Off",
+      schoolIdx: 0,
+      age: 34,
+      gender: "F" as Gender,
+      canCreatePositionAndPreset: false,
+      canDeletePositionAndPreset: true,
+    },
+    {
+      email: "teacher-disabled@poleapp.test",
+      role: Role.TEACHER,
+      premium: false,
+      name: "Prof Disabled",
+      schoolIdx: 0,
+      age: 36,
+      gender: "F" as Gender,
+      disabledAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      canCreatePositionAndPreset: true,
+      canDeletePositionAndPreset: true,
+    },
   ];
 
   const teachers: { id: string; schoolId: string; email?: string }[] = [];
@@ -826,6 +871,10 @@ async function seedSchoolsAndUsers() {
         avatarPublicId: takeAvatarPublicId(acc.gender ?? null),
         age: acc.age ?? null,
         credits: acc.role === Role.STUDENT ? 1000 : undefined,
+        verifiedAt: acc.verifiedAt ?? new Date(),
+        disabledAt: acc.disabledAt ?? null,
+        canCreatePositionAndPreset: acc.canCreatePositionAndPreset ?? true,
+        canDeletePositionAndPreset: acc.canDeletePositionAndPreset ?? true,
         diplomas:
           acc.role === Role.TEACHER
             ? acc.email === "teacher@poleapp.test"
