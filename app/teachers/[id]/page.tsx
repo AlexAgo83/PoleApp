@@ -163,7 +163,7 @@ export default async function TeacherPublicProfilePage({
           </div>
         </div>
         <div className="panel-grid md:grid-cols-2">
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <h2 className="text-lg font-semibold text-white">Diplômes</h2>
             <p className="whitespace-pre-line rounded-xl px-0 py-0 text-sm text-slate-100">
               {teacher.diplomas?.trim() || "Non renseigné"}
