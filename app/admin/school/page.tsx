@@ -71,7 +71,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
   const currentStudioPage = Math.min(studioPage, studioTotalPages);
   const studios = await prisma.studio.findMany({
     where: { schoolId: session.user.schoolId },
-    select: { id: true, name: true, address: true, photoPublicId: true },
+    select: { id: true, name: true, address: true, photoPublicId: true, disabledAt: true },
     orderBy: { name: "asc" },
     skip: (currentStudioPage - 1) * 6,
     take: 6,
@@ -85,7 +85,7 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
   const redirectToSchool =
     redirectParams.toString().length > 0 ? `/admin/school?${redirectParams.toString()}` : "/admin/school";
   const disciplines = await prisma.discipline.findMany({
-    select: { id: true, name: true, color: true },
+    select: { id: true, name: true, color: true, disabledAt: true },
     orderBy: { name: "asc" },
     skip: (currentDisciplinePage - 1) * 6,
     take: 6,
@@ -237,21 +237,31 @@ export default async function AdminSchoolPage({ searchParams }: PageProps) {
                   className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-slate-200"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span
                         className="h-4 w-4 rounded-full border border-white/20"
                         style={{ backgroundColor: d.color }}
                         aria-hidden="true"
                       />
                       <span className="font-semibold text-white">{d.name}</span>
+                      {d.disabledAt && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-rose-300/60 bg-rose-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-rose-50">
+                          Désactivée
+                        </span>
+                      )}
                     </div>
                     <form action={deleteDisciplineAction}>
                       <input type="hidden" name="disciplineId" value={d.id} />
+                      <input type="hidden" name="action" value={d.disabledAt ? "enable" : "disable"} />
                       <ConfirmDeleteButton
                         type="submit"
-                        className="text-xs font-semibold text-red-200 hover:text-red-100"
+                        className={`text-xs font-semibold ${
+                          d.disabledAt
+                            ? "text-emerald-200 hover:text-emerald-100"
+                            : "text-red-200 hover:text-red-100"
+                        }`}
                       >
-                        Supprimer
+                        {d.disabledAt ? "Réactiver" : "Désactiver"}
                       </ConfirmDeleteButton>
                     </form>
                   </div>

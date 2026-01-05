@@ -84,17 +84,18 @@ export function StudioCard({ studio }: Props) {
                 Voir la fiche
               </Link>
             </div>
-            <form action={deleteStudioAction}>
-              <input type="hidden" name="studioId" value={studio.id} />
-              <ConfirmDeleteButton
-                type="button"
-                onConfirm={handleDelete}
-                disabled={isPending}
-                className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100 transition hover:border-red-400 hover:bg-red-500/20"
-              >
-                Supprimer
-              </ConfirmDeleteButton>
-            </form>
+            <button
+              type="button"
+              onClick={handleToggle}
+              disabled={isPending}
+              className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${
+                isDisabled
+                  ? "border-emerald-400/60 bg-emerald-500/20 text-emerald-100 hover:border-emerald-300 hover:bg-emerald-500/30"
+                  : "border-amber-400/60 bg-amber-500/20 text-amber-100 hover:border-amber-300 hover:bg-amber-500/30"
+              }`}
+            >
+              {isDisabled ? "Réactiver" : "Désactiver"}
+            </button>
           </div>
           <div className="space-y-2">
             <p className="text-base font-semibold text-white">{studio.name}</p>
