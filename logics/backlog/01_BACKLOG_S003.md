@@ -1,5 +1,5 @@
 # Backlog — Programme “Remise en forme / Débutant·e pole” (notes S003)
-[Compréhension: 35% / Avancement: 0% / Obsolete: 65%]
+[Compréhension: 35% / Avancement: 0% / Obsolete: 100%]
 > Quand une tâche est terminée la passer en **(DONE)**
 > Pensez à mettre à jour les autres fichiers .md
 > Pensez à mettre à jour la homepage
