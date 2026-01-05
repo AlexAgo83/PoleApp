@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { promoteSuperAdminAction, resetUserPasswordAction } from "../actions";
+import { promoteSuperAdminAction, resetUserPasswordAction, forceVerifyUserAction } from "../actions";
 import { ResetCopyButton } from "../ResetCopyButton";
 import { authOptions } from "@/lib/auth";
 
@@ -23,6 +23,9 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
   const flash = getValue(resolvedParams.flash);
   const flashTemp = getValue(resolvedParams.temp);
   const flashEmail = getValue(resolvedParams.email);
+  const flashForceOk = flash === "force-ok";
+  const flashForceNotFound = flash === "force-not-found";
+  const flashForceInvalid = flash === "force-invalid";
 
   return (
     <main className="grid gap-4 md:gap-6">
@@ -56,6 +59,21 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
       {flash === "reset-invalid" && (
         <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
           Formulaire de réinitialisation invalide.
+        </div>
+      )}
+      {flashForceOk && (
+        <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
+          Vérification forcée appliquée pour {flashEmail ?? "l'utilisateur"}.
+        </div>
+      )}
+      {flashForceNotFound && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Utilisateur introuvable pour cet email.
+        </div>
+      )}
+      {flashForceInvalid && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+          Formulaire invalide pour la vérification forcée.
         </div>
       )}
 
@@ -96,6 +114,37 @@ export default async function SuperAdminUsersPage({ searchParams }: PageProps) {
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-400/60 bg-red-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-red-300/70 hover:bg-red-500/30"
             >
               Valider
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="panel space-y-4 border-cyan-300/25 p-5 shadow-cyan-900/30">
+        <div>
+          <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">Vérification email</p>
+          <h3 className="text-lg font-semibold text-white">Forcer la vérification d’un compte</h3>
+        </div>
+        <p className="text-sm text-slate-300">
+          Marque un utilisateur comme vérifié immédiatement (enregistre l’admin dans l’audit et supprime les tokens en attente).
+        </p>
+        <form action={forceVerifyUserAction} className="grid gap-2 md:grid-cols-[2fr_1fr]">
+          <input type="hidden" name="redirectTo" value="/super-admin/users" />
+          <label className="space-y-1">
+            <span className="text-xs text-slate-300">Email</span>
+            <input
+              name="email"
+              type="email"
+              placeholder="user@poleapp.test"
+              required
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-2 text-white"
+            />
+          </label>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-cyan-400/60 bg-cyan-500/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-cyan-500/30"
+            >
+              Forcer la vérification
             </button>
           </div>
         </form>
