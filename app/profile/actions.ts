@@ -64,7 +64,9 @@ export async function updateProfileAction(formData: FormData) {
 
   const { firstName, lastName, age, diplomas, favoritePositions = [], favoriteDisciplines = [] } =
     parsed.data;
-  const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || null;
+  const firstNameValue = firstName?.trim() || null;
+  const lastNameValue = lastName?.trim() || null;
+  const displayName = [firstNameValue, lastNameValue].filter(Boolean).join(" ").trim() || null;
   const dedupedDisciplines = Array.from(new Set(favoriteDisciplines)).slice(0, 5);
   const dedupedPositions = Array.from(new Set(favoritePositions));
 
@@ -73,6 +75,8 @@ export async function updateProfileAction(formData: FormData) {
       where: { id: session.user.id },
       data: {
         name: displayName,
+        firstName: firstNameValue,
+        lastName: lastNameValue,
         age: age ?? null,
         diplomas: isTeacher ? diplomas ?? null : undefined,
       },
@@ -197,7 +201,7 @@ export async function updatePasswordAction(formData: FormData) {
     confirmPassword: formData.get("confirmPassword")?.toString() ?? "",
   });
   if (!parsed.success) {
-    throw new Error(parsed.error.errors[0]?.message ?? "Formulaire invalide");
+    throw new Error(parsed.error.issues[0]?.message ?? "Formulaire invalide");
   }
 
   const user = await prisma.user.findUnique({
@@ -223,5 +227,5 @@ export async function updatePasswordAction(formData: FormData) {
   });
 
   revalidatePath("/profile");
-  return { ok: true };
+  return;
 }
