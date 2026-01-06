@@ -1,7 +1,14 @@
 # Changelog
-## 2026-MM-DD - Release v0.14.X (???)
+## 2026-01-06 — Release v0.14.1 (Contacts WhatsApp/Instagram + docs)
+- Profil `/app/profile` : ajout des champs optionnels téléphone WhatsApp (normalisé 8–20 chiffres, + optionnel) et username Instagram (regex 2–30 caractères), validation côté serveur, suppression si vide, boutons externes conditionnels (icônes PNG locales).
+- Fiche prof publique `/teachers/[id]` : affichage des boutons WhatsApp/Instagram si renseignés, alignés avec “Partager”.
+- Fiche élève vue prof `/app/teacher/students/[id]` : lecture/édition des contacts, boutons externes si disponibles.
+- Modèle Prisma : champs `phone` / `instagramUsername` sur `User`, seed mis à jour (prof principal avec contacts).
+- Specs : `profile.md`, `teacher.md`, `_index.md` alignées sur les contacts ; DRY 19 à 100%.
+- Assets : icônes `public/icons/whatsapp.png` et `public/icons/instagram.png`; `.env.example` versionné avec placeholders (including PROD_RENDER*).
+- Tests/build : `npm test` et `npm run build` OK.
 
-## 2026-02-04 — Release v0.13.X (Audit médias Cloudinary + UI logics)
+## 2026-01-04 — Release v0.13.X (Audit médias Cloudinary + UI logics)
 - Super-admin : page `/super-admin/media-audit` (filtres resource/type, diff orphelins Cloudinary vs références cassées DB, stats, export CSV).
 - Services audit : normalisation DB/Cloudinary, diff orphans/missing, cache/cooldown, audit log.
 - UI logics : rendu visuel des tâches Markdown (checkboxes stylisées) sur la page `app/logics`.

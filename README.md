@@ -1,4 +1,4 @@
-# Pole App — Produit v0.14.X
+# Pole App — Produit v0.14.1
 
 Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. 
 
@@ -38,9 +38,9 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ## Navigation / Profile (Step 8)
 - Bandeau session/rôle avec `Accueil`, `Mon espace`, `Se déconnecter` sur toutes les pages.
 - Salutation “Bonjour <prénom|nom|email>” + bouton “Éditer” → `/app/profile`.
-- Page profil `/app/profile` : consultation email/rôle/école, édition prénom/nom/âge/photo (placeholder si vide).
-- Prof : diplômes + positions préférées éditables (multi-sélection) et visibles sur la fiche publique.
-- Fiche prof publique `/app/teachers/[id]` (photo/diplômes/positions préférées), accessible aux élèves ayant eu cours avec ce prof (`/app/student/teachers`).
+- Page profil `/app/profile` : consultation email/rôle/école, édition prénom/nom/âge/photo (placeholder si vide), contacts optionnels (téléphone WhatsApp, username Instagram) avec boutons externes.
+- Prof : diplômes + positions préférées éditables (multi-sélection) et visibles sur la fiche publique ; contacts affichés sous forme de boutons WhatsApp/Instagram si renseignés.
+- Fiche prof publique `/app/teachers/[id]` (photo/diplômes/positions préférées, contacts s’ils existent), accessible aux élèves ayant eu cours avec ce prof (`/app/student/teachers`).
 - Homepage “Modules” épurée (panels statut/nouveautés retirés) et inclut la carte Profile.
 - Panneaux de filtres : repliés par défaut avec état mémorisé localement (localStorage).
 
@@ -65,7 +65,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 
 ## Blessures & progression
 - Élève : `/app/student/injuries` (CRUD, pagination 10) ; `/app/student/progress` (pagination 10).
-- Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste.
+- Prof/Admin : blessures et progression visibles/editables sur `/app/teacher/students/[id]`; retour vers la liste ; boutons contacts (WhatsApp/Instagram) si l’élève a renseigné ses données.
 
 ## Cours / Facturation
 - Prof/Admin : `/app/teacher/courses` (tri décroissant, pagination 10), création `/new` (récurrence quotidienne/bi-hebdo/mensuelle en bêta avec occurrences virtuelles), détail, édition, photos Cloudinary optionnelles (placeholder si absent) et bouton “Voir le cours”. Agenda mensuel + vue semaine (enseignant/admin) avec filtres persistés + chips actives (discipline/prof/studio/dates/notes/recherche).
@@ -108,7 +108,7 @@ npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ## Déploiement Render
 - Build : `npm install && npm run db:migrate:deploy && npm run build` (migrations squashées en init, pas de baseline nécessaire sur DB neuve).
 - Start : `npm run start:render` (start-auto : migrate deploy → seed super-admin si absent → start). Le fallback `db push` est **désactivé** sauf si `ALLOW_DB_PUSH_FALLBACK=true` (éviter les dérives de migrations en prod).
-- Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_PASSWORD` (obligatoires en prod), `SUPER_ADMIN_NAME` (optionnel).
+- Variables : `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NODE_VERSION=20`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_PASSWORD` (obligatoires en prod), `SUPER_ADMIN_NAME` (optionnel). Placeholders prod Render dans `.env.example` (`PROD_RENDER_DATABASE_URL`, `PROD_RENDER_PSQL_COMMAND`) à n’utiliser qu’en ops.
 - Prisma : config dans `prisma.config.js` (seed `tsx prisma/seed.ts`, mais le seed destructif nécessite `SEED_ALLOW_PROD=true` ou `NODE_ENV` hors prod).
 - Cache build : pour éviter l’avertissement “No build cache found”, activer le cache de build sur Render (Persistent build cache) ou conserver `.next/cache` entre builds. Si warning “middleware” : migrer vers `proxy` à terme.
 
