@@ -10,6 +10,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
 import { isSeedPublicId } from "@/lib/media";
+import {
+  INSTAGRAM_ERROR_MESSAGE,
+  PHONE_ERROR_MESSAGE,
+  normalizePhone,
+  validateInstagramUsername,
+} from "@/lib/contacts";
 
 const updateProgressSchema = z.object({
   studentId: z.string().cuid(),
@@ -87,6 +93,8 @@ const updateProfileSchema = z.object({
     .min(1, "Âge invalide")
     .max(120, "Âge invalide")
     .optional(),
+  phone: z.string().trim().max(64, "Téléphone trop long").optional(),
+  instagramUsername: z.string().trim().max(64, "Username trop long").optional(),
 });
 
 export async function updateStudentProfileAction(formData: FormData) {
@@ -103,6 +111,8 @@ export async function updateStudentProfileAction(formData: FormData) {
     firstName: (formData.get("firstName") as string | null)?.trim() || "",
     lastName: (formData.get("lastName") as string | null)?.trim() || "",
     age: (formData.get("age") as string | null)?.trim() || undefined,
+    phone: (formData.get("phone") as string | null)?.trim() || undefined,
+    instagramUsername: (formData.get("instagramUsername") as string | null)?.trim() || undefined,
   });
 
   if (!parsed.success) {
@@ -118,12 +128,34 @@ export async function updateStudentProfileAction(formData: FormData) {
   }
 
   const name = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ").trim() || null;
+  let phone: string | null = null;
+  let instagramUsername: string | null = null;
+  try {
+    phone = normalizePhone(parsed.data.phone);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || PHONE_ERROR_MESSAGE);
+    }
+    throw new Error(PHONE_ERROR_MESSAGE);
+  }
+  try {
+    instagramUsername = validateInstagramUsername(parsed.data.instagramUsername);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || INSTAGRAM_ERROR_MESSAGE);
+    }
+    throw new Error(INSTAGRAM_ERROR_MESSAGE);
+  }
 
   await prisma.user.update({
     where: { id: parsed.data.studentId },
     data: {
       name,
+      firstName: parsed.data.firstName?.trim() || null,
+      lastName: parsed.data.lastName?.trim() || null,
       age: parsed.data.age ?? null,
+      phone,
+      instagramUsername,
     },
   });
 

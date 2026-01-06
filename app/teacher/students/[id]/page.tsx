@@ -13,6 +13,7 @@ import { updateStudentProfileAction } from "./actions";
 import { StudentAvatarManager } from "./StudentAvatarManager";
 import { PersistedSection } from "./PersistedSection";
 import { ProgressCard } from "./ProgressCard";
+import { ContactButtons } from "@/components/ContactButtons";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -57,6 +58,10 @@ export default async function TeacherStudentDetailPage({
       id: true,
       email: true,
       name: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
+      instagramUsername: true,
       avatarPublicId: true,
       age: true,
       isPremium: true,
@@ -124,10 +129,15 @@ export default async function TeacherStudentDetailPage({
     placeholder: STUDENT_AVATAR_PLACEHOLDER,
   });
   const avatarFolder = process.env.NEXT_PUBLIC_CLOUDINARY_AVATAR_FOLDER ?? "poleapp/avatars";
-  const studentDisplayName = student.name?.trim() || student.email || "Élève";
+  const studentDisplayName =
+    [student.firstName?.trim(), student.lastName?.trim()].filter(Boolean).join(" ") ||
+    student.name?.trim() ||
+    student.email ||
+    "Élève";
   const nameParts = (student.name ?? "").trim().split(" ").filter(Boolean);
-  const firstNameDefault = nameParts[0] ?? "";
-  const lastNameDefault = nameParts.slice(1).join(" ");
+  const firstNameDefault = student.firstName?.trim() || nameParts[0] || "";
+  const lastNameDefault =
+    student.lastName?.trim() || (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "");
   const canEdit = session.user.role === "SCHOOL_ADMIN" || session.user.role === "TEACHER";
   const roleLabel = "Étudiant";
   const statusOrder: Record<LearningStatus, number> = {
@@ -177,14 +187,21 @@ export default async function TeacherStudentDetailPage({
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
-              Vu : {student.progress.length}
-            </span>
-            {student.isPremium && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-50">
-                Premium
+            <ContactButtons
+              phone={student.phone}
+              instagramUsername={student.instagramUsername}
+              className="justify-end"
+            />
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/90">
+                Vu : {student.progress.length}
               </span>
-            )}
+              {student.isPremium && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/60 bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-50">
+                  Premium
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -379,6 +396,29 @@ export default async function TeacherStudentDetailPage({
                     max={120}
                     className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
                   />
+                </label>
+                <label className="text-sm text-slate-200">
+                  Téléphone (WhatsApp)
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="+33601020304"
+                    defaultValue={student.phone ?? ""}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
+                  />
+                  <p className="text-[11px] text-slate-400">8–20 chiffres, + optionnel. Vide pour retirer.</p>
+                </label>
+                <label className="text-sm text-slate-200">
+                  Instagram (username)
+                  <input
+                    name="instagramUsername"
+                    placeholder="mon.profil"
+                    defaultValue={student.instagramUsername ?? ""}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white outline-none focus:border-indigo-400"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    Lettres/chiffres/._, 2–30 caractères. Vide pour retirer.
+                  </p>
                 </label>
                 <div className="flex items-end justify-end">
                   <button
