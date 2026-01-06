@@ -105,13 +105,29 @@ export default async function AdminPartnersPage({
   const skip = (safePage - 1) * PAGE_SIZE;
   const pageRange = buildPageRange(totalPages, safePage);
 
-  let partners: Awaited<ReturnType<typeof prisma.partner.findMany>> = [];
+  type PartnerRow = {
+    id: string;
+    name: string;
+    kind: string;
+    website: string | null;
+    description: string | null;
+    sponsoredLinks?: { id: string; label: string | null; url: string; category: string }[];
+  };
+
+  let partners: PartnerRow[] = [];
   let supportsSponsored = true;
   try {
     partners = await prisma.partner.findMany({
       where: whereClause,
       orderBy: { name: "asc" },
-      include: { sponsoredLinks: true },
+      select: {
+        id: true,
+        name: true,
+        kind: true,
+        website: true,
+        description: true,
+        sponsoredLinks: { select: { id: true, label: true, url: true, category: true } },
+      },
       skip,
       take: PAGE_SIZE,
     });
@@ -120,6 +136,7 @@ export default async function AdminPartnersPage({
     partners = await prisma.partner.findMany({
       where: whereClause,
       orderBy: { name: "asc" },
+      select: { id: true, name: true, kind: true, website: true, description: true },
       skip,
       take: PAGE_SIZE,
     });

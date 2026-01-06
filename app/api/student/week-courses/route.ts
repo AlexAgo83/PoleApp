@@ -219,3 +219,4 @@ export async function GET(req: Request) {
     disciplineNameById,
   });
 }
+export const revalidate = 60;

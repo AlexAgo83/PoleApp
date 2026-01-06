@@ -139,7 +139,7 @@ export default async function TeacherStudentsPage({
       avatarPublicId: true,
       isPremium: true,
       injuries: {
-        include: { injuryType: true },
+        select: { isActive: true },
       },
       progress: { select: { id: true } },
     },
