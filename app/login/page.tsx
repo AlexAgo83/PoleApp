@@ -63,6 +63,12 @@ function LoginContent() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const mapErrorMessage = (raw?: string | null) => {
+      if (!raw) return null;
+      if (raw === "CredentialsSignin") return "Email ou mot de passe incorrect.";
+      return raw;
+    };
     const result = await signIn("credentials", {
       email,
       password,
@@ -71,7 +77,7 @@ function LoginContent() {
     });
 
     if (result?.error) {
-      setError(result.error);
+      setError(mapErrorMessage(result.error));
       setLoading(false);
       return;
     }

@@ -50,6 +50,10 @@ type Props = {
   showAttendanceBadges?: boolean;
 };
 
+function formatWeekKey(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -57,6 +61,26 @@ function formatDuration(minutes: number) {
     return `${hrs}h${mins.toString().padStart(2, "0")}`;
   }
   return `${mins} min`;
+}
+
+function computeWeekNavigation(targetWeek?: string) {
+  const parsedWeek = targetWeek ? new Date(`${targetWeek}T00:00:00`) : new Date();
+  const weekBase = Number.isNaN(parsedWeek.getTime()) ? new Date() : parsedWeek;
+  const start = new Date(weekBase);
+  const dayOffset = start.getDay() === 0 ? 6 : start.getDay() - 1;
+  start.setDate(start.getDate() - dayOffset);
+  start.setHours(0, 0, 0, 0);
+
+  const prev = new Date(start);
+  prev.setDate(start.getDate() - 7);
+  const next = new Date(start);
+  next.setDate(start.getDate() + 7);
+
+  return {
+    week: formatWeekKey(start),
+    prevWeek: formatWeekKey(prev),
+    nextWeek: formatWeekKey(next),
+  };
 }
 
 export function WeekView({
@@ -78,17 +102,14 @@ export function WeekView({
   const [isPending, startTransition] = useTransition();
 
   const currentWeekKey = useMemo(() => {
-    const d = new Date();
-    const start = new Date(d);
-    const dayOffset = start.getDay() === 0 ? 6 : start.getDay() - 1;
-    start.setDate(start.getDate() - dayOffset);
-    return `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
+    return computeWeekNavigation().week;
   }, []);
 
   const fetchWeek = (target: string) => {
     startTransition(async () => {
+      const targetNav = computeWeekNavigation(target);
       const params = new URLSearchParams();
-      params.set("week", target);
+      params.set("week", targetNav.week);
       if (filters.teacher) params.set("teacher", filters.teacher);
       if (filters.studio) params.set("studio", filters.studio);
       if (filters.discipline) params.set("discipline", filters.discipline);
@@ -98,14 +119,16 @@ export function WeekView({
       const res = await fetch(`${apiPath}?${params.toString()}`, { cache: "no-store" });
       if (!res.ok) return;
       const json = (await res.json()) as {
-        prevWeek: string;
-        nextWeek: string;
+        prevWeek?: string;
+        nextWeek?: string;
         days: Day[];
         disciplineNameById?: Record<string, string>;
+        week?: string;
       };
-      setWeek(target);
-      setPrev(json.prevWeek);
-      setNext(json.nextWeek);
+      const responseNav = computeWeekNavigation(json.week ?? targetNav.week);
+      setWeek(responseNav.week);
+      setPrev(responseNav.prevWeek);
+      setNext(responseNav.nextWeek);
       const nameById = json.disciplineNameById ?? {};
       setDays(
         (json.days ?? []).map((day) => ({

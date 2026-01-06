@@ -40,6 +40,7 @@ export async function GET(req: Request, { params }: { params: { teacherId: strin
   }
 
   return NextResponse.json({
+    week: agenda.data.week,
     prevWeek: agenda.data.prevWeek,
     nextWeek: agenda.data.nextWeek,
     days: agenda.data.days,
