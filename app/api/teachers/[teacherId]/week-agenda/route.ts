@@ -7,13 +7,14 @@ import { buildTeacherWeekAgenda, resolveTeacherAgendaAccess } from "@/lib/teache
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request, { params }: { params: { teacherId: string } }) {
+export async function GET(req: Request, { params }: { params: { teacherId: string } | Promise<{ teacherId: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const teacherId = params.teacherId;
+  const resolvedParams = await Promise.resolve(params);
+  const teacherId = resolvedParams.teacherId;
   if (!teacherId) {
     return NextResponse.json({ error: "teacherId missing" }, { status: 400 });
   }
