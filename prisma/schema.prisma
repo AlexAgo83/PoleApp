@@ -113,6 +113,8 @@ model User {
   name          String?
   firstName     String?
   lastName      String?
+  phone         String?
+  instagramUsername String?
   age           Int?
   avatarPublicId String?
   diplomas      String?

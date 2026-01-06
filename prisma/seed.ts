@@ -779,6 +779,8 @@ async function seedSchoolsAndUsers() {
   schoolIdx: number;
   age?: number;
   gender?: Gender;
+  phone?: string | null;
+  instagramUsername?: string | null;
   verifiedAt?: Date | null;
   canCreatePositionAndPreset?: boolean;
   canDeletePositionAndPreset?: boolean;
@@ -792,6 +794,8 @@ async function seedSchoolsAndUsers() {
       schoolIdx: 0,
       age: 32,
       gender: "F",
+      phone: "+33601020304",
+      instagramUsername: "poleapp.prof",
     },
     {
       email: "student1@poleapp.test",
@@ -811,26 +815,15 @@ async function seedSchoolsAndUsers() {
       age: 35,
       gender: "M" as Gender,
     },
-    {
-      email: "student-unverified@poleapp.test",
-      role: Role.STUDENT,
-      premium: false,
-      name: "QA Unverified",
-      schoolIdx: 0,
-      age: 26,
-      verifiedAt: null,
-    },
-    {
-      email: "teacher-create-off@poleapp.test",
-      role: Role.TEACHER,
-      premium: false,
-      name: "Prof Create Off",
-      schoolIdx: 0,
-      age: 34,
-      gender: "F" as Gender,
-      canCreatePositionAndPreset: false,
-      canDeletePositionAndPreset: true,
-    },
+  {
+    email: "student-unverified@poleapp.test",
+    role: Role.STUDENT,
+    premium: false,
+    name: "QA Unverified",
+    schoolIdx: 0,
+    age: 26,
+    verifiedAt: null,
+  },
   ];
 
   const teachers: { id: string; schoolId: string; email?: string }[] = [];
@@ -849,6 +842,8 @@ async function seedSchoolsAndUsers() {
         avatarPublicId: takeAvatarPublicId(acc.gender ?? null),
         age: acc.age ?? null,
         credits: acc.role === Role.STUDENT ? 1000 : undefined,
+        phone: acc.phone ?? null,
+        instagramUsername: acc.instagramUsername ?? null,
         verifiedAt: acc.verifiedAt === undefined ? new Date() : acc.verifiedAt,
         canCreatePositionAndPreset: acc.canCreatePositionAndPreset ?? true,
         canDeletePositionAndPreset: acc.canDeletePositionAndPreset ?? true,
@@ -878,8 +873,7 @@ async function seedSchoolsAndUsers() {
           "admin@poleapp.test",
           "teacher@poleapp.test",
           "student1@poleapp.test",
-          "student2@poleapp.test",
-          "teacher-create-off@poleapp.test",
+          "student2@poleapp.test"
         ],
       },
     },

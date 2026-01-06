@@ -10,6 +10,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
 import { isSeedPublicId } from "@/lib/media";
+import {
+  INSTAGRAM_ERROR_MESSAGE,
+  PHONE_ERROR_MESSAGE,
+  normalizePhone,
+  validateInstagramUsername,
+} from "@/lib/contacts";
 
 const schema = z.object({
   teacherId: z.string().cuid(),
@@ -23,6 +29,8 @@ const schema = z.object({
     .optional(),
   avatarPublicId: z.string().trim().max(512).optional(),
   diplomas: z.string().trim().max(2000, "Texte trop long").optional(),
+  phone: z.string().trim().max(64, "Téléphone trop long").optional(),
+  instagramUsername: z.string().trim().max(64, "Username trop long").optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
   favoriteDisciplines: z.array(z.string().cuid()).max(5, "Max 5 disciplines").optional(),
   returnTo: z.string().trim().optional(),
@@ -57,6 +65,8 @@ export async function updateTeacherProfileAction(formData: FormData) {
     age: (formData.get("age") as string | null)?.trim() || undefined,
     avatarPublicId: (formData.get("avatarPublicId") as string | null)?.trim() || undefined,
     diplomas: (formData.get("diplomas") as string | null)?.trim() || undefined,
+    phone: (formData.get("phone") as string | null)?.trim() || undefined,
+    instagramUsername: (formData.get("instagramUsername") as string | null)?.trim() || undefined,
     favoritePositions: formData.getAll("favoritePositions").map((value) => value.toString()),
     favoriteDisciplines: formData.getAll("favoriteDisciplines").map((value) => value.toString()),
     returnTo: (formData.get("returnTo") as string | null)?.trim() || undefined,
@@ -77,6 +87,24 @@ export async function updateTeacherProfileAction(formData: FormData) {
   const name = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ").trim() || null;
   const firstNameValue = parsed.data.firstName?.trim() || null;
   const lastNameValue = parsed.data.lastName?.trim() || null;
+  let phone: string | null = null;
+  let instagramUsername: string | null = null;
+  try {
+    phone = normalizePhone(parsed.data.phone);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || PHONE_ERROR_MESSAGE);
+    }
+    throw new Error(PHONE_ERROR_MESSAGE);
+  }
+  try {
+    instagramUsername = validateInstagramUsername(parsed.data.instagramUsername);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || INSTAGRAM_ERROR_MESSAGE);
+    }
+    throw new Error(INSTAGRAM_ERROR_MESSAGE);
+  }
   const dedupedPositions = Array.from(new Set(parsed.data.favoritePositions ?? []));
   const dedupedDisciplines = Array.from(new Set(parsed.data.favoriteDisciplines ?? [])).slice(0, 5);
 
@@ -86,6 +114,8 @@ export async function updateTeacherProfileAction(formData: FormData) {
     lastName: lastNameValue,
     age: parsed.data.age ?? null,
     diplomas: parsed.data.diplomas ?? null,
+    phone,
+    instagramUsername,
   };
   if (parsed.data.avatarPublicId !== undefined) {
     updateData.avatarPublicId = parsed.data.avatarPublicId ?? null;

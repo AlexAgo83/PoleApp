@@ -16,6 +16,7 @@
 - Partenaires — routes : `/app/student/partners`, `/app/admin/partners`, `/api/partners/redirect` — spec : `logics/specs/partners.md`
 - ICS — route : `/api/courses/[id]/ics` — spec : `logics/specs/ics.md`
 - Agenda professeur (fiche élève) — route : `/teachers/[id]` (non listée dans routes), `/student/week-courses` — spec : `logics/specs/2026-01-05_agenda-prof.md` (à implémenter)
+- Contacts (WhatsApp/Instagram) — routes : `/app/profile`, `/teachers/[id]`, `/teacher/students/[id]` — spec : `logics/specs/2026-01-06_contacts-buttons.md`
 
 ## Décisions
 - Découpage par rôle conservé ; pas de specs additionnelles par feature sauf besoin transverse explicite.

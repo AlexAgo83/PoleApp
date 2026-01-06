@@ -16,6 +16,7 @@ import { ShareLinkButton } from "@/components/ShareLinkButton";
 import { TeacherCombosGrid } from "./TeacherCombosGrid";
 import { updateTeacherPasswordAction } from "./actions";
 import { ProfileCollapsible } from "@/app/profile/ProfileCollapsible";
+import { ContactButtons } from "@/components/ContactButtons";
 
 const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
@@ -67,6 +68,8 @@ export default async function TeacherPublicProfilePage({
       age: true,
       avatarPublicId: true,
       diplomas: true,
+      phone: true,
+      instagramUsername: true,
       role: true,
       schoolId: true,
       school: { select: { name: true } },
@@ -195,10 +198,17 @@ export default async function TeacherPublicProfilePage({
             </div>
           </div>
           <div className="flex w-full justify-end md:w-auto">
-            <ShareLinkButton
-              path={`/teachers/${teacher.id}`}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
-            />
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <ContactButtons
+                phone={teacher.phone}
+                instagramUsername={teacher.instagramUsername}
+                className="justify-end"
+              />
+              <ShareLinkButton
+                path={`/teachers/${teacher.id}`}
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
+              />
+            </div>
           </div>
         </div>
         <div className="panel-grid mt-4 md:grid-cols-2">
@@ -288,6 +298,8 @@ export default async function TeacherPublicProfilePage({
             defaults={{
               firstName: firstNameDefault,
               lastName: lastNameDefault,
+              phone: teacher.phone,
+              instagramUsername: teacher.instagramUsername,
               age: teacher.age,
               diplomas: teacher.diplomas,
               favoritePositionIds,
