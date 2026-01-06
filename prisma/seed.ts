@@ -780,7 +780,6 @@ async function seedSchoolsAndUsers() {
   age?: number;
   gender?: Gender;
   verifiedAt?: Date | null;
-  disabledAt?: Date | null;
   canCreatePositionAndPreset?: boolean;
   canDeletePositionAndPreset?: boolean;
 }[] = [
@@ -822,15 +821,6 @@ async function seedSchoolsAndUsers() {
       verifiedAt: null,
     },
     {
-      email: "student-disabled@poleapp.test",
-      role: Role.STUDENT,
-      premium: false,
-      name: "QA Disabled",
-      schoolIdx: 0,
-      age: 28,
-      disabledAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    },
-    {
       email: "teacher-create-off@poleapp.test",
       role: Role.TEACHER,
       premium: false,
@@ -839,18 +829,6 @@ async function seedSchoolsAndUsers() {
       age: 34,
       gender: "F" as Gender,
       canCreatePositionAndPreset: false,
-      canDeletePositionAndPreset: true,
-    },
-    {
-      email: "teacher-disabled@poleapp.test",
-      role: Role.TEACHER,
-      premium: false,
-      name: "Prof Disabled",
-      schoolIdx: 0,
-      age: 36,
-      gender: "F" as Gender,
-      disabledAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      canCreatePositionAndPreset: true,
       canDeletePositionAndPreset: true,
     },
   ];
@@ -872,7 +850,6 @@ async function seedSchoolsAndUsers() {
         age: acc.age ?? null,
         credits: acc.role === Role.STUDENT ? 1000 : undefined,
         verifiedAt: acc.verifiedAt === undefined ? new Date() : acc.verifiedAt,
-        disabledAt: acc.disabledAt ?? null,
         canCreatePositionAndPreset: acc.canCreatePositionAndPreset ?? true,
         canDeletePositionAndPreset: acc.canDeletePositionAndPreset ?? true,
         diplomas:
@@ -902,9 +879,7 @@ async function seedSchoolsAndUsers() {
           "teacher@poleapp.test",
           "student1@poleapp.test",
           "student2@poleapp.test",
-          "student-disabled@poleapp.test",
           "teacher-create-off@poleapp.test",
-          "teacher-disabled@poleapp.test",
         ],
       },
     },
@@ -1058,9 +1033,7 @@ async function seedCourses(schoolsData: {
       disciplinesBySchool[school.id] && disciplinesBySchool[school.id].length > 0
         ? disciplinesBySchool[school.id]
         : disciplinesCatalog.map((d) => ({ id: undefined as unknown as string, name: d.name, color: d.color }));
-    const disciplinePool: SeedDiscipline[] = baseDisciplines.map((d, idx) =>
-      idx === 0 ? { ...d, disabledAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) } : d
-    );
+    const disciplinePool: SeedDiscipline[] = [...baseDisciplines];
     const reservedSlots: { start: Date; end: Date }[] = [];
 
     // studios
@@ -1068,7 +1041,6 @@ async function seedCourses(schoolsData: {
       name,
       address: `Paris ${idx + 1}`,
       photoPublicId: STUDIO_PUBLIC_IDS[idx % STUDIO_PUBLIC_IDS.length],
-      disabledAt: idx === 2 ? new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) : null,
     }));
     const createdStudios = await Promise.all(
       studiosForSchool.map((s) =>
@@ -1078,7 +1050,6 @@ async function seedCourses(schoolsData: {
             address: s.address,
             schoolId: school.id,
             photoPublicId: s.photoPublicId,
-            disabledAt: s.disabledAt,
           },
         })
       )
@@ -1086,97 +1057,6 @@ async function seedCourses(schoolsData: {
     const studioCourseCount = new Map<string, number>(
       createdStudios.map((s) => [s.id, 0])
     );
-
-    // Cours QA pour sources désactivées (studio/discipline)
-    const disabledStudio = createdStudios.find((s) => s.disabledAt);
-    const disabledDiscipline = disciplinePool.find((d) => (d as any).disabledAt);
-    if (disabledStudio && schoolTeachers[0]) {
-      const disciplineName = disabledDiscipline?.name ?? PRIMARY_DISCIPLINE;
-      const disciplineId =
-        disabledDiscipline?.id ??
-        disciplinePool.find((d) => d.id)?.id ??
-        disciplinePool[0]?.id ??
-        PRIMARY_DISCIPLINE;
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 5);
-      futureDate.setHours(18, 0, 0, 0);
-      const positionsForDisc = positions.filter(
-        (p: any) => p.discipline && p.discipline.toLowerCase() === disciplineName.toLowerCase()
-      );
-      const qaCourse = await prisma.course.create({
-        data: {
-          title: `Cours QA studio/discipline désactivés`,
-          date: futureDate,
-          durationMinutes: 60,
-          teacherId: schoolTeachers[0].id,
-          schoolId: school.id,
-          studioId: disabledStudio.id,
-          discipline: disciplineName,
-          disciplineId,
-          maxSeats: 15,
-          costCredits: 100,
-          photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
-          positions:
-            positionsForDisc.length > 0
-              ? { create: positionsForDisc.slice(0, 2).map((p) => ({ positionId: p.id })) }
-              : undefined,
-        },
-      });
-      const keepStudents = schoolStudents.slice(0, Math.min(3, schoolStudents.length));
-      if (keepStudents.length > 0) {
-        await prisma.courseAttendance.createMany({
-          data: keepStudents.map((s) => ({ courseId: qaCourse.id, studentId: s.id })),
-          skipDuplicates: true,
-        });
-      }
-      courseImageIdx += 1;
-      reservedSlots.push({
-        start: futureDate,
-        end: new Date(futureDate.getTime() + 60 * 60_000),
-      });
-    }
-
-    // Cours QA pour prof désactivé (unique prof)
-    const disabledTeacher = schoolTeachers.find((t) => t.email?.includes("teacher-disabled"));
-    const activeStudio = createdStudios.find((s) => !s.disabledAt);
-    if (disabledTeacher && activeStudio) {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 8);
-      futureDate.setHours(19, 0, 0, 0);
-      const disciplineName = PRIMARY_DISCIPLINE;
-      const disciplineId =
-        disciplinePool.find((d) => d.name.toLowerCase() === disciplineName.toLowerCase())?.id ??
-        disciplinePool.find((d) => d.id)?.id ??
-        disciplinePool[0]?.id ??
-        PRIMARY_DISCIPLINE;
-      const qaCourse = await prisma.course.create({
-        data: {
-          title: "Cours QA prof désactivé",
-          date: futureDate,
-          durationMinutes: 75,
-          teacherId: disabledTeacher.id,
-          schoolId: school.id,
-          studioId: activeStudio.id,
-          discipline: disciplineName,
-          disciplineId,
-          maxSeats: 12,
-          costCredits: 120,
-          photoPublicId: COURSE_PUBLIC_IDS[courseImageIdx % COURSE_PUBLIC_IDS.length],
-        },
-      });
-      const keepStudents = schoolStudents.slice(0, Math.min(2, schoolStudents.length));
-      if (keepStudents.length > 0) {
-        await prisma.courseAttendance.createMany({
-          data: keepStudents.map((s) => ({ courseId: qaCourse.id, studentId: s.id })),
-          skipDuplicates: true,
-        });
-      }
-      courseImageIdx += 1;
-      reservedSlots.push({
-        start: futureDate,
-        end: new Date(futureDate.getTime() + 75 * 60_000),
-      });
-    }
 
     const slots = buildSchedule({ daysPast: 15, daysFuture: 45, total: 40 }, reservedSlots);
     const forcedStatuses = ["REFUNDED", "MANUAL_PAID", "MANUAL_LATE"];
@@ -1391,7 +1271,7 @@ async function seedCourses(schoolsData: {
       });
     }
 
-    // Ajouter des cours récurrents hebdo (Pole) sur ~2 mois avec occurrences virtuelles
+    // Ajouter des cours récurrents hebdo (Pole) sur ~4 mois avec occurrences virtuelles
     const recurrenceTemplates: {
       weekday: number;
       hour: number;
@@ -1417,7 +1297,7 @@ async function seedCourses(schoolsData: {
     const startBase = new Date();
     startBase.setDate(startBase.getDate() + 3); // décale légèrement pour éviter conflits immédiats
     const untilBase = new Date(startBase);
-    untilBase.setMonth(untilBase.getMonth() + 2);
+    untilBase.setMonth(untilBase.getMonth() + 4);
     const shortUntil = new Date(startBase);
     shortUntil.setDate(shortUntil.getDate() + 20); // série courte pour test conversion virtuel->réel
     // Slot réservé pour provoquer des collisions
@@ -2430,6 +2310,7 @@ async function seedUnlockDemo({
       maxSeats: 10,
       costCredits: 20,
       waitlistQuota: 2,
+      photoPublicId: COURSE_PUBLIC_IDS[0],
       positions: coursePositions.length > 0 ? { create: coursePositions } : undefined,
     },
     select: { id: true },
