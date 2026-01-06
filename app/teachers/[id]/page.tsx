@@ -8,7 +8,6 @@ import { resolveAvatarUrl } from "@/lib/avatar";
 import { WeekView } from "@/app/student/courses/agenda/WeekView";
 import {
   buildTeacherWeekAgenda,
-  loadTeacherUpcomingLocations,
   resolveTeacherAgendaAccess,
 } from "@/lib/teacherAgenda";
 import { TeacherEditPanel } from "./TeacherEditPanel";
@@ -121,15 +120,12 @@ export default async function TeacherPublicProfilePage({
         orderBy: { name: "asc" },
       })
     : [];
-  const [agendaResult, locationsResult] = await Promise.all([
-    buildTeacherWeekAgenda({ teacher: teacherSummary, viewer: session.user, weekParam }),
-    loadTeacherUpcomingLocations({ teacher: teacherSummary, viewer: session.user }),
-  ]);
+  const agendaResult = await buildTeacherWeekAgenda({ teacher: teacherSummary, viewer: session.user, weekParam });
   if (!agendaResult.data) {
     notFound();
   }
   const agendaData = agendaResult.data;
-  const hasUpcomingCourses = locationsResult.locations.length > 0;
+  const hasCoursesThisWeek = agendaData.days.some((day) => day.courses.length > 0);
   const courseBasePath =
     session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN"
       ? "/teacher/courses"
@@ -258,7 +254,7 @@ export default async function TeacherPublicProfilePage({
             <h2 className="text-xl font-semibold text-white">Agenda du professeur</h2>
           </div>
         </div>
-        {!hasUpcomingCourses && (
+        {!hasCoursesThisWeek && (
           <div className="rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-slate-200">
             Aucun cours à venir pour le moment. Consulte la liste complète pour préparer ta prochaine session.
           </div>
