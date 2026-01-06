@@ -63,26 +63,6 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
-function computeWeekNavigation(targetWeek?: string) {
-  const parsedWeek = targetWeek ? new Date(`${targetWeek}T00:00:00`) : new Date();
-  const weekBase = Number.isNaN(parsedWeek.getTime()) ? new Date() : parsedWeek;
-  const start = new Date(weekBase);
-  const dayOffset = start.getDay() === 0 ? 6 : start.getDay() - 1;
-  start.setDate(start.getDate() - dayOffset);
-  start.setHours(0, 0, 0, 0);
-
-  const prev = new Date(start);
-  prev.setDate(start.getDate() - 7);
-  const next = new Date(start);
-  next.setDate(start.getDate() + 7);
-
-  return {
-    week: formatWeekKey(start),
-    prevWeek: formatWeekKey(prev),
-    nextWeek: formatWeekKey(next),
-  };
-}
-
 export function WeekView({
   initialWeek,
   initialPrev,
@@ -102,14 +82,17 @@ export function WeekView({
   const [isPending, startTransition] = useTransition();
 
   const currentWeekKey = useMemo(() => {
-    return computeWeekNavigation().week;
+    const d = new Date();
+    const start = new Date(d);
+    const dayOffset = start.getDay() === 0 ? 6 : start.getDay() - 1;
+    start.setDate(start.getDate() - dayOffset);
+    return formatWeekKey(start);
   }, []);
 
   const fetchWeek = (target: string) => {
     startTransition(async () => {
-      const targetNav = computeWeekNavigation(target);
       const params = new URLSearchParams();
-      params.set("week", targetNav.week);
+      params.set("week", target);
       if (filters.teacher) params.set("teacher", filters.teacher);
       if (filters.studio) params.set("studio", filters.studio);
       if (filters.discipline) params.set("discipline", filters.discipline);
@@ -125,10 +108,10 @@ export function WeekView({
         disciplineNameById?: Record<string, string>;
         week?: string;
       };
-      const responseNav = computeWeekNavigation(json.week ?? targetNav.week);
-      setWeek(responseNav.week);
-      setPrev(responseNav.prevWeek);
-      setNext(responseNav.nextWeek);
+      const resolvedWeek = json.week ?? target;
+      setWeek(resolvedWeek);
+      setPrev(json.prevWeek ?? resolvedWeek);
+      setNext(json.nextWeek ?? resolvedWeek);
       const nameById = json.disciplineNameById ?? {};
       setDays(
         (json.days ?? []).map((day) => ({
