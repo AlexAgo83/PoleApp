@@ -10,6 +10,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { destroyAsset, isCloudinaryEnabled, isDefaultAvatarPublicId } from "@/lib/cloudinary";
 import { isSeedPublicId } from "@/lib/media";
+import {
+  INSTAGRAM_ERROR_MESSAGE,
+  PHONE_ERROR_MESSAGE,
+  normalizePhone,
+  validateInstagramUsername,
+} from "@/lib/contacts";
 
 const schema = z.object({
   firstName: z
@@ -33,6 +39,8 @@ const schema = z.object({
     .trim()
     .max(2000, "Texte trop long")
     .optional(),
+  phone: z.string().trim().max(64, "Téléphone trop long").optional(),
+  instagramUsername: z.string().trim().max(64, "Username trop long").optional(),
   favoritePositions: z.array(z.string().cuid()).optional(),
   favoriteDisciplines: z.array(z.string().cuid()).max(5, "Max 5 disciplines").optional(),
 });
@@ -52,6 +60,8 @@ export async function updateProfileAction(formData: FormData) {
     diplomas: isTeacher
       ? formData.get("diplomas")?.toString().trim() || undefined
       : undefined,
+    phone: formData.get("phone")?.toString() ?? undefined,
+    instagramUsername: formData.get("instagramUsername")?.toString() ?? undefined,
     favoritePositions: (formData.getAll("favoritePositions") ?? []).map((value) => value.toString()),
     favoriteDisciplines: (formData.getAll("favoriteDisciplines") ?? []).map((value) =>
       value.toString()
@@ -64,6 +74,24 @@ export async function updateProfileAction(formData: FormData) {
 
   const { firstName, lastName, age, diplomas, favoritePositions = [], favoriteDisciplines = [] } =
     parsed.data;
+  let phone: string | null = null;
+  let instagramUsername: string | null = null;
+  try {
+    phone = normalizePhone(parsed.data.phone);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || PHONE_ERROR_MESSAGE);
+    }
+    throw new Error(PHONE_ERROR_MESSAGE);
+  }
+  try {
+    instagramUsername = validateInstagramUsername(parsed.data.instagramUsername);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || INSTAGRAM_ERROR_MESSAGE);
+    }
+    throw new Error(INSTAGRAM_ERROR_MESSAGE);
+  }
   const firstNameValue = firstName?.trim() || null;
   const lastNameValue = lastName?.trim() || null;
   const displayName = [firstNameValue, lastNameValue].filter(Boolean).join(" ").trim() || null;
@@ -79,6 +107,8 @@ export async function updateProfileAction(formData: FormData) {
         lastName: lastNameValue,
         age: age ?? null,
         diplomas: isTeacher ? diplomas ?? null : undefined,
+        phone,
+        instagramUsername,
       },
     });
 

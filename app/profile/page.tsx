@@ -12,6 +12,7 @@ import { ProfileCollapsible } from "./ProfileCollapsible";
 import { AvatarManager } from "./AvatarManager";
 import { StudentPerformanceList } from "./StudentPerformanceList";
 import { PersistedSection as StudentPersistedSection } from "@/app/teacher/students/[id]/PersistedSection";
+import { ContactButtons } from "@/components/ContactButtons";
 
 const roleLabels: Record<string, string> = {
   STUDENT: "Étudiant",
@@ -143,35 +144,42 @@ export default async function ProfilePage() {
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
       <section className="panel p-5 md:p-6">
-        <div className="flex items-center gap-4">
-          <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-black/30">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={avatarUrl}
-              alt={`Avatar de ${displayName}`}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div className="text-sm text-slate-300">
-            <p className="text-base font-semibold text-white flex items-center gap-2">
-              <span>{currentDisplay}</span>
-              {user.age ? (
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-black/30">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt={`Avatar de ${displayName}`}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="text-sm text-slate-300">
+              <p className="text-base font-semibold text-white flex items-center gap-2">
+                <span>{currentDisplay}</span>
+                {user.age ? (
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                    {user.age} ans
+                  </span>
+                ) : null}
+              </p>
+              <p className="text-xs text-slate-400">{user.email}</p>
+              <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                <span>École : {user.school?.name ?? "Non rattaché"}</span>
                 <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
-                  {user.age} ans
+                  {roleLabel}
                 </span>
-              ) : null}
-            </p>
-            <p className="text-xs text-slate-400">{user.email}</p>
-            <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-              <span>École : {user.school?.name ?? "Non rattaché"}</span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
-                {roleLabel}
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
-                {user.isPremium ? "Premium" : "Gratuit"}
-              </span>
-            </p>
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-100">
+                  {user.isPremium ? "Premium" : "Gratuit"}
+                </span>
+              </p>
+            </div>
           </div>
+          <ContactButtons
+            phone={user.phone}
+            instagramUsername={user.instagramUsername}
+            className="justify-end md:pt-2"
+          />
         </div>
 
         {isStudent && (
@@ -340,6 +348,34 @@ export default async function ProfilePage() {
               placeholder="Ton nom de famille"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
             />
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-200">Téléphone (WhatsApp)</span>
+            <input
+              type="tel"
+              name="phone"
+              defaultValue={user.phone ?? ""}
+              placeholder="+33601020304"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+            />
+            <p className="text-xs text-slate-400">
+              8–20 chiffres, + optionnel. Laisser vide pour retirer le numéro.
+            </p>
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-200">Instagram (username)</span>
+            <input
+              type="text"
+              name="instagramUsername"
+              defaultValue={user.instagramUsername ?? ""}
+              placeholder="mon.profil"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-slate-400 focus:border-cyan-400/70 focus:outline-none"
+            />
+            <p className="text-xs text-slate-400">
+              Lettres/chiffres/._, 2–30 caractères. Laisser vide pour retirer.
+            </p>
           </label>
 
           <label className="block space-y-2">
