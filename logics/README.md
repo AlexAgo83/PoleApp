@@ -1,4 +1,4 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.14.0
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.14.1
 > Doit rester à jour avec le projet (backlogs, changelog, modèles, routes).
 
 ## Contenu principal
@@ -20,9 +20,9 @@
 - Sécurité/PII : RBAC middleware, validations zod serveur, secrets hors code, Cloudinary via signatures serveur.
 - Perf/UX : budgets web (TTFB/CLS/LCP), images Cloudinary transformées, filtres persistés par utilisateur.
 
-## État produit (v0.14.0)
+## État produit (v0.14.1)
 - Auth/RBAC : NextAuth Credentials, middleware par rôle, redirections home par rôle, signup élève ouvert (premium optionnel).
-- Profil : salutation/bandeau session, page `/app/profile` (email/rôle/école, prénom/nom/âge/photo), préférences prof/élève (cœurs) visibles sur fiche publique prof.
+- Profil : salutation/bandeau session, page `/app/profile` (email/rôle/école, prénom/nom/âge/photo), préférences prof/élève (cœurs) visibles sur fiche publique prof, contacts optionnels (téléphone WhatsApp, username Instagram) avec boutons externes.
 - Positions : progression/blessures (CRUD, pagination 10), mini-jeu, muscles/articulations liés, filtres multi-disciplines, vidéos Cloudinary authentifiées (signées).
 - Cours & agendas : listes + détail alignés élève/prof/admin, agendas semaine/mois (élève/teacher/admin) avec filtres persistés, ICS dynamique avec timezone + alarme, annulation rembourse crédits et nettoie factures liées.
 - Facturation/achats : `Invoice` par cours (admin : statuts, export CSV, backfill), lecture prof, achats élèves (packs/abos/presets) visibles côté admin/prof.
@@ -31,7 +31,7 @@
 - Notifications : menu cloche (supprimer/clear all, compteur), déduplication par user/kind/course, limite 50 en fetch.
 - Super-admin : audit médias Cloudinary vs DB (filtres resource/type, diff orphelins/cassés, export CSV) ; page logics affiche les tâches Markdown stylisées.
 - Média/Cloudinary : avatars (contrôles poids/résolution, fallback seed), headers/photos cours/studios/écoles/presets, placeholders, signatures et destruction via API.
-- Seeds dev : comptes fixes (admin/teacher/student1/2, mdp `DATABASE_SEED_PWD`), 2 écoles (photos `sc_*`), studios, partenaires, 30 positions (vidéos Cloudinary), 40 cours avec factures, crédits 500/élève, disciplines Pole/Exotic/Souplesse/Pilates/Conditioning, muscles/articulations, presets avec médias. Démo déblocage via achat preset/cours conservée.
+- Seeds dev : comptes fixes (admin/teacher/student1/2, mdp `DATABASE_SEED_PWD`), 2 écoles (photos `sc_*`), studios, partenaires, 30 positions (vidéos Cloudinary), 40 cours avec factures, crédits 500/élève, disciplines Pole/Exotic/Souplesse/Pilates/Conditioning, muscles/articulations, presets avec médias. Démo déblocage via achat preset/cours conservée. Contacts seedés pour le prof principal (WhatsApp/Instagram).
 
 ## Stack / scripts
 - Next.js 16 App Router, React 19, TypeScript, Tailwind v4.
