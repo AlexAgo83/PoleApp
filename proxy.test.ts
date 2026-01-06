@@ -71,4 +71,16 @@ describe("proxy (middleware)", () => {
 
     expect(res.status).toBe(200);
   });
+
+  it("redirects when role is null/invalid", async () => {
+    getTokenMock.mockResolvedValue({ role: null });
+    hasAccessMock.mockReturnValue(false);
+    allowedRolesForPathMock.mockReturnValue(["TEACHER"]);
+    const req = new NextRequest("http://localhost/teacher/courses");
+
+    const res = await proxy(req);
+
+    expect(res.status).toBe(307);
+    expect(res.headers.get("location")).toContain("/access-denied");
+  });
 });

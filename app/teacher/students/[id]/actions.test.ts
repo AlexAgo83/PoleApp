@@ -1,9 +1,9 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-import { updateProgressAction } from "./actions";
+import { updateProgressAction, updateStudentProfileAction } from "./actions";
 
 const prismaMock = vi.hoisted(() => ({
-  user: { findUnique: vi.fn() },
+  user: { findUnique: vi.fn(), update: vi.fn() },
   studentPositionProgress: { upsert: vi.fn() },
 }));
 const getServerSessionMock = vi.fn();
@@ -97,5 +97,57 @@ describe("updateProgressAction", () => {
 
     await expect(updateProgressAction(form)).rejects.toThrow("redirect");
     expect(redirectMock).toHaveBeenCalledWith("/access-denied");
+  });
+
+  it("updateStudentProfileAction rejects invalid phone", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "u1", schoolId: "s1", role: "TEACHER" },
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ schoolId: "s1" });
+
+    const form = new FormData();
+    form.set("studentId", "clstu12345678901234567890");
+    form.set("firstName", "John");
+    form.set("lastName", "Doe");
+    form.set("phone", "abc");
+
+    await expect(updateStudentProfileAction(form)).rejects.toThrow("Numéro WhatsApp invalide");
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
+
+  it("updateStudentProfileAction rejects invalid instagram", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "u1", schoolId: "s1", role: "TEACHER" },
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ schoolId: "s1" });
+
+    const form = new FormData();
+    form.set("studentId", "clstu12345678901234567890");
+    form.set("instagramUsername", "a");
+
+    await expect(updateStudentProfileAction(form)).rejects.toThrow("Username Instagram invalide");
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
+
+  it("updateStudentProfileAction updates profile and redirects", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "u1", schoolId: "s1", role: "TEACHER" },
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ schoolId: "s1" });
+    prismaMock.user.update.mockResolvedValue({});
+    redirectMock.mockImplementation(() => undefined);
+
+    const form = new FormData();
+    form.set("studentId", "clstu12345678901234567890");
+    form.set("firstName", "John");
+    form.set("lastName", "Doe");
+    form.set("phone", "+33123456789");
+    form.set("instagramUsername", "john_doe");
+
+    await updateStudentProfileAction(form);
+
+    expect(prismaMock.user.update).toHaveBeenCalled();
+    expect(revalidatePathMock).toHaveBeenCalledWith("/teacher/students/clstu12345678901234567890");
+    expect(redirectMock).toHaveBeenCalledWith("/teacher/students/clstu12345678901234567890");
   });
 });
