@@ -111,7 +111,14 @@ export default async function AdminPartnersPage({
     partners = await prisma.partner.findMany({
       where: whereClause,
       orderBy: { name: "asc" },
-      include: { sponsoredLinks: true },
+      select: {
+        id: true,
+        name: true,
+        kind: true,
+        website: true,
+        description: true,
+        sponsoredLinks: { select: { id: true, label: true, url: true, category: true } },
+      },
       skip,
       take: PAGE_SIZE,
     });
@@ -120,6 +127,7 @@ export default async function AdminPartnersPage({
     partners = await prisma.partner.findMany({
       where: whereClause,
       orderBy: { name: "asc" },
+      select: { id: true, name: true, kind: true, website: true, description: true },
       skip,
       take: PAGE_SIZE,
     });
