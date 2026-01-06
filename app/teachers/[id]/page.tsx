@@ -5,6 +5,11 @@ import { notFound, redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resolveAvatarUrl } from "@/lib/avatar";
+import { WeekView } from "@/app/student/courses/agenda/WeekView";
+import {
+  buildTeacherWeekAgenda,
+  resolveTeacherAgendaAccess,
+} from "@/lib/teacherAgenda";
 import { TeacherEditPanel } from "./TeacherEditPanel";
 import { TeacherAvatarManager } from "./TeacherAvatarManager";
 import { ShareLinkButton } from "@/components/ShareLinkButton";
@@ -16,7 +21,7 @@ const TEACHER_AVATAR_PLACEHOLDER =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23111' offset='0%'/><stop stop-color='%23223' offset='100%'/></linearGradient></defs><rect width='120' height='120' rx='60' fill='url(%23g)'/><circle cx='60' cy='48' r='24' fill='%23334155'/><path d='M24 110c6-20 66-20 72 0' fill='%23334155'/></svg>";
 
 type Params = Promise<{ id: string }>;
-type SearchParams = Promise<{ from?: string; combosPage?: string }>;
+type SearchParams = Promise<{ from?: string; combosPage?: string; week?: string }>;
 
 export default async function TeacherPublicProfilePage({
   params,
@@ -30,14 +35,17 @@ export default async function TeacherPublicProfilePage({
   const resolvedSearch = (await Promise.resolve(searchParams ?? {})) as {
     from?: string;
     combosPage?: string;
+    week?: string;
   };
   const rawFrom = resolvedSearch.from;
   const rawCombosPage = resolvedSearch.combosPage;
+  const rawWeek = resolvedSearch.week;
   const safeFrom =
     rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//")
       ? rawFrom
       : undefined;
   const initialCombosPage = Math.max(1, Number(rawCombosPage ?? "1") || 1);
+  const weekParam = typeof rawWeek === "string" ? rawWeek : undefined;
 
   if (!teacherId) {
     notFound();
@@ -53,6 +61,8 @@ export default async function TeacherPublicProfilePage({
     select: {
       id: true,
       name: true,
+      firstName: true,
+      lastName: true,
       email: true,
       age: true,
       avatarPublicId: true,
@@ -90,6 +100,14 @@ export default async function TeacherPublicProfilePage({
   if (!teacher || (teacher.role !== "TEACHER" && teacher.role !== "SCHOOL_ADMIN")) {
     notFound();
   }
+  const teacherSummary = { id: teacher.id, role: teacher.role, schoolId: teacher.schoolId };
+  const access = resolveTeacherAgendaAccess(teacherSummary, session.user);
+  if (!access.allowed) {
+    if (access.reason === "forbidden") {
+      redirect("/access-denied");
+    }
+    notFound();
+  }
   const canEdit =
     session.user.role === "SCHOOL_ADMIN" || session.user.id === teacher.id;
   const positions = canEdit
@@ -104,6 +122,20 @@ export default async function TeacherPublicProfilePage({
         orderBy: { name: "asc" },
       })
     : [];
+  const agendaResult = await buildTeacherWeekAgenda({ teacher: teacherSummary, viewer: session.user, weekParam });
+  if (!agendaResult.data) {
+    notFound();
+  }
+  const agendaData = agendaResult.data;
+  const hasCoursesThisWeek = agendaData.days.some((day) => day.courses.length > 0);
+  const courseBasePath =
+    session.user.role === "TEACHER" || session.user.role === "SCHOOL_ADMIN"
+      ? "/teacher/courses"
+      : session.user.role === "SUPER_ADMIN"
+      ? "/admin/courses"
+      : "/student/courses";
+  const coursesListHref = `/student/courses?teacher=${teacher.id}`;
+  const agendaBaseFrom = `/teachers/${teacher.id}`;
 
   const avatarUrl = resolveAvatarUrl({
     avatarPublicId: teacher.avatarPublicId,
@@ -119,13 +151,18 @@ export default async function TeacherPublicProfilePage({
       .map((fd) => fd.discipline)
       .filter((d): d is NonNullable<typeof d> => Boolean(d)) ?? [];
   const backHref = safeFrom || undefined;
-  const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
+  const teacherName =
+    [teacher.firstName?.trim(), teacher.lastName?.trim()].filter(Boolean).join(" ") ||
+    teacher.name?.trim() ||
+    teacher.email ||
+    "Professeur";
   const nameParts = (teacher.name ?? "")
     .trim()
     .split(" ")
     .filter(Boolean);
-  let firstNameDefault = nameParts[0] ?? "";
-  let lastNameDefault = nameParts.slice(1).join(" ");
+  let firstNameDefault = teacher.firstName?.trim() || nameParts[0] || "";
+  let lastNameDefault =
+    teacher.lastName?.trim() || (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "");
   if (!firstNameDefault && teacher.email) {
     firstNameDefault = teacher.email.split("@")[0] ?? "";
   }
@@ -164,7 +201,7 @@ export default async function TeacherPublicProfilePage({
             />
           </div>
         </div>
-        <div className="panel-grid md:grid-cols-2">
+        <div className="panel-grid mt-4 md:grid-cols-2">
           <div className="space-y-2 md:col-span-2">
             <h2 className="text-lg font-semibold text-white">Diplômes</h2>
             <p className="whitespace-pre-line rounded-xl px-0 py-0 text-sm text-slate-100">
@@ -215,6 +252,33 @@ export default async function TeacherPublicProfilePage({
           cloudName={cloudinaryCloudName}
           initialPage={initialCombosPage}
         />
+
+        <div className="mt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-white">Agenda du professeur</h2>
+            </div>
+          </div>
+          {!hasCoursesThisWeek && (
+            <div className="mt-3 rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+              Aucun cours à venir pour le moment. Consulte la liste complète pour préparer ta prochaine session.
+            </div>
+          )}
+          <div className="mt-3">
+            <WeekView
+              initialWeek={agendaData.week}
+              initialPrev={agendaData.prevWeek}
+              initialNext={agendaData.nextWeek}
+              initialDays={agendaData.days}
+              filters={{ teacher: teacher.id }}
+              baseFrom={agendaBaseFrom}
+              apiPath={`/api/teachers/${teacher.id}/week-agenda`}
+              courseBasePath={courseBasePath}
+              showAttendanceBadges={session.user.role === "STUDENT"}
+              compact
+            />
+          </div>
+        </div>
       </section>
 
       {canEdit && (
