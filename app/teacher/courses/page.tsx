@@ -484,7 +484,7 @@ export default async function TeacherCoursesPage({
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                     <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-200">
                       <span>
-                        {course.attendances.length} élèves · {course.positions.length} positions
+                        {course._count?.attendances ?? 0} élèves · {course._count?.positions ?? 0} positions
                       </span>
                       {course.isVirtual && (
                         <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/70 bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-100">

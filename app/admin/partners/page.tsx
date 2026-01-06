@@ -105,7 +105,16 @@ export default async function AdminPartnersPage({
   const skip = (safePage - 1) * PAGE_SIZE;
   const pageRange = buildPageRange(totalPages, safePage);
 
-  let partners: Awaited<ReturnType<typeof prisma.partner.findMany>> = [];
+  type PartnerRow = {
+    id: string;
+    name: string;
+    kind: string;
+    website: string | null;
+    description: string | null;
+    sponsoredLinks?: { id: string; label: string | null; url: string; category: string }[];
+  };
+
+  let partners: PartnerRow[] = [];
   let supportsSponsored = true;
   try {
     partners = await prisma.partner.findMany({
