@@ -1,4 +1,4 @@
-# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.14.1
+# Pole App — Pack Markdown (Backlog + Instructions Codex) — v0.15.0
 > Doit rester à jour avec le projet (backlogs, changelog, modèles, routes).
 
 ## Contenu principal

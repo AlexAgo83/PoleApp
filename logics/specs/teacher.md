@@ -18,19 +18,20 @@
 - Droits prof (DRY17) : `canCreatePositionAndPreset` et `canDeletePositionAndPreset` gouvernent création/duplication/import/suppression de positions/presets.
 - Billing prof : lecture des factures liées (pas d’actions).
 - Profil prof : diplômes, favoris positions/discipline (cap 5), avatar ; téléphone WhatsApp optionnel, username Instagram optionnel ; boutons externes conditionnels ; changement MDP ; fiche publique partageable.
-- Fiche publique : affiche favoris, disciplines, presets, boutons contact (icônes locales PNG) alignés avec “Partager”, agenda prof, bloc localisation.
+- Fiche publique : affiche favoris, disciplines, presets, boutons contact (icônes locales PNG) alignés avec “Partager”, agenda prof (vue semaine filtrée teacherId, nav ± semaines), bloc localisation (école + studios/adresses/ville des cours à venir, mention “En ligne” pour cours virtuels).
 
 ## UX cible
 - Dashboard avec cartes cours/presets/élèves.
 - Agenda `/app/teacher/courses/agenda` : filtres date/studio/discipline/recherche/“mes cours”, nav semaine/mois.
 - Form cours : date/durée/studio/discipline/prof, positions, maxSeats/costCredits, badges désactivation.
 - Presets : grille/cards, CTA créer/dupliquer, masqués si droit off.
-- Fiche publique : header avatar/email/école, diplômes, favoris, disciplines, presets, boutons WhatsApp/Instagram (si renseignés, icônes locales), bouton partager, agenda prof.
+- Fiche publique : header avatar/email/école, diplômes, favoris, disciplines, presets, boutons WhatsApp/Instagram (si renseignés, icônes locales), bouton partager, agenda prof (bloc compact calqué sur planning école), bloc localisation listant écoles/studios/adresses/ville ou “En ligne” pour virtuels, état vide avec lien liste cours.
 - Fiche élève : header avatar/email/école, badges premium/progressions vues, boutons contact si phone/IG fournis.
 
 ## Données / technique
 - Modèles : Course (+ CourseAttendance/Position), Preset (+ positions), User TEACHER (phone?, instagramUsername?), favoriteDisciplines (cap 5), favoritePositions, droits canCreate/canDelete, disabledAt/By.
 - Agendas teacher filtrés sur teacherId + schoolId.
+- Agenda fiche publique : réutilise `/api/student/week-courses` filtré serveur sur `teacherId` + `schoolId`, nav semaine (fenêtre ±8-16 semaines).
 - Badges désactivation via flags disabled sur studio/discipline/user (DRY17).
 - Uploads : avatars/presets via Cloudinary signature.
 - Boutons contact : liens `wa.me/<phone>` et `instagram.com/<username>/`, icônes `/icons/whatsapp.png` et `/icons/instagram.png`, `target=_blank` + `rel="noreferrer noopener"`.
@@ -39,7 +40,7 @@
 - RBAC : accès teacher ; super-admin OK.
 - Cours : création/édition bloque entités désactivées ; agenda filtres/nav OK ; badges désactivation visibles.
 - Presets : droits create/delete appliqués (duplication/import inclus).
-- Fiche publique : visible, agenda prof filtré teacherId non contournable si présent ; boutons contact visibles uniquement si données.
+- Fiche publique : visible, agenda prof filtré teacherId non contournable (scope schoolId respecté), nav semaine OK, état vide avec lien liste cours ; bloc localisation affiche studios/ville ou “En ligne” pour virtuels ; boutons contact visibles uniquement si données.
 - Disciplines favorites cap 5 ; changement MDP OK.
 
 ## Risques / points ouverts
