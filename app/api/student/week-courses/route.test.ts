@@ -59,4 +59,25 @@ describe("GET /api/student/week-courses", () => {
     expect(data.days).toHaveLength(7);
     expect(data.disciplineNameById).toMatchObject({ d1: "Pole" });
   });
+
+  it("applies school filter and discipline multi-filter", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "stu1", role: "STUDENT", schoolId: "s1" },
+    });
+    prismaMock.courseAttendance.findMany.mockResolvedValue([]);
+    prismaMock.course.findMany.mockResolvedValue([]);
+    prismaMock.discipline.findMany.mockResolvedValue([]);
+
+    await GET(new Request("http://localhost/api/student/week-courses?discipline=a,b"));
+
+    expect(prismaMock.course.findMany).toHaveBeenCalledTimes(1);
+    const where = prismaMock.course.findMany.mock.calls[0][0].where;
+    expect(where.schoolId).toEqual("s1");
+    expect(where.OR).toEqual([
+      { disciplineId: { in: ["a", "b"] } },
+      { discipline: { in: ["a", "b"], mode: "insensitive" } },
+    ]);
+    expect(where.date.gte instanceof Date).toBe(true);
+    expect(where.date.lte instanceof Date).toBe(true);
+  });
 });

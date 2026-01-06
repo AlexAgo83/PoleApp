@@ -66,4 +66,36 @@ describe("updateProgressAction", () => {
     });
     expect(revalidatePathMock).toHaveBeenCalledWith("/teacher/students/clstu12345678901234567890");
   });
+
+  it("throws on invalid learningStatus", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "u1", schoolId: "s1", role: "TEACHER" },
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ schoolId: "s1" });
+
+    const form = new FormData();
+    form.set("studentId", "clstu12345678901234567890");
+    form.set("positionId", "clpos12345678901234567890");
+    form.set("learningStatus", "UNKNOWN");
+
+    await expect(updateProgressAction(form)).rejects.toThrow("Invalid form");
+  });
+
+  it("redirects when student from another school", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "u1", schoolId: "s1", role: "TEACHER" },
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ schoolId: "s2" });
+    redirectMock.mockImplementation(() => {
+      throw new Error("redirect");
+    });
+
+    const form = new FormData();
+    form.set("studentId", "clstu12345678901234567890");
+    form.set("positionId", "clpos12345678901234567890");
+    form.set("learningStatus", "IN_PROGRESS");
+
+    await expect(updateProgressAction(form)).rejects.toThrow("redirect");
+    expect(redirectMock).toHaveBeenCalledWith("/access-denied");
+  });
 });

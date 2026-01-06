@@ -58,4 +58,26 @@ describe("GET /api/teacher/week-courses", () => {
     expect(data.days).toHaveLength(7);
     expect(data.disciplineNameById).toMatchObject({ d1: "Pole" });
   });
+
+  it("clamps date to week start and honors discipline filters for admin", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "admin1", role: "SCHOOL_ADMIN", schoolId: "s1" },
+    });
+    prismaMock.course.findMany.mockResolvedValue([]);
+    prismaMock.discipline.findMany.mockResolvedValue([]);
+
+    await GET(new Request("http://localhost/api/teacher/week-courses?week=2024-01-03&discipline=a,b"));
+
+    expect(prismaMock.course.findMany).toHaveBeenCalledTimes(1);
+    const args = prismaMock.course.findMany.mock.calls[0][0];
+    expect(args.where.schoolId).toBe("s1");
+    expect(args.where.date.gte.getDay()).toBe(1); // Monday
+    const diffDays = Math.round((args.where.date.lte.getTime() - args.where.date.gte.getTime()) / (1000 * 60 * 60 * 24));
+    expect(diffDays).toBeGreaterThanOrEqual(6);
+    expect(diffDays).toBeLessThanOrEqual(7);
+    expect(args.where.OR).toEqual([
+      { disciplineId: { in: ["a", "b"] } },
+      { discipline: { in: ["a", "b"], mode: "insensitive" } },
+    ]);
+  });
 });

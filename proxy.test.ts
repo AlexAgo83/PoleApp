@@ -51,4 +51,24 @@ describe("proxy (middleware)", () => {
 
     expect(res.status).toBe(200);
   });
+
+  it("allows SCHOOL_ADMIN on /admin", async () => {
+    getTokenMock.mockResolvedValue({ role: "SCHOOL_ADMIN" });
+    hasAccessMock.mockReturnValue(true);
+    const req = new NextRequest("http://localhost/admin");
+
+    const res = await proxy(req);
+
+    expect(res.status).toBe(200);
+  });
+
+  it("passes through public path when authorized", async () => {
+    getTokenMock.mockResolvedValue({ role: "TEACHER" });
+    hasAccessMock.mockReturnValue(true);
+    const req = new NextRequest("http://localhost/student");
+
+    const res = await proxy(req);
+
+    expect(res.status).toBe(200);
+  });
 });
