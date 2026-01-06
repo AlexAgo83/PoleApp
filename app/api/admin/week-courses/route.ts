@@ -91,3 +91,4 @@ export async function GET(req: Request) {
     days,
   });
 }
+export const revalidate = 60;
