@@ -118,13 +118,18 @@ export default async function ProfilePage() {
     : [];
 
   const roleLabel = roleLabels[user.role] ?? user.role;
-  const [firstNameDefault, ...restName] =
+  const nameTokens =
     (user.name ?? "")
       .trim()
       .split(" ")
       .filter(Boolean);
-  const lastNameDefault = restName.join(" ");
-  const displayName = user.name?.trim() || user.email;
+  const firstNameDefault = user.firstName?.trim() || nameTokens[0] || "";
+  const lastNameDefault =
+    user.lastName?.trim() || (nameTokens.length > 1 ? nameTokens.slice(1).join(" ") : "");
+  const displayName =
+    [user.firstName?.trim(), user.lastName?.trim()].filter(Boolean).join(" ") ||
+    user.name?.trim() ||
+    user.email;
   const currentDisplay = [firstNameDefault, lastNameDefault].filter(Boolean).join(" ") || displayName;
   const avatarPlaceholder = isTeacher ? TEACHER_AVATAR_PLACEHOLDER : STUDENT_AVATAR_PLACEHOLDER;
   const avatarUrl = resolveAvatarUrl({

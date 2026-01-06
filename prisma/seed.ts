@@ -1801,6 +1801,7 @@ async function seedStudentInjuries(students: { id: string; schoolId: string }[])
         studentId: first.id,
         injuryTypeId: shoulder.id,
         isActive: true,
+        notes: "Blessure déclarée (épaule) — seed",
       });
     }
     if (second && back) {
@@ -1808,6 +1809,7 @@ async function seedStudentInjuries(students: { id: string; schoolId: string }[])
         studentId: second.id,
         injuryTypeId: back.id,
         isActive: true,
+        notes: "Blessure déclarée (bas du dos) — seed",
       });
     }
   }

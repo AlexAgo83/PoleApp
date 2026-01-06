@@ -61,6 +61,8 @@ export default async function TeacherPublicProfilePage({
     select: {
       id: true,
       name: true,
+      firstName: true,
+      lastName: true,
       email: true,
       age: true,
       avatarPublicId: true,
@@ -149,13 +151,18 @@ export default async function TeacherPublicProfilePage({
       .map((fd) => fd.discipline)
       .filter((d): d is NonNullable<typeof d> => Boolean(d)) ?? [];
   const backHref = safeFrom || undefined;
-  const teacherName = teacher.name?.trim() || teacher.email || "Professeur";
+  const teacherName =
+    [teacher.firstName?.trim(), teacher.lastName?.trim()].filter(Boolean).join(" ") ||
+    teacher.name?.trim() ||
+    teacher.email ||
+    "Professeur";
   const nameParts = (teacher.name ?? "")
     .trim()
     .split(" ")
     .filter(Boolean);
-  let firstNameDefault = nameParts[0] ?? "";
-  let lastNameDefault = nameParts.slice(1).join(" ");
+  let firstNameDefault = teacher.firstName?.trim() || nameParts[0] || "";
+  let lastNameDefault =
+    teacher.lastName?.trim() || (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "");
   if (!firstNameDefault && teacher.email) {
     firstNameDefault = teacher.email.split("@")[0] ?? "";
   }
@@ -245,32 +252,33 @@ export default async function TeacherPublicProfilePage({
           cloudName={cloudinaryCloudName}
           initialPage={initialCombosPage}
         />
-      </section>
 
-      <section className="panel panel-body lg-gap border-indigo-400/25 shadow-indigo-900/30">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Agenda</p>
-            <h2 className="text-xl font-semibold text-white">Agenda du professeur</h2>
+        <div className="mt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-white">Agenda du professeur</h2>
+            </div>
+          </div>
+          {!hasCoursesThisWeek && (
+            <div className="mt-3 rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+              Aucun cours à venir pour le moment. Consulte la liste complète pour préparer ta prochaine session.
+            </div>
+          )}
+          <div className="mt-3">
+            <WeekView
+              initialWeek={agendaData.week}
+              initialPrev={agendaData.prevWeek}
+              initialNext={agendaData.nextWeek}
+              initialDays={agendaData.days}
+              filters={{ teacher: teacher.id }}
+              baseFrom={agendaBaseFrom}
+              apiPath={`/api/teachers/${teacher.id}/week-agenda`}
+              courseBasePath={courseBasePath}
+              showAttendanceBadges={session.user.role === "STUDENT"}
+              compact
+            />
           </div>
         </div>
-        {!hasCoursesThisWeek && (
-          <div className="rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-            Aucun cours à venir pour le moment. Consulte la liste complète pour préparer ta prochaine session.
-          </div>
-        )}
-        <WeekView
-          initialWeek={agendaData.week}
-          initialPrev={agendaData.prevWeek}
-          initialNext={agendaData.nextWeek}
-          initialDays={agendaData.days}
-          filters={{ teacher: teacher.id }}
-          baseFrom={agendaBaseFrom}
-          apiPath={`/api/teachers/${teacher.id}/week-agenda`}
-          courseBasePath={courseBasePath}
-          showAttendanceBadges={session.user.role === "STUDENT"}
-          compact
-        />
       </section>
 
       {canEdit && (
