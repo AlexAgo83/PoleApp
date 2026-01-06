@@ -158,7 +158,7 @@ export default async function CoursesAgendaPage({
       title: true,
       photoPublicId: true,
       disciplineId: true,
-      discipline: true,
+      discipline: { select: { name: true, color: true } },
       date: true,
       durationMinutes: true,
       isVirtual: true,
