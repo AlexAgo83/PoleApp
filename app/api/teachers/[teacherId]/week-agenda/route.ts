@@ -48,3 +48,4 @@ export async function GET(req: Request, { params }: { params: { teacherId: strin
     disciplineNameById: agenda.data.disciplineNameById,
   });
 }
+export const revalidate = 60;
