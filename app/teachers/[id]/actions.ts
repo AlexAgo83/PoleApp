@@ -75,11 +75,15 @@ export async function updateTeacherProfileAction(formData: FormData) {
   }
 
   const name = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ").trim() || null;
+  const firstNameValue = parsed.data.firstName?.trim() || null;
+  const lastNameValue = parsed.data.lastName?.trim() || null;
   const dedupedPositions = Array.from(new Set(parsed.data.favoritePositions ?? []));
   const dedupedDisciplines = Array.from(new Set(parsed.data.favoriteDisciplines ?? [])).slice(0, 5);
 
   const updateData: Record<string, unknown> = {
     name,
+    firstName: firstNameValue,
+    lastName: lastNameValue,
     age: parsed.data.age ?? null,
     diplomas: parsed.data.diplomas ?? null,
   };
@@ -227,7 +231,7 @@ export async function updateTeacherPasswordAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    throw new Error(parsed.error.errors[0]?.message ?? "Formulaire invalide");
+    throw new Error(parsed.error.issues[0]?.message ?? "Formulaire invalide");
   }
 
   const teacher = await prisma.user.findUnique({
@@ -268,5 +272,5 @@ export async function updateTeacherPasswordAction(formData: FormData) {
     safeReturn ? `?from=${encodeURIComponent(safeReturn)}` : ""
   }`;
   revalidatePath(targetPath);
-  return { ok: true };
+  return;
 }

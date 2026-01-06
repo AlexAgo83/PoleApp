@@ -45,7 +45,14 @@ type Props = {
     q?: string;
   };
   baseFrom: string;
+  apiPath?: string;
+  courseBasePath?: string;
+  showAttendanceBadges?: boolean;
 };
+
+function formatWeekKey(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 function formatDuration(minutes: number) {
   const hrs = Math.floor(minutes / 60);
@@ -56,7 +63,18 @@ function formatDuration(minutes: number) {
   return `${mins} min`;
 }
 
-export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, filters, baseFrom, compact }: Props) {
+export function WeekView({
+  initialWeek,
+  initialPrev,
+  initialNext,
+  initialDays,
+  filters,
+  baseFrom,
+  compact,
+  apiPath = "/api/student/week-courses",
+  courseBasePath = "/student/courses",
+  showAttendanceBadges = true,
+}: Props) {
   const [days, setDays] = useState<Day[]>(initialDays);
   const [week, setWeek] = useState(initialWeek);
   const [prev, setPrev] = useState(initialPrev);
@@ -68,7 +86,7 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
     const start = new Date(d);
     const dayOffset = start.getDay() === 0 ? 6 : start.getDay() - 1;
     start.setDate(start.getDate() - dayOffset);
-    return `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
+    return formatWeekKey(start);
   }, []);
 
   const fetchWeek = (target: string) => {
@@ -81,17 +99,19 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
       if (filters.mine) params.set("mine", "true");
       if (filters.schools) params.set("schools", "all");
       if (filters.q) params.set("q", filters.q);
-      const res = await fetch(`/api/student/week-courses?${params.toString()}`, { cache: "no-store" });
+      const res = await fetch(`${apiPath}?${params.toString()}`, { cache: "no-store" });
       if (!res.ok) return;
       const json = (await res.json()) as {
-        prevWeek: string;
-        nextWeek: string;
+        prevWeek?: string;
+        nextWeek?: string;
         days: Day[];
         disciplineNameById?: Record<string, string>;
+        week?: string;
       };
-      setWeek(target);
-      setPrev(json.prevWeek);
-      setNext(json.nextWeek);
+      const resolvedWeek = json.week ?? target;
+      setWeek(resolvedWeek);
+      setPrev(json.prevWeek ?? resolvedWeek);
+      setNext(json.nextWeek ?? resolvedWeek);
       const nameById = json.disciplineNameById ?? {};
       setDays(
         (json.days ?? []).map((day) => ({
@@ -99,6 +119,8 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
           courses: (day.courses ?? []).map((course) => ({
             ...course,
             discipline: course.disciplineId ? nameById[course.disciplineId] ?? course.discipline : course.discipline,
+            myStatus: course.myStatus ?? null,
+            waitlistRank: course.waitlistRank ?? null,
           })),
         }))
       );
@@ -200,8 +222,8 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                 </div>
                 <div className="flex flex-1 flex-col gap-1 md:gap-1.5">
                   {day.courses.map((course) => {
-                    const isWaitlist = course.myStatus === "WAITLIST";
-                    const isMineConfirmed = course.myStatus === "CONFIRMED";
+                    const isWaitlist = showAttendanceBadges && course.myStatus === "WAITLIST";
+                    const isMineConfirmed = showAttendanceBadges && course.myStatus === "CONFIRMED";
                     const isVirtual = Boolean(course.isVirtual);
                     const badgeClass = course.past
                       ? "border border-blue-400/70 bg-blue-600/30 text-blue-50"
@@ -216,16 +238,18 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                       ? "Attente"
                       : isMineConfirmed
                       ? "Inscris"
-                      : "Ouvert";
+                      : showAttendanceBadges
+                      ? "Ouvert"
+                      : "À venir";
                     return (
                       <Link
                         key={course.id}
-                        href={`/student/courses/${course.id}?from=${encodeURIComponent(baseFrom)}`}
+                        href={`${courseBasePath}/${course.id}?from=${encodeURIComponent(baseFrom)}`}
                         className={`relative block w-full overflow-hidden rounded-md border px-0.5 py-0.5 text-[11px] transition hover:border-cyan-300/70 hover:bg-white/15 md:rounded-lg md:px-1 md:py-1 ${
                           isVirtual
                             ? course.past
                               ? "border-amber-200/50 bg-amber-500/10 text-amber-50 opacity-80"
-                              : "border-amber-300/70 bg-amber-500/20 text-white"
+                            : "border-amber-300/70 bg-amber-500/20 text-white"
                             : course.past
                             ? "border-white/15 bg-slate-800/60 text-slate-300 opacity-70 line-through"
                             : "border-white/10 bg-white/10 text-white"
@@ -288,7 +312,9 @@ export function WeekView({ initialWeek, initialPrev, initialNext, initialDays, f
                                 ? course.past
                                   ? "Cours déjà suivi"
                                   : "Inscrit"
-                                : "Non inscrit"
+                                : showAttendanceBadges
+                                ? "Non inscrit"
+                                : undefined
                             }
                           >
                             {isWaitlist && course.waitlistRank ? `#${course.waitlistRank}` : statusLabel}
