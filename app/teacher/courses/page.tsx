@@ -148,12 +148,19 @@ export default async function TeacherCoursesPage({
       orderBy: { date: "desc" },
       skip,
       take: PAGE_SIZE,
-      include: {
-        attendances: true,
-        positions: true,
+      select: {
+        id: true,
+        title: true,
+        photoPublicId: true,
+        disciplineId: true,
+        disciplineRef: { select: { disabledAt: true } },
+        date: true,
+        durationMinutes: true,
+        isVirtual: true,
+        maxSeats: true,
+        costCredits: true,
         teacher: { select: { name: true, email: true, disabledAt: true } },
         studio: { select: { name: true, disabledAt: true } },
-        disciplineRef: { select: { disabledAt: true } },
         _count: { select: { notes: true, attendances: true, positions: true } },
       },
     })
@@ -167,12 +174,19 @@ export default async function TeacherCoursesPage({
           orderBy: { date: "desc" },
           skip,
           take: PAGE_SIZE,
-          include: {
-            attendances: true,
-            positions: true,
+          select: {
+            id: true,
+            title: true,
+            photoPublicId: true,
+            disciplineId: true,
+            disciplineRef: { select: { disabledAt: true } },
+            date: true,
+            durationMinutes: true,
+            isVirtual: true,
+            maxSeats: true,
+            costCredits: true,
             teacher: { select: { name: true, email: true, disabledAt: true } },
             studio: { select: { name: true, disabledAt: true } },
-            disciplineRef: { select: { disabledAt: true } },
             _count: { select: { notes: true, attendances: true, positions: true } },
           },
         });
@@ -394,7 +408,7 @@ export default async function TeacherCoursesPage({
           if ((course as any).disciplineRef?.disabledAt) disabledSources.push("Discipline");
           const isDisabledSource = disabledSources.length > 0;
           const isPast = new Date(course.date).getTime() < NOW_MS;
-          const seatsUsed = course._count?.attendances ?? course.attendances.length ?? 0;
+          const seatsUsed = course._count?.attendances ?? 0;
           const remainingSeats = (course.maxSeats ?? 30) - seatsUsed;
           const cost = course.costCredits ?? 100;
           const faded = isPast ? "opacity-60" : "";
