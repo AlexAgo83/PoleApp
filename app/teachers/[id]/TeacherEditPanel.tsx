@@ -13,6 +13,8 @@ type Props = {
     lastName: string;
     age?: number | null;
     diplomas?: string | null;
+    phone?: string | null;
+    instagramUsername?: string | null;
     favoritePositionIds: string[];
     favoriteDisciplineIds: string[];
   };
@@ -71,6 +73,32 @@ export function TeacherEditPanel({ teacherId, defaults, positions, disciplines, 
               defaultValue={defaults.lastName}
               className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
             />
+          </label>
+          <label className="space-y-2 text-sm text-slate-200">
+            Téléphone (WhatsApp)
+            <input
+              type="tel"
+              name="phone"
+              defaultValue={defaults.phone ?? ""}
+              placeholder="+33601020304"
+              className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+            <p className="text-xs text-slate-400">
+              8–20 chiffres, + optionnel. Vide pour retirer.
+            </p>
+          </label>
+          <label className="space-y-2 text-sm text-slate-200">
+            Instagram (username)
+            <input
+              type="text"
+              name="instagramUsername"
+              defaultValue={defaults.instagramUsername ?? ""}
+              placeholder="mon.profil"
+              className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-white outline-none focus:border-cyan-400"
+            />
+            <p className="text-xs text-slate-400">
+              Lettres/chiffres/._, 2–30 caractères. Vide pour retirer.
+            </p>
           </label>
           <label className="space-y-2 text-sm text-slate-200">
             Âge (optionnel)
