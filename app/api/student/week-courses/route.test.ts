@@ -80,4 +80,37 @@ describe("GET /api/student/week-courses", () => {
     expect(where.date.gte instanceof Date).toBe(true);
     expect(where.date.lte instanceof Date).toBe(true);
   });
+
+  it("respects mine=true and marks myAttendance/isMine", async () => {
+    getServerSessionMock.mockResolvedValue({
+      user: { id: "stu1", role: "STUDENT", schoolId: "s1" },
+    });
+    prismaMock.courseAttendance.findMany.mockResolvedValue([
+      {
+        id: "att1",
+        courseId: "c1",
+        status: "CONFIRMED",
+        waitlistRank: null,
+        course: {
+          id: "c1",
+          title: "Cours",
+          photoPublicId: null,
+          disciplineId: "d1",
+          date: new Date("2024-01-01T10:00:00Z"),
+          durationMinutes: 60,
+          isVirtual: false,
+          _count: { positions: 0 },
+          teacher: { name: "Prof", email: "p@example.com" },
+          studio: { name: "Studio" },
+        },
+      },
+    ]);
+    prismaMock.discipline.findMany.mockResolvedValue([{ id: "d1", name: "Pole" }]);
+
+    const res = await GET(new Request("http://localhost/api/student/week-courses?week=2024-01-01&mine=true"));
+    const data = await res.json();
+    const courses = data.days.flatMap((d: any) => d.courses);
+    expect(courses[0].myStatus).toBe("CONFIRMED");
+    expect(courses[0].waitlistRank).toBeNull();
+  });
 });
