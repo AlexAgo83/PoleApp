@@ -212,7 +212,7 @@ export default async function ProfilePage() {
                       .map((fav) => (
                         <Link
                           key={fav.positionId}
-                          href={`/positions/${fav.positionId}`}
+                          href={`/positions/${fav.positionId}?from=${encodeURIComponent("/profile")}`}
                           className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
                         >
                           {fav.position?.name}
@@ -561,7 +561,7 @@ export default async function ProfilePage() {
                     .map((fav) => (
                       <Link
                         key={fav.positionId}
-                        href={`/positions/${fav.positionId}`}
+                        href={`/positions/${fav.positionId}?from=${encodeURIComponent("/profile")}`}
                         className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
                       >
                         {fav.position?.name}

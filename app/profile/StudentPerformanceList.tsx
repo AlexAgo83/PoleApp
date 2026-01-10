@@ -33,11 +33,13 @@ export function StudentPerformanceList({
   hideLabel = false,
   label = "Positions suivies",
   labelClassName,
+  from = "/profile",
 }: {
   items: PerformanceEntry[];
   hideLabel?: boolean;
   label?: string;
   labelClassName?: string;
+  from?: string;
 }) {
   const [page, setPage] = useState(1);
 
@@ -93,7 +95,7 @@ export function StudentPerformanceList({
         {pageItems.map((p) => (
           <Link
             key={p.positionId}
-            href={`/positions/${p.positionId}`}
+            href={`/positions/${p.positionId}?from=${encodeURIComponent(from)}`}
             className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 transition hover:border-cyan-400/70 hover:bg-white/10"
           >
             <span className="flex items-center gap-2">

@@ -215,6 +215,7 @@ export default async function TeacherStudentDetailPage({
                 learningStatus: p.learningStatus,
                 updatedAt: p.updatedAt,
               }))}
+              from={`/teacher/students/${student.id}`}
             />
             {sortedProgression.length === 0 ? (
               <p className="mt-2 text-sm text-slate-300">
@@ -232,7 +233,7 @@ export default async function TeacherStudentDetailPage({
                   .map((fav) => (
                     <Link
                       key={fav.positionId}
-                      href={`/positions/${fav.positionId}`}
+                      href={`/positions/${fav.positionId}?from=${encodeURIComponent(`/teacher/students/${student.id}`)}`}
                       className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
                     >
                       {fav.position?.name}

@@ -225,7 +225,7 @@ export default async function TeacherPublicProfilePage({
                 {favoritePositions.map((position) => (
                   <Link
                     key={position.id}
-                    href={`/positions/${position.id}`}
+                    href={`/positions/${position.id}?from=${encodeURIComponent(`/teachers/${teacher.id}`)}`}
                     className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white transition hover:border-cyan-300 hover:text-cyan-100"
                   >
                     {position.name}
