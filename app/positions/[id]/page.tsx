@@ -22,6 +22,7 @@ type Props = {
   params: Promise<{ id: string }>;
   searchParams?: Promise<{
     from?: string;
+    fromCourse?: string;
   }>;
 };
 
@@ -60,9 +61,15 @@ export default async function PositionDetailPage({ params, searchParams }: Props
 
   const awaitedSearch = searchParams ? await searchParams : undefined;
   const rawFrom = awaitedSearch?.from;
+  const rawFromCourse = awaitedSearch?.fromCourse;
   const decodedFrom = rawFrom ? decodeURIComponent(rawFrom) : undefined;
+  const decodedFromCourse = rawFromCourse ? decodeURIComponent(rawFromCourse) : undefined;
   const safeFrom =
-    decodedFrom && decodedFrom.startsWith("/") && !decodedFrom.startsWith("//") ? decodedFrom : undefined;
+    decodedFromCourse && decodedFromCourse.startsWith("/") && !decodedFromCourse.startsWith("//")
+      ? decodedFromCourse
+      : decodedFrom && decodedFrom.startsWith("/") && !decodedFrom.startsWith("//")
+        ? decodedFrom
+        : undefined;
   const backHref = safeFrom ?? "/positions";
   const isFromPositionsList = Boolean(safeFrom && safeFrom.startsWith("/positions"));
   const isFromProgress = Boolean(safeFrom && safeFrom.startsWith("/student/progress"));

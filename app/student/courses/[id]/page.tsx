@@ -146,6 +146,7 @@ export default async function StudentCourseDetailPage({
       ? rawFrom
       : undefined;
   const backHref = safeFrom ?? "/student/courses";
+  const coursePath = `/student/courses/${course.id}${safeFrom ? `?from=${encodeURIComponent(safeFrom)}` : ""}`;
   const teacherName =
     course.teacher?.name ?? course.teacher?.email ?? "Professeur";
   const teacherProfileHref = course.teacher?.id
@@ -375,7 +376,7 @@ export default async function StudentCourseDetailPage({
               className="rounded-xl border border-white/10 bg-white/5 text-slate-200"
             >
               <Link
-                href={`/positions/${cp.position.id}?from=${encodeURIComponent(backHref)}`}
+                href={`/positions/${cp.position.id}?from=${encodeURIComponent(backHref)}&fromCourse=${encodeURIComponent(coursePath)}`}
                 className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 transition hover:border-cyan-300/70 hover:bg-white/10"
               >
                 <div className="flex flex-wrap items-center gap-2">

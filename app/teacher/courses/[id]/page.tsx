@@ -388,7 +388,7 @@ export default async function TeacherCourseDetailPage({
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Link
-                  href={`/positions/${cp.position.id}`}
+                  href={`/positions/${cp.position.id}?from=${encodeURIComponent(currentPath)}&fromCourse=${encodeURIComponent(currentPath)}`}
                   className="inline-flex items-center gap-2 font-semibold text-white underline-offset-4 transition hover:text-cyan-200 hover:underline"
                 >
                   <span>{cp.position.name}</span>
