@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { InvoiceStatus } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -104,6 +105,9 @@ export default async function AdminDashboard() {
     combosCount,
     newStudentsWeek,
     newStudentsMonth,
+    paidInvoicesCount,
+    pendingInvoicesCount,
+    paidInvoicesTotalCents,
   ] = await Promise.all([
     prisma.user.findMany({
       where: { schoolId: session.user.schoolId },
@@ -149,6 +153,25 @@ export default async function AdminDashboard() {
         createdAt: { gte: startOfMonth },
       },
     }),
+    prisma.invoice.count({
+      where: {
+        course: { schoolId: session.user.schoolId },
+        status: InvoiceStatus.PAID,
+      },
+    }),
+    prisma.invoice.count({
+      where: {
+        course: { schoolId: session.user.schoolId },
+        status: { in: [InvoiceStatus.GENERATED, InvoiceStatus.SENT, InvoiceStatus.LATE] },
+      },
+    }),
+    prisma.invoice.aggregate({
+      where: {
+        course: { schoolId: session.user.schoolId },
+        status: InvoiceStatus.PAID,
+      },
+      _sum: { amountCents: true },
+    }),
   ]);
 
   const counts = users.reduce(
@@ -162,6 +185,13 @@ export default async function AdminDashboard() {
   ) satisfies RoleCounts;
 
   const premiumRate = counts.total ? `${Math.round((counts.premium / counts.total) * 100)}%` : "0%";
+  const paidInvoicesTotalEuros = `${(
+    (paidInvoicesTotalCents?._sum.amountCents ?? 0) /
+    100
+  ).toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} €`;
 
   const panels: Panel[] = [
     {
@@ -223,8 +253,9 @@ export default async function AdminDashboard() {
       stats: [
         { label: "Premium %", value: premiumRate },
         { label: "Admins", value: counts.SCHOOL_ADMIN },
-        { label: "Super-admin", value: counts.SUPER_ADMIN },
-        { label: "Site web", value: schoolWebsite ? "En ligne" : "Non défini" },
+        { label: "Payées", value: paidInvoicesCount },
+        { label: "En attente", value: pendingInvoicesCount },
+        { label: "Payé", value: paidInvoicesTotalEuros },
       ],
       shortcuts: [
         { label: "Facturation", href: "/admin/billing" },

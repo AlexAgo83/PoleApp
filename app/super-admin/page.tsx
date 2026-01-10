@@ -8,7 +8,42 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+type StatPillProps = { label: string; value: string | number };
+type Shortcut = { label: string; href: string; backgroundUrl?: string | null };
+type Panel = {
+  id: string;
+  title: string;
+  description: string;
+  stats: StatPillProps[];
+  shortcuts: Shortcut[];
+};
+
 type PageProps = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
+
+function StatPill({ label, value }: StatPillProps) {
+  return (
+    <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-slate-200">
+      <span className="uppercase tracking-[0.14em] text-cyan-200">{label}</span>
+      <span className="rounded-md bg-white/10 px-1.5 py-[2px] text-[10px] font-semibold text-white">{value}</span>
+    </div>
+  );
+}
+
+function PanelHero({ title, description }: { title: string; description: string }) {
+  const heroBg =
+    "linear-gradient(135deg, rgba(22,36,66,0.68), rgba(16,26,52,0.62)), radial-gradient(circle at 12% 20%, rgba(56,189,248,0.25), transparent 42%), radial-gradient(circle at 82% -8%, rgba(236,72,153,0.22), transparent 38%)";
+  return (
+    <div
+      className="relative -mx-[var(--panel-px)] -mt-[var(--panel-py)] overflow-hidden rounded-t-2xl border-b border-white/10 bg-[#0f1a32] px-4 py-5 shadow-inner shadow-black/20 sm:px-6"
+      style={{ backgroundImage: heroBg, backgroundSize: "cover", backgroundPosition: "center" }}
+    >
+      <div className="relative flex flex-col gap-2">
+        <h2 className="text-xl font-semibold text-white sm:text-2xl">{title}</h2>
+        <p className="text-sm text-slate-200/90">{description}</p>
+      </div>
+    </div>
+  );
+}
 
 export default async function SuperAdminPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
@@ -26,194 +61,201 @@ export default async function SuperAdminPage({ searchParams }: PageProps) {
   const flashForceOk = flash === "force-ok";
   const flashForceInvalid = flash === "force-invalid";
 
-  const audits = await prisma.auditLog.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 10,
-    include: { actor: { select: { email: true } } },
-  });
+  const [
+    schoolsCount,
+    usersCount,
+    premiumCount,
+    teachersCount,
+    studentsCount,
+    creditPacksActiveCount,
+    subscriptionOffersActiveCount,
+    positionsCount,
+    presetsCount,
+    studiosCount,
+    partnersCount,
+    audits,
+  ] = await Promise.all([
+    prisma.school.count(),
+    prisma.user.count(),
+    prisma.user.count({ where: { isPremium: true } }),
+    prisma.user.count({ where: { role: "TEACHER" } }),
+    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.creditPackOffer.count({ where: { isActive: true, isOpen: true } }),
+    prisma.subscriptionOffer.count({ where: { isActive: true, isOpen: true } }),
+    prisma.position.count(),
+    prisma.preset.count(),
+    prisma.studio.count(),
+    prisma.partner.count(),
+    prisma.auditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      include: { actor: { select: { email: true } } },
+    }),
+  ]);
 
-  const modules = [
+  const premiumRate = usersCount ? `${Math.round((premiumCount / usersCount) * 100)}%` : "0%";
+
+  const panels: Panel[] = [
     {
-      title: "Abonnements",
-      href: "/super-admin/subscriptions",
-      cta: "Gérer les abonnements",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M4 7h16M4 12h16M4 17h10" />
-          <circle cx="8" cy="7" r="1" />
-          <circle cx="8" cy="12" r="1" />
-          <circle cx="14" cy="17" r="1" />
-        </svg>
-      ),
+      id: "pilotage",
+      title: "Pilotage global",
+      description: "Rôles, écoles et utilisateurs.",
+      stats: [
+        { label: "Écoles", value: schoolsCount },
+        { label: "Utilisateurs", value: usersCount },
+        { label: "Premium", value: premiumCount },
+        { label: "Profs", value: teachersCount },
+        { label: "Élèves", value: studentsCount },
+      ],
+      shortcuts: [
+        { label: "Écoles", href: "/super-admin/schools" },
+        { label: "Utilisateurs", href: "/super-admin/users" },
+        { label: "Préférences (TVA/devise)", href: "/super-admin/preferences" },
+      ],
     },
     {
-      title: "Packs crédits",
-      href: "/super-admin/packs",
-      cta: "Gérer les packs",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <rect x="4" y="6" width="16" height="12" rx="2" />
-          <path d="M4 10h16M9 14h6" />
-        </svg>
-      ),
+      id: "offres",
+      title: "Offres & revenus",
+      description: "Packs crédits, abonnements et presets.",
+      stats: [
+        { label: "Packs actifs", value: creditPacksActiveCount },
+        { label: "Abos actifs", value: subscriptionOffersActiveCount },
+        { label: "Presets", value: presetsCount },
+        { label: "Premium %", value: premiumRate },
+      ],
+      shortcuts: [
+        { label: "Packs crédits", href: "/super-admin/packs" },
+        { label: "Abonnements", href: "/super-admin/subscriptions" },
+      ],
     },
     {
-      title: "Utilisateurs",
-      href: "/super-admin/users",
-      cta: "Promotions / resets",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <circle cx="12" cy="8" r="3" />
-          <path d="M5 20v-1.5A4.5 4.5 0 019.5 14H12" />
-          <path d="M17 11h3m-1.5-1.5v3" />
-        </svg>
-      ),
-    },
-    {
-      title: "Écoles",
-      href: "/super-admin/schools",
-      cta: "Gestion écoles",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M12 3l9 5-9 5-9-5 9-5z" />
-          <path d="M4 10v7a1 1 0 001 1h14a1 1 0 001-1v-7" />
-          <path d="M12 18v-5" />
-        </svg>
-      ),
-    },
-    {
-      title: "Préférences",
-      href: "/super-admin/preferences",
-      cta: "TVA & devise",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 01-.33 1.82l-.05.05a2 2 0 00-.25 2.45l.02.03a1.65 1.65 0 01-1.51 2.5 1.65 1.65 0 01-1.51-1l-.02-.05a2 2 0 00-2.3-1.23h-.12a2 2 0 00-2.3 1.23l-.02.05a1.65 1.65 0 01-1.51 1 1.65 1.65 0 01-1.51-2.5l.02-.03a2 2 0 00-.25-2.45l-.05-.05A1.65 1.65 0 014.6 15a1.65 1.65 0 011-1.51l.05-.02a2 2 0 001.23-2.3v-.12a2 2 0 00-1.23-2.3l-.05-.02A1.65 1.65 0 014.6 5a1.65 1.65 0 012.5-1.51l.03.02a2 2 0 002.45-.25l.05-.05a1.65 1.65 0 011.82-.33h.02a1.65 1.65 0 011.01 1.51l-.02.05a2 2 0 001.23 2.3h.12a2 2 0 002.3-1.23l.02-.05A1.65 1.65 0 0120.9 5a1.65 1.65 0 01-1 1.51l-.05.02a2 2 0 00-1.23 2.3v.12a2 2 0 001.23 2.3l.05.02a1.65 1.65 0 011 1.5z" />
-        </svg>
-      ),
-    },
-    {
-      title: "Audit médias",
-      href: "/super-admin/media-audit",
-      cta: "Cloudinary vs base",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M4 7h16M4 12h16M4 17h10" />
-          <circle cx="7" cy="7" r="1.2" />
-          <circle cx="7" cy="12" r="1.2" />
-          <circle cx="13" cy="17" r="1.2" />
-        </svg>
-      ),
-    },
-    {
-      title: "Logics",
-      href: "/logics",
-      cta: "Docs internes",
-      icon: (
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M5 4h9a2 2 0 012 2v13l-4-2-4 2V6a2 2 0 00-2-2z" />
-          <path d="M16 6h3a1 1 0 011 1v12l-3-2" />
-        </svg>
-      ),
+      id: "catalogue",
+      title: "Catalogue & conformité",
+      description: "Positions, studios et contrôle médias.",
+      stats: [
+        { label: "Positions", value: positionsCount },
+        { label: "Studios", value: studiosCount },
+        { label: "Partenaires", value: partnersCount },
+      ],
+      shortcuts: [
+        { label: "Audit médias", href: "/super-admin/media-audit" },
+        { label: "Docs internes", href: "/logics" },
+      ],
     },
   ];
 
   return (
-    <div className="grid gap-4 md:gap-6">
-      {flash?.startsWith("invalid-") && (
-        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm font-semibold text-amber-50 shadow-lg shadow-amber-900/30">
-          {flash === "invalid-offer"
-            ? "Offre abonnement invalide : vérifie le nom et les montants."
-            : "Pack de crédits invalide : vérifie le nom et les montants."}
-          {flashError && (
-            <span className="ml-2 font-normal text-amber-100/80">({flashError})</span>
-          )}
-        </div>
-      )}
-      {flashForceOk && (
-        <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
-          Discipline forcée appliquée.
-        </div>
-      )}
-      {flashForceInvalid && (
-        <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
-          Confirmation manquante ou école invalide.
-        </div>
-      )}
-      <PersistedPanel
-        storageKey="superadmin:audit-log"
-        title="Audit"
-        subtitle="10 dernières actions"
-        defaultOpen={false}
-        className="panel panel-body lg-gap"
-        contentClassName="space-y-2"
-      >
-        <div id="audit-log" className="space-y-2">
-          {audits.length === 0 && <p className="text-sm text-slate-400">Aucune action super-admin enregistrée.</p>}
-          {audits.map((log) => (
-            <div
-              key={log.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-            >
-              <div>
-                <p className="font-semibold text-white">{log.action}</p>
-                <p className="text-xs text-slate-400">
-                  {log.target ? `Cible: ${log.target} — ` : ""}
-                  {log.actor?.email || "N/A"}
-                </p>
-              </div>
-              <p className="text-xs text-slate-400">
-                {new Date(log.createdAt).toLocaleString("fr-FR", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}
-              </p>
-            </div>
-          ))}
-        </div>
-      </PersistedPanel>
-
-      <section className="panel panel-body lg-gap">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Actions</h2>
-        </div>
-        <div className="panel-grid lg-gap md:grid-cols-2">
-          {modules.map((mod) => (
-            <ActionCard key={mod.href} title={mod.title} href={mod.href} cta={mod.cta} icon={mod.icon} />
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function ActionCard({
-  title,
-  href,
-  cta,
-  icon,
-}: {
-  title: string;
-  href: string;
-  cta: string;
-  icon?: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/60 hover:bg-white/10"
-    >
-      <div className="flex items-center gap-3">
-        {icon ? (
-          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5">
-            {icon}
-          </span>
-        ) : null}
-        <div className="flex-1">
-          <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">{cta}</p>
-          <p className="text-lg font-semibold text-white">{title}</p>
-        </div>
+    <main className="flex min-h-screen w-full flex-col gap-4">
+      <div className="grid gap-3 md:gap-4">
+        {flash?.startsWith("invalid-") && (
+          <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm font-semibold text-amber-50 shadow-lg shadow-amber-900/30">
+            {flash === "invalid-offer"
+              ? "Offre abonnement invalide : vérifie le nom et les montants."
+              : "Pack de crédits invalide : vérifie le nom et les montants."}
+            {flashError && (
+              <span className="ml-2 font-normal text-amber-100/80">({flashError})</span>
+            )}
+          </div>
+        )}
+        {flashForceOk && (
+          <div className="rounded-xl border border-emerald-300/60 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow-lg shadow-emerald-900/30">
+            Discipline forcée appliquée.
+          </div>
+        )}
+        {flashForceInvalid && (
+          <div className="rounded-xl border border-amber-300/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-50 shadow-lg shadow-amber-900/30">
+            Confirmation manquante ou école invalide.
+          </div>
+        )}
       </div>
-    </Link>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        {panels.map((panel) => (
+          <article key={panel.id} className="panel border border-white/5">
+            <div className="panel-body gap-4">
+              <PanelHero title={panel.title} description={panel.description} />
+              <div className="flex flex-wrap gap-2">
+                {panel.stats.map((stat) => (
+                  <StatPill key={`${panel.id}-${stat.label}`} label={stat.label} value={stat.value} />
+                ))}
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {panel.shortcuts.map((shortcut) => (
+                  <Link
+                    key={`${panel.id}-${shortcut.label}`}
+                    href={shortcut.href}
+                    className="group flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-white transition hover:border-cyan-400/70 hover:bg-white/10"
+                    style={
+                      shortcut.backgroundUrl
+                        ? {
+                            backgroundImage: `linear-gradient(135deg, rgba(26,35,69,0.55), rgba(88,28,135,0.4)), url(${shortcut.backgroundUrl})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }
+                        : undefined
+                    }
+                  >
+                    <span
+                      className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]"
+                      style={
+                        shortcut.backgroundUrl
+                          ? { textShadow: "0 0 6px rgba(0,0,0,0.65), 0 1px 2px rgba(0,0,0,0.55)" }
+                          : undefined
+                      }
+                    >
+                      {shortcut.label}
+                    </span>
+                    <span
+                      className="text-cyan-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] transition-transform group-hover:translate-x-1"
+                      style={
+                        shortcut.backgroundUrl
+                          ? { textShadow: "0 0 6px rgba(0,0,0,0.65), 0 1px 2px rgba(0,0,0,0.55)" }
+                          : undefined
+                      }
+                    >
+                      →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+        <article className="panel border border-white/5">
+          <PersistedPanel
+            storageKey="superadmin:audit-log"
+            title="Audit"
+            subtitle="10 dernières actions"
+            defaultOpen={false}
+            className="panel-body lg-gap"
+            contentClassName="space-y-2"
+          >
+            <div id="audit-log" className="space-y-2">
+              {audits.length === 0 && <p className="text-sm text-slate-400">Aucune action super-admin enregistrée.</p>}
+              {audits.map((log) => (
+                <div
+                  key={log.id}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+                >
+                  <div>
+                    <p className="font-semibold text-white">{log.action}</p>
+                    <p className="text-xs text-slate-400">
+                      {log.target ? `Cible: ${log.target} — ` : ""}
+                      {log.actor?.email || "N/A"}
+                    </p>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    {new Date(log.createdAt).toLocaleString("fr-FR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </PersistedPanel>
+        </article>
+      </section>
+    </main>
   );
 }

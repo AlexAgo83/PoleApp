@@ -204,7 +204,7 @@ export default async function PresetDetailPublicPage({ params, searchParams }: P
               ) : null}
             </div>
             <Link
-              href="/presets"
+              href={safeFrom}
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:border-cyan-300/70 hover:bg-white/10"
               title="Retour à la liste des presets"
             >
