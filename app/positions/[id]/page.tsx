@@ -446,7 +446,7 @@ export default async function PositionDetailPage({ params, searchParams }: Props
               </span>
             </Link>
             <Link
-              href="/positions"
+              href={backHref}
               className="inline-flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition border-white/10 bg-white/5 text-white hover:border-cyan-300/70 hover:bg-white/10"
               title="Retour à la liste"
             >
