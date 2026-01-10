@@ -234,7 +234,7 @@ export default async function TeacherDashboard() {
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-4">
-      <section className="grid gap-4 xl:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-2">
         {panels.map((panel) => (
           <article key={panel.id} className="panel border border-white/5">
             <div className="panel-body gap-4">
