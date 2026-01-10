@@ -13,7 +13,7 @@
 - Accès : authentification requise pour `/positions`; création/édition réservée aux profs/admins.
 - Liste : pagination (12), filtres type/level/discipline, recherche texte, filtre créateur (teacher), filtre “déverrouillées” (positions accessibles via achats presets ou cours suivis pour l’élève), filtre favoris (élève).
 - Progression : pour l’élève connecté, badge de statut (Nouveauté/Initié/Passé/Fluide chorégraphié) sur les cartes si progression existante.
-- Détail : médias photo (Cloudinary), description, niveau/type, discipline, tips/grips ; accès lecture pour tous les authentifiés.
+- Détail : médias photo (Cloudinary), description, niveau/type, discipline, tips/grips ; accès lecture pour tous les authentifiés ; bouton retour supporte `?from=` (retour vers la liste/filtre d’origine, fallback `/positions`).
 - Favoris prof : positions coups de cœur visibles sur fiche prof ; gestion côté fiche prof.
 - RBAC : teacher/admin peuvent créer/éditer ; lecture pour tous les rôles ; scope école implicite via data (positions liées à l’école).
 
