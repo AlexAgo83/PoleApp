@@ -1,5 +1,6 @@
 # DB partagée — schémas par app & reset ciblé
 [Aligné v0.15.x | Portée: infra DB/ops PoleApp + autres apps partageant le même Postgres]
+Guide pour configurer l’accès à une base Postgres partagée via un schéma dédié par app (local/Docker/Render) et savoir comment réinitialiser le schéma PoleApp sans toucher les autres.
 
 ## Objectif
 Permettre à PoleApp et aux autres apps d’utiliser une seule instance Postgres sans interférence, via un schéma dédié par app et une procédure de reset du schéma PoleApp sans toucher les autres.
@@ -32,6 +33,12 @@ Permettre à PoleApp et aux autres apps d’utiliser une seule instance Postgres
   - `db:reset:schema` → drop/recreate schéma, `db:push`, `db:seed`, avec garde-fous.
 - `start-auto.js` continue de pousser le schéma et seed uniquement si base vide (0 école, ≤1 user).
 - Les autres apps doivent utiliser leur propre schéma (ex : `?schema=app2`) et éviter `public`.
+
+## Procédures
+- Render (prod/staging) : override `DATABASE_URL` avec le schéma (ex : `.../dbname?schema=poleapp`), vérifier `DATABASE_SEED_PWD`/`SUPER_ADMIN_*`/`NEXTAUTH_*`. Laisser le build exécuter `db push`; pas de `db:reset:schema` en prod.
+- Création schéma manuelle (optionnel) : `CREATE SCHEMA IF NOT EXISTS "<schema>";` via psql avant un `db:push` si l’on veut figer les droits.
+- Local/Docker : `DATABASE_URL=...schema=poleapp npm run db:push && npm run db:seed` pour initialiser ; `db:reset:schema` autorisé en dev uniquement.
+- Autres apps sur la même DB : leur propre URL avec `?schema=<app>`, leurs commandes/migrations, aucun accès `public`.
 
 ## Tests & QA
 - Local/Docker : `DATABASE_URL=...schema=poleapp npm run db:reset:schema` → vérifier via psql que seules les tables `poleapp.*` existent et que le seed crée 30 users / 2 schools.
