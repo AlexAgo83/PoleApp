@@ -1,6 +1,6 @@
 {
   "name": "poleapp",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "private": true,
   "scripts": {
     "prebuild": "prisma generate",
@@ -11,8 +11,10 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:push": "prisma db push --schema prisma/schema.prisma",
-    "db:seed": "prisma db seed --schema prisma/schema.prisma",
+    "db:schema:ensure": "node scripts/ensure-schema.js",
+    "db:push": "node scripts/ensure-schema.js && prisma db push --schema prisma/schema.prisma",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset:schema": "node scripts/reset-schema.js",
     "db:migrate:deploy": "node scripts/ci-migrate-deploy.js",
     "db:baseline:render": "echo \"baseline not required (init migration)\"",
     "start:render": "node scripts/start-auto.js render",

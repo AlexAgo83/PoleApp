@@ -1,4 +1,10 @@
 # Changelog
+# Changelog
+## 2026-01-10 — Ops (schéma dédié par app + reset ciblé)
+- Schéma DB : support explicite d’un schéma dédié (`?schema=poleapp`), `.env.example`/docker-compose/README alignés pour cohabiter avec d’autres apps sur la même base Postgres.
+- Scripts : `db:schema:ensure` avant `db:push`, `db:reset:schema` (drop/recreate du schéma ciblé, push, seed) avec garde-fous prod/public.
+- Seed : `db:seed` bascule sur `tsx prisma/seed.ts` (seed effectif, `prisma db seed` ne tournait pas).
+
 ## 2026-01-06 — Release v0.14.1 (Contacts WhatsApp/Instagram + docs)
 - Profil `/app/profile` : ajout des champs optionnels téléphone WhatsApp (normalisé 8–20 chiffres, + optionnel) et username Instagram (regex 2–30 caractères), validation côté serveur, suppression si vide, boutons externes conditionnels (icônes PNG locales).
 - Fiche prof publique `/teachers/[id]` : affichage des boutons WhatsApp/Instagram si renseignés, alignés avec “Partager”.

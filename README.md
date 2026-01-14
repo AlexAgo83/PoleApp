@@ -25,6 +25,11 @@ npm run db:seed
 npm run dev                 # ou NEXT_USE_TURBOPACK=0 npm run dev si panics
 ```
 
+### Schéma dédié (DB partagée)
+- Utiliser un schéma par app : `DATABASE_URL=postgresql://.../poleapp?schema=poleapp` (déjà dans `.env.example`). `npm run db:push` crée le schéma s’il n’existe pas.
+- Reset complet du schéma uniquement : `npm run db:reset:schema` (drop + recreate + db:push + seed). Protégé en prod ou sur `schema=public` sans `SCHEMA_RESET_FORCE=1`.
+- Sur Render, la `connectionString` fournie n’inclut pas le schéma : la surcharger avec `?schema=poleapp` pour éviter de toucher d’autres apps qui partagent la même DB.
+
 ### Docker
 - Hot reload conseillé : `docker compose watch` (si lock, `docker compose down` puis relancer).
 - Rebuild complet : `docker-compose up --build`.

@@ -23,7 +23,7 @@ services:
       target: dev
     container_name: poleapp-web
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/poleapp?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/poleapp?schema=poleapp
       NEXTAUTH_SECRET: dev-secret-change-me
       NEXTAUTH_URL: http://localhost:3000
       NODE_ENV: development
