@@ -256,6 +256,15 @@ export function CourseForm({
   const favoritePositionsForTeacher = useMemo(() => {
     return new Set(teacherFavorites[selectedTeacherId] ?? []);
   }, [teacherFavorites, selectedTeacherId]);
+  const selectedDisciplineLabel = useMemo(() => {
+    if (!selectedDiscipline) return "";
+    const match = disciplines.find(
+      (d) =>
+        (d.id && d.id === selectedDiscipline) ||
+        d.name.toLowerCase() === selectedDiscipline.toLowerCase()
+    );
+    return match?.name ?? selectedDiscipline;
+  }, [disciplines, selectedDiscipline]);
   const filteredPositions = useMemo(() => {
     if (!selectedDiscipline) return positions;
     const base = positions.filter(
@@ -669,7 +678,7 @@ export function CourseForm({
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span>
-            Filtrées par discipline{selectedDiscipline ? ` (${selectedDiscipline})` : ""}
+            Filtrées par discipline{selectedDiscipline ? ` (${selectedDisciplineLabel})` : ""}
           </span>
           {selectedPositions.length > 0 && (
             <button

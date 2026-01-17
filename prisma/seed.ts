@@ -151,7 +151,7 @@ function parseDocPositions() {
   try {
     const docPath = path.resolve(process.cwd(), "logics/knowledge/db_positions.md");
     const content = fs.readFileSync(docPath, "utf8");
-    const blockRegex = /^##\s+(.+)\n([\s\S]*?)(?=^##\s+|\Z)/gm;
+    const blocks = content.split(/^##\s+/m).filter(Boolean);
     const extras: typeof positionsData = [];
     const seen = new Set(positionsData.map((p) => normalizeHeading(p.name)));
 
@@ -178,10 +178,10 @@ function parseDocPositions() {
       return null;
     };
 
-    let match;
-    while ((match = blockRegex.exec(content)) !== null) {
-      const heading = match[1].trim();
-      const body = match[2];
+    for (const block of blocks) {
+      const lines = block.split(/\r?\n/);
+      const heading = (lines.shift() || "").trim();
+      const body = lines.join("\n");
       const norm = normalizeHeading(heading);
       if (!norm || seen.has(norm)) continue;
 

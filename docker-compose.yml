@@ -22,6 +22,8 @@ services:
       dockerfile: Dockerfile
       target: dev
     container_name: poleapp-web
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/poleapp?schema=poleapp
       NEXTAUTH_SECRET: dev-secret-change-me
