@@ -691,7 +691,7 @@ export async function deleteCourseAction(formData: FormData) {
         title: "Cours annulé",
         body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
         link: "/student/courses",
-        courseId: course.id,
+        courseId: null,
       }))
     );
   }
@@ -701,8 +701,8 @@ export async function deleteCourseAction(formData: FormData) {
       kind: NotificationKind.COURSE_CANCELLED,
       title: "Cours annulé",
       body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
-      link: `/teacher/courses/${course.id}`,
-      courseId: course.id,
+      link: "/teacher/courses",
+      courseId: null,
     });
   }
   const admins = await prisma.user.findMany({
@@ -716,8 +716,8 @@ export async function deleteCourseAction(formData: FormData) {
         kind: NotificationKind.ADMIN_COURSE_CANCELLED,
         title: "Cours annulé",
         body: `${course.title ?? "Cours"}${dateLabel ? ` — ${dateLabel}` : ""}`,
-        link: `/teacher/courses/${course.id}`,
-        courseId: course.id,
+        link: "/teacher/courses",
+        courseId: null,
       }))
     );
   }

@@ -1,4 +1,4 @@
-# Pole App — Produit v0.15.2
+# Pole App — Produit v0.15.X
 
 Web app Next.js (App Router) pour gérer positions, élèves, cours, progression, combos/presets et mini-jeux, avec navigation par rôle et pagination. 
 
