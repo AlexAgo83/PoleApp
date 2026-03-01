@@ -9,6 +9,12 @@ Next.js web app (App Router) to manage positions, students, courses, progression
 ![Next.js](https://img.shields.io/badge/Next.js-16.1.0-000000?logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-19.2.3-61DAFB?logo=react&logoColor=black)
 
+<img width="1192" height="657" alt="image" src="https://github.com/user-attachments/assets/50b6ae27-9303-4c3f-87c9-925d3012f11e" />
+<img width="1192" height="806" alt="image" src="https://github.com/user-attachments/assets/b80c38cd-f67c-429f-8611-68f9473e76e6" />
+<img width="373" height="663" alt="image" src="https://github.com/user-attachments/assets/30da696e-735d-4829-a03a-583508ced4aa" />
+<img width="370" height="665" alt="image" src="https://github.com/user-attachments/assets/54bc0f3b-870b-45ac-8f46-30be25c8608e" />
+
+
 ## Product Phase - Cross-Cutting Requirements
 - Stronger testing (unit + integration/contract where relevant), backward-compatible migrations with backfills and data guardrails. Idempotent seed.
 - Observability: structured logging, actionable metrics/health checks, alerts for errors/latency, traces on sensitive actions.
