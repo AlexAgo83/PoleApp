@@ -3,7 +3,7 @@
 Next.js web app (App Router) to manage positions, students, courses, progression, combos/presets, and mini-games, with role-based navigation and pagination.
 
 
-[![Repository](https://img.shields.io/badge/GitHub-AlexAgo83%2FPoleApp-181717?logo=github&logoColor=white)](https://github.com/AlexAgo83/PoleApp)
+[![Repository](https://img.shields.io/badge/GitHub-AlexAgo83%2Fpole%2Dapp-181717?logo=github&logoColor=white)](https://github.com/AlexAgo83/pole-app)
 [![Live Demo](https://img.shields.io/badge/live%20demo-Render-46E3B7?logo=render&logoColor=white)](https://poleapp.onrender.com)
 ![Version](https://img.shields.io/badge/version-v0.15.3-4C8BF5)
 ![Next.js](https://img.shields.io/badge/Next.js-16.1.0-000000?logo=nextdotjs&logoColor=white)
